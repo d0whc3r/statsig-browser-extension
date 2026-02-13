@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - esbuild
+  - spawn-sync
+
+hoist: true
+shamefullyHoist: true

@@ -1,0 +1,32 @@
+name: "Submit to Web Store"
+on:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "npm"
+
+      - name: Install dependencies with npm
+        run: npm i
+
+      - name: Build and zip extension artifact
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096 --trace-warnings"
+          npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Browser Platform Publish
+        uses: PlasmoHQ/bpp@v3
+        with:
+          keys: ${{ secrets.SUBMIT_KEYS }}
+          artifact: build/chrome-mv3-prod.zip

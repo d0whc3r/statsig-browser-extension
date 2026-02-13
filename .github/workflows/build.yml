@@ -1,0 +1,36 @@
+name: "Build the extension"
+on:
+  pull_request:
+    # Only the following types are handled by the action, but one can default to all as well
+    types: [opened, reopened, synchronize]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.x
+          cache: "npm"
+
+      - name: Install dependencies with npm
+        run: npm i
+
+      - name: Build the extension
+        run: |
+          export NODE_OPTIONS="--max-old-space-size=4096 --trace-warnings"
+          npm run build
+        env:
+          NODE_ENV: production
+
+      - name: Archive the extension production build as ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}-prod-build
+          path: build/chrome-mv3-prod.zip
+          retention-days: 30

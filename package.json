@@ -1,0 +1,70 @@
+{
+  "name": "statsig-browser-extension",
+  "version": "1.0.0",
+  "description": "Statsig Browser Extension",
+  "keywords": [
+    "browser-extension",
+    "feature-flags",
+    "statsig"
+  ],
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "wxt",
+    "dev:firefox": "wxt -b firefox",
+    "dev:chrome": "wxt -b chrome",
+    "dev:edge": "wxt -b edge",
+    "build": "wxt build",
+    "build:firefox": "wxt build -b firefox",
+    "build:chrome": "wxt build -b chrome",
+    "build:edge": "wxt build -b edge",
+    "zip": "wxt zip",
+    "zip:firefox": "wxt zip -b firefox",
+    "zip:chrome": "wxt zip -b chrome",
+    "zip:edge": "wxt zip -b edge",
+    "prepare": "wxt prepare",
+    "compile": "tsc --noEmit",
+    "postinstall": "wxt prepare",
+    "format:fix": "pnpm lint:fix --fix-suggestions --fix-dangerously && pnpm format",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "format": "oxfmt --write",
+    "format:check": "oxfmt --check",
+    "type-check": "tsc --noEmit",
+    "pre-commit": "lint-staged"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "5.90.21",
+    "axios": "1.13.5",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
+    "zustand": "5.0.11"
+  },
+  "devDependencies": {
+    "@total-typescript/ts-reset": "0.6.1",
+    "@types/chrome": "0.1.36",
+    "@types/node": "^24",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@wxt-dev/module-react": "1.1.5",
+    "autoprefixer": "10.4.24",
+    "husky": "9.1.7",
+    "lint-staged": "16.2.7",
+    "oxfmt": "0.32.0",
+    "oxlint": "1.47.0",
+    "postcss": "8.5.6",
+    "tailwindcss": "4.1.18",
+    "typescript": "5.9.3",
+    "vitest": "4.0.18",
+    "wxt": "0.20.17"
+  },
+  "lint-staged": {
+    "*": [
+      "oxlint --fix",
+      "oxfmt --write"
+    ]
+  },
+  "packageManager": "pnpm@10.29.3"
+}
