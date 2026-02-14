@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { Empty } from '@/src/components/ui/empty'
 import { useFeatureGateRules } from '@/src/hooks/use-feature-gate-rules'
 import { getConditionLabel } from '@/src/lib/rules'
+import { cn } from '@/src/lib/utils'
 
 interface Props {
   featureGateId: string
@@ -64,7 +65,7 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
           </div>
           <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
             <div
-              className={`h-full ${getProgressColor(rule.passPercentage)}`}
+              className={cn('h-full', getProgressColor(rule.passPercentage))}
               style={{ width: `${rule.passPercentage}%` }}
             />
           </div>
@@ -101,7 +102,6 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
     </CardContent>
   </Card>
 ))
-
 FeatureGateRuleCard.displayName = 'FeatureGateRuleCard'
 
 export const FeatureGateRules = memo(({ featureGateId }: Props) => {
@@ -138,5 +138,4 @@ export const FeatureGateRules = memo(({ featureGateId }: Props) => {
     </div>
   )
 })
-
 FeatureGateRules.displayName = 'FeatureGateRules'

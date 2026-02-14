@@ -45,7 +45,6 @@ const StatusFilterItem = memo(({ status, isChecked, onChange }: StatusFilterItem
     </DropdownMenuCheckboxItem>
   )
 })
-
 StatusFilterItem.displayName = 'StatusFilterItem'
 
 interface ColumnVisibilityItemProps {
@@ -68,7 +67,6 @@ const ColumnVisibilityItem = memo(({ column, isChecked, onChange }: ColumnVisibi
     </DropdownMenuCheckboxItem>
   )
 })
-
 ColumnVisibilityItem.displayName = 'ColumnVisibilityItem'
 
 export const TopContentActions = memo(
@@ -157,5 +155,4 @@ export const TopContentActions = memo(
     )
   },
 )
-
 TopContentActions.displayName = 'TopContentActions'

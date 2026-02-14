@@ -1,12 +1,12 @@
 import React from 'react'
 
-import BottomContent from '@/src/components/tables/BottomContent'
+import { BottomContent } from '@/src/components/tables/BottomContent'
 import { ExperimentsTableBody } from '@/src/components/tables/ExperimentsTableBody'
-import TopContent from '@/src/components/tables/TopContent'
+import { TopContent } from '@/src/components/tables/TopContent'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useExperimentsTableLogic } from '@/src/hooks/use-experiments-table-logic'
 
-export default function ExperimentsTable() {
+export function ExperimentsTable() {
   const {
     experimentColumns,
     experimentStatusOptions,

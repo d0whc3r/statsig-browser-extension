@@ -10,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/src/components/ui/select'
+import { cn } from '@/src/lib/utils'
 
 export const actionFilterOptions = [
   { label: 'All Actions', value: 'all' },
@@ -43,7 +44,7 @@ const HeaderControls = ({
       disabled={isFetching}
       className="h-8 gap-2"
     >
-      <RefreshCw className={`h-4 w-4 ${isFetching ? 'animate-spin' : ''}`} />
+      <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
       Refresh
     </Button>
     <Button variant="outline" size="sm" className="h-8 gap-2" asChild>

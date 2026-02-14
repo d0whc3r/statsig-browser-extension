@@ -1,13 +1,13 @@
 import React from 'react'
 
-import BottomContent from '@/src/components/tables/BottomContent'
+import { BottomContent } from '@/src/components/tables/BottomContent'
 import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
-import TopContent from '@/src/components/tables/TopContent'
+import { TopContent } from '@/src/components/tables/TopContent'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useDynamicConfigsTableLogic } from '@/src/hooks/use-dynamic-configs-table-logic'
 
-export default function DynamicConfigsTable() {
+export function DynamicConfigsTable() {
   const {
     error,
     filterValue,

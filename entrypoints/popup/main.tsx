@@ -6,7 +6,7 @@ import { TooltipProvider } from '@/src/components/ui/tooltip'
 import { queryClient } from '@/src/lib/query-client.ts'
 
 import '@fontsource/inter'
-import App from './App.tsx'
+import { App } from './App'
 
 ReactDOM.createRoot(document.querySelector('#root')!).render(
   <React.StrictMode>

@@ -43,7 +43,6 @@ const ExperimentCell = memo(({ item, columnKey, onRowClick }: ExperimentCellProp
     }
   }
 })
-
 ExperimentCell.displayName = 'ExperimentCell'
 
 interface ExperimentRowProps {
@@ -67,5 +66,4 @@ export const ExperimentRow = memo(({ item, headerColumns, onRowClick }: Experime
     </TableRow>
   )
 })
-
 ExperimentRow.displayName = 'ExperimentRow'

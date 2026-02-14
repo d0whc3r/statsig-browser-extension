@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react'
 import type { Group } from '@/src/types/statsig'
 
 import { UpdateGroupSection } from '@/src/components/modals/manage-experiment/UpdateGroupSection'
-import GroupsTable from '@/src/components/tables/GroupsTable'
+import { GroupsTable } from '@/src/components/tables/GroupsTable'
 
 type View = 'form' | 'table'
 

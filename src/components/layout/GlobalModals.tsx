@@ -23,7 +23,11 @@ const ExperimentSheet = lazy(() =>
     default: module.ExperimentSheet,
   })),
 )
-const FeatureGateSheet = lazy(() => import('@/src/components/sheets/FeatureGateSheet'))
+const FeatureGateSheet = lazy(() =>
+  import('@/src/components/sheets/FeatureGateSheet').then((module) => ({
+    default: module.FeatureGateSheet,
+  })),
+)
 const SettingsSheet = lazy(() =>
   import('@/src/components/sheets/SettingsSheet').then((module) => ({
     default: module.SettingsSheet,
@@ -47,5 +51,4 @@ export const GlobalModals = memo(() => (
     <AuditLogDetailSheet />
   </Suspense>
 ))
-
 GlobalModals.displayName = 'GlobalModals'

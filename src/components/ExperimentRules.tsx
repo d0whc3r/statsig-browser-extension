@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { Empty } from '@/src/components/ui/empty'
 import { useExperimentRules } from '@/src/hooks/use-experiment-rules'
 import { getConditionLabel } from '@/src/lib/rules'
+import { cn } from '@/src/lib/utils'
 
 interface Props {
   experimentId: string
@@ -58,7 +59,10 @@ const ExperimentRuleCard = memo(({ rule }: ExperimentRuleCardProps) => (
         </div>
         <div className="h-1.5 w-full bg-secondary rounded-full overflow-hidden">
           <div
-            className={`h-full rounded-full transition-all ${getProgressColor(rule.passPercentage)}`}
+            className={cn(
+              'h-full rounded-full transition-all',
+              getProgressColor(rule.passPercentage),
+            )}
             style={{ width: `${rule.passPercentage}%` }}
           />
         </div>
@@ -94,7 +98,6 @@ const ExperimentRuleCard = memo(({ rule }: ExperimentRuleCardProps) => (
     </CardContent>
   </Card>
 ))
-
 ExperimentRuleCard.displayName = 'ExperimentRuleCard'
 
 export const ExperimentRules = memo(({ experimentId }: Props) => {
@@ -135,5 +138,4 @@ export const ExperimentRules = memo(({ experimentId }: Props) => {
     </div>
   )
 })
-
 ExperimentRules.displayName = 'ExperimentRules'

@@ -1,9 +1,9 @@
 import { memo } from 'react'
 
 import { AuditLogs } from '@/src/components/AuditLogs'
-import DynamicConfigsTable from '@/src/components/tables/DynamicConfigsTable'
-import ExperimentsTable from '@/src/components/tables/ExperimentsTable'
-import FeatureGatesTable from '@/src/components/tables/FeatureGatesTable'
+import { DynamicConfigsTable } from '@/src/components/tables/DynamicConfigsTable'
+import { ExperimentsTable } from '@/src/components/tables/ExperimentsTable'
+import { FeatureGatesTable } from '@/src/components/tables/FeatureGatesTable'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 
 interface MainTabsProps {
@@ -53,5 +53,4 @@ export const MainTabs = memo(({ activeTab, onTabChange }: MainTabsProps) => (
     </Tabs>
   </div>
 ))
-
 MainTabs.displayName = 'MainTabs'

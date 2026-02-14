@@ -87,7 +87,6 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
     </CardContent>
   </Card>
 ))
-
 DynamicConfigRuleCard.displayName = 'DynamicConfigRuleCard'
 
 export const DynamicConfigRules = memo(({ configId }: Props) => {
@@ -128,5 +127,4 @@ export const DynamicConfigRules = memo(({ configId }: Props) => {
     </div>
   )
 })
-
 DynamicConfigRules.displayName = 'DynamicConfigRules'

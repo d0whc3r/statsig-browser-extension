@@ -58,10 +58,9 @@ const GroupRow = memo(({ group, canEdit, onEdit }: GroupRowProps) => {
     </TableRow>
   )
 })
-
 GroupRow.displayName = 'GroupRow'
 
-const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
+export const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
   const { currentItemId } = useStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
@@ -100,7 +99,4 @@ const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
     </div>
   )
 })
-
 GroupsTable.displayName = 'GroupsTable'
-
-export default GroupsTable

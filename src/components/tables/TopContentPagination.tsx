@@ -28,5 +28,4 @@ export const TopContentPagination = memo(
     </div>
   ),
 )
-
 TopContentPagination.displayName = 'TopContentPagination'

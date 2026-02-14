@@ -2,6 +2,7 @@ import type { HealthCheck } from '@/src/types/statsig'
 
 import { Progress } from '@/src/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import { cn } from '@/src/lib/utils'
 
 export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthCheck[] }) => {
   if (!healthChecks || healthChecks.length === 0) {
@@ -30,7 +31,10 @@ export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthChec
         {healthChecks.map((healthCheck) => (
           <div className="flex items-center gap-2" key={healthCheck.name}>
             <div
-              className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${healthCheck.status === 'PASSED' ? 'bg-green-500' : 'bg-muted-foreground/30'}`}
+              className={cn(
+                'h-2.5 w-2.5 rounded-full flex-shrink-0',
+                healthCheck.status === 'PASSED' ? 'bg-green-500' : 'bg-muted-foreground/30',
+              )}
             />
             <Tooltip>
               <TooltipTrigger asChild>

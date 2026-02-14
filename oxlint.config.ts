@@ -39,6 +39,7 @@ export default defineConfig({
         'max-lines': 'off',
         'max-lines-per-function': 'off',
         'max-statements': 'off',
+        'no-magic-numbers': 'off',
       },
     },
     {
@@ -61,7 +62,7 @@ export default defineConfig({
       },
     },
     {
-      files: ['vitest.config.ts'],
+      files: ['**/*.config.{js,ts,mjs,cjs}', 'entrypoints/background.ts', 'entrypoints/content.ts'],
       rules: {
         'import/no-default-export': 'off',
         'no-nodejs-modules': 'off',
@@ -106,6 +107,7 @@ export default defineConfig({
     'import/no-amd': 'error',
     'import/no-commonjs': 'warn',
     'import/no-cycle': 'error',
+    'import/no-default-export': 'error',
     'import/no-duplicates': 'error',
     'import/no-named-default': 'warn',
     'import/no-unresolved': 'error',

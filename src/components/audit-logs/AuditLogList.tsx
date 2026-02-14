@@ -93,5 +93,4 @@ export const AuditLogList = memo(
     </div>
   ),
 )
-
 AuditLogList.displayName = 'AuditLogList'

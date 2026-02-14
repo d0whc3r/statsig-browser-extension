@@ -90,7 +90,7 @@ export function AppContent() {
   )
 }
 
-function App() {
+export function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -99,5 +99,3 @@ function App() {
     </ErrorBoundary>
   )
 }
-
-export default App

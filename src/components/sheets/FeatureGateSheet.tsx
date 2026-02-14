@@ -10,7 +10,7 @@ import { useStore } from '@/src/store/use-store'
 import { FeatureGateSheetDetails } from './FeatureGateSheetDetails'
 import { FeatureGateSheetHeader } from './FeatureGateSheetHeader'
 
-export default function FeatureGateSheet() {
+export function FeatureGateSheet() {
   const { currentItemId, isItemSheetOpen, setItemSheetOpen } = useStore((state) => state)
   const {
     data: featureGate,

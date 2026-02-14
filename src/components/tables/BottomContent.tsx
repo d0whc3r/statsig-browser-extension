@@ -59,7 +59,7 @@ const PageNumbers = ({ page, totalPages, onPageClick }: PageNumbersProps) => {
   return <div className="flex gap-1">{pages}</div>
 }
 
-const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
+export const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
   const totalPages = total || 1
 
   const handlePrevious = useCallback(() => {
@@ -93,5 +93,3 @@ const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
     </div>
   )
 }
-
-export default BottomContent

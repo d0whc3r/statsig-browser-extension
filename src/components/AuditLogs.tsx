@@ -63,5 +63,4 @@ export const AuditLogs = memo(() => {
     </div>
   )
 })
-
 AuditLogs.displayName = 'AuditLogs'

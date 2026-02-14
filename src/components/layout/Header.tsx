@@ -66,5 +66,4 @@ export const Header = memo(({ onNavigate, onLogout }: HeaderProps) => {
     </header>
   )
 })
-
 Header.displayName = 'Header'

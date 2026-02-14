@@ -1,4 +1,4 @@
-import OverridesTable from '@/src/components/tables/OverridesTable'
+import { OverridesTable } from '@/src/components/tables/OverridesTable'
 import { Button } from '@/src/components/ui/button'
 
 interface OverridesListProps {

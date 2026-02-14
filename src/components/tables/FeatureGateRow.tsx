@@ -96,7 +96,6 @@ const FeatureGateCell = memo(({ item, columnKey, onRowClick }: FeatureGateCellPr
     }
   }
 })
-
 FeatureGateCell.displayName = 'FeatureGateCell'
 
 interface FeatureGateRowProps {
@@ -120,5 +119,4 @@ export const FeatureGateRow = memo(({ item, headerColumns, onRowClick }: Feature
     </TableRow>
   )
 })
-
 FeatureGateRow.displayName = 'FeatureGateRow'

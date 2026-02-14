@@ -22,7 +22,7 @@ interface TopContentProps {
   statusOptions?: StatusOption[]
 }
 
-const TopContent = memo(
+export const TopContent = memo(
   ({
     filterValue,
     onRowsPerPageChange,
@@ -107,7 +107,4 @@ const TopContent = memo(
     )
   },
 )
-
 TopContent.displayName = 'TopContent'
-
-export default TopContent

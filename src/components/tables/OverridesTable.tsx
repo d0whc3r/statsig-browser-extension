@@ -8,7 +8,7 @@ import { useStore } from '@/src/store/use-store'
 
 import { OverrideRow } from './OverrideRow'
 
-export default function OverridesTable() {
+export function OverridesTable() {
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
   const { currentItemId } = useStore((state) => state)
   const { data: overrides } = useOverrides(currentItemId)

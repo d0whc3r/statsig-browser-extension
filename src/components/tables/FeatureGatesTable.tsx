@@ -1,13 +1,13 @@
 import React from 'react'
 
-import BottomContent from '@/src/components/tables/BottomContent'
+import { BottomContent } from '@/src/components/tables/BottomContent'
 import { featureGateColumns } from '@/src/components/tables/data'
 import { FeatureGatesTableBody } from '@/src/components/tables/FeatureGatesTableBody'
-import TopContent from '@/src/components/tables/TopContent'
+import { TopContent } from '@/src/components/tables/TopContent'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useFeatureGatesTableLogic } from '@/src/hooks/use-feature-gates-table-logic'
 
-export default function FeatureGatesTable() {
+export function FeatureGatesTable() {
   const {
     error,
     featureGates,
