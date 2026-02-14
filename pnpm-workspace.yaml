@@ -4,3 +4,4 @@ onlyBuiltDependencies:
 
 hoist: true
 shamefullyHoist: true
+hoistWorkspacePackages: true

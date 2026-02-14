@@ -25,8 +25,7 @@ web-ext.config.ts
 *.sln
 *.sw?
 
-/old/
-
 !/.agents/
 !/.specify/
 !/specs/
+!/.kiro/

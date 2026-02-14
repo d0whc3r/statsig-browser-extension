@@ -1,32 +1,102 @@
-import wxtLogo from '/wxt.svg'
-import { useState } from 'react'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { useCallback, useEffect, useState } from 'react'
 
-import reactLogo from '@/assets/react.svg'
+import { ErrorBoundary } from '@/src/components/ErrorBoundary'
+import { GlobalModals } from '@/src/components/layout/GlobalModals'
+import { Header } from '@/src/components/layout/Header'
+import { MainTabs } from '@/src/components/layout/MainTabs'
+import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { queryClient } from '@/src/lib/query-client'
+import { useStore } from '@/src/store/use-store'
+// eslint-disable-next-line import/no-unassigned-import
+import '@/src/styles/globals.css'
 
-import './App.css'
+export function AppContent() {
+  const { setAuthModalOpen, setItemSheetOpen, setCurrentItemId, setDetectedUser } = useStore(
+    (state) => state,
+  )
 
-function App() {
-  const [count, setCount] = useState(0)
+  const [apiKey, setApiKey] = useLocalStorage('statsig-console-api-key', '')
+  const [activeTab, setActiveTab] = useState('experiments')
+
+  useEffect(() => {
+    if (!apiKey) {
+      setAuthModalOpen(true)
+    }
+  }, [apiKey, setAuthModalOpen])
+
+  useEffect(() => {
+    // Listen for detected user
+    const handleMessage = (message: unknown) => {
+      if (
+        typeof message === 'object' &&
+        message !== null &&
+        'type' in message &&
+        (message as { type: string }).type === 'STATSIG_USER_FOUND' &&
+        'user' in message
+      ) {
+        setDetectedUser((message as { user: Record<string, unknown> }).user)
+      }
+    }
+    chrome.runtime.onMessage.addListener(handleMessage)
+
+    // Query active tab for user
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      const activeTabId = tabs[0]?.id
+      if (activeTabId) {
+        chrome.tabs.sendMessage(activeTabId, { type: 'GET_STATSIG_USER' }, (response) => {
+          if (chrome.runtime.lastError) {
+            // Content script might not be ready or not injected
+            return
+          }
+          if (response?.user) {
+            setDetectedUser(response.user)
+          }
+        })
+      }
+    })
+
+    return () => {
+      chrome.runtime.onMessage.removeListener(handleMessage)
+    }
+  }, [setDetectedUser])
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value)
+      // Clear selection when changing tabs to prevent sheet type mismatch
+      setItemSheetOpen(false)
+      setCurrentItemId(undefined)
+    },
+    [setItemSheetOpen, setCurrentItemId],
+  )
+
+  const handleLogout = useCallback(() => {
+    setApiKey('')
+    setAuthModalOpen(true)
+    // Query cache invalidation is handled by queryClient if needed,
+    // But clearing API key usually stops new fetches.
+    queryClient.clear()
+  }, [setApiKey, setAuthModalOpen])
 
   return (
-    <>
-      <div>
-        <a href="https://wxt.dev" target="_blank">
-          <img src={wxtLogo} className="logo" alt="WXT logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>WXT + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>count is {count}</button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">Click on the WXT and React logos to learn more</p>
-    </>
+    <div className="w-[780px] h-[600px] flex flex-col bg-background text-foreground overflow-hidden">
+      <Header onNavigate={setActiveTab} onLogout={handleLogout} />
+
+      <MainTabs activeTab={activeTab} onTabChange={handleTabChange} />
+
+      <GlobalModals />
+    </div>
+  )
+}
+
+function App() {
+  return (
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AppContent />
+      </QueryClientProvider>
+    </ErrorBoundary>
   )
 }
 

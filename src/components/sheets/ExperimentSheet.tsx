@@ -1,0 +1,94 @@
+import { useCallback } from 'react'
+
+import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
+import { ExperimentRules } from '@/src/components/ExperimentRules'
+import { ScrollArea } from '@/src/components/ui/scroll-area'
+import { Sheet, SheetContent } from '@/src/components/ui/sheet'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
+import { useExperiment } from '@/src/hooks/use-experiment'
+import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { useOverrides } from '@/src/hooks/use-overrides'
+import { useStore } from '@/src/store/use-store'
+
+import { ExperimentSheetDetails } from './ExperimentSheetDetails'
+import { ExperimentSheetHeader } from './ExperimentSheetHeader'
+
+export const ExperimentSheet = () => {
+  const { currentItemId, isItemSheetOpen, setItemSheetOpen, setManageExperimentModalOpen } =
+    useStore((state) => state)
+
+  const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
+
+  const {
+    data: experiment,
+    isLoading: isLoadingExperiment,
+    error: experimentError,
+  } = useExperiment(currentItemId)
+  const {
+    data: overrides,
+    isLoading: isLoadingOverrides,
+    error: overridesError,
+  } = useOverrides(currentItemId)
+
+  const isLoading = isLoadingExperiment || isLoadingOverrides
+  const error = experimentError || overridesError
+
+  const isOpen = isItemSheetOpen && Boolean(currentItemId)
+
+  const handleClose = useCallback(() => {
+    setItemSheetOpen(false)
+  }, [setItemSheetOpen])
+
+  const handleManage = useCallback(() => {
+    setManageExperimentModalOpen(true)
+  }, [setManageExperimentModalOpen])
+
+  return (
+    <Sheet open={isOpen} onOpenChange={setItemSheetOpen}>
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col p-0">
+        <ExperimentSheetHeader
+          isLoading={isLoading}
+          experiment={experiment}
+          currentItemId={currentItemId}
+          typeApiKey={typeApiKey}
+          onClose={handleClose}
+          onManage={handleManage}
+        />
+
+        <div className="flex-1 overflow-hidden flex flex-col">
+          <Tabs defaultValue="details" className="flex-1 flex flex-col">
+            <div className="px-6 pt-2 border-b">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="details">Details</TabsTrigger>
+                <TabsTrigger value="rules">Rules</TabsTrigger>
+                <TabsTrigger value="overrides">Overrides</TabsTrigger>
+              </TabsList>
+            </div>
+
+            <ScrollArea className="flex-1">
+              <div className="p-6">
+                <TabsContent value="details" className="m-0 space-y-6">
+                  <ExperimentSheetDetails
+                    isLoading={isLoading}
+                    error={error}
+                    experiment={experiment}
+                  />
+                </TabsContent>
+
+                <TabsContent value="rules" className="m-0">
+                  {currentItemId && <ExperimentRules experimentId={currentItemId} />}
+                </TabsContent>
+
+                <TabsContent value="overrides" className="m-0">
+                  {overrides && experiment && (
+                    <ExperimentOverrides overrides={overrides} groups={experiment.groups} />
+                  )}
+                </TabsContent>
+              </div>
+            </ScrollArea>
+          </Tabs>
+        </div>
+      </SheetContent>
+    </Sheet>
+  )
+}

@@ -1,5 +1,6 @@
 import { defineConfig } from 'oxlint'
 
+/* eslint-disable no-magic-numbers */
 export default defineConfig({
   categories: {
     correctness: 'error',
@@ -29,6 +30,11 @@ export default defineConfig({
       },
       files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/__tests__/**'],
       plugins: ['vitest'],
+      rules: {
+        'max-lines': 'off',
+        'max-lines-per-function': 'off',
+        'max-statements': 'off',
+      },
     },
     {
       files: ['*.d.ts'],
@@ -43,6 +49,7 @@ export default defineConfig({
       plugins: ['jsx-a11y', 'react', 'react-perf'],
       rules: {
         'jsx-max-depth': ['warn', { max: 10 }],
+        'jsx-no-new-object-as-prop': 'off',
         'jsx-props-no-spreading': 'off',
         'react-in-jsx-scope': 'off',
         'unicorn/filename-case': ['warn', { case: 'pascalCase' }],
@@ -63,15 +70,28 @@ export default defineConfig({
         'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
       },
     },
+    {
+      files: ['entrypoints/*/main.tsx'],
+      rules: {
+        'no-unassigned-import': 'off',
+        'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
+      },
+    },
   ],
   plugins: ['typescript', 'unicorn', 'oxc', 'import'],
   rules: {
     'eslint/no-unused-vars': 'error',
+    'func-style': [
+      'warn',
+      'declaration',
+      { allowArrowFunctions: true, overrides: { namedExports: 'ignore' } },
+    ],
     'group-exports': 'off',
     'id-length': [
       'warn',
-      { exceptions: ['i', 'j', 'k', 'x', 'y', 'z'], max: 30, min: 2, properties: 'never' },
+      { exceptions: ['i', 'j', 'k', 'x', 'y', 'z'], max: 40, min: 2, properties: 'never' },
     ],
+    'import/exports-last': 'off',
     'import/first': 'error',
     'import/no-amd': 'error',
     'import/no-commonjs': 'warn',
@@ -81,6 +101,9 @@ export default defineConfig({
     'import/no-unresolved': 'error',
     'import/no-unused-modules': 'warn',
     'max-dependencies': 'off',
+    'max-lines': ['warn', 350],
+    'max-lines-per-function': ['warn', 150],
+    'max-params': ['warn', 3],
     'no-array-for-each': 'off',
     'no-duplicate-imports': [
       'error',
@@ -88,6 +111,7 @@ export default defineConfig({
         allowSeparateTypeImports: true,
       },
     ],
+    'no-inline-comments': 'off',
     'no-magic-numbers': [
       'warn',
       {
@@ -100,12 +124,14 @@ export default defineConfig({
       },
     ],
     'no-named-export': 'allow',
+    'no-nested-ternary': 'off',
     'no-ternary': 'allow',
     'prefer-default-export': 'off',
     'sort-imports': 'off',
     'typescript/no-explicit-any': 'warn',
     'typescript/no-unused-vars': 'warn',
     'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
+    'unicorn/no-nested-ternary': 'error',
     'unicorn/prevent-abbreviations': [
       'warn',
       { allowList: { Params: true, Props: true, Ref: true, params: true, props: true, ref: true } },
