@@ -27,6 +27,7 @@ export default function DynamicConfigsTable() {
     setFilterValue,
     setPage,
     statusFilter,
+    totalConfigs,
     visibleColumns,
   } = useDynamicConfigsTableLogic()
 
@@ -42,7 +43,7 @@ export default function DynamicConfigsTable() {
           setStatusFilter={handleStatusFilter}
           setVisibleColumns={handleVisibleColumns}
           statusFilter={statusFilter}
-          total={items.length}
+          total={totalConfigs}
           type="dynamicConfigs"
           visibleColumns={new Set(visibleColumns)}
           columns={dynamicConfigColumns}

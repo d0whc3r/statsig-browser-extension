@@ -78,6 +78,7 @@ export const useDynamicConfigsTableLogic = () => {
     setFilterValue: handleSetFilterValue,
     setPage,
     statusFilter,
+    totalConfigs: dynamicConfigs.length,
     visibleColumns,
   }
 }

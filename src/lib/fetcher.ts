@@ -25,3 +25,36 @@ export const poster = async <ResponseData>(url: string, body: unknown): Promise<
   const response = await api.post<ResponseData>(url, body)
   return response.data
 }
+
+interface PaginationInfo {
+  pagination: {
+    totalItems: number
+    page: number
+    limit: number
+  }
+}
+
+export const fetchAllPages = async <ItemType>(
+  endpoint: string,
+  limit = 100,
+): Promise<ItemType[]> => {
+  const allItems: ItemType[] = []
+  let page = 1
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // eslint-disable-next-line no-await-in-loop
+    const response = await fetcher<{ data: ItemType[] } & PaginationInfo>(
+      `${endpoint}?limit=${limit}&page=${page}`,
+    )
+
+    allItems.push(...response.data)
+
+    const { page: currentPage, limit: currentLimit, totalItems } = response.pagination
+    if (currentPage * currentLimit >= totalItems) {
+      break
+    }
+    page++
+  }
+  return allItems
+}

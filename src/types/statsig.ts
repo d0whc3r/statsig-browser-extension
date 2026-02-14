@@ -14,6 +14,15 @@ export interface StatsigUser {
   [key: string]: unknown
 }
 
+export interface PaginatedResponse<ItemType> {
+  data: ItemType[]
+  pagination: {
+    totalItems: number
+    page: number
+    limit: number
+  }
+}
+
 export interface Experiment {
   allocation: number
   createdTime: number

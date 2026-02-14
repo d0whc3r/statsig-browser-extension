@@ -54,7 +54,8 @@ export const getCurrentLocalStorageValue = async (
       target: { tabId },
       world: 'MAIN',
     })
-    return result[0]?.result ?? undefined
+    // eslint-disable-next-line unicorn/no-null
+    return result[0]?.result ?? null
   } catch (error) {
     console.error('Failed to get localStorage value:', handleApiError(error))
     throw new Error(handleApiError(error), { cause: error })

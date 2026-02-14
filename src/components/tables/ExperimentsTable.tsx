@@ -1,16 +1,9 @@
 import React from 'react'
 
 import BottomContent from '@/src/components/tables/BottomContent'
-import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
+import { ExperimentsTableBody } from '@/src/components/tables/ExperimentsTableBody'
 import TopContent from '@/src/components/tables/TopContent'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/src/components/ui/table'
+import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useExperimentsTableLogic } from '@/src/hooks/use-experiments-table-logic'
 
 export default function ExperimentsTable() {
@@ -35,37 +28,6 @@ export default function ExperimentsTable() {
     totalExperiments,
     visibleColumns,
   } = useExperimentsTableLogic()
-
-  const renderTableBody = () => {
-    if (isLoading) {
-      return (
-        <TableRow>
-          <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-            Loading...
-          </TableCell>
-        </TableRow>
-      )
-    }
-
-    if (items.length === 0) {
-      return (
-        <TableRow>
-          <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-            No experiments found.
-          </TableCell>
-        </TableRow>
-      )
-    }
-
-    return items.map((item) => (
-      <ExperimentRow
-        key={item.id}
-        item={item}
-        headerColumns={headerColumns}
-        onRowClick={setCurrentExperiment}
-      />
-    ))
-  }
 
   return (
     <div className="flex flex-col h-full">
@@ -102,11 +64,17 @@ export default function ExperimentsTable() {
                 ))}
               </TableRow>
             </TableHeader>
-            <TableBody>{renderTableBody()}</TableBody>
+            <TableBody>
+              <ExperimentsTableBody
+                headerColumns={headerColumns}
+                isLoading={isLoading}
+                items={items}
+                setCurrentExperiment={setCurrentExperiment}
+              />
+            </TableBody>
           </Table>
         </div>
       </div>
-
       <div className="flex-none p-4 pt-0">
         <BottomContent page={page} setPage={setPage} total={pages} />
       </div>

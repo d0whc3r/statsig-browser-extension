@@ -1,36 +1,28 @@
 import React, { useMemo } from 'react'
 
 const MILLISECONDS_PER_SECOND = 1000
-const SECONDS_PER_MINUTE = 60
-const SECONDS_PER_HOUR = 3600
-const SECONDS_PER_DAY = 86_400
-const SECONDS_PER_MONTH = 2_592_000
-const SECONDS_PER_YEAR = 31_536_000
 
-// eslint-disable-next-line max-statements
+const INTERVALS = [
+  { label: 'year', seconds: 31_536_000 },
+  { label: 'month', seconds: 2_592_000 },
+  { label: 'day', seconds: 86_400 },
+  { label: 'hour', seconds: 3600 },
+  { label: 'minute', seconds: 60 },
+  { label: 'second', seconds: 1 },
+] as const
+
 const getTimeAgoString = (date: number | string | Date): string => {
   const seconds = Math.floor((Date.now() - new Date(date).getTime()) / MILLISECONDS_PER_SECOND)
-  let interval = seconds / SECONDS_PER_YEAR
-  if (interval > 1) {
-    return `${Math.floor(interval)} years ago`
+
+  for (const { label, seconds: intervalSeconds } of INTERVALS) {
+    const interval = seconds / intervalSeconds
+    if (interval >= 1) {
+      const count = Math.floor(interval)
+      return `${count} ${label}${count === 1 ? '' : 's'} ago`
+    }
   }
-  interval = seconds / SECONDS_PER_MONTH
-  if (interval > 1) {
-    return `${Math.floor(interval)} months ago`
-  }
-  interval = seconds / SECONDS_PER_DAY
-  if (interval > 1) {
-    return `${Math.floor(interval)} days ago`
-  }
-  interval = seconds / SECONDS_PER_HOUR
-  if (interval > 1) {
-    return `${Math.floor(interval)} hours ago`
-  }
-  interval = seconds / SECONDS_PER_MINUTE
-  if (interval > 1) {
-    return `${Math.floor(interval)} minutes ago`
-  }
-  return `${Math.floor(seconds)} seconds ago`
+
+  return 'just now'
 }
 
 export function TimeAgo({ date }: { date: number | string | Date }) {

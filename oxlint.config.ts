@@ -1,6 +1,11 @@
 import { defineConfig } from 'oxlint'
 
-/* eslint-disable no-magic-numbers */
+const JSX_MAX_DEPTH = 10
+const ID_LENGTH_MAX = 40
+const ID_LENGTH_MIN = 2
+const MAX_LINES = 350
+const MAX_LINES_PER_FUNCTION = 150
+
 export default defineConfig({
   categories: {
     correctness: 'error',
@@ -48,7 +53,7 @@ export default defineConfig({
       files: ['**/*.tsx'],
       plugins: ['jsx-a11y', 'react', 'react-perf'],
       rules: {
-        'jsx-max-depth': ['warn', { max: 10 }],
+        'jsx-max-depth': ['warn', { max: JSX_MAX_DEPTH }],
         'jsx-no-new-object-as-prop': 'off',
         'jsx-props-no-spreading': 'off',
         'react-in-jsx-scope': 'off',
@@ -89,7 +94,12 @@ export default defineConfig({
     'group-exports': 'off',
     'id-length': [
       'warn',
-      { exceptions: ['i', 'j', 'k', 'x', 'y', 'z'], max: 40, min: 2, properties: 'never' },
+      {
+        exceptions: ['i', 'j', 'k', 'x', 'y', 'z', 'T', 'K', 'Q', 'V'],
+        max: ID_LENGTH_MAX,
+        min: ID_LENGTH_MIN,
+        properties: 'never',
+      },
     ],
     'import/exports-last': 'off',
     'import/first': 'error',
@@ -101,8 +111,8 @@ export default defineConfig({
     'import/no-unresolved': 'error',
     'import/no-unused-modules': 'warn',
     'max-dependencies': 'off',
-    'max-lines': ['warn', 350],
-    'max-lines-per-function': ['warn', 150],
+    'max-lines': ['warn', MAX_LINES],
+    'max-lines-per-function': ['warn', MAX_LINES_PER_FUNCTION],
     'max-params': ['warn', 3],
     'no-array-for-each': 'off',
     'no-duplicate-imports': [

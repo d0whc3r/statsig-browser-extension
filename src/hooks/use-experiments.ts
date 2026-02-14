@@ -1,20 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { fetcher } from '@/src/lib/fetcher'
+import { fetchAllPages } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
 import type { Experiment } from '../types/statsig'
-
-const PAGE_LIMIT = 100
-
-interface PaginatedResponse<ItemType> {
-  data: ItemType[]
-  pagination: {
-    totalItems: number
-    page: number
-    limit: number
-  }
-}
 
 /**
  * Fetches all experiments from the Statsig API by iterating through pages.
@@ -22,29 +11,9 @@ interface PaginatedResponse<ItemType> {
  * @returns A promise resolving to an array of all experiments
  * @throws Error if the fetch fails
  */
-// eslint-disable-next-line max-statements
 const fetchAllExperiments = async (): Promise<Experiment[]> => {
-  const allExperiments: Experiment[] = []
-  let page = 1
-  let hasMore = true
-
   try {
-    while (hasMore) {
-      // eslint-disable-next-line no-await-in-loop
-      const response = await fetcher<PaginatedResponse<Experiment>>(
-        `/experiments?limit=${PAGE_LIMIT}&page=${page}`,
-      )
-
-      allExperiments.push(...response.data)
-
-      const currentTotal = response.pagination.page * response.pagination.limit
-      if (currentTotal < response.pagination.totalItems) {
-        page++
-      } else {
-        hasMore = false
-      }
-    }
-    return allExperiments
+    return await fetchAllPages<Experiment>('/experiments')
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }
