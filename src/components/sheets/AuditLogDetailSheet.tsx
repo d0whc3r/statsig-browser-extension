@@ -36,7 +36,7 @@ const AuditLogHeader = ({
   currentAuditLogId?: string
   onCopyId: () => void
 }) => (
-  <SheetHeader className="px-6 py-4 border-b">
+  <SheetHeader className="px-6 py-4 border-b pr-12">
     <div className="flex justify-between items-center gap-4">
       <div className="flex-1 min-w-0">
         <SheetTitle className="truncate" title={auditLog?.name}>
@@ -109,47 +109,50 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
   }
 
   return (
-    <ScrollArea className="flex-1">
-      <div className="p-6 space-y-6">
-        <div className="bg-muted/50 rounded-lg p-3 border border-border space-y-3">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+    <ScrollArea className="flex-1 min-h-0">
+      <div className="p-4 space-y-4">
+        <div className="bg-muted/30 rounded-lg border border-border/50 overflow-hidden">
+          <div className="flex flex-col gap-px bg-border/50">
+            <div className="bg-background p-3">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                 Action
               </h3>
-              <Badge variant={getActionTypeColor(auditLog.actionType)}>{auditLog.actionType}</Badge>
+              <Badge variant={getActionTypeColor(auditLog.actionType)} className="rounded-sm px-2">
+                {auditLog.actionType}
+              </Badge>
             </div>
-            <div className="text-right">
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
+            <div className="bg-background p-3">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
                 Date
               </h3>
-              <div className="text-xs font-medium">{auditLog.date}</div>
-              <div className="text-[10px] text-muted-foreground">{auditLog.time}</div>
-            </div>
-          </div>
-
-          <div className="pt-2 border-t border-border/50">
-            <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-              User
-            </h3>
-            <div className="flex items-center gap-2">
-              <div className="h-5 w-5 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary">
-                {auditLog.updatedBy.charAt(0).toUpperCase()}
+              <div className="flex flex-col">
+                <span className="text-xs font-medium">{auditLog.date}</span>
+                <span className="text-[10px] text-muted-foreground font-mono">{auditLog.time}</span>
               </div>
-              <div className="text-xs font-medium">
-                {auditLog.updatedBy}
-                <span className="text-muted-foreground ml-1 font-normal">
-                  ({auditLog.modifierEmail})
-                </span>
+            </div>
+            <div className="bg-background p-3">
+              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                User
+              </h3>
+              <div className="flex items-center gap-2.5">
+                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-primary/20">
+                  {auditLog.updatedBy.charAt(0).toUpperCase()}
+                </div>
+                <div className="flex flex-col min-w-0">
+                  <span className="text-xs font-medium truncate">{auditLog.updatedBy}</span>
+                  <span className="text-[10px] text-muted-foreground truncate">
+                    {auditLog.modifierEmail}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         <div className="space-y-2">
-          <h3 className="text-lg font-semibold">Details</h3>
-          <div className="bg-muted rounded-md p-4 overflow-x-auto">
-            <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+          <h3 className="text-sm font-semibold px-1">Details</h3>
+          <div className="bg-muted/50 rounded-md p-3 border border-border/50 overflow-x-auto">
+            <pre className="text-[10px] font-mono whitespace-pre-wrap break-all leading-relaxed">
               {JSON.stringify(
                 {
                   changeLog: auditLog.changeLog,
@@ -198,7 +201,7 @@ export const AuditLogDetailSheet = () => {
 
   return (
     <Sheet open={isAuditLogDetailSheetOpen} onOpenChange={handleClose}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col p-0">
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0 gap-0">
         <AuditLogHeader
           auditLog={auditLog}
           isLoading={isLoading}

@@ -11,7 +11,7 @@ interface UserDetailsHeaderProps {
 }
 
 export const UserDetailsHeader = memo(({ isLoading, onRefetch }: UserDetailsHeaderProps) => (
-  <SheetHeader className="px-6 py-4 border-b flex flex-row items-center justify-between space-y-0">
+  <SheetHeader className="px-6 py-4 border-b flex flex-row items-center justify-between space-y-0 pr-12">
     <div>
       <SheetTitle>User Details</SheetTitle>
       <p className="text-xs text-muted-foreground">Statsig SDK identity on this page</p>

@@ -22,10 +22,10 @@ export const UserDetailsSheet = () => {
 
   return (
     <Sheet open={isUserDetailsSheetOpen} onOpenChange={setUserDetailsSheetOpen}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col p-0">
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0 gap-0">
         <UserDetailsHeader isLoading={isLoading} onRefetch={handleRefetch} />
 
-        <ScrollArea className="flex-1">
+        <ScrollArea className="flex-1 min-h-0">
           <div className="p-6 space-y-6">
             {isLoading ? (
               <UserDetailsSkeleton />

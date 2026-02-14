@@ -43,7 +43,7 @@ export const ExperimentSheetHeader = memo(
     }, [onClose, onManage])
 
     return (
-      <SheetHeader className="px-6 py-4 border-b shrink-0">
+      <SheetHeader className="px-6 py-4 border-b shrink-0 pr-12">
         <div className="flex justify-between items-center gap-4">
           <div className="flex-1 min-w-0">
             <SheetTitle className="truncate" title={experiment?.name}>

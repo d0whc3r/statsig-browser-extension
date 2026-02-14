@@ -7,7 +7,21 @@ import { useTableState } from '@/src/hooks/use-table-state'
 import { useStore } from '@/src/store/use-store'
 
 export const useDynamicConfigsTableLogic = () => {
-  const { data: dynamicConfigs = [], isLoading, isError, error, refetch } = useDynamicConfigs()
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useDynamicConfigs()
+
+  const dynamicConfigs = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || []
+  }, [data])
+
   const {
     filterValue,
     handleSetFilterValue,
@@ -61,12 +75,15 @@ export const useDynamicConfigsTableLogic = () => {
 
   return {
     error,
+    fetchNextPage,
     filterValue,
     handleRefetch,
     handleStatusFilter: handleSetStatusFilter,
     handleVisibleColumns: handleSetVisibleColumns,
+    hasNextPage,
     headerColumns,
     isError,
+    isFetchingNextPage,
     isLoading,
     items,
     onRowsPerPageChange,

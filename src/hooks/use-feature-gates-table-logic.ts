@@ -7,7 +7,21 @@ import { useTableState } from '@/src/hooks/use-table-state'
 import { useStore } from '@/src/store/use-store'
 
 export const useFeatureGatesTableLogic = () => {
-  const { data: featureGates = [], isLoading, isError, error, refetch } = useFeatureGates()
+  const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useFeatureGates()
+
+  const featureGates = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || []
+  }, [data])
+
   const {
     filterValue,
     handleSetFilterValue,
@@ -63,13 +77,16 @@ export const useFeatureGatesTableLogic = () => {
   return {
     error,
     featureGates,
+    fetchNextPage,
     filterValue,
     handleRetry,
     handleSetFilterValue,
     handleSetStatusFilter,
     handleSetVisibleColumns,
+    hasNextPage,
     headerColumns,
     isError,
+    isFetchingNextPage,
     isLoading,
     items,
     onRowsPerPageChange,

@@ -28,7 +28,7 @@ export const FeatureGateSheetHeader = memo(
     }, [currentItemId])
 
     return (
-      <SheetHeader className="px-6 py-4 border-b shrink-0">
+      <SheetHeader className="px-6 py-4 border-b shrink-0 pr-12">
         <div className="flex justify-between items-center pr-6">
           <div className="flex-1 min-w-0 mr-4">
             <SheetTitle

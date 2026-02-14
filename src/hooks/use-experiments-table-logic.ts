@@ -7,7 +7,16 @@ import { useTableState } from '@/src/hooks/use-table-state'
 import { useStore } from '@/src/store/use-store'
 
 export const useExperimentsTableLogic = () => {
-  const { data: experiments = [], isLoading } = useExperiments()
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
+
+  const experiments = useMemo(() => {
+    return data?.pages.flatMap((page) => page.data) || []
+  }, [data])
+
+  const totalServerItems = useMemo(() => {
+    return data?.pages[0]?.pagination.totalItems || 0
+  }, [data])
+
   const {
     filterValue,
     handleSetFilterValue,
@@ -66,11 +75,14 @@ export const useExperimentsTableLogic = () => {
   return {
     experimentColumns,
     experimentStatusOptions,
+    fetchNextPage,
     filterValue,
     handleSetFilterValue,
     handleSetStatusFilter,
     handleSetVisibleColumns,
+    hasNextPage,
     headerColumns,
+    isFetchingNextPage,
     isLoading,
     items,
     onRowsPerPageChange,
@@ -81,7 +93,7 @@ export const useExperimentsTableLogic = () => {
     setCurrentExperiment,
     setPage,
     statusFilter,
-    totalExperiments: experiments.length,
+    totalExperiments: totalServerItems || experiments.length,
     visibleColumns,
   }
 }

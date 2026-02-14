@@ -1,5 +1,4 @@
-import React from 'react'
-
+import { Button } from '@/src/components/ui/button'
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
@@ -10,12 +9,15 @@ import { useDynamicConfigsTableLogic } from '@/src/hooks/use-dynamic-configs-tab
 export function DynamicConfigsTable() {
   const {
     error,
+    fetchNextPage,
     filterValue,
     handleRefetch,
     handleStatusFilter,
     handleVisibleColumns,
+    hasNextPage,
     headerColumns,
     isError,
+    isFetchingNextPage,
     isLoading,
     items,
     onRowsPerPageChange,
@@ -80,8 +82,18 @@ export function DynamicConfigsTable() {
         </div>
       </div>
 
-      <div className="flex-none p-4 pt-0">
+      <div className="flex-none p-4 pt-0 flex flex-col gap-4">
         <BottomContent page={page} setPage={setPage} total={pages} />
+        {hasNextPage && (
+          <Button
+            variant="secondary"
+            className="w-full"
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
+          >
+            {isFetchingNextPage ? 'Loading more...' : 'Load More Dynamic Configs'}
+          </Button>
+        )}
       </div>
     </div>
   )

@@ -55,9 +55,9 @@ export const ExperimentSheet = () => {
           onManage={handleManage}
         />
 
-        <div className="flex-1 overflow-hidden flex flex-col">
-          <Tabs defaultValue="details" className="flex-1 flex flex-col">
-            <div className="px-6 pt-2 border-b">
+        <div className="flex-1 overflow-hidden flex flex-col relative">
+          <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
+            <div className="px-6 pt-2 border-b shrink-0">
               <TabsList className="grid w-full grid-cols-3">
                 <TabsTrigger value="details">Details</TabsTrigger>
                 <TabsTrigger value="rules">Rules</TabsTrigger>
@@ -65,27 +65,35 @@ export const ExperimentSheet = () => {
               </TabsList>
             </div>
 
-            <ScrollArea className="flex-1">
-              <div className="p-6">
-                <TabsContent value="details" className="m-0 space-y-6">
+            <TabsContent value="details" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+              <ScrollArea className="h-full">
+                <div className="p-6 space-y-6">
                   <ExperimentSheetDetails
                     isLoading={isLoading}
                     error={error}
                     experiment={experiment}
                   />
-                </TabsContent>
+                </div>
+              </ScrollArea>
+            </TabsContent>
 
-                <TabsContent value="rules" className="m-0">
+            <TabsContent value="rules" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+              <ScrollArea className="h-full">
+                <div className="p-6">
                   {currentItemId && <ExperimentRules experimentId={currentItemId} />}
-                </TabsContent>
+                </div>
+              </ScrollArea>
+            </TabsContent>
 
-                <TabsContent value="overrides" className="m-0">
+            <TabsContent value="overrides" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+              <ScrollArea className="h-full">
+                <div className="p-6">
                   {overrides && experiment && (
                     <ExperimentOverrides overrides={overrides} groups={experiment.groups} />
                   )}
-                </TabsContent>
-              </div>
-            </ScrollArea>
+                </div>
+              </ScrollArea>
+            </TabsContent>
           </Tabs>
         </div>
       </SheetContent>

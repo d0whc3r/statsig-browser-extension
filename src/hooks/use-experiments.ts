@@ -1,32 +1,53 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { fetchAllPages } from '@/src/lib/fetcher'
+import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
 import type { Experiment } from '../types/statsig'
 
+const PAGE_LIMIT = 100
+
+export interface PaginatedResponse<ItemType> {
+  data: ItemType[]
+  pagination: {
+    totalItems: number
+    page: number
+    limit: number
+  }
+}
+
 /**
- * Fetches all experiments from the Statsig API by iterating through pages.
+ * Fetches a single page of experiments from the Statsig API.
  *
- * @returns A promise resolving to an array of all experiments
+ * @param page - The page number to fetch
+ * @returns A promise resolving to the paginated experiments response
  * @throws Error if the fetch fails
  */
-const fetchAllExperiments = async (): Promise<Experiment[]> => {
+const fetchExperimentsPage = async (page: number): Promise<PaginatedResponse<Experiment>> => {
   try {
-    return await fetchAllPages<Experiment>('/experiments')
+    return await fetcher<PaginatedResponse<Experiment>>(
+      `/experiments?limit=${PAGE_LIMIT}&page=${page}`,
+    )
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }
 }
 
 /**
- * React Query hook to fetch all experiments.
+ * React Query hook to fetch experiments using infinite scrolling.
  * Uses the stored API key.
  *
- * @returns The React Query result containing the list of experiments
+ * @returns The Infinite React Query result containing the experiments pages
  */
 export const useExperiments = () =>
-  useQuery({
-    queryFn: fetchAllExperiments,
+  useInfiniteQuery({
+    getNextPageParam: (lastPage: PaginatedResponse<Experiment>) => {
+      const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
+      if (currentTotal < lastPage.pagination.totalItems) {
+        return lastPage.pagination.page + 1
+      }
+    },
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchExperimentsPage(pageParam),
     queryKey: ['experiments'],
   })

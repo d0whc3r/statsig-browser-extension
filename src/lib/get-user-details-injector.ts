@@ -19,47 +19,52 @@ interface WindowWithStatsig {
   }
 }
 
-const getFromInstances = (theWindow: WindowWithStatsig) => {
-  if (!theWindow.__STATSIG__?.instances) {
-    return
-  }
-
-  const { instances } = theWindow.__STATSIG__
-  const keys = Object.keys(instances)
-
-  if (keys.length === 1) {
-    return { instance: theWindow.__STATSIG__?.instance(), isJsMonoClient: true }
-  }
-  if (keys.length > 1) {
-    return { instance: theWindow.__STATSIG__?.instance(keys[0]), isJsMonoClient: true }
-  }
-}
-
-const getStatsigInstance = (theWindow: WindowWithStatsig) => {
-  let instance = theWindow.__STATSIG_JS_SDK__?.instance
-  if (!instance) {
-    instance = theWindow.__STATSIG_SDK__?.instance
-  }
-
-  const fromInstances = getFromInstances(theWindow)
-  if (!instance && fromInstances) {
-    return fromInstances
-  }
-
-  return { instance, isJsMonoClient: false }
-}
-
 export const getUserDetailsFromPage = () => {
-  const theWindow = globalThis as unknown as WindowWithStatsig
-  const { instance, isJsMonoClient } = getStatsigInstance(theWindow)
+  try {
+    const theWindow = globalThis as unknown as WindowWithStatsig
 
-  if (!instance) {
-    return
-  }
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const getFromInstances = (win: WindowWithStatsig) => {
+      if (!win.__STATSIG__?.instances) {
+        return
+      }
 
-  const user = isJsMonoClient ? instance._user : instance.identity.user
+      const { instances } = win.__STATSIG__
+      const keys = Object.keys(instances)
 
-  return {
-    user,
+      if (keys.length === 1) {
+        return { instance: win.__STATSIG__?.instance(), isJsMonoClient: true }
+      }
+      if (keys.length > 1) {
+        return { instance: win.__STATSIG__?.instance(keys[0]), isJsMonoClient: true }
+      }
+    }
+
+    // eslint-disable-next-line unicorn/consistent-function-scoping
+    const getStatsigInstance = (win: WindowWithStatsig) => {
+      let instance = win.__STATSIG_JS_SDK__?.instance
+      instance ??= win.__STATSIG_SDK__?.instance;
+
+      const fromInstances = getFromInstances(win)
+      if (!instance && fromInstances) {
+        return fromInstances
+      }
+
+      return { instance, isJsMonoClient: false }
+    }
+
+    const { instance, isJsMonoClient } = getStatsigInstance(theWindow)
+
+    if (!instance) {
+      return
+    }
+
+    const user = isJsMonoClient ? instance._user : instance.identity.user
+
+    return {
+      user,
+    }
+  } catch {
+    // Ignore
   }
 }

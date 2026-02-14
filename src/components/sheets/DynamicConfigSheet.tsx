@@ -162,16 +162,16 @@ export const DynamicConfigSheet = () => {
 
   return (
     <Sheet open={isOpen} onOpenChange={setItemSheetOpen}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col p-0">
-        <SheetHeader className="px-6 py-4 border-b">
+      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0">
+        <SheetHeader className="px-6 py-4 border-b pr-12">
           <ConfigHeader isLoading={isLoading} config={config} />
           <SheetDescription className="sr-only">
             Details for dynamic config {config?.name}
           </SheetDescription>
         </SheetHeader>
 
-        <Tabs defaultValue="details" className="flex-1 flex flex-col">
-          <div className="px-6 pt-2 border-b">
+        <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
+          <div className="px-6 pt-2 border-b shrink-0">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="details">Details</TabsTrigger>
               <TabsTrigger value="rules">Rules</TabsTrigger>
@@ -179,23 +179,31 @@ export const DynamicConfigSheet = () => {
             </TabsList>
           </div>
 
-          <ScrollArea className="flex-1">
-            <div className="p-6">
-              <TabsContent value="details" className="m-0 space-y-6">
+          <TabsContent value="details" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6 space-y-6">
                 <ConfigDetails isLoading={isLoading} error={error} config={config} />
-              </TabsContent>
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-              <TabsContent value="rules" className="m-0">
+          <TabsContent value="rules" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6">
                 {config && <DynamicConfigRules configId={config.id} />}
-              </TabsContent>
+              </div>
+            </ScrollArea>
+          </TabsContent>
 
-              <TabsContent value="overrides" className="m-0">
+          <TabsContent value="overrides" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
+            <ScrollArea className="h-full">
+              <div className="p-6">
                 <div className="text-center text-sm text-muted-foreground py-4">
                   Overrides not yet implemented
                 </div>
-              </TabsContent>
-            </div>
-          </ScrollArea>
+              </div>
+            </ScrollArea>
+          </TabsContent>
         </Tabs>
       </SheetContent>
     </Sheet>

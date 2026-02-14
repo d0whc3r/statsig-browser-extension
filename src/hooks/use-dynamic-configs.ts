@@ -1,32 +1,53 @@
-import { useQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 
-import { fetchAllPages } from '@/src/lib/fetcher'
+import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
 import type { DynamicConfig } from '../types/statsig'
 
+const PAGE_LIMIT = 100
+
+export interface PaginatedResponse<ItemType> {
+  data: ItemType[]
+  pagination: {
+    totalItems: number
+    page: number
+    limit: number
+  }
+}
+
 /**
- * Fetches all dynamic configs from the Statsig API by iterating through pages.
+ * Fetches a single page of dynamic configs from the Statsig API.
  *
- * @returns A promise resolving to an array of all dynamic configs
+ * @param page - The page number to fetch
+ * @returns A promise resolving to the paginated dynamic configs response
  * @throws Error if the fetch fails
  */
-const fetchAllDynamicConfigs = async (): Promise<DynamicConfig[]> => {
+const fetchDynamicConfigsPage = async (page: number): Promise<PaginatedResponse<DynamicConfig>> => {
   try {
-    return await fetchAllPages<DynamicConfig>('/dynamic_configs')
+    return await fetcher<PaginatedResponse<DynamicConfig>>(
+      `/dynamic_configs?limit=${PAGE_LIMIT}&page=${page}`,
+    )
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }
 }
 
 /**
- * React Query hook to fetch all dynamic configs.
+ * React Query hook to fetch dynamic configs using infinite scrolling.
  * Uses the stored API key.
  *
- * @returns The React Query result containing the list of dynamic configs
+ * @returns The Infinite React Query result containing the dynamic configs pages
  */
 export const useDynamicConfigs = () =>
-  useQuery({
-    queryFn: fetchAllDynamicConfigs,
+  useInfiniteQuery({
+    getNextPageParam: (lastPage: PaginatedResponse<DynamicConfig>) => {
+      const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
+      if (currentTotal < lastPage.pagination.totalItems) {
+        return lastPage.pagination.page + 1
+      }
+    },
+    initialPageParam: 1,
+    queryFn: ({ pageParam }) => fetchDynamicConfigsPage(pageParam),
     queryKey: ['dynamic-configs'],
   })

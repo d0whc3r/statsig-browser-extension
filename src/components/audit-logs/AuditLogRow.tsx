@@ -1,4 +1,4 @@
-import { ExternalLink, MoreVertical } from 'lucide-react'
+import { ExternalLink, MoreVertical, Info } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
 import type { AuditLog } from '@/src/types/statsig'
@@ -12,6 +12,12 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 import { TimeAgo } from '@/src/components/ui/time-ago'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/src/components/ui/tooltip'
 import {
   getActionTypeColor,
   getActionTypeLabel,
@@ -77,7 +83,22 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
               </>
             )}
             <span>•</span>
-            <TimeAgo date={getDateFromAuditLog(auditLog.date, auditLog.time)} />
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 cursor-help hover:text-foreground transition-colors">
+                    <TimeAgo date={getDateFromAuditLog(auditLog.date, auditLog.time)} />
+                    <Info className="h-3 w-3" />
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top">
+                  <div className="text-xs text-center">
+                    <div className="font-semibold">{auditLog.date}</div>
+                    <div className="text-muted-foreground">{auditLog.time}</div>
+                  </div>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           {/* Tags */}

@@ -54,7 +54,7 @@ export const PageContextCard = memo(
                     <User className="h-3 w-3" />
                     <span className="truncate">{detectedUserId || 'Unknown ID'}</span>
                   </div>
-                  {!isDetectedUserOverridden && canEdit && (
+                  {!isDetectedUserOverridden && canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
                     <div className="flex gap-2 mt-3">
                       <Button
                         size="sm"

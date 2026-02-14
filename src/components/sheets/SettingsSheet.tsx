@@ -46,9 +46,6 @@ export const SettingsSheet = () => {
             handleValueChange={handleValueChange}
             error={error}
             apiKeyValue={apiKeyValue}
-            handleApiKeyChange={handleApiKeyChange}
-            typeApiKey={typeApiKey}
-            handleWriteAccessChange={handleWriteAccessChange}
           />
 
           <StorageSettings
