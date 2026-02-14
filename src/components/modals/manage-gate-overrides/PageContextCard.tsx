@@ -54,28 +54,31 @@ export const PageContextCard = memo(
                     <User className="h-3 w-3" />
                     <span className="truncate">{detectedUserId || 'Unknown ID'}</span>
                   </div>
-                  {!isDetectedUserOverridden && canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
-                    <div className="flex gap-2 mt-3">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-xs border-green-200 hover:bg-green-50 hover:text-green-700 dark:border-green-900 dark:hover:bg-green-900/20"
-                        onClick={handleOverridePass}
-                        disabled={isPending}
-                      >
-                        Override PASS
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="h-8 text-xs border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-red-900 dark:hover:bg-red-900/20"
-                        onClick={handleOverrideFail}
-                        disabled={isPending}
-                      >
-                        Override FAIL
-                      </Button>
-                    </div>
-                  )}
+                  {!isDetectedUserOverridden &&
+                    canEdit &&
+                    detectedUserId &&
+                    detectedUserId !== 'Unknown ID' && (
+                      <div className="flex gap-2 mt-3">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 text-xs border-green-200 hover:bg-green-50 hover:text-green-700 dark:border-green-900 dark:hover:bg-green-900/20"
+                          onClick={handleOverridePass}
+                          disabled={isPending}
+                        >
+                          Override PASS
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="h-8 text-xs border-red-200 hover:bg-red-50 hover:text-red-700 dark:border-red-900 dark:hover:bg-red-900/20"
+                          onClick={handleOverrideFail}
+                          disabled={isPending}
+                        >
+                          Override FAIL
+                        </Button>
+                      </div>
+                    )}
                   {isDetectedUserOverridden && (
                     <p className="text-xs text-green-600 mt-2">
                       Override already active for this user.

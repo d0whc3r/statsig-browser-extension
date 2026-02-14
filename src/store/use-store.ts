@@ -2,6 +2,7 @@ import { create } from 'zustand'
 
 interface FieldState {
   currentItemId?: string
+  currentItemType?: 'feature_gate' | 'dynamic_config' | 'experiment'
   currentLocalStorageValue?: string
   currentAuditLogId?: string
   detectedUser?: Record<string, unknown> | null
@@ -15,6 +16,9 @@ interface FieldState {
   isAuditLogDetailSheetOpen: boolean
   setAuthModalOpen: (isAuthModalOpen: boolean) => void
   setCurrentItemId: (currentItemId: string | undefined) => void
+  setCurrentItemType: (
+    currentItemType: 'feature_gate' | 'dynamic_config' | 'experiment' | undefined,
+  ) => void
   setCurrentLocalStorageValue: (currentLocalStorageValue: string) => void
   setCurrentAuditLogId: (currentAuditLogId: string | undefined) => void
   setDetectedUser: (detectedUser: Record<string, unknown> | null) => void
@@ -30,6 +34,7 @@ interface FieldState {
 export const useStore = create<FieldState>((set) => ({
   currentAuditLogId: undefined,
   currentItemId: undefined,
+  currentItemType: undefined,
   currentLocalStorageValue: undefined,
   detectedUser: undefined,
   isAuditLogDetailSheetOpen: false,
@@ -46,6 +51,7 @@ export const useStore = create<FieldState>((set) => ({
   setAuthModalOpen: (isAuthModalOpen) => set(() => ({ isAuthModalOpen })),
   setCurrentAuditLogId: (currentAuditLogId) => set(() => ({ currentAuditLogId })),
   setCurrentItemId: (currentItemId) => set(() => ({ currentItemId })),
+  setCurrentItemType: (currentItemType) => set(() => ({ currentItemType })),
   setCurrentLocalStorageValue: (currentLocalStorageValue) =>
     set(() => ({ currentLocalStorageValue })),
   setDetectedUser: (detectedUser) => set(() => ({ detectedUser })),

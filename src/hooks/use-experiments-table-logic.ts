@@ -9,13 +9,9 @@ import { useStore } from '@/src/store/use-store'
 export const useExperimentsTableLogic = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
 
-  const experiments = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || []
-  }, [data])
+  const experiments = useMemo(() => data?.pages.flatMap((page) => page.data) || [], [data])
 
-  const totalServerItems = useMemo(() => {
-    return data?.pages[0]?.pagination.totalItems || 0
-  }, [data])
+  const totalServerItems = useMemo(() => data?.pages[0]?.pagination.totalItems || 0, [data])
 
   const {
     filterValue,
@@ -35,7 +31,7 @@ export const useExperimentsTableLogic = () => {
     rowsPerPageKey: 'experiments-table-rows-per-page',
     visibleColumnsKey: 'experiments-table-visible-columns',
   })
-  const { setCurrentItemId, setItemSheetOpen } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
 
   const headerColumns = useMemo(
     () => experimentColumns.filter((column) => visibleColumns.includes(column.uid)),
@@ -67,9 +63,10 @@ export const useExperimentsTableLogic = () => {
   const setCurrentExperiment = useCallback(
     (experimentId: string) => {
       setCurrentItemId(experimentId)
+      setCurrentItemType('experiment')
       setItemSheetOpen(true)
     },
-    [setCurrentItemId, setItemSheetOpen],
+    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
   )
 
   return {

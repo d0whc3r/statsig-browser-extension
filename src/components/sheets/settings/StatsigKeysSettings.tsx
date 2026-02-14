@@ -1,9 +1,8 @@
-import { CheckCircle2, Key, ShieldAlert } from 'lucide-react'
+import { CheckCircle2, Key } from 'lucide-react'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import { Switch } from '@/src/components/ui/switch'
 
 interface StatsigKeysSettingsProps {
   value: string

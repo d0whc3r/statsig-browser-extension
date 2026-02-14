@@ -137,6 +137,13 @@ export default defineConfig({
     ],
     'no-named-export': 'allow',
     'no-nested-ternary': 'off',
+    'no-restricted-syntax': [
+      'error',
+      {
+        message: 'Export objects are not allowed. Use inline exports instead.',
+        selector: 'ExportNamedDeclaration[declaration=null][source=null]',
+      },
+    ],
     'no-ternary': 'allow',
     'prefer-default-export': 'off',
     'sort-imports': 'off',
@@ -144,6 +151,7 @@ export default defineConfig({
     'typescript/no-unused-vars': 'warn',
     'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
     'unicorn/no-nested-ternary': 'error',
+    'unicorn/no-null': 'off',
     'unicorn/prevent-abbreviations': [
       'warn',
       { allowList: { Params: true, Props: true, Ref: true, params: true, props: true, ref: true } },

@@ -1,8 +1,8 @@
-import { Button } from '@/src/components/ui/button'
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
 import { TopContent } from '@/src/components/tables/TopContent'
+import { Button } from '@/src/components/ui/button'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useDynamicConfigsTableLogic } from '@/src/hooks/use-dynamic-configs-table-logic'
 

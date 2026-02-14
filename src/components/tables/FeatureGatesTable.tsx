@@ -1,8 +1,8 @@
-import { Button } from '@/src/components/ui/button'
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { featureGateColumns } from '@/src/components/tables/data'
 import { FeatureGatesTableBody } from '@/src/components/tables/FeatureGatesTableBody'
 import { TopContent } from '@/src/components/tables/TopContent'
+import { Button } from '@/src/components/ui/button'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { useFeatureGatesTableLogic } from '@/src/hooks/use-feature-gates-table-logic'
 

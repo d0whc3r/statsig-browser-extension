@@ -43,7 +43,7 @@ export const getUserDetailsFromPage = () => {
     // eslint-disable-next-line unicorn/consistent-function-scoping
     const getStatsigInstance = (win: WindowWithStatsig) => {
       let instance = win.__STATSIG_JS_SDK__?.instance
-      instance ??= win.__STATSIG_SDK__?.instance;
+      instance ??= win.__STATSIG_SDK__?.instance
 
       const fromInstances = getFromInstances(win)
       if (!instance && fromInstances) {

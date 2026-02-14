@@ -18,9 +18,7 @@ export const useFeatureGatesTableLogic = () => {
     isFetchingNextPage,
   } = useFeatureGates()
 
-  const featureGates = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || []
-  }, [data])
+  const featureGates = useMemo(() => data?.pages.flatMap((page) => page.data) || [], [data])
 
   const {
     filterValue,
@@ -40,7 +38,7 @@ export const useFeatureGatesTableLogic = () => {
     visibleColumnsKey: 'feature-gate-table-visible-columns',
   })
 
-  const { setCurrentItemId, setItemSheetOpen } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
 
   const headerColumns = useMemo(
     () => featureGateColumns.filter((column) => visibleColumns.includes(column.uid)),
@@ -65,9 +63,10 @@ export const useFeatureGatesTableLogic = () => {
   const setCurrentFeatureGate = useCallback(
     (featureGateId: string) => {
       setCurrentItemId(featureGateId)
+      setCurrentItemType('feature_gate')
       setItemSheetOpen(true)
     },
-    [setCurrentItemId, setItemSheetOpen],
+    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
   )
 
   const handleRetry = useCallback(() => {

@@ -3,21 +3,16 @@ import { useCallback } from 'react'
 
 import type { DynamicConfig } from '@/src/types/statsig'
 
+import { DynamicConfigOverrides } from '@/src/components/DynamicConfigOverrides'
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
 import { Button } from '@/src/components/ui/button'
-import { ScrollArea } from '@/src/components/ui/scroll-area'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/src/components/ui/sheet'
+import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useDynamicConfig } from '@/src/hooks/use-dynamic-config'
 import { useStore } from '@/src/store/use-store'
+
+import { CommonSheet, SheetTabs } from './CommonSheet'
 
 interface ConfigHeaderProps {
   isLoading: boolean
@@ -154,58 +149,25 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
 }
 
 export const DynamicConfigSheet = () => {
-  const { currentItemId, isItemSheetOpen, setItemSheetOpen } = useStore((state) => state)
+  const { currentItemId, isItemSheetOpen, currentItemType } = useStore((state) => state)
 
-  const { data: config, isLoading, error } = useDynamicConfig(currentItemId)
+  const isOpen = isItemSheetOpen && currentItemType === 'dynamic_config'
 
-  const isOpen = isItemSheetOpen && Boolean(currentItemId)
+  const { data: config, isLoading, error } = useDynamicConfig(isOpen ? currentItemId : undefined)
 
   return (
-    <Sheet open={isOpen} onOpenChange={setItemSheetOpen}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0">
-        <SheetHeader className="px-6 py-4 border-b pr-12">
-          <ConfigHeader isLoading={isLoading} config={config} />
-          <SheetDescription className="sr-only">
-            Details for dynamic config {config?.name}
-          </SheetDescription>
-        </SheetHeader>
-
-        <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
-          <div className="px-6 pt-2 border-b shrink-0">
-            <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="details">Details</TabsTrigger>
-              <TabsTrigger value="rules">Rules</TabsTrigger>
-              <TabsTrigger value="overrides">Overrides</TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="details" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
-            <ScrollArea className="h-full">
-              <div className="p-6 space-y-6">
-                <ConfigDetails isLoading={isLoading} error={error} config={config} />
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="rules" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
-            <ScrollArea className="h-full">
-              <div className="p-6">
-                {config && <DynamicConfigRules configId={config.id} />}
-              </div>
-            </ScrollArea>
-          </TabsContent>
-
-          <TabsContent value="overrides" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
-            <ScrollArea className="h-full">
-              <div className="p-6">
-                <div className="text-center text-sm text-muted-foreground py-4">
-                  Overrides not yet implemented
-                </div>
-              </div>
-            </ScrollArea>
-          </TabsContent>
-        </Tabs>
-      </SheetContent>
-    </Sheet>
+    <CommonSheet type="dynamic_config">
+      <SheetHeader className="px-6 py-4 border-b pr-12">
+        <ConfigHeader isLoading={isLoading} config={config} />
+        <SheetDescription className="sr-only">
+          Details for dynamic config {config?.name}
+        </SheetDescription>
+      </SheetHeader>
+      <SheetTabs
+        detailsContent={<ConfigDetails isLoading={isLoading} error={error} config={config} />}
+        rulesContent={config && <DynamicConfigRules configId={config.id} />}
+        overridesContent={config && <DynamicConfigOverrides configId={config.id} />}
+      />
+    </CommonSheet>
   )
 }

@@ -115,6 +115,12 @@ export interface DynamicConfigRule {
   returnValue: Record<string, unknown>
 }
 
+export interface DynamicConfigOverride {
+  returnValue: Record<string, unknown>
+  ids: string[]
+  environment?: string
+}
+
 export interface GateOverride {
   passingUserIDs: string[]
   failingUserIDs: string[]

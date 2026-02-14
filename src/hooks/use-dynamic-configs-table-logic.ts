@@ -18,9 +18,7 @@ export const useDynamicConfigsTableLogic = () => {
     isFetchingNextPage,
   } = useDynamicConfigs()
 
-  const dynamicConfigs = useMemo(() => {
-    return data?.pages.flatMap((page) => page.data) || []
-  }, [data])
+  const dynamicConfigs = useMemo(() => data?.pages.flatMap((page) => page.data) || [], [data])
 
   const {
     filterValue,
@@ -39,7 +37,7 @@ export const useDynamicConfigsTableLogic = () => {
     rowsPerPageKey: 'dynamic-config-table-rows-per-page',
     visibleColumnsKey: 'dynamic-config-table-visible-columns',
   })
-  const { setCurrentItemId, setItemSheetOpen } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
 
   const headerColumns = useMemo(
     () => dynamicConfigColumns.filter((column) => visibleColumns.includes(column.uid)),
@@ -64,9 +62,10 @@ export const useDynamicConfigsTableLogic = () => {
   const setCurrentConfig = useCallback(
     (configId: string) => {
       setCurrentItemId(configId)
+      setCurrentItemType('dynamic_config')
       setItemSheetOpen(true)
     },
-    [setCurrentItemId, setItemSheetOpen],
+    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
   )
 
   const handleRefetch = useCallback(() => {
