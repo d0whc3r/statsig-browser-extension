@@ -1,7 +1,7 @@
 import { LogOut, Settings, User } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import statsigLogo from '@/assets/statsig-logo.png'
+import statsigLogo from '@/assets/statsig_full.png'
 import { Button } from '@/src/components/ui/button'
 import {
   DropdownMenu,
