@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { AppContent } from '@/entrypoints/popup/App'
 import { api, fetcher } from '@/src/lib/fetcher'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
 
@@ -79,7 +79,7 @@ const setupMocks = () => {
 describe('CRUD Flow - Feature Gates', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useStore.setState({
+    useUIStore.setState({
       currentItemId: undefined,
       isAuthModalOpen: false,
       isItemSheetOpen: false,
@@ -112,8 +112,8 @@ describe('CRUD Flow - Feature Gates', () => {
 
     // Verify sheet opens
     await waitFor(() => {
-      expect(useStore.getState().isItemSheetOpen).toBeTruthy()
-      expect(useStore.getState().currentItemId).toBe('gate_1')
+      expect(useUIStore.getState().isItemSheetOpen).toBeTruthy()
+      expect(useUIStore.getState().currentItemId).toBe('gate_1')
       // Check for elements that are always present in the sheet
       expect(screen.getByText('Statsig')).toBeInTheDocument() // External link button
     })

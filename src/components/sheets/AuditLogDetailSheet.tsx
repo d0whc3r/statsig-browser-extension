@@ -22,7 +22,7 @@ import {
   TooltipTrigger,
 } from '@/src/components/ui/tooltip'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 import { getActionTypeColor } from '@/src/utils/audit-log-utils'
 
 const AuditLogHeader = ({
@@ -172,7 +172,7 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
 }
 
 export const AuditLogDetailSheet = () => {
-  const { currentAuditLogId, isAuditLogDetailSheetOpen, setAuditLogDetailSheetOpen } = useStore(
+  const { currentAuditLogId, isAuditLogDetailSheetOpen, setAuditLogDetailSheetOpen } = useUIStore(
     (state) => state,
   )
 

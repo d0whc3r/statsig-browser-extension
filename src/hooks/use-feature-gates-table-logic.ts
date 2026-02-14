@@ -4,7 +4,7 @@ import { featureGateColumns } from '@/src/components/tables/data'
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useFeatureGatesTableLogic = () => {
   const {
@@ -38,7 +38,7 @@ export const useFeatureGatesTableLogic = () => {
     visibleColumnsKey: 'feature-gate-table-visible-columns',
   })
 
-  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 
   const headerColumns = useMemo(
     () => featureGateColumns.filter((column) => visibleColumns.includes(column.uid)),

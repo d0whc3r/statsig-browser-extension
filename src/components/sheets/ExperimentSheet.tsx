@@ -5,7 +5,7 @@ import { ExperimentRules } from '@/src/components/ExperimentRules'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
 import { ExperimentSheetDetails } from './ExperimentSheetDetails'
@@ -18,7 +18,7 @@ export const ExperimentSheet = () => {
     setItemSheetOpen,
     setManageExperimentModalOpen,
     currentItemType,
-  } = useStore((state) => state)
+  } = useUIStore((state) => state)
 
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
 

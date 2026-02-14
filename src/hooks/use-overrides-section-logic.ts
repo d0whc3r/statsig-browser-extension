@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'react'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 type View = 'form' | 'table'
 
@@ -36,7 +36,7 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
 export const useOverridesSectionLogic = () => {
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
   const [view, setView] = useState<View>('table')
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
   const groups = useMemo(() => experiment?.groups || [], [experiment?.groups])
 

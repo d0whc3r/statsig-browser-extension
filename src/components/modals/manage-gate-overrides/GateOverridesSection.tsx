@@ -2,16 +2,17 @@ import { Loader2 } from 'lucide-react'
 
 import type { GateOverride } from '@/src/types/statsig'
 
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useGateOverrides } from '@/src/hooks/use-gate-overrides'
 import { useGateOverridesLogic } from '@/src/hooks/use-gate-overrides-logic'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
 import { PageContextCard } from './PageContextCard'
 
 export const GateOverridesSection = () => {
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const { data: overrides, isLoading } = useGateOverrides(currentItemId)
 
   if (isLoading) {
@@ -23,7 +24,13 @@ export const GateOverridesSection = () => {
   }
 
   if (!overrides) {
-    return <div className="text-center p-4">No overrides data available.</div>
+    return (
+      <GeneralEmptyState
+        variant="error"
+        title="No data available"
+        description="Could not load overrides data for this gate."
+      />
+    )
   }
 
   return <GateOverridesManager currentItemId={currentItemId} overrides={overrides} />

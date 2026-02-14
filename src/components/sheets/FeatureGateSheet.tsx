@@ -2,14 +2,14 @@ import { FeatureGateRules } from '@/src/components/FeatureGateRules'
 import { GateOverridesSection } from '@/src/components/modals/manage-gate-overrides/GateOverridesSection'
 import { useFeatureGate } from '@/src/hooks/use-feature-gate'
 import { useGateOverrides } from '@/src/hooks/use-gate-overrides'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
 import { FeatureGateSheetDetails } from './FeatureGateSheetDetails'
 import { FeatureGateSheetHeader } from './FeatureGateSheetHeader'
 
 export function FeatureGateSheet() {
-  const { currentItemId, isItemSheetOpen, currentItemType } = useStore((state) => state)
+  const { currentItemId, isItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === 'feature_gate'
 

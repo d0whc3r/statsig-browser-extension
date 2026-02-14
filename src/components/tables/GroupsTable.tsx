@@ -4,6 +4,7 @@ import React, { memo, useCallback } from 'react'
 import type { Group } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import {
   Table,
   TableBody,
@@ -15,7 +16,7 @@ import {
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 interface Props {
   changeView: () => void
@@ -62,7 +63,7 @@ GroupRow.displayName = 'GroupRow'
 
 export const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
   const groups = experiment?.groups || []
 
@@ -75,7 +76,7 @@ export const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
   )
 
   if (groups.length === 0) {
-    return <div className="text-center py-4 text-muted-foreground text-sm">No groups found.</div>
+    return <GeneralEmptyState variant="group" entityName="experiment" />
   }
 
   const canEdit = typeApiKey !== 'read-key'

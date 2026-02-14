@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { GateOverridesSection } from './GateOverridesSection'
 
@@ -11,7 +11,7 @@ export function ManageGateOverridesModal() {
     isManageGateOverridesModalOpen,
     setItemSheetOpen,
     setGateOverridesModalOpen,
-  } = useStore((state) => state)
+  } = useUIStore((state) => state)
 
   const handleCloseModal = useCallback(
     (open: boolean) => {

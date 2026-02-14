@@ -4,7 +4,7 @@ import type { FeatureGateRule } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { Empty } from '@/src/components/ui/empty'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useExperimentRules } from '@/src/hooks/use-experiment-rules'
 import { getConditionLabel } from '@/src/lib/rules'
 import { cn } from '@/src/lib/utils'
@@ -116,11 +116,7 @@ export const ExperimentRules = memo(({ experimentId }: Props) => {
   }
 
   if (!rules || rules.length === 0) {
-    return (
-      <Empty className="py-8">
-        <div className="text-muted-foreground">No rules configured for this experiment</div>
-      </Empty>
-    )
+    return <GeneralEmptyState variant="rule" entityName="experiment" />
   }
 
   return (

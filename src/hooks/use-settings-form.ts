@@ -3,11 +3,11 @@ import { useCallback } from 'react'
 
 import { useSettingsFormState } from '@/src/hooks/use-settings-form-state'
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useSettingsForm = () => {
   const queryClient = useQueryClient()
-  const { isSettingsSheetOpen, setSettingsSheetOpen } = useStore((state) => state)
+  const { isSettingsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
   const {
     apiKey,
     localStorageValue,

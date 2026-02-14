@@ -5,7 +5,7 @@ import type { AuditLog } from '@/src/types/statsig'
 
 import { useAuditLogFiltering } from '@/src/hooks/use-audit-log-filtering'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { AuditLogFilters } from './audit-logs/AuditLogFilters'
 import { AuditLogList } from './audit-logs/AuditLogList'
@@ -16,7 +16,7 @@ export const AuditLogs = memo(() => {
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch } =
     useAuditLogs()
 
-  const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useStore(
+  const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useUIStore(
     (state) => state,
   )
 

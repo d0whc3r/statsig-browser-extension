@@ -2,6 +2,7 @@ import { Plus } from 'lucide-react'
 import { memo } from 'react'
 
 import { Button } from '@/src/components/ui/button'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import {
   Table,
   TableBody,
@@ -48,8 +49,8 @@ export const OverridesList = memo(
           <TableBody>
             {allOverrides.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center text-muted-foreground py-8">
-                  No overrides found
+                <TableCell colSpan={3} className="h-24 text-center">
+                  <GeneralEmptyState variant="override" entityName="gate" />
                 </TableCell>
               </TableRow>
             ) : (

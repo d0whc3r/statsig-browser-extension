@@ -10,7 +10,7 @@ import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/s
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useDynamicConfig } from '@/src/hooks/use-dynamic-config'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
 
@@ -149,7 +149,9 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
 }
 
 export const DynamicConfigSheet = () => {
-  const { currentItemId, isItemSheetOpen, currentItemType } = useStore((state) => state)
+  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore(
+    (state) => state,
+  )
 
   const isOpen = isItemSheetOpen && currentItemType === 'dynamic_config'
 

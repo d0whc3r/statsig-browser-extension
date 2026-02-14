@@ -6,10 +6,10 @@ import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
 import { useExperimentOverrideHandlers } from '@/src/hooks/use-experiment-override-handlers'
 import { useExperimentStorage } from '@/src/hooks/use-experiment-storage'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useExperimentOverridesLogic = (overrides: Override[]) => {
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
 
   const { currentLocalStorageValue, saveToLocalStorage, clearOverride } = useExperimentStorage()

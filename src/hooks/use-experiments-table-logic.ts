@@ -4,7 +4,7 @@ import { experimentColumns, experimentStatusOptions } from '@/src/components/tab
 import { useExperiments } from '@/src/hooks/use-experiments'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useExperimentsTableLogic = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
@@ -31,7 +31,7 @@ export const useExperimentsTableLogic = () => {
     rowsPerPageKey: 'experiments-table-rows-per-page',
     visibleColumnsKey: 'experiments-table-visible-columns',
   })
-  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 
   const headerColumns = useMemo(
     () => experimentColumns.filter((column) => visibleColumns.includes(column.uid)),

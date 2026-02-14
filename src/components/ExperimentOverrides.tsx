@@ -6,6 +6,7 @@ import type { Group } from '@/src/types/statsig'
 import { AddOverrideInput } from '@/src/components/AddOverrideInput'
 import { OverrideGroup } from '@/src/components/OverrideGroup'
 import { Button } from '@/src/components/ui/button'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useExperimentOverridesLogic } from '@/src/hooks/use-experiment-overrides-logic'
 
 interface Props {
@@ -31,7 +32,7 @@ export const ExperimentOverrides = memo(({ overrides, groups = EMPTY_GROUPS }: P
   } = useExperimentOverridesLogic(overrides)
 
   if (overrides.length === 0 && !canEdit) {
-    return
+    return <GeneralEmptyState variant="override" entityName="experiment" />
   }
 
   const hasActiveOverride = Boolean(currentLocalStorageValue)
@@ -68,22 +69,26 @@ export const ExperimentOverrides = memo(({ overrides, groups = EMPTY_GROUPS }: P
       )}
 
       <div className="space-y-4">
-        {overrides.map((override) => {
-          const groupName =
-            groups.find((group) => group.id === override.groupID)?.name || override.groupID
+        {overrides.length === 0 ? (
+          <GeneralEmptyState variant="override" entityName="experiment" />
+        ) : (
+          overrides.map((override) => {
+            const groupName =
+              groups.find((group) => group.id === override.groupID)?.name || override.groupID
 
-          return (
-            <OverrideGroup
-              key={override.groupID}
-              override={override}
-              groupName={groupName}
-              currentLocalStorageValue={currentLocalStorageValue || ''}
-              canEdit={canEdit}
-              onSave={saveToLocalStorage}
-              onDelete={handleDelete}
-            />
-          )
-        })}
+            return (
+              <OverrideGroup
+                key={override.groupID}
+                override={override}
+                groupName={groupName}
+                currentLocalStorageValue={currentLocalStorageValue || ''}
+                canEdit={canEdit}
+                onSave={saveToLocalStorage}
+                onDelete={handleDelete}
+              />
+            )
+          })
+        )}
       </div>
     </div>
   )

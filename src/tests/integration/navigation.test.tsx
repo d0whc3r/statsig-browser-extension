@@ -4,7 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 // eslint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom'
 import { AppContent } from '@/entrypoints/popup/App'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
 
@@ -35,7 +35,7 @@ vi.mock('@/src/hooks/use-local-storage', () => ({
 describe('Navigation Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useStore.setState({
+    useUIStore.setState({
       isAuthModalOpen: false,
       isSettingsSheetOpen: false,
       isUserDetailsSheetOpen: false,
@@ -91,7 +91,7 @@ describe('Navigation Flow', () => {
     const settingsItem = screen.getByText('Settings')
     await userEvent.click(settingsItem)
 
-    expect(useStore.getState().isSettingsSheetOpen).toBeTruthy()
+    expect(useUIStore.getState().isSettingsSheetOpen).toBeTruthy()
   })
 
   it('should navigate to Audit Logs via menu', async () => {

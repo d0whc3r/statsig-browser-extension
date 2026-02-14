@@ -4,6 +4,7 @@ import { useCallback } from 'react'
 import type { DynamicConfigOverride } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 
 interface DynamicConfigOverridesListProps {
   overrides: DynamicConfigOverride[]
@@ -25,7 +26,10 @@ export const DynamicConfigOverridesList = ({
 
   if (overrides.length === 0) {
     return (
-      <div className="text-center text-sm text-muted-foreground py-8">No overrides configured.</div>
+      <GeneralEmptyState
+        variant="override"
+        description="Add an override to enforce a specific return value for a set of users."
+      />
     )
   }
 

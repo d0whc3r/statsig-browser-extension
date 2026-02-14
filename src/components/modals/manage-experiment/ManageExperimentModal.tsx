@@ -2,7 +2,7 @@ import { useCallback } from 'react'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { GroupsSection } from './GroupsSection'
 import { OverridesSection } from './OverridesSection'
@@ -13,7 +13,7 @@ export function ManageExperimentModal() {
     isManageExperimentModalOpen,
     setItemSheetOpen,
     setManageExperimentModalOpen,
-  } = useStore((state) => state)
+  } = useUIStore((state) => state)
 
   const handleCloseModal = useCallback(
     (open: boolean) => {

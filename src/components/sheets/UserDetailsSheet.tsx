@@ -8,10 +8,10 @@ import { UserDetailsSkeleton } from '@/src/components/sheets/user-details/UserDe
 import { ScrollArea } from '@/src/components/ui/scroll-area'
 import { Sheet, SheetContent } from '@/src/components/ui/sheet'
 import { useUserDetails } from '@/src/hooks/use-user-details'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const UserDetailsSheet = () => {
-  const { isUserDetailsSheetOpen, setUserDetailsSheetOpen } = useStore((state) => state)
+  const { isUserDetailsSheetOpen, setUserDetailsSheetOpen } = useUIStore((state) => state)
   const { data: userDetailsData, isLoading, refetch } = useUserDetails()
 
   const userDetails = userDetailsData as StatsigUser | undefined

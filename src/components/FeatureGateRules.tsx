@@ -4,7 +4,7 @@ import type { FeatureGateRule } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { Empty } from '@/src/components/ui/empty'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useFeatureGateRules } from '@/src/hooks/use-feature-gate-rules'
 import { getConditionLabel } from '@/src/lib/rules'
 import { cn } from '@/src/lib/utils'
@@ -120,11 +120,7 @@ export const FeatureGateRules = memo(({ featureGateId }: Props) => {
   }
 
   if (!rules || rules.length === 0) {
-    return (
-      <Empty className="py-8">
-        <div className="text-muted-foreground">No rules configured for this feature gate</div>
-      </Empty>
-    )
+    return <GeneralEmptyState variant="rule" entityName="feature gate" />
   }
 
   return (

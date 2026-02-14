@@ -1,16 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { deleteOverride } from '@/src/handlers/delete-override'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { OverrideRow } from './OverrideRow'
 
 export function OverridesTable() {
   const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const { data: overrides } = useOverrides(currentItemId)
   const queryClient = useQueryClient()
 
@@ -22,7 +23,7 @@ export function OverridesTable() {
   })
 
   if (!overrides || overrides.length === 0) {
-    return <div className="text-center py-4 text-muted-foreground text-sm">No overrides found.</div>
+    return <GeneralEmptyState variant="override" entityName="item" />
   }
 
   return (

@@ -4,7 +4,7 @@ import type { DynamicConfigRule } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
-import { Empty } from '@/src/components/ui/empty'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useDynamicConfigRules } from '@/src/hooks/use-dynamic-config-rules'
 import { getConditionLabel } from '@/src/lib/rules'
 
@@ -105,11 +105,7 @@ export const DynamicConfigRules = memo(({ configId }: Props) => {
   }
 
   if (!rules || rules.length === 0) {
-    return (
-      <Empty className="py-8">
-        <div className="text-muted-foreground">No rules configured for this dynamic config</div>
-      </Empty>
-    )
+    return <GeneralEmptyState variant="rule" entityName="dynamic config" />
   }
 
   return (

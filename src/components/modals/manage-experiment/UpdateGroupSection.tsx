@@ -8,7 +8,7 @@ import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { updateGroup } from '@/src/handlers/update-group'
 import { useExperiment } from '@/src/hooks/use-experiment'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 interface Props {
   changeView: () => void
@@ -16,7 +16,7 @@ interface Props {
 }
 
 export function UpdateGroupSection({ changeView, group }: Props) {
-  const { currentItemId } = useStore((state) => state)
+  const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
   const groups = useMemo(() => experiment?.groups || [], [experiment])
   const [groupName, setGroupName] = useState(group.name)

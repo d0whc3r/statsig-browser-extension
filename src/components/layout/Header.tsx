@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 interface HeaderProps {
   onNavigate: (tab: string) => void
@@ -17,7 +17,7 @@ interface HeaderProps {
 }
 
 export const Header = memo(({ onNavigate, onLogout }: HeaderProps) => {
-  const { setUserDetailsSheetOpen, setSettingsSheetOpen } = useStore((state) => state)
+  const { setUserDetailsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
 
   const handleNavigateAuditLogs = useCallback(() => {
     onNavigate('audit_logs')

@@ -3,6 +3,7 @@ import { memo } from 'react'
 import type { AuditLog } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 
 import { AuditLogRow } from './AuditLogRow'
 
@@ -22,14 +23,11 @@ const EmptyState = ({
 }: {
   filterValue: string
   actionFilter: string
-}) => (
-  <div className="flex flex-col items-center justify-center py-8 text-muted-foreground">
-    <p className="text-sm">No audit logs found</p>
-    {(filterValue || actionFilter !== 'all') && (
-      <p className="text-[10px] mt-1">Try adjusting your filters</p>
-    )}
-  </div>
-)
+}) => {
+  const isFiltered = filterValue || actionFilter !== 'all'
+
+  return <GeneralEmptyState variant={isFiltered ? 'search' : 'audit_log'} />
+}
 
 const Footer = ({
   hasNextPage,

@@ -1,4 +1,3 @@
-import { AlertCircle } from 'lucide-react'
 import React from 'react'
 
 import type { featureGateColumns } from '@/src/components/tables/data'
@@ -6,7 +5,7 @@ import type { FeatureGate } from '@/src/types/statsig'
 
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
 import { Button } from '@/src/components/ui/button'
-import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/src/components/ui/empty'
+import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface FeatureGatesTableBodyProps {
@@ -42,18 +41,15 @@ export const FeatureGatesTableBody = ({
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          <Empty className="p-2 border-none">
-            <EmptyMedia variant="icon" className="mb-2 mx-auto">
-              <AlertCircle className="h-5 w-5 text-destructive" />
-            </EmptyMedia>
-            <EmptyTitle className="text-sm">Failed to load feature gates</EmptyTitle>
-            <EmptyDescription className="text-xs">
-              {error instanceof Error ? error.message : 'An unknown error occurred'}
-            </EmptyDescription>
+          <GeneralEmptyState
+            variant="error"
+            title="Failed to load feature gates"
+            description={error instanceof Error ? error.message : 'An unknown error occurred'}
+          >
             <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2">
               Retry
             </Button>
-          </Empty>
+          </GeneralEmptyState>
         </TableCell>
       </TableRow>
     )
@@ -63,7 +59,7 @@ export const FeatureGatesTableBody = ({
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          No feature gates found.
+          <GeneralEmptyState variant="feature_gate" />
         </TableCell>
       </TableRow>
     )

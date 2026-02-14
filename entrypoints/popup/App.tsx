@@ -7,14 +7,14 @@ import { Header } from '@/src/components/layout/Header'
 import { MainTabs } from '@/src/components/layout/MainTabs'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { queryClient } from '@/src/lib/query-client'
-import { useStore } from '@/src/store/use-store'
+import { useContextStore } from '@/src/store/use-context-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 // eslint-disable-next-line import/no-unassigned-import
 import '@/src/styles/globals.css'
 
 export function AppContent() {
-  const { setAuthModalOpen, setItemSheetOpen, setCurrentItemId, setDetectedUser } = useStore(
-    (state) => state,
-  )
+  const { setAuthModalOpen, setItemSheetOpen, setCurrentItemId } = useUIStore((state) => state)
+  const { setDetectedUser } = useContextStore((state) => state)
 
   const [apiKey, setApiKey] = useLocalStorage('statsig-console-api-key', '')
   const [activeTab, setActiveTab] = useState('experiments')

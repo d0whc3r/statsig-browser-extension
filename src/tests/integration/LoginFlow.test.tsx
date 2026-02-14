@@ -5,7 +5,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import '@testing-library/jest-dom'
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
 
@@ -19,7 +19,7 @@ describe('Login Flow', () => {
     vi.clearAllMocks()
     localStorage.clear()
     // Reset store
-    useStore.setState({ isAuthModalOpen: true })
+    useUIStore.setState({ isAuthModalOpen: true })
   })
 
   it('should render the login modal when open', () => {
@@ -56,7 +56,7 @@ describe('Login Flow', () => {
     })
 
     await waitFor(() => {
-      expect(useStore.getState().isAuthModalOpen).toBeFalsy()
+      expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
     })
 
     expect(localStorage.getItem('statsig-console-api-key')).toContain('console-test-key')
@@ -78,6 +78,6 @@ describe('Login Flow', () => {
       expect(screen.getByText('Invalid API Key')).toBeInTheDocument()
     })
 
-    expect(useStore.getState().isAuthModalOpen).toBeTruthy()
+    expect(useUIStore.getState().isAuthModalOpen).toBeTruthy()
   })
 })

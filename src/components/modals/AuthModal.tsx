@@ -1,12 +1,12 @@
 import { useCallback } from 'react'
 
 import { Dialog, DialogContent } from '@/src/components/ui/dialog'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { AuthForm } from './AuthForm'
 
 export const AuthModal = () => {
-  const { isAuthModalOpen, setAuthModalOpen, setSettingsSheetOpen } = useStore((state) => state)
+  const { isAuthModalOpen, setAuthModalOpen, setSettingsSheetOpen } = useUIStore((state) => state)
 
   const handleSuccess = useCallback(() => {
     setAuthModalOpen(false)

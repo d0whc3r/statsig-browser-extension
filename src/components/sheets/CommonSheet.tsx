@@ -3,7 +3,7 @@ import type { ReactNode } from 'react'
 import { ScrollArea } from '@/src/components/ui/scroll-area'
 import { Sheet, SheetContent } from '@/src/components/ui/sheet'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 interface CommonSheetProps {
   type: 'feature_gate' | 'dynamic_config' | 'experiment'
@@ -11,7 +11,7 @@ interface CommonSheetProps {
 }
 
 export function CommonSheet({ type, children }: CommonSheetProps) {
-  const { isItemSheetOpen, setItemSheetOpen, currentItemType } = useStore((state) => state)
+  const { isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === type
 

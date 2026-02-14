@@ -4,7 +4,7 @@ import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
-import { useStore } from '@/src/store/use-store'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useDynamicConfigsTableLogic = () => {
   const {
@@ -37,7 +37,7 @@ export const useDynamicConfigsTableLogic = () => {
     rowsPerPageKey: 'dynamic-config-table-rows-per-page',
     visibleColumnsKey: 'dynamic-config-table-visible-columns',
   })
-  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useStore((state) => state)
+  const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 
   const headerColumns = useMemo(
     () => dynamicConfigColumns.filter((column) => visibleColumns.includes(column.uid)),
