@@ -14,10 +14,20 @@ vi.mock('@/src/handlers/initial-login', () => ({
   initialLogin: vi.fn(),
 }))
 
+// Mock useWxtStorage
+const mockSetApiKey = vi.fn()
+vi.mock('@/src/hooks/use-wxt-storage', () => ({
+  useWxtStorage: vi.fn((item) => {
+    if (item.key === 'local:statsig-console-api-key') {
+      return ['', mockSetApiKey, false]
+    }
+    return [item.defaultValue, vi.fn(), false]
+  }),
+}))
+
 describe('Login Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    localStorage.clear()
     // Reset store
     useUIStore.setState({ isAuthModalOpen: true })
   })
@@ -59,7 +69,7 @@ describe('Login Flow', () => {
       expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
     })
 
-    expect(localStorage.getItem('statsig-console-api-key')).toContain('console-test-key')
+    expect(mockSetApiKey).toHaveBeenCalledWith('console-test-key')
   })
 
   it('should show error message on API failure', async () => {

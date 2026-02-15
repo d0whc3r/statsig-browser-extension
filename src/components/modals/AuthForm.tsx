@@ -12,7 +12,7 @@ import {
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
 import { initialLogin } from '@/src/handlers/initial-login'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 
 interface AuthFormProps {
   onSuccess: () => void
@@ -20,7 +20,7 @@ interface AuthFormProps {
 }
 
 export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
-  const [, setApiKey] = useLocalStorage('statsig-console-api-key', '')
+  const { setApiKey } = useSettingsStorage()
   const [value, setValue] = useState('')
   const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const queryClient = useQueryClient()

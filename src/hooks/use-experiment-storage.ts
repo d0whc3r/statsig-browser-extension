@@ -5,20 +5,23 @@ import {
   removeStorageValue,
   updateStorageValue,
 } from '@/src/handlers/local-storage-handlers'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { STORAGE_KEYS } from '@/src/lib/storage-keys'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import {
+  currentOverridesStorage,
+  localStorageKeyStorage,
+  storageTypeStorage,
+} from '@/src/lib/storage'
 import { useContextStore } from '@/src/store/use-context-store'
+
+import type { ExperimentOverride } from '../types/statsig'
 
 export const useExperimentStorage = () => {
   const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore(
     (state) => state,
   )
-  const [storageKeyName] = useLocalStorage(STORAGE_KEYS.LOCAL_STORAGE_KEY, 'statsig_gate_overrides')
-  const [storageType] = useLocalStorage<'cookie' | 'localStorage'>(
-    STORAGE_KEYS.STORAGE_TYPE,
-    'localStorage',
-  )
-  const [, setCurrentOverrides] = useLocalStorage<unknown[]>(STORAGE_KEYS.CURRENT_OVERRIDES, [])
+  const [storageKeyName] = useWxtStorage<string>(localStorageKeyStorage)
+  const [storageType] = useWxtStorage<'localStorage' | 'cookie'>(storageTypeStorage)
+  const [, setCurrentOverrides] = useWxtStorage<ExperimentOverride[]>(currentOverridesStorage)
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
@@ -33,7 +36,7 @@ export const useExperimentStorage = () => {
 
   const saveToLocalStorage = useCallback(
     (value: string, allOverrideIds: string[]) => {
-      setCurrentOverrides(allOverrideIds.map((id) => ({ name: id })))
+      setCurrentOverrides(allOverrideIds.map((id) => ({ name: id }))) // Use generic object structure if needed, or adjust type
 
       chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
         if (tabs[0]?.id) {

@@ -1,15 +1,17 @@
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { STORAGE_KEYS } from '@/src/lib/storage-keys'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import {
+  apiKeyStorage,
+  apiKeyTypeStorage,
+  localStorageKeyStorage,
+  storageTypeStorage,
+} from '@/src/lib/storage'
 
 export const useSettingsStorage = () => {
-  const [apiKey, setApiKey] = useLocalStorage(STORAGE_KEYS.CONSOLE_API_KEY, '')
-  const [localStorageValue, setLocalStorageKey] = useLocalStorage(
-    STORAGE_KEYS.LOCAL_STORAGE_KEY,
-    'statsig_user',
-  )
-  const [storageType, setStorageType] = useLocalStorage(STORAGE_KEYS.STORAGE_TYPE, 'localStorage')
+  const [apiKey, setApiKey, isApiKeyLoading] = useWxtStorage(apiKeyStorage)
+  const [localStorageValue, setLocalStorageKey] = useWxtStorage(localStorageKeyStorage)
+  const [storageType, setStorageType] = useWxtStorage(storageTypeStorage)
   // Force write-key as default since user requested to remove the selector
-  const [typeApiKey, setTypeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'write-key')
+  const [typeApiKey, setTypeApiKey] = useWxtStorage(apiKeyTypeStorage)
 
   // Ensure typeApiKey is always write-key if it was somehow set to read-key
   if (typeApiKey !== 'write-key') {
@@ -18,6 +20,7 @@ export const useSettingsStorage = () => {
 
   return {
     apiKey,
+    isApiKeyLoading,
     localStorageValue,
     setApiKey,
     setLocalStorageKey,

@@ -4,6 +4,10 @@ import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
+import {
+  dynamicConfigRowsPerPageStorage,
+  dynamicConfigVisibleColumnsStorage,
+} from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useDynamicConfigsTableLogic = () => {
@@ -33,9 +37,8 @@ export const useDynamicConfigsTableLogic = () => {
     statusFilter,
     visibleColumns,
   } = useTableState({
-    initialVisibleColumns: ['name', 'tags', 'isEnabled', 'actions'],
-    rowsPerPageKey: 'dynamic-config-table-rows-per-page',
-    visibleColumnsKey: 'dynamic-config-table-visible-columns',
+    rowsPerPageStorage: dynamicConfigRowsPerPageStorage,
+    visibleColumnsStorage: dynamicConfigVisibleColumnsStorage,
   })
   const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 

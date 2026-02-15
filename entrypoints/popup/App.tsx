@@ -5,7 +5,7 @@ import { ErrorBoundary } from '@/src/components/ErrorBoundary'
 import { GlobalModals } from '@/src/components/layout/GlobalModals'
 import { Header } from '@/src/components/layout/Header'
 import { MainTabs } from '@/src/components/layout/MainTabs'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { queryClient } from '@/src/lib/query-client'
 import { useContextStore } from '@/src/store/use-context-store'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -16,14 +16,14 @@ export function AppContent() {
   const { setAuthModalOpen, setItemSheetOpen, setCurrentItemId } = useUIStore((state) => state)
   const { setDetectedUser } = useContextStore((state) => state)
 
-  const [apiKey, setApiKey] = useLocalStorage('statsig-console-api-key', '')
+  const { apiKey, setApiKey, isApiKeyLoading } = useSettingsStorage()
   const [activeTab, setActiveTab] = useState('experiments')
 
   useEffect(() => {
-    if (!apiKey) {
+    if (!isApiKeyLoading && !apiKey) {
       setAuthModalOpen(true)
     }
-  }, [apiKey, setAuthModalOpen])
+  }, [apiKey, isApiKeyLoading, setAuthModalOpen])
 
   useEffect(() => {
     // Listen for detected user

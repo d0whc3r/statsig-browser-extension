@@ -15,7 +15,8 @@ import {
 } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useExperiment } from '@/src/hooks/use-experiment'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 interface Props {
@@ -62,7 +63,7 @@ const GroupRow = memo(({ group, canEdit, onEdit }: GroupRowProps) => {
 GroupRow.displayName = 'GroupRow'
 
 export const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
-  const [typeApiKey] = useLocalStorage('statsig-api-key-type', 'read-key')
+  const [typeApiKey] = useWxtStorage(apiKeyTypeStorage)
   const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
   const groups = experiment?.groups || []

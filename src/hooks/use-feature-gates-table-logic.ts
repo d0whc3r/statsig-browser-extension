@@ -4,6 +4,10 @@ import { featureGateColumns } from '@/src/components/tables/data'
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
+import {
+  featureGatesRowsPerPageStorage,
+  featureGatesVisibleColumnsStorage,
+} from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useFeatureGatesTableLogic = () => {
@@ -33,9 +37,8 @@ export const useFeatureGatesTableLogic = () => {
     statusFilter,
     visibleColumns,
   } = useTableState({
-    initialVisibleColumns: ['name', 'tags', 'status', 'isEnabled', 'actions'],
-    rowsPerPageKey: 'feature-gate-table-rows-per-page',
-    visibleColumnsKey: 'feature-gate-table-visible-columns',
+    rowsPerPageStorage: featureGatesRowsPerPageStorage,
+    visibleColumnsStorage: featureGatesVisibleColumnsStorage,
   })
 
   const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)

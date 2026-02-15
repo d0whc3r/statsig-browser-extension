@@ -1,4 +1,6 @@
-import axios from 'axios'
+import type { AxiosAdapter } from 'axios'
+
+import axios, { AxiosHeaders } from 'axios'
 
 export const API_BASE_URL = 'https://statsigapi.net/console/v1'
 
@@ -7,14 +9,44 @@ export const api = axios.create({
 })
 
 api.interceptors.request.use((config) => {
-  const apiKey = localStorage.getItem('statsig-console-api-key')
-  // Only set if not already set by the caller
-  if (apiKey && !config.headers['STATSIG-API-KEY']) {
-    // Remove quotes if present (since localStorage stores JSON stringified values)
-    config.headers['STATSIG-API-KEY'] = apiKey.replaceAll('"', '')
-  }
   return config
 })
+
+const backgroundAdapter: AxiosAdapter = async (config) => {
+  // Use the api instance to resolve the full URL including params
+  const url = api.getUri(config)
+
+  const headers =
+    config.headers instanceof AxiosHeaders
+      ? config.headers.toJSON()
+      : (config.headers as Record<string, string>)
+
+  // Send request to background
+  const response = await chrome.runtime.sendMessage({
+    config: {
+      data: config.data,
+      headers,
+      method: config.method,
+      url,
+    },
+    type: 'AXIOS_REQUEST',
+  })
+
+  if (!response.success) {
+    throw new Error(response.error)
+  }
+
+  return {
+    config,
+    data: response.response.data,
+    headers: response.response.headers,
+    request: {}, // Dummy request object
+    status: response.response.status,
+    statusText: response.response.statusText,
+  }
+}
+
+api.defaults.adapter = backgroundAdapter
 
 export const fetcher = async <ResponseData>(url: string): Promise<ResponseData> => {
   const response = await api.get<ResponseData>(url)

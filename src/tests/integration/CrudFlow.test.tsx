@@ -23,14 +23,13 @@ vi.mock('@/src/lib/fetcher', () => ({
 }))
 
 // Mock API key
-vi.mock('@/src/hooks/use-local-storage', () => ({
-  useLocalStorage: vi.fn((key, initial) => {
+vi.mock('@/src/hooks/use-wxt-storage', () => ({
+  useWxtStorage: vi.fn((item) => {
     // Only mock api key for components that might still read it directly (e.g. AuthModal)
-    // The hooks no longer read it
-    if (key === 'statsig-console-api-key') {
-      return ['test-api-key', vi.fn()]
+    if (item.key === 'local:statsig-console-api-key') {
+      return ['test-api-key', vi.fn(), false]
     }
-    return [initial, vi.fn()]
+    return [item.defaultValue, vi.fn(), false]
   }),
 }))
 

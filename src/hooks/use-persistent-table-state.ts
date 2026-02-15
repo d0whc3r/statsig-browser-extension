@@ -1,23 +1,18 @@
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import type { WxtStorageItem } from 'wxt/utils/storage'
+
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 
 interface UsePersistentTableStateOptions {
-  visibleColumnsKey: string
-  rowsPerPageKey: string
-  initialVisibleColumns: string[]
-  initialRowsPerPage?: number
+  visibleColumnsStorage: WxtStorageItem<string[], any>
+  rowsPerPageStorage: WxtStorageItem<number, any>
 }
 
 export const usePersistentTableState = ({
-  visibleColumnsKey,
-  rowsPerPageKey,
-  initialVisibleColumns,
-  initialRowsPerPage = 5,
+  visibleColumnsStorage,
+  rowsPerPageStorage,
 }: UsePersistentTableStateOptions) => {
-  const [visibleColumns, setVisibleColumns] = useLocalStorage<string[]>(
-    visibleColumnsKey,
-    initialVisibleColumns,
-  )
-  const [rowsPerPage, setRowsPerPage] = useLocalStorage<number>(rowsPerPageKey, initialRowsPerPage)
+  const [visibleColumns, setVisibleColumns] = useWxtStorage<string[]>(visibleColumnsStorage)
+  const [rowsPerPage, setRowsPerPage] = useWxtStorage<number>(rowsPerPageStorage)
 
   return { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns }
 }

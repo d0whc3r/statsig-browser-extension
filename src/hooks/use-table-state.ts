@@ -1,29 +1,25 @@
+import type { WxtStorageItem } from 'wxt/utils/storage'
+
 import { useCallback } from 'react'
 
 import { usePersistentTableState } from '@/src/hooks/use-persistent-table-state'
 import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
 
 interface UseTableStateOptions {
-  initialVisibleColumns: string[]
-  visibleColumnsKey: string
-  rowsPerPageKey: string
-  initialRowsPerPage?: number
+  visibleColumnsStorage: WxtStorageItem<string[], any>
+  rowsPerPageStorage: WxtStorageItem<number, any>
   initialStatusFilter?: Set<string>
 }
 
 export const useTableState = ({
-  initialVisibleColumns,
-  visibleColumnsKey,
-  rowsPerPageKey,
-  initialRowsPerPage = 5,
+  visibleColumnsStorage,
+  rowsPerPageStorage,
   initialStatusFilter,
 }: UseTableStateOptions) => {
   const { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns } =
     usePersistentTableState({
-      initialRowsPerPage,
-      initialVisibleColumns,
-      rowsPerPageKey,
-      visibleColumnsKey,
+      rowsPerPageStorage,
+      visibleColumnsStorage,
     })
 
   const { filterValue, page, setFilterValue, setPage, setStatusFilter, statusFilter } =

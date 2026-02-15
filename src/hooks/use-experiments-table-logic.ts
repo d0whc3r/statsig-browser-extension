@@ -4,6 +4,7 @@ import { experimentColumns, experimentStatusOptions } from '@/src/components/tab
 import { useExperiments } from '@/src/hooks/use-experiments'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
+import { experimentsRowsPerPageStorage, experimentsVisibleColumnsStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useExperimentsTableLogic = () => {
@@ -27,9 +28,8 @@ export const useExperimentsTableLogic = () => {
     visibleColumns,
   } = useTableState({
     initialStatusFilter: new Set(experimentStatusOptions.map((option) => option.uid)),
-    initialVisibleColumns: ['name', 'status', 'allocation', 'tags', 'actions'],
-    rowsPerPageKey: 'experiments-table-rows-per-page',
-    visibleColumnsKey: 'experiments-table-visible-columns',
+    rowsPerPageStorage: experimentsRowsPerPageStorage,
+    visibleColumnsStorage: experimentsVisibleColumnsStorage,
   })
   const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 

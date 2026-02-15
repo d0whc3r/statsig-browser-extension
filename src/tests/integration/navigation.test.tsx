@@ -23,12 +23,12 @@ vi.mock('@/src/components/AuditLogs', () => ({
 }))
 
 // Mock API key to bypass login modal
-vi.mock('@/src/hooks/use-local-storage', () => ({
-  useLocalStorage: vi.fn((key, initial) => {
-    if (key === 'statsig-console-api-key') {
-      return ['test-api-key', vi.fn()]
+vi.mock('@/src/hooks/use-wxt-storage', () => ({
+  useWxtStorage: vi.fn((item) => {
+    if (item.key === 'local:statsig-console-api-key') {
+      return ['test-api-key', vi.fn(), false]
     }
-    return [initial, vi.fn()]
+    return [item.defaultValue, vi.fn(), false]
   }),
 }))
 

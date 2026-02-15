@@ -5,10 +5,10 @@ import type { AnyOverride } from '@/src/handlers/create-override'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
 import { useUserDetails } from '@/src/hooks/use-user-details'
-import { STORAGE_KEYS } from '@/src/lib/storage-keys'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 type View = 'form' | 'table'
@@ -86,7 +86,7 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
 }
 
 export const useOverridesSectionLogic = () => {
-  const [typeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'write-key')
+  const [typeApiKey] = useWxtStorage(apiKeyTypeStorage)
   const [view, setView] = useState<View>('table')
   const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)

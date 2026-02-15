@@ -3,9 +3,9 @@ import { useCallback, useMemo } from 'react'
 import { ExperimentGroups } from '@/src/components/ExperimentGroups'
 import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
 import { useExperiment } from '@/src/hooks/use-experiment'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
-import { STORAGE_KEYS } from '@/src/lib/storage-keys'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
@@ -21,7 +21,7 @@ const useExperimentSheetState = () => {
     currentItemType,
   } = useUIStore((state) => state)
 
-  const [typeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'read-key')
+  const [typeApiKey] = useWxtStorage<'write-key' | 'read-key'>(apiKeyTypeStorage)
 
   const isOpen = isItemSheetOpen && currentItemType === 'experiment'
 
