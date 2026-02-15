@@ -10,22 +10,16 @@ export const OverridesSection = () => {
     deleteOverride,
     detectedUser,
     detectedUserId,
+    detectedUserOverrides,
     groups,
     handleBackClick,
     handleCreateOverrideClick,
-    handleOverrideValueChange,
     isDetectedUserOverridden,
     isPending,
     overridesData,
-    overrideValue,
-    selectedGroup,
-    setSelectedGroup,
     typeApiKey,
     view,
-    overrideType,
-    setOverrideType,
-    featureGates,
-    setOverrideValue,
+    experiment,
   } = useOverridesSectionLogic()
 
   return (
@@ -34,10 +28,14 @@ export const OverridesSection = () => {
         detectedUser={detectedUser || undefined}
         detectedUserId={detectedUserId || ''}
         isDetectedUserOverridden={isDetectedUserOverridden}
+        detectedUserOverrides={detectedUserOverrides}
         canEdit={typeApiKey === 'write-key'}
         isPending={isPending}
         groups={groups}
-        onAddOverride={addOverride}
+        onAddOverride={(id, groupName, env, idType) =>
+          addOverride(id, groupName, env || null, idType || null)
+        }
+        experiment={experiment}
       />
 
       {view === 'table' ? (
@@ -51,17 +49,10 @@ export const OverridesSection = () => {
       ) : (
         <AddOverrideForm
           groups={groups}
-          selectedGroup={selectedGroup}
-          onSelectedGroupChange={setSelectedGroup}
-          overrideValue={overrideValue}
-          onOverrideValueChange={handleOverrideValueChange}
-          setOverrideValue={setOverrideValue}
           onCancel={handleBackClick}
-          onAddOverride={() => addOverride()}
+          onAddOverride={addOverride}
           isPending={isPending}
-          overrideType={overrideType}
-          onOverrideTypeChange={setOverrideType}
-          featureGates={featureGates}
+          experiment={experiment}
         />
       )}
     </div>

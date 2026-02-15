@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react'
 
-import type { GateOverride } from '@/src/types/statsig'
+import type { FeatureGate, GateOverride } from '@/src/types/statsig'
 
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useGateOverrides } from '@/src/hooks/use-gate-overrides'
@@ -11,7 +11,7 @@ import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
 import { PageContextCard } from './PageContextCard'
 
-export const GateOverridesSection = () => {
+export const GateOverridesSection = ({ featureGate }: { featureGate?: FeatureGate }) => {
   const { currentItemId } = useUIStore((state) => state)
   const { data: overrides, isLoading } = useGateOverrides(currentItemId)
 
@@ -33,21 +33,30 @@ export const GateOverridesSection = () => {
     )
   }
 
-  return <GateOverridesManager currentItemId={currentItemId} overrides={overrides} />
+  return (
+    <GateOverridesManager
+      currentItemId={currentItemId}
+      overrides={overrides}
+      featureGate={featureGate}
+    />
+  )
 }
 
 const GateOverridesManager = ({
   currentItemId,
   overrides,
+  featureGate,
 }: {
   currentItemId: string | undefined
   overrides: GateOverride
+  featureGate?: FeatureGate
 }) => {
   const {
     view,
     detectedUser,
     detectedUserId,
     isDetectedUserOverridden,
+    detectedUserOverrides,
     canEdit,
     isPending,
     allOverrides,
@@ -55,7 +64,7 @@ const GateOverridesManager = ({
     handleDeleteOverride,
     handleSwitchToForm,
     handleSwitchToTable,
-  } = useGateOverridesLogic(currentItemId, overrides)
+  } = useGateOverridesLogic(currentItemId, overrides, featureGate)
 
   return (
     <div className="flex flex-col gap-6">
@@ -63,9 +72,11 @@ const GateOverridesManager = ({
         detectedUser={detectedUser || undefined}
         detectedUserId={detectedUserId || ''}
         isDetectedUserOverridden={isDetectedUserOverridden}
+        detectedUserOverrides={detectedUserOverrides}
         canEdit={canEdit}
         isPending={isPending}
         onAddOverride={handleAddOverride}
+        featureGate={featureGate}
       />
 
       {view === 'table' ? (
@@ -81,6 +92,7 @@ const GateOverridesManager = ({
           isPending={isPending}
           onAddOverride={handleAddOverride}
           onCancel={handleSwitchToTable}
+          featureGate={featureGate}
         />
       )}
     </div>

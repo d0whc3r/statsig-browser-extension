@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
@@ -40,11 +41,14 @@ const fetchAuditLogsPage = async (page: number): Promise<PaginatedResponse<Audit
  *
  * @returns The Infinite React Query result containing the audit logs pages
  */
-export const useAuditLogs = () =>
-  useInfiniteQuery({
+export const useAuditLogs = () => {
+  const { apiKey } = useSettingsStorage()
+
+  return useInfiniteQuery({
+    enabled: Boolean(apiKey),
     getNextPageParam: (lastPage: PaginatedResponse<AuditLog>) => {
       if (!lastPage?.pagination) {
-        return undefined
+        return
       }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
@@ -55,3 +59,4 @@ export const useAuditLogs = () =>
     queryFn: ({ pageParam }) => fetchAuditLogsPage(pageParam),
     queryKey: ['audit-logs'],
   })
+}

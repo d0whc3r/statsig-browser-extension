@@ -35,6 +35,19 @@ vi.mock('@/src/hooks/use-wxt-storage', () => ({
   }),
 }))
 
+vi.mock('@/src/lib/storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  return {
+    ...actual,
+    apiKeyStorage: {
+      ...actual.apiKeyStorage,
+      getValue: vi.fn().mockResolvedValue('test-api-key'),
+      setValue: vi.fn(),
+      watch: vi.fn(),
+    },
+  }
+})
+
 const mockExperiments = [
   {
     groups: [
@@ -173,17 +186,17 @@ describe('Experiment Overrides Flow', () => {
     await userEvent.click(createBtn)
 
     // Check if form is displayed
-    expect(screen.getByText('Override Type')).toBeInTheDocument()
-
-    // Fill User ID
-    const input = screen.getByLabelText('User ID')
-    await userEvent.type(input, 'new_user_456')
+    expect(screen.getByText('Group')).toBeInTheDocument()
 
     // Select Group
-    const groupSelect = screen.getByRole('combobox', { name: 'Select a group' })
+    const groupSelect = screen.getByLabelText('Group')
     await userEvent.click(groupSelect)
     await screen.findByRole('option', { name: 'Test' })
     await userEvent.click(screen.getByRole('option', { name: 'Test' }))
+
+    // Fill User ID
+    const input = screen.getByLabelText('ID Value')
+    await userEvent.type(input, 'new_user_456')
 
     // Submit
     const saveBtn = screen.getByRole('button', { name: /Add override/i })
@@ -201,67 +214,6 @@ describe('Experiment Overrides Flow', () => {
               // Type: 'user', // Depending on implementation
             }),
           ],
-        }),
-      )
-    })
-  })
-
-  it('should allow creating a gate override via modal', async () => {
-    setupMocks()
-    renderWithProviders(<AppContent />)
-
-    // Open experiment details
-    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
-
-    // Open Manage Modal
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Manage experiment/i })).toBeInTheDocument(),
-    )
-    await userEvent.click(screen.getByRole('button', { name: /Manage experiment/i }))
-
-    // Switch to Overrides tab
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
-
-    // Click Create override
-    await userEvent.click(screen.getByRole('button', { name: /Add Manual/i }))
-
-    // Change Type to Gate
-    const typeSelect = screen.getByRole('combobox', { name: 'Override Type' })
-    await userEvent.click(typeSelect)
-    await screen.findByRole('option', { name: 'Gate' })
-    await userEvent.click(screen.getByRole('option', { name: 'Gate' }))
-
-    // Select Gate
-    const gateSelect = screen.getByRole('combobox', { name: 'Select a Gate' })
-    await userEvent.click(gateSelect)
-    await screen.findByRole('option', { name: /Test Gate 1/i })
-    await userEvent.click(screen.getByRole('option', { name: /Test Gate 1/i }))
-
-    // Select Group
-    const groupSelect = screen.getByRole('combobox', { name: 'Select a group' })
-    await userEvent.click(groupSelect)
-    await screen.findByRole('option', { name: 'Control' })
-    await userEvent.click(screen.getByRole('option', { name: 'Control' }))
-
-    // Submit
-    const saveBtn = screen.getByRole('button', { name: /Add override/i })
-    await userEvent.click(saveBtn)
-
-    // Verify API call
-    await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith(
-        '/experiments/exp_1/overrides',
-        expect.objectContaining({
-          overrides: [
-            expect.objectContaining({
-              groupID: 'Control',
-              name: 'gate_1',
-              type: 'gate',
-            }),
-          ],
-          userIDOverrides: [],
         }),
       )
     })

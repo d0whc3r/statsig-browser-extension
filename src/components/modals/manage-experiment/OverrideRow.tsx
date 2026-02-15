@@ -23,6 +23,8 @@ export const OverrideRow = memo(({ override, canEdit, isPending, onDelete }: Ove
   return (
     <TableRow>
       <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
+      <TableCell>{override.environment || 'All'}</TableCell>
+      <TableCell>{override.unitID || 'userID'}</TableCell>
       <TableCell>{override.groupID}</TableCell>
       {canEdit && (
         <TableCell>

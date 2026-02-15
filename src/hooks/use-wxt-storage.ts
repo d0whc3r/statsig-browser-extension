@@ -8,16 +8,30 @@ export function useWxtStorage<T>(item: WxtStorageItem<T, any>): [T, (value: T) =
 
   useEffect(() => {
     let mounted = true
-    setIsLoading(true)
-    item.getValue().then((val: T) => {
-      if (mounted) {
-        setValue(val)
-        setIsLoading(false)
+    // Do not set isLoading to true here. We want to keep the old value while fetching the new one if the item changes.
+    // Or if it's the first mount, isLoading is already true (default state).
+
+    const init = async () => {
+      try {
+        const val = await item.getValue()
+        if (mounted) {
+          setValue(val)
+          setIsLoading(false)
+        }
+      } catch (error) {
+        console.error('Failed to get storage value:', error)
+        if (mounted) {
+          setIsLoading(false)
+        }
       }
-    })
+    }
+
+    init()
+
     const unwatch = item.watch((val: T) => {
       if (mounted) {
         setValue(val)
+        setIsLoading(false)
       }
     })
     return () => {
@@ -27,8 +41,16 @@ export function useWxtStorage<T>(item: WxtStorageItem<T, any>): [T, (value: T) =
   }, [item])
 
   const setStorageValue = (newValue: T) => {
+    // Only update if value actually changed
+    if (value === newValue) {
+      return
+    }
+
     setValue(newValue)
-    item.setValue(newValue)
+    item.setValue(newValue).catch((error) => {
+      console.error('Failed to set storage value:', error)
+      // Revert on failure? Or just log?
+    })
   }
 
   return [value, setStorageValue, isLoading]

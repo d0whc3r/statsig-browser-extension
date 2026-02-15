@@ -27,10 +27,15 @@ export const UserProperty = memo(({ label, value, isLast = false }: UserProperty
     }
     if (typeof val === 'object') {
       return (
-        <div className="w-full mt-2 bg-muted rounded-lg p-2 border overflow-hidden">
-          <pre className="text-xs font-mono whitespace-pre-wrap break-all">
-            {JSON.stringify(val, undefined, 2)}
-          </pre>
+        <div className="w-full mt-2 relative group/obj">
+          <div className="bg-muted rounded-lg p-2 border overflow-hidden">
+            <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+              {JSON.stringify(val, undefined, 2)}
+            </pre>
+          </div>
+          <div className="absolute top-2 right-2 opacity-0 group-hover/obj:opacity-100 transition-opacity">
+            <CopyButton text={JSON.stringify(val, undefined, 2)} />
+          </div>
         </div>
       )
     }

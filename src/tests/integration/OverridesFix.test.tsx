@@ -37,27 +37,27 @@ vi.mock('@/src/hooks/use-wxt-storage', () => ({
 }))
 
 const mockExperiment = {
-  id: 'exp_validation',
-  name: 'Validation Experiment',
-  status: 'active',
   groups: [
     { id: 'group_control', name: 'Control', size: 50 },
     { id: 'group_test', name: 'Test', size: 50 },
   ],
+  id: 'exp_validation',
   lastModifiedTime: Date.now(),
+  name: 'Validation Experiment',
+  status: 'active',
 }
 
 const mockGate = {
   id: 'gate_payload',
-  name: 'Payload Gate',
   isEnabled: true,
   lastModifiedTime: Date.now(),
+  name: 'Payload Gate',
 }
 
 const mockGateOverrides = {
+  environmentOverrides: [],
   failingUserIDs: [],
   passingUserIDs: [],
-  environmentOverrides: [],
 }
 
 const setupMocks = () => {

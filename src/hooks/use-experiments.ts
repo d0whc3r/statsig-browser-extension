@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
@@ -39,11 +40,14 @@ const fetchExperimentsPage = async (page: number): Promise<PaginatedResponse<Exp
  *
  * @returns The Infinite React Query result containing the experiments pages
  */
-export const useExperiments = () =>
-  useInfiniteQuery({
+export const useExperiments = () => {
+  const { apiKey } = useSettingsStorage()
+
+  return useInfiniteQuery({
+    enabled: Boolean(apiKey),
     getNextPageParam: (lastPage: PaginatedResponse<Experiment>) => {
       if (!lastPage?.pagination) {
-        return undefined
+        return
       }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
@@ -54,3 +58,4 @@ export const useExperiments = () =>
     queryFn: ({ pageParam }) => fetchExperimentsPage(pageParam),
     queryKey: ['experiments'],
   })
+}

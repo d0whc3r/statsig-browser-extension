@@ -7,12 +7,18 @@ interface ContextState {
   // Setters
   setCurrentLocalStorageValue: (value: string) => void
   setDetectedUser: (user: Record<string, unknown> | null) => void
+  reset: () => void
 }
 
 export const useContextStore = create<ContextState>((set) => ({
   currentLocalStorageValue: undefined,
   detectedUser: undefined,
 
+  reset: () =>
+    set(() => ({
+      currentLocalStorageValue: undefined,
+      detectedUser: undefined,
+    })),
   setCurrentLocalStorageValue: (value) => set(() => ({ currentLocalStorageValue: value })),
   setDetectedUser: (user) => set(() => ({ detectedUser: user })),
 }))

@@ -22,7 +22,7 @@ export const useFeatureGatesTableLogic = () => {
     isFetchingNextPage,
   } = useFeatureGates()
 
-  const featureGates = useMemo(() => data?.pages.flatMap((page) => page.data) || [], [data])
+  const featureGates = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
 
   const {
     filterValue,

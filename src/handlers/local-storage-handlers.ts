@@ -15,32 +15,34 @@ const executeStorageOp = async (
 ) => {
   // 1. Inject args into DOM (ISOLATED world) - Safe from CSP
   await chrome.scripting.executeScript({
-    target: { tabId },
+    args: [{ key, op, value }],
     func: (args) => {
       const el = document.createElement('div')
       el.id = '__statsig_action_args'
       el.hidden = true
       el.textContent = JSON.stringify(args)
-      document.body.appendChild(el)
+      document.body.append(el)
     },
-    args: [{ op, key, value }],
+    target: { tabId },
   })
 
   // 2. Execute external file (MAIN world) - Allowed by CSP (chrome-extension://...)
   // The file reads the args from DOM, executes logic, and returns result
   const result = await chrome.scripting.executeScript({
-    target: { tabId },
     files: ['storage-helper.js'],
+    target: { tabId },
     world: 'MAIN',
   })
 
   // 3. Cleanup DOM (ISOLATED world)
   await chrome.scripting.executeScript({
-    target: { tabId },
     func: () => {
-      const el = document.getElementById('__statsig_action_args')
-      if (el) el.remove()
+      const el = document.querySelector('#__statsig_action_args')
+      if (el) {
+        el.remove()
+      }
     },
+    target: { tabId },
   })
 
   return result[0]?.result

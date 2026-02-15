@@ -25,6 +25,7 @@ interface UIState {
   setUserDetailsSheetOpen: (isOpen: boolean) => void
   setAuditLogSheetOpen: (isOpen: boolean) => void
   setAuditLogDetailSheetOpen: (isOpen: boolean) => void
+  reset: () => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -40,6 +41,20 @@ export const useUIStore = create<UIState>((set) => ({
   isSettingsSheetOpen: false,
   isUserDetailsSheetOpen: false,
 
+  reset: () =>
+    set(() => ({
+      currentAuditLogId: undefined,
+      currentItemId: undefined,
+      currentItemType: undefined,
+      isAuditLogDetailSheetOpen: false,
+      isAuditLogSheetOpen: false,
+      isAuthModalOpen: false,
+      isItemSheetOpen: false,
+      isManageExperimentModalOpen: false,
+      isManageGateOverridesModalOpen: false,
+      isSettingsSheetOpen: false,
+      isUserDetailsSheetOpen: false,
+    })),
   setAuditLogDetailSheetOpen: (isOpen) => set(() => ({ isAuditLogDetailSheetOpen: isOpen })),
   setAuditLogSheetOpen: (isOpen) => set(() => ({ isAuditLogSheetOpen: isOpen })),
   setAuthModalOpen: (isOpen) => set(() => ({ isAuthModalOpen: isOpen })),

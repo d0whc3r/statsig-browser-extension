@@ -8,15 +8,26 @@ import { MainTabs } from '@/src/components/layout/MainTabs'
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { queryClient } from '@/src/lib/query-client'
 import { useContextStore } from '@/src/store/use-context-store'
+import { useSettingsStore } from '@/src/store/use-settings-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 // eslint-disable-next-line import/no-unassigned-import
 import '@/src/styles/globals.css'
 
 export function AppContent() {
-  const { setAuthModalOpen, setItemSheetOpen, setCurrentItemId } = useUIStore((state) => state)
-  const { setDetectedUser } = useContextStore((state) => state)
+  const setAuthModalOpen = useUIStore((state) => state.setAuthModalOpen)
+  const setItemSheetOpen = useUIStore((state) => state.setItemSheetOpen)
+  const setCurrentItemId = useUIStore((state) => state.setCurrentItemId)
+  const setDetectedUser = useContextStore((state) => state.setDetectedUser)
+  const resetUIStore = useUIStore((state) => state.reset)
+  const resetContextStore = useContextStore((state) => state.reset)
 
-  const { apiKey, setApiKey, isApiKeyLoading } = useSettingsStorage()
+  const { apiKey, isApiKeyLoading, reset: resetSettings } = useSettingsStorage()
+  const initializeSettings = useSettingsStore((state) => state.initialize)
+
+  useEffect(() => {
+    initializeSettings()
+  }, [initializeSettings])
+
   const [activeTab, setActiveTab] = useState('experiments')
 
   useEffect(() => {
@@ -72,12 +83,21 @@ export function AppContent() {
   )
 
   const handleLogout = useCallback(() => {
-    setApiKey('')
-    setAuthModalOpen(true)
-    // Query cache invalidation is handled by queryClient if needed,
-    // But clearing API key usually stops new fetches.
+    // 1. Reset Settings (clears API Key)
+    resetSettings()
+
+    // 2. Clear Query Cache (removes all fetched data)
     queryClient.clear()
-  }, [setApiKey, setAuthModalOpen])
+
+    // 3. Reset UI State (closes modals, sheets, etc.)
+    resetUIStore()
+
+    // 4. Reset Context State (clears detected user, etc.)
+    resetContextStore()
+
+    // 5. Open Auth Modal
+    setAuthModalOpen(true)
+  }, [resetSettings, resetUIStore, resetContextStore, setAuthModalOpen])
 
   return (
     <div className="w-[780px] h-[600px] flex flex-col bg-background text-foreground overflow-hidden">

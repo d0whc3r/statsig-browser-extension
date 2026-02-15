@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 
 import { ExperimentGroups } from '@/src/components/ExperimentGroups'
-import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
+import { OverridesSection } from '@/src/components/modals/manage-experiment/OverridesSection'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useOverrides } from '@/src/hooks/use-overrides'
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
@@ -78,13 +78,7 @@ export const ExperimentSheet = () => {
     [experiment],
   )
 
-  const overridesContent = useMemo(
-    () =>
-      overridesData && experiment ? (
-        <ExperimentOverrides overrides={overridesData.userIDOverrides} groups={experiment.groups} />
-      ) : null,
-    [overridesData, experiment],
-  )
+  const overridesContent = useMemo(() => <OverridesSection />, [])
 
   return (
     <CommonSheet type="experiment">

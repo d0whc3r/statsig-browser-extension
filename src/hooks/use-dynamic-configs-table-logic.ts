@@ -22,7 +22,10 @@ export const useDynamicConfigsTableLogic = () => {
     isFetchingNextPage,
   } = useDynamicConfigs()
 
-  const dynamicConfigs = useMemo(() => data?.pages.flatMap((page) => page.data) || [], [data])
+  const dynamicConfigs = useMemo(
+    () => data?.pages.flatMap((page) => page?.data ?? []) || [],
+    [data],
+  )
 
   const {
     filterValue,

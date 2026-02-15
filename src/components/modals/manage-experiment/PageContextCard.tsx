@@ -1,8 +1,8 @@
-import { memo, useCallback, useState } from 'react'
+import { memo, useState } from 'react'
 
-import type { Group } from '@/src/types/statsig'
+import type { Experiment, Group } from '@/src/types/statsig'
 
-import { SharedPageContextCard } from '@/src/components/common/SharedPageContextCard'
+import { BaseOverrideContextCard } from '@/src/components/common/BaseOverrideContextCard'
 import { Button } from '@/src/components/ui/button'
 import {
   Select,
@@ -15,11 +15,21 @@ import {
 interface ExperimentPageContextCardProps {
   detectedUser: Record<string, unknown> | undefined
   detectedUserId: string
+  detectedUserOverrides?: {
+    environment: string | null
+    groupID: string
+  }[]
   isDetectedUserOverridden: boolean
   canEdit: boolean
   isPending: boolean
   groups: Group[]
-  onAddOverride: (userId: string, groupId: string) => void
+  onAddOverride: (
+    userId: string,
+    groupId: string,
+    environment?: string | null,
+    idType?: string | null,
+  ) => void
+  experiment?: Experiment
 }
 
 export const PageContextCard = memo(
@@ -27,54 +37,67 @@ export const PageContextCard = memo(
     detectedUser,
     detectedUserId,
     isDetectedUserOverridden,
+    detectedUserOverrides = [],
     canEdit,
     isPending,
     groups,
     onAddOverride,
+    experiment,
   }: ExperimentPageContextCardProps) => {
     const [selectedGroupId, setSelectedGroupId] = useState('')
 
-    const handleOverride = useCallback(() => {
-      if (detectedUserId && selectedGroupId) {
-        onAddOverride(detectedUserId, selectedGroupId)
-      }
-    }, [detectedUserId, selectedGroupId, onAddOverride])
+    const idType = experiment?.idType || 'userID'
 
     return (
-      <SharedPageContextCard
+      <BaseOverrideContextCard
         detectedUser={detectedUser}
         detectedUserId={detectedUserId}
         isDetectedUserOverridden={isDetectedUserOverridden}
+        detectedUserOverrides={detectedUserOverrides}
+        canEdit={canEdit}
+        idType={idType}
       >
-        {canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
-          <div className="mt-3 flex items-center gap-2">
-            <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
-              <SelectTrigger
-                className="h-8 w-[140px] bg-background"
-                aria-label="Select group for detected user"
+        {(currentEnvValue) => {
+          const isCurrentEnvOverridden = detectedUserOverrides.some(
+            (override) => override.environment === currentEnvValue,
+          )
+
+          const handleOverride = () => {
+            if (detectedUserId && selectedGroupId) {
+              onAddOverride(detectedUserId, selectedGroupId, currentEnvValue, idType)
+            }
+          }
+
+          return (
+            <div className="flex items-center gap-2">
+              <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+                <SelectTrigger
+                  className="h-8 w-full bg-background"
+                  aria-label="Select group for detected user"
+                >
+                  <SelectValue placeholder="Select group" />
+                </SelectTrigger>
+                <SelectContent>
+                  {groups.map((group) => (
+                    <SelectItem key={group.id} value={group.id}>
+                      {group.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
+                onClick={handleOverride}
+                disabled={isPending || !selectedGroupId || isCurrentEnvOverridden}
               >
-                <SelectValue placeholder="Select group" />
-              </SelectTrigger>
-              <SelectContent>
-                {groups.map((group) => (
-                  <SelectItem key={group.id} value={group.id}>
-                    {group.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
-              onClick={handleOverride}
-              disabled={isPending || !selectedGroupId}
-            >
-              Override
-            </Button>
-          </div>
-        )}
-      </SharedPageContextCard>
+                {isCurrentEnvOverridden ? 'Overridden' : 'Override'}
+              </Button>
+            </div>
+          )
+        }}
+      </BaseOverrideContextCard>
     )
   },
 )

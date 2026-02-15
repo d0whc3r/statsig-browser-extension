@@ -20,7 +20,7 @@ export const SharedPageContextCard = memo(
     children,
   }: SharedPageContextCardProps) => (
     <Card className="bg-muted/30">
-      <CardContent className="pt-6">
+      <CardContent>
         <div className="flex items-start gap-4">
           <div className="mt-1">
             {detectedUser ? (

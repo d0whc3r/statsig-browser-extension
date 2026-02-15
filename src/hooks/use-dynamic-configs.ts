@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
@@ -39,11 +40,14 @@ const fetchDynamicConfigsPage = async (page: number): Promise<PaginatedResponse<
  *
  * @returns The Infinite React Query result containing the dynamic configs pages
  */
-export const useDynamicConfigs = () =>
-  useInfiniteQuery({
+export const useDynamicConfigs = () => {
+  const { apiKey } = useSettingsStorage()
+
+  return useInfiniteQuery({
+    enabled: Boolean(apiKey),
     getNextPageParam: (lastPage: PaginatedResponse<DynamicConfig>) => {
       if (!lastPage?.pagination) {
-        return undefined
+        return
       }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
@@ -54,3 +58,4 @@ export const useDynamicConfigs = () =>
     queryFn: ({ pageParam }) => fetchDynamicConfigsPage(pageParam),
     queryKey: ['dynamic-configs'],
   })
+}

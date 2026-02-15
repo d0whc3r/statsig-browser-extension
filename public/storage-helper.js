@@ -28,10 +28,10 @@
       for (let i = 0; i < ca.length; i++) {
         let c = ca[i]
         while (c.charAt(0) === ' ') {
-          c = c.slice(1, c.length)
+          c = c.slice(1)
         }
         if (c.indexOf(nameEQ) === 0) {
-          return c.slice(nameEQ.length, c.length)
+          return c.slice(nameEQ.length)
         }
       }
       return null

@@ -43,6 +43,8 @@ export const OverridesList = ({
                 <TableHeader>
                   <TableRow>
                     <TableHead>IDs</TableHead>
+                    <TableHead>Environment</TableHead>
+                    <TableHead>ID Type</TableHead>
                     <TableHead>Group</TableHead>
                     {canEdit && <TableHead className="w-[50px]" />}
                   </TableRow>

@@ -27,6 +27,7 @@ export interface Experiment {
     ownerName: string
   }
   isStale?: boolean
+  idType?: string
 }
 
 export interface ExperimentOverride {
@@ -38,6 +39,8 @@ export interface ExperimentOverride {
 export interface UserIDOverride {
   ids: string[]
   groupID: string
+  environment?: string
+  unitID?: string
 }
 
 export interface ExperimentOverridesResponse {

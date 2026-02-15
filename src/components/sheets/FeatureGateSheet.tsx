@@ -37,7 +37,10 @@ export function FeatureGateSheet() {
     [currentItemId],
   )
 
-  const overridesContent = useMemo(() => <GateOverridesSection />, [])
+  const overridesContent = useMemo(
+    () => <GateOverridesSection featureGate={featureGate} />,
+    [featureGate],
+  )
 
   return (
     <CommonSheet type="feature_gate">

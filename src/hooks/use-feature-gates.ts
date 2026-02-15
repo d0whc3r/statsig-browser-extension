@@ -1,5 +1,6 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
@@ -37,11 +38,14 @@ const fetchFeatureGatesPage = async (page: number): Promise<PaginatedResponse<Fe
  *
  * @returns The Infinite React Query result containing the feature gates pages
  */
-export const useFeatureGates = () =>
-  useInfiniteQuery({
+export const useFeatureGates = () => {
+  const { apiKey } = useSettingsStorage()
+
+  return useInfiniteQuery({
+    enabled: Boolean(apiKey),
     getNextPageParam: (lastPage: PaginatedResponse<FeatureGate>) => {
       if (!lastPage?.pagination) {
-        return undefined
+        return
       }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
@@ -52,3 +56,4 @@ export const useFeatureGates = () =>
     queryFn: ({ pageParam }) => fetchFeatureGatesPage(pageParam),
     queryKey: ['feature-gates'],
   })
+}

@@ -15,10 +15,6 @@ type View = 'form' | 'table'
 export type OverrideType = 'user' | 'gate' | 'segment'
 
 const useOverridesFormState = (onSuccess: () => void, currentItemId: string | undefined) => {
-  const [selectedGroup, setSelectedGroup] = useState('')
-  const [overrideType, setOverrideType] = useState<OverrideType>('user')
-  const [overrideValue, setOverrideValue] = useState('')
-
   const {
     addMutation: mutate,
     deleteMutation,
@@ -28,27 +24,20 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
     currentItemId: currentItemId ?? '',
     onAddSuccess: () => {
       onSuccess()
-      setOverrideValue('')
-      setSelectedGroup('')
-      setOverrideType('user')
     },
   })
 
   const addOverride = useCallback(
-    (userId?: string, groupId?: string) => {
+    (id: string, groupName: string, environment: string | null, idType: string | null) => {
       if (!currentItemId) {
         return
       }
 
-      let override: AnyOverride
-
-      const id = userId || overrideValue
-      const group = groupId || selectedGroup
-
-      if (overrideType === 'user' || userId) {
-        override = { groupID: group, ids: [id] }
-      } else {
-        override = { groupID: group, name: id, type: overrideType }
+      const override: AnyOverride = {
+        environment: environment || undefined,
+        groupID: groupName,
+        ids: [id],
+        unitID: idType || undefined,
       }
 
       mutate({
@@ -56,7 +45,7 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
         override,
       })
     },
-    [currentItemId, mutate, selectedGroup, overrideValue, overrideType],
+    [currentItemId, mutate],
   )
 
   const deleteOverride = useCallback(
@@ -76,12 +65,6 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
     addOverride,
     deleteOverride,
     isPending: isAdding || isDeleting,
-    overrideType,
-    overrideValue,
-    selectedGroup,
-    setOverrideType,
-    setOverrideValue,
-    setSelectedGroup,
   }
 }
 
@@ -100,37 +83,63 @@ export const useOverridesSectionLogic = () => {
 
   const { data: detectedUser } = useUserDetails()
 
-  const detectedUserId = (detectedUser?.userID || (detectedUser as Record<string, unknown>)?.id) as
-    | string
-    | undefined
+  const detectedUserId = useMemo(() => {
+    if (!detectedUser) {
+      return
+    }
+
+    const idType = experiment?.idType || 'userID'
+
+    if (idType === 'userID') {
+      return (detectedUser.userID || (detectedUser as Record<string, unknown>).id) as
+        | string
+        | undefined
+    }
+
+    // Check for customIDs
+    const customIDs = detectedUser.customIDs as Record<string, string> | undefined
+    if (customIDs && typeof customIDs === 'object' && idType in customIDs) {
+      return customIDs[idType]
+    }
+
+    // Check top level
+    if (idType in detectedUser) {
+      return (detectedUser as Record<string, unknown>)[idType] as string
+    }
+
+    return
+  }, [detectedUser, experiment?.idType])
 
   const { data: overridesData } = useOverrides(currentItemId)
 
-  const isDetectedUserOverridden = useMemo(() => {
+  const detectedUserOverrides = useMemo(() => {
     if (!detectedUserId || !overridesData) {
-      return false
+      return []
     }
-    return overridesData.userIDOverrides.some((o) => o.ids.includes(detectedUserId))
-  }, [detectedUserId, overridesData])
 
-  const {
-    addOverride,
-    deleteOverride,
-    isPending,
-    overrideValue,
-    selectedGroup,
-    setOverrideValue,
-    setSelectedGroup,
-    overrideType,
-    setOverrideType,
-  } = useOverridesFormState(() => setView('table'), currentItemId)
+    const currentIdType = experiment?.idType || 'userID'
+
+    return overridesData.userIDOverrides
+      .filter((o) => {
+        const hasId = o.ids.includes(detectedUserId)
+        const overrideIdType = o.unitID || 'userID'
+        return hasId && overrideIdType === currentIdType
+      })
+      .map((o) => ({
+        environment: o.environment || null,
+        groupID: o.groupID,
+      }))
+  }, [detectedUserId, overridesData, experiment?.idType])
+
+  const isDetectedUserOverridden = detectedUserOverrides.length > 0
+
+  const { addOverride, deleteOverride, isPending } = useOverridesFormState(
+    () => setView('table'),
+    currentItemId,
+  )
 
   const handleCreateOverrideClick = useCallback(() => setView('form'), [])
   const handleBackClick = useCallback(() => setView('table'), [])
-  const handleOverrideValueChange = useCallback(
-    (event: React.ChangeEvent<HTMLInputElement>) => setOverrideValue(event.target.value),
-    [setOverrideValue],
-  )
 
   return {
     addOverride,
@@ -138,20 +147,15 @@ export const useOverridesSectionLogic = () => {
     deleteOverride,
     detectedUser,
     detectedUserId,
+    detectedUserOverrides, // Added this
+    experiment, // Added this
     featureGates,
     groups,
     handleBackClick,
     handleCreateOverrideClick,
-    handleOverrideValueChange,
     isDetectedUserOverridden,
     isPending,
-    overrideType,
-    overrideValue,
     overridesData,
-    selectedGroup,
-    setOverrideType,
-    setOverrideValue,
-    setSelectedGroup,
     typeApiKey,
     view,
   }
