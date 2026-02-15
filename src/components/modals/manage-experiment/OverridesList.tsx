@@ -1,18 +1,29 @@
+import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { OverridesTable } from '@/src/components/tables/OverridesTable'
-import { Button } from '@/src/components/ui/button'
 
 interface OverridesListProps {
   typeApiKey: string
   onCreateOverrideClick: () => void
+  overridesData:
+    | {
+        userIDOverrides: any[]
+        overrides: any[]
+      }
+    | undefined
+  currentItemId: string | undefined
 }
 
-export const OverridesList = ({ typeApiKey, onCreateOverrideClick }: OverridesListProps) => (
-  <>
-    <OverridesTable />
-    {typeApiKey === 'write-key' && (
-      <Button className="w-full" onClick={onCreateOverrideClick}>
-        Create override
-      </Button>
-    )}
-  </>
+export const OverridesList = ({
+  typeApiKey,
+  onCreateOverrideClick,
+  overridesData,
+  currentItemId,
+}: OverridesListProps) => (
+  <SharedOverridesList onAddManual={onCreateOverrideClick} canEdit={typeApiKey === 'write-key'}>
+    <OverridesTable
+      overridesData={overridesData}
+      currentItemId={currentItemId}
+      typeApiKey={typeApiKey}
+    />
+  </SharedOverridesList>
 )

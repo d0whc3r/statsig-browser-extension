@@ -1,7 +1,6 @@
-import { Plus } from 'lucide-react'
 import { memo } from 'react'
 
-import { Button } from '@/src/components/ui/button'
+import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import {
   Table,
@@ -26,17 +25,7 @@ interface OverridesListProps {
 
 export const OverridesList = memo(
   ({ allOverrides, canEdit, isPending, onDeleteOverride, onSwitchToForm }: OverridesListProps) => (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-sm font-medium">Active Overrides</h3>
-        {canEdit && (
-          <Button size="sm" onClick={onSwitchToForm}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Manual
-          </Button>
-        )}
-      </div>
-
+    <SharedOverridesList onAddManual={onSwitchToForm} canEdit={canEdit}>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -67,7 +56,7 @@ export const OverridesList = memo(
           </TableBody>
         </Table>
       </div>
-    </div>
+    </SharedOverridesList>
   ),
 )
 

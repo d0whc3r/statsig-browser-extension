@@ -113,6 +113,7 @@ export const useOverridesSectionLogic = () => {
 
   return {
     addOverride,
+    currentItemId,
     detectedUser,
     detectedUserId,
     featureGates,
@@ -122,6 +123,7 @@ export const useOverridesSectionLogic = () => {
     handleOverrideValueChange,
     isDetectedUserOverridden,
     isPending,
+    overridesData,
     overrideType,
     overrideValue,
     selectedGroup,

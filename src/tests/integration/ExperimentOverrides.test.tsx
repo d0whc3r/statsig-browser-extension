@@ -167,7 +167,7 @@ describe('Experiment Overrides Flow', () => {
     await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Create override
-    const createBtn = screen.getByRole('button', { name: /Create override/i })
+    const createBtn = screen.getByRole('button', { name: /Add Manual/i })
     await userEvent.click(createBtn)
 
     // Check if form is displayed
@@ -223,7 +223,7 @@ describe('Experiment Overrides Flow', () => {
     await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Create override
-    await userEvent.click(screen.getByRole('button', { name: /Create override/i }))
+    await userEvent.click(screen.getByRole('button', { name: /Add Manual/i }))
 
     // Change Type to Gate
     const typeSelect = screen.getByRole('combobox', { name: 'Override Type' })

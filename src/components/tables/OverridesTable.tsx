@@ -3,18 +3,22 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
 import { deleteOverride } from '@/src/handlers/delete-override'
-import { useLocalStorage } from '@/src/hooks/use-local-storage'
-import { useOverrides } from '@/src/hooks/use-overrides'
-import { STORAGE_KEYS } from '@/src/lib/storage-keys'
-import { useUIStore } from '@/src/store/use-ui-store'
 
 import { ExperimentOverrideRow } from './ExperimentOverrideRow'
 import { OverrideRow } from './OverrideRow'
 
-export function OverridesTable() {
-  const [typeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'write-key')
-  const { currentItemId } = useUIStore((state) => state)
-  const { data: overridesData } = useOverrides(currentItemId)
+interface OverridesTableProps {
+  overridesData:
+    | {
+        userIDOverrides: any[]
+        overrides: any[]
+      }
+    | undefined
+  currentItemId: string | undefined
+  typeApiKey: string
+}
+
+export function OverridesTable({ overridesData, currentItemId, typeApiKey }: OverridesTableProps) {
   const queryClient = useQueryClient()
 
   const { mutate: deleteMutation } = useMutation({
@@ -28,7 +32,11 @@ export function OverridesTable() {
     !overridesData ||
     (overridesData.userIDOverrides.length === 0 && overridesData.overrides.length === 0)
   ) {
-    return <GeneralEmptyState variant="override" entityName="item" />
+    return (
+      <div className="rounded-md border p-8 text-center">
+        <GeneralEmptyState variant="override" entityName="item" />
+      </div>
+    )
   }
 
   return (

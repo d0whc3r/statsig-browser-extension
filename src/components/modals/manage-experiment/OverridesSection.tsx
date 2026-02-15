@@ -7,6 +7,7 @@ import { OverridesList } from './OverridesList'
 export const OverridesSection = () => {
   const {
     addOverride,
+    currentItemId,
     detectedUser,
     detectedUserId,
     groups,
@@ -15,6 +16,7 @@ export const OverridesSection = () => {
     handleOverrideValueChange,
     isDetectedUserOverridden,
     isPending,
+    overridesData,
     overrideValue,
     selectedGroup,
     setSelectedGroup,
@@ -42,6 +44,8 @@ export const OverridesSection = () => {
           <OverridesList
             typeApiKey={typeApiKey}
             onCreateOverrideClick={handleCreateOverrideClick}
+            overridesData={overridesData}
+            currentItemId={currentItemId}
           />
         </>
       ) : (
@@ -53,7 +57,7 @@ export const OverridesSection = () => {
           onOverrideValueChange={handleOverrideValueChange}
           setOverrideValue={setOverrideValue}
           onBackClick={handleBackClick}
-          onAddOverride={addOverride}
+          onAddOverride={() => addOverride()}
           isPending={isPending}
           overrideType={overrideType}
           onOverrideTypeChange={setOverrideType}
