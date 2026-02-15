@@ -1,8 +1,8 @@
 import { Trash2 } from 'lucide-react'
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 
 import type { AnyOverride } from '@/src/handlers/delete-override'
-import type { ExperimentOverride } from '@/src/types/statsig'
+import type { ExperimentOverride, Group } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'
@@ -13,19 +13,25 @@ interface ExperimentOverrideRowProps {
   canEdit: boolean
   isPending?: boolean
   onDelete: (override: AnyOverride) => void
+  groups: Group[]
 }
 
 export const ExperimentOverrideRow = memo(
-  ({ override, canEdit, isPending, onDelete }: ExperimentOverrideRowProps) => {
+  ({ override, canEdit, isPending, onDelete, groups }: ExperimentOverrideRowProps) => {
     const handleDelete = useCallback(() => {
       onDelete(override)
     }, [onDelete, override])
+
+    const groupName = useMemo(
+      () => groups.find((g) => g.id === override.groupID)?.name || override.groupID,
+      [groups, override.groupID],
+    )
 
     return (
       <TableRow>
         <TableCell className="font-medium capitalize">{override.type}</TableCell>
         <TableCell>{override.name}</TableCell>
-        <TableCell>{override.groupID}</TableCell>
+        <TableCell>{groupName}</TableCell>
         {canEdit && (
           <TableCell>
             <Tooltip>

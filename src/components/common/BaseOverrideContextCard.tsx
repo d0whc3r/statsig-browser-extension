@@ -22,7 +22,7 @@ export interface BaseOverrideContextCardProps {
   children: (selectedEnvironment: string | null) => React.ReactNode
 }
 
-const ENVIRONMENTS = ['Development', 'Staging', 'Production']
+const ENVIRONMENTS = ['development', 'staging', 'production']
 
 export const BaseOverrideContextCard = memo(
   ({

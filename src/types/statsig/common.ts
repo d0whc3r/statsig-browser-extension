@@ -1,6 +1,7 @@
 export interface StatsigUser {
   name?: string
   userID?: string
+  stableID?: string
   statsigEnvironment?: {
     tier?: string
   }

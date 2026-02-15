@@ -21,7 +21,7 @@ interface UserDetailsContentProps {
   onRefetch: () => void
 }
 
-const CopyableValue = ({ value, label }: { value: string; label?: string }) => {
+const CopyableValue = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = useCallback(
@@ -84,7 +84,7 @@ const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
             <User className="h-3.5 w-3.5 shrink-0" />
             <span className="w-16 text-xs font-medium uppercase tracking-wider">User ID</span>
             {userDetails.userID ? (
-              <CopyableValue value={userDetails.userID} label="User ID" />
+              <CopyableValue value={userDetails.userID} />
             ) : (
               <span className="font-mono text-muted-foreground/50">No User ID</span>
             )}
@@ -94,7 +94,7 @@ const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
             <Lock className="h-3.5 w-3.5 shrink-0" />
             <span className="w-16 text-xs font-medium uppercase tracking-wider">Stable ID</span>
             {userDetails.stableID ? (
-              <CopyableValue value={userDetails.stableID} label="Stable ID" />
+              <CopyableValue value={userDetails.stableID} />
             ) : (
               <span className="font-mono text-muted-foreground/50">No Stable ID</span>
             )}

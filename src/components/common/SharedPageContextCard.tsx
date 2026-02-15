@@ -30,7 +30,6 @@ export const SharedPageContextCard = memo(
             )}
           </div>
           <div className="flex-1 space-y-1">
-            <h4 className="text-sm font-medium">Page Context</h4>
             {detectedUser ? (
               <div className="text-sm text-muted-foreground">
                 <p>Statsig User detected on current page.</p>

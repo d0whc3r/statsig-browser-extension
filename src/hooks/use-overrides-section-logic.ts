@@ -28,16 +28,9 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
   })
 
   const addOverride = useCallback(
-    (id: string, groupName: string, environment: string | null, idType: string | null) => {
+    (override: AnyOverride) => {
       if (!currentItemId) {
         return
-      }
-
-      const override: AnyOverride = {
-        environment: environment || undefined,
-        groupID: groupName,
-        ids: [id],
-        unitID: idType || undefined,
       }
 
       mutate({
@@ -122,7 +115,7 @@ export const useOverridesSectionLogic = () => {
     return overridesData.userIDOverrides
       .filter((o) => {
         const hasId = o.ids.includes(detectedUserId)
-        const overrideIdType = o.unitID || 'userID'
+        const overrideIdType = o.unitType || 'userID'
         return hasId && overrideIdType === currentIdType
       })
       .map((o) => ({

@@ -96,9 +96,9 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="All Environments">All Environments</SelectItem>
-              <SelectItem value="Production">Production</SelectItem>
-              <SelectItem value="Staging">Staging</SelectItem>
-              <SelectItem value="Development">Development</SelectItem>
+              <SelectItem value="production">Production</SelectItem>
+              <SelectItem value="staging">Staging</SelectItem>
+              <SelectItem value="development">Development</SelectItem>
             </SelectContent>
           </Select>
         </div>

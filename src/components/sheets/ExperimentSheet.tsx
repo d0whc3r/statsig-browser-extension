@@ -57,16 +57,8 @@ const useExperimentSheetState = () => {
 }
 
 export const ExperimentSheet = () => {
-  const {
-    currentItemId,
-    error,
-    experiment,
-    handleClose,
-    handleManage,
-    isLoading,
-    overridesData,
-    typeApiKey,
-  } = useExperimentSheetState()
+  const { currentItemId, error, experiment, handleClose, handleManage, isLoading, typeApiKey } =
+    useExperimentSheetState()
 
   const detailsContent = useMemo(
     () => <ExperimentSheetDetails isLoading={isLoading} error={error} experiment={experiment} />,

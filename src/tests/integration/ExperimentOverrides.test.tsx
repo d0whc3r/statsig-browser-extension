@@ -209,9 +209,66 @@ describe('Experiment Overrides Flow', () => {
         expect.objectContaining({
           userIDOverrides: [
             expect.objectContaining({
+              environment: 'Production',
               groupID: 'Test',
               ids: ['new_user_456'],
-              // Type: 'user', // Depending on implementation
+              unitType: 'userID',
+            }),
+          ],
+        }),
+      )
+    })
+  })
+
+  it('should allow creating a new gate override via modal', async () => {
+    setupMocks()
+    renderWithProviders(<AppContent />)
+
+    // Open experiment details
+    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
+    await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
+
+    // Open Manage Modal
+    await waitFor(() =>
+      expect(screen.getByRole('button', { name: /Manage experiment/i })).toBeInTheDocument(),
+    )
+    await userEvent.click(screen.getByRole('button', { name: /Manage experiment/i }))
+
+    // Switch to Overrides tab
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
+    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+
+    // Click Create override
+    const createBtn = screen.getByRole('button', { name: /Add Manual/i })
+    await userEvent.click(createBtn)
+
+    // Switch to Gate/Segment tab
+    await userEvent.click(screen.getByRole('tab', { name: /Gate\/Segment Override/i }))
+
+    // Fill Gate Name
+    const nameInput = screen.getByLabelText('Name')
+    await userEvent.type(nameInput, 'my_new_gate')
+
+    // Select Group
+    const groupSelect = screen.getByLabelText('Target Group')
+    await userEvent.click(groupSelect)
+    await screen.findByRole('option', { name: 'Control' })
+    await userEvent.click(screen.getByRole('option', { name: 'Control' }))
+
+    // Submit
+    const saveBtn = screen.getByRole('button', { name: /Add Override/i })
+    await userEvent.click(saveBtn)
+
+    // Verify API call
+    await waitFor(() => {
+      expect(api.post).toHaveBeenCalledWith(
+        '/experiments/exp_1/overrides',
+        expect.objectContaining({
+          overrides: [
+            expect.objectContaining({
+              groupID: 'Control',
+              name: 'my_new_gate',
+              type: 'gate',
             }),
           ],
         }),

@@ -79,7 +79,7 @@ export const PageContextCard = memo(
                 </SelectTrigger>
                 <SelectContent>
                   {groups.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
+                    <SelectItem key={group.name} value={group.name}>
                       {group.name}
                     </SelectItem>
                   ))}

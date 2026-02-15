@@ -121,58 +121,66 @@ describe('Fix Validation Tests', () => {
   })
 
   it('should NOT submit experiment override if group ID does not exist', async () => {
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />, {
+      container: document.body,
+    })
 
     // Open experiment sheet
     const expRow = await screen.findByText('Validation Experiment')
-    await userEvent.click(expRow)
+    await user.click(expRow)
 
     // Wait for sheet to open by finding "Details" tab
     await screen.findByRole('tab', { name: 'Details' })
 
     // Click Overrides tab
-    await userEvent.click(await screen.findByRole('tab', { name: 'Overrides' }))
+    await user.click(await screen.findByRole('tab', { name: 'Overrides' }))
 
     // Wait for overrides section
     await screen.findByText('Experiment overrides')
 
     // Find input fields
-    const userIdInput = screen.getByPlaceholderText('User ID')
+    const userIdInput = screen.getByLabelText('ID Value')
 
     const selectTrigger = screen.getByRole('combobox')
-    await userEvent.click(selectTrigger)
+    await user.click(selectTrigger)
 
     // Verify valid groups are present
     expect(screen.getByText('Control')).toBeInTheDocument()
     expect(screen.getByText('Test')).toBeInTheDocument()
 
     // Select a valid group
-    await userEvent.click(screen.getByText('Test'))
-    await userEvent.type(userIdInput, 'test_user_1')
+    await user.click(screen.getByText('Test'))
+    await user.type(userIdInput, 'test_user_1')
 
     const addButton = screen.getByLabelText('Add Override')
-    await userEvent.click(addButton)
+    await user.click(addButton)
 
     // Verify api.post WAS called for valid group
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledTimes(1)
+      expect(api.post).toHaveBeenCalledOnce()
     })
   })
 
   it('should send PARTIAL payload for gate overrides', async () => {
     // Switch to gates tab
-    renderWithProviders(<AppContent />)
-    await userEvent.click(screen.getByText('Feature Gates'))
+    const { user } = renderWithProviders(<AppContent />, {
+      container: document.body,
+    })
+
+    const gatesTab = screen.getByText('Feature Gates')
+    await user.click(gatesTab)
 
     // Open gate sheet
-    const gateRow = await screen.findByText('Payload Gate')
-    await userEvent.click(gateRow)
+    await waitFor(async () => {
+      const gateRow = await screen.findByText('Payload Gate')
+      await user.click(gateRow)
+    })
 
     // Wait for sheet to open by finding "Details" tab
     await screen.findByRole('tab', { name: 'Details' })
 
     // Click Overrides tab
-    await userEvent.click(await screen.findByRole('tab', { name: 'Overrides' }))
+    await user.click(await screen.findByRole('tab', { name: 'Overrides' }))
 
     // Wait for overrides section
     // For gates, the header is "Active Overrides"
@@ -180,20 +188,20 @@ describe('Fix Validation Tests', () => {
 
     // Click "Add Manual" to open form
     const addManualBtn = screen.getByRole('button', { name: /Add Manual/i })
-    await userEvent.click(addManualBtn)
+    await user.click(addManualBtn)
 
     // Fill form
     // Default is PASS, Production, UserID
-    const userIdInput = screen.getByPlaceholderText('Enter ID')
-    await userEvent.type(userIdInput, 'gate_user_1')
+    const userIdInput = screen.getByLabelText('ID Value')
+    await user.type(userIdInput, 'gate_user_1')
 
     // The button says "Add PASS Override"
     const saveButton = screen.getByRole('button', { name: /Add PASS Override/i })
-    await userEvent.click(saveButton)
+    await user.click(saveButton)
 
     // Verify poster was called with CORRECT payload
     await waitFor(() => {
-      expect(poster).toHaveBeenCalledTimes(1)
+      expect(poster).toHaveBeenCalledOnce()
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_payload/overrides',
         expect.objectContaining({

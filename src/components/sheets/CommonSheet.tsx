@@ -47,7 +47,7 @@ export function SheetTabs({
   return (
     <div className="flex-1 overflow-hidden flex flex-col relative">
       <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
-        <div className="px-6 pt-2 border-b shrink-0">
+        <div className="px-6 shrink-0">
           <TabsList className={`grid w-full ${gridCols}`}>
             <TabsTrigger value="details">{details}</TabsTrigger>
             <TabsTrigger value="rules">{rules}</TabsTrigger>

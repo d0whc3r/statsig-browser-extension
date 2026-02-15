@@ -40,7 +40,7 @@ export const OverridesList = memo(
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>User ID</TableHead>
+              <TableHead>ID</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Environment</TableHead>
               <TableHead>Result</TableHead>

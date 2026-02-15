@@ -32,8 +32,13 @@ export const OverridesSection = () => {
         canEdit={typeApiKey === 'write-key'}
         isPending={isPending}
         groups={groups}
-        onAddOverride={(id, groupName, env, idType) =>
-          addOverride(id, groupName, env || null, idType || null)
+        onAddOverride={(id, groupID, env, idType) =>
+          addOverride({
+            environment: env || undefined,
+            groupID,
+            ids: [id],
+            unitType: idType || undefined,
+          })
         }
         experiment={experiment}
       />
@@ -45,6 +50,7 @@ export const OverridesSection = () => {
           overridesData={overridesData}
           onDeleteOverride={deleteOverride}
           isPending={isPending}
+          groups={groups}
         />
       ) : (
         <AddOverrideForm

@@ -40,7 +40,7 @@ export interface UserIDOverride {
   ids: string[]
   groupID: string
   environment?: string
-  unitID?: string
+  unitType?: string
 }
 
 export interface ExperimentOverridesResponse {
