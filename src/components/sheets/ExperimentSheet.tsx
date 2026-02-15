@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 
+import { ExperimentGroups } from '@/src/components/ExperimentGroups'
 import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
-import { ExperimentRules } from '@/src/components/ExperimentRules'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
@@ -72,9 +72,9 @@ export const ExperimentSheet = () => {
     [isLoading, error, experiment],
   )
 
-  const rulesContent = useMemo(
-    () => (currentItemId ? <ExperimentRules experimentId={currentItemId} /> : null),
-    [currentItemId],
+  const groupsContent = useMemo(
+    () => (experiment ? <ExperimentGroups experiment={experiment} /> : null),
+    [experiment],
   )
 
   const overridesContent = useMemo(
@@ -97,8 +97,9 @@ export const ExperimentSheet = () => {
       />
       <SheetTabs
         detailsContent={detailsContent}
-        rulesContent={rulesContent}
+        rulesContent={groupsContent}
         overridesContent={overridesContent}
+        labels={{ rules: 'Groups' }}
       />
     </CommonSheet>
   )

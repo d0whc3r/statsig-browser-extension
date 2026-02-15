@@ -28,17 +28,29 @@ interface SheetTabsProps {
   detailsContent: ReactNode
   rulesContent: ReactNode
   overridesContent: ReactNode
+  labels?: {
+    details?: string
+    rules?: string
+    overrides?: string
+  }
 }
 
-export function SheetTabs({ detailsContent, rulesContent, overridesContent }: SheetTabsProps) {
+export function SheetTabs({
+  detailsContent,
+  rulesContent,
+  overridesContent,
+  labels = {},
+}: SheetTabsProps) {
+  const { details = 'Details', rules = 'Rules', overrides = 'Overrides' } = labels
+
   return (
     <div className="flex-1 overflow-hidden flex flex-col relative">
       <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
         <div className="px-6 pt-2 border-b shrink-0">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="rules">Rules</TabsTrigger>
-            <TabsTrigger value="overrides">Overrides</TabsTrigger>
+            <TabsTrigger value="details">{details}</TabsTrigger>
+            <TabsTrigger value="rules">{rules}</TabsTrigger>
+            <TabsTrigger value="overrides">{overrides}</TabsTrigger>
           </TabsList>
         </div>
 

@@ -1,12 +1,9 @@
+import type { UserIDOverride } from '@/src/types/statsig'
+
 import { api } from '../lib/fetcher'
 import { handleApiError } from '../lib/utils'
 
-export interface Override {
-  environment?: string
-  groupID: string
-  ids: string[]
-  passingPercentage?: number
-}
+export type Override = UserIDOverride
 
 interface CreateOverrideArgs {
   experimentId: string

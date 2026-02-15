@@ -1,18 +1,11 @@
 import { useQuery } from '@tanstack/react-query'
 
+import type { ExperimentOverridesResponse, UserIDOverride } from '@/src/types/statsig'
+
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
 
-export interface Override {
-  environment?: string
-  groupID: string
-  ids: string[]
-  passingPercentage: number
-}
-
-interface OverridesResponse {
-  userIDOverrides: Override[]
-}
+export type Override = UserIDOverride
 
 interface ApiResponse<DataType> {
   data: DataType
@@ -20,7 +13,7 @@ interface ApiResponse<DataType> {
 
 const fetchOverrides = async (experimentId: string): Promise<Override[]> => {
   try {
-    const result = await fetcher<ApiResponse<OverridesResponse>>(
+    const result = await fetcher<ApiResponse<ExperimentOverridesResponse>>(
       `/experiments/${experimentId}/overrides`,
     )
     return result.data.userIDOverrides.filter((override) => override.ids.length > 0)

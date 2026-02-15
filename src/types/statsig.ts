@@ -38,6 +38,40 @@ export interface Experiment {
   startTime: number
   status: string
   tags: string[]
+  targetingGateID?: string
+  primaryMetrics?: Metric[]
+  secondaryMetrics?: Metric[]
+  defaultConfidenceInterval?: string
+  bonferroniCorrection?: boolean
+  duration?: number
+  decisionReason?: string
+  owner?: {
+    ownerType: string
+    ownerName: string
+  }
+  isStale?: boolean
+}
+
+export interface Metric {
+  name: string
+  type: string
+  tags?: string[]
+}
+
+export interface ExperimentOverride {
+  type: 'gate' | 'segment'
+  name: string
+  groupID: string
+}
+
+export interface UserIDOverride {
+  ids: string[]
+  groupID: string
+}
+
+export interface ExperimentOverridesResponse {
+  overrides: ExperimentOverride[]
+  userIDOverrides: UserIDOverride[]
 }
 
 export interface DynamicConfig {

@@ -33,7 +33,6 @@ export function OverridesTable() {
           <TableRow>
             <TableHead>IDs</TableHead>
             <TableHead>Override</TableHead>
-            <TableHead>Environment</TableHead>
             {typeApiKey === 'write-key' && <TableHead className="w-[50px]" />}
           </TableRow>
         </TableHeader>

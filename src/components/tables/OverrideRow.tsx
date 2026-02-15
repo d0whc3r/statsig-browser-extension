@@ -29,7 +29,6 @@ export const OverrideRow = memo(
       <TableRow>
         <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
         <TableCell>{override.groupID}</TableCell>
-        <TableCell className="capitalize">{override.environment || 'All environments'}</TableCell>
         {typeApiKey === 'write-key' && (
           <TableCell>
             <Tooltip>
