@@ -11,10 +11,19 @@ interface DynamicConfigOverridesProps {
   configId: string
 }
 
+const EMPTY_OVERRIDES: never[] = []
+
 export const DynamicConfigOverrides = ({ configId }: DynamicConfigOverridesProps) => {
   const { data: overrides, isLoading, error } = useDynamicConfigOverrides(configId)
   const { addOverride, deleteOverride, isAdding, isDeleting } =
     useDynamicConfigOverrideMutations(configId)
+
+  const handleAdd = useCallback(
+    (userId: string, returnValue: Record<string, unknown>) => {
+      addOverride({ ids: [userId], returnValue })
+    },
+    [addOverride],
+  )
 
   if (isLoading) {
     return (
@@ -36,17 +45,14 @@ export const DynamicConfigOverrides = ({ configId }: DynamicConfigOverridesProps
 
   return (
     <div className="space-y-6">
-      <AddDynamicConfigOverride
-        isPending={isAdding}
-        onAdd={(userId, returnValue) => addOverride({ ids: [userId], returnValue })}
-      />
+      <AddDynamicConfigOverride isPending={isAdding} onAdd={handleAdd} />
 
       <div className="space-y-2">
         <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">
           Active Overrides
         </h3>
         <DynamicConfigOverridesList
-          overrides={overrides || []}
+          overrides={overrides || EMPTY_OVERRIDES}
           isDeleting={isDeleting}
           onDelete={deleteOverride}
         />

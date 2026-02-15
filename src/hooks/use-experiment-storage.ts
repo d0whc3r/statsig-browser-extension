@@ -9,7 +9,9 @@ import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useContextStore } from '@/src/store/use-context-store'
 
 export const useExperimentStorage = () => {
-  const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore((state) => state)
+  const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore(
+    (state) => state,
+  )
   const [storageKeyName] = useLocalStorage('statsig-local-storage-key', 'statsig_gate_overrides')
   const [storageType] = useLocalStorage<'cookie' | 'localStorage'>(
     'statsig-storage-type',

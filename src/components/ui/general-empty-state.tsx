@@ -1,4 +1,6 @@
-import { cva, type VariantProps } from 'class-variance-authority'
+import type { VariantProps } from 'class-variance-authority'
+
+import { cva } from 'class-variance-authority'
 import {
   AlertCircle,
   Database,
@@ -17,22 +19,22 @@ import { Empty, EmptyDescription, EmptyMedia, EmptyTitle } from '@/src/component
 import { cn } from '@/src/lib/utils'
 
 const generalEmptyStateVariants = cva('border-0 p-0', {
-  variants: {
-    variant: {
-      experiment: '',
-      feature_gate: '',
-      dynamic_config: '',
-      rule: '',
-      override: '',
-      group: '',
-      audit_log: '',
-      user: '',
-      search: '',
-      error: '',
-    },
-  },
   defaultVariants: {
     variant: 'experiment',
+  },
+  variants: {
+    variant: {
+      audit_log: '',
+      dynamic_config: '',
+      error: '',
+      experiment: '',
+      feature_gate: '',
+      group: '',
+      override: '',
+      rule: '',
+      search: '',
+      user: '',
+    },
   },
 })
 
@@ -47,55 +49,55 @@ interface EmptyStateConfig {
 }
 
 const EMPTY_STATE_CONFIGS: Record<GeneralEmptyStateVariant, EmptyStateConfig> = {
-  experiment: {
-    icon: FlaskConical,
-    title: 'No experiments found',
-    description: 'There are no experiments to display.',
-  },
-  feature_gate: {
-    icon: ToggleRight,
-    title: 'No feature gates found',
-    description: 'There are no feature gates to display.',
-  },
-  dynamic_config: {
-    icon: Settings,
-    title: 'No dynamic configs found',
-    description: 'There are no dynamic configs to display.',
-  },
-  rule: {
-    icon: List,
-    title: 'No rules configured',
-    description: 'No rules have been configured.',
-  },
-  override: {
-    icon: Database,
-    title: 'No overrides found',
-    description: 'There are no overrides configured.',
-  },
-  group: {
-    icon: Users,
-    title: 'No groups found',
-    description: 'There are no groups configured.',
-  },
   audit_log: {
+    description: 'There are no audit logs to display.',
     icon: FileText,
     title: 'No audit logs found',
-    description: 'There are no audit logs to display.',
   },
-  user: {
-    icon: User,
-    title: 'No User Found',
-    description: "We couldn't detect a Statsig user on this page.",
-  },
-  search: {
-    icon: Search,
-    title: 'No results found',
-    description: 'Try adjusting your filters to see more results.',
+  dynamic_config: {
+    description: 'There are no dynamic configs to display.',
+    icon: Settings,
+    title: 'No dynamic configs found',
   },
   error: {
+    description: 'An error occurred while loading data.',
     icon: AlertCircle,
     title: 'Something went wrong',
-    description: 'An error occurred while loading data.',
+  },
+  experiment: {
+    description: 'There are no experiments to display.',
+    icon: FlaskConical,
+    title: 'No experiments found',
+  },
+  feature_gate: {
+    description: 'There are no feature gates to display.',
+    icon: ToggleRight,
+    title: 'No feature gates found',
+  },
+  group: {
+    description: 'There are no groups configured.',
+    icon: Users,
+    title: 'No groups found',
+  },
+  override: {
+    description: 'There are no overrides configured.',
+    icon: Database,
+    title: 'No overrides found',
+  },
+  rule: {
+    description: 'No rules have been configured.',
+    icon: List,
+    title: 'No rules configured',
+  },
+  search: {
+    description: 'Try adjusting your filters to see more results.',
+    icon: Search,
+    title: 'No results found',
+  },
+  user: {
+    description: "We couldn't detect a Statsig user on this page.",
+    icon: User,
+    title: 'No User Found',
   },
 }
 
@@ -129,7 +131,7 @@ export function GeneralEmptyState({
       : config.description)
 
   return (
-    <Empty className={cn(generalEmptyStateVariants({ variant, className }))} {...props}>
+    <Empty className={cn(generalEmptyStateVariants({ className, variant }))} {...props}>
       <EmptyMedia>
         <Icon className="text-muted-foreground size-8" />
       </EmptyMedia>

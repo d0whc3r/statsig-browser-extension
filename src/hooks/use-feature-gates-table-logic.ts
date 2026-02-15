@@ -60,25 +60,14 @@ export const useFeatureGatesTableLogic = () => {
     return filteredGates.slice(start, end)
   }, [page, filteredGates, rowsPerPage])
 
-  const setCurrentFeatureGate = useCallback(
-    (featureGateId: string) => {
-      setCurrentItemId(featureGateId)
-      setCurrentItemType('feature_gate')
-      setItemSheetOpen(true)
-    },
-    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
-  )
-
-  const handleRetry = useCallback(() => {
-    refetch()
-  }, [refetch])
-
   return {
     error,
     featureGates,
     fetchNextPage,
     filterValue,
-    handleRetry,
+    handleRetry: useCallback(() => {
+      refetch()
+    }, [refetch]),
     handleSetFilterValue,
     handleSetStatusFilter,
     handleSetVisibleColumns,
@@ -93,7 +82,14 @@ export const useFeatureGatesTableLogic = () => {
     page,
     pages,
     rowsPerPage,
-    setCurrentFeatureGate,
+    setCurrentFeatureGate: useCallback(
+      (featureGateId: string) => {
+        setCurrentItemId(featureGateId)
+        setCurrentItemType('feature_gate')
+        setItemSheetOpen(true)
+      },
+      [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
+    ),
     setPage,
     statusFilter,
     visibleColumns,

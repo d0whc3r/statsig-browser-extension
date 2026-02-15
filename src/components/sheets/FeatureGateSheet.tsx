@@ -1,3 +1,5 @@
+import { useMemo } from 'react'
+
 import { FeatureGateRules } from '@/src/components/FeatureGateRules'
 import { GateOverridesSection } from '@/src/components/modals/manage-gate-overrides/GateOverridesSection'
 import { useFeatureGate } from '@/src/hooks/use-feature-gate'
@@ -25,6 +27,18 @@ export function FeatureGateSheet() {
   const isLoading = isLoadingGate || isLoadingOverrides
   const error = gateError || overridesError
 
+  const detailsContent = useMemo(
+    () => <FeatureGateSheetDetails isLoading={isLoading} error={error} featureGate={featureGate} />,
+    [isLoading, error, featureGate],
+  )
+
+  const rulesContent = useMemo(
+    () => (currentItemId ? <FeatureGateRules featureGateId={currentItemId} /> : null),
+    [currentItemId],
+  )
+
+  const overridesContent = useMemo(() => <GateOverridesSection />, [])
+
   return (
     <CommonSheet type="feature_gate">
       <FeatureGateSheetHeader
@@ -33,11 +47,9 @@ export function FeatureGateSheet() {
         currentItemId={currentItemId}
       />
       <SheetTabs
-        detailsContent={
-          <FeatureGateSheetDetails isLoading={isLoading} error={error} featureGate={featureGate} />
-        }
-        rulesContent={currentItemId && <FeatureGateRules featureGateId={currentItemId} />}
-        overridesContent={<GateOverridesSection />}
+        detailsContent={detailsContent}
+        rulesContent={rulesContent}
+        overridesContent={overridesContent}
       />
     </CommonSheet>
   )

@@ -16,10 +16,14 @@ export const AddDynamicConfigOverride = ({ isPending, onAdd }: AddDynamicConfigO
   const [jsonValue, setJsonValue] = useState('{}')
   const [jsonError, setJsonError] = useState<string | undefined>()
 
-  const handleJsonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setJsonValue(e.target.value)
+  const handleUserIdChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserId(event.target.value)
+  }, [])
+
+  const handleJsonChange = useCallback((event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setJsonValue(event.target.value)
     try {
-      JSON.parse(e.target.value)
+      JSON.parse(event.target.value)
       setJsonError(undefined)
     } catch {
       setJsonError('Invalid JSON')
@@ -43,12 +47,7 @@ export const AddDynamicConfigOverride = ({ isPending, onAdd }: AddDynamicConfigO
       <div className="grid gap-4">
         <div className="grid gap-2">
           <Label htmlFor="userId">User ID</Label>
-          <Input
-            id="userId"
-            placeholder="User ID"
-            value={userId}
-            onChange={(e) => setUserId(e.target.value)}
-          />
+          <Input id="userId" placeholder="User ID" value={userId} onChange={handleUserIdChange} />
         </div>
         <div className="grid gap-2">
           <Label htmlFor="returnValue">Return Value (JSON)</Label>

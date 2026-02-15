@@ -93,6 +93,9 @@ export const DynamicConfigRow = memo(
             )
           }
           default: {
+            if (typeof cellValue === 'object' && cellValue !== null) {
+              return <div>{JSON.stringify(cellValue)}</div>
+            }
             return <div>{String(cellValue)}</div>
           }
         }

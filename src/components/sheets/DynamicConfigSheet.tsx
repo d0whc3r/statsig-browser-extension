@@ -1,5 +1,5 @@
 import { Copy, ExternalLink } from 'lucide-react'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import type { DynamicConfig } from '@/src/types/statsig'
 
@@ -149,13 +149,26 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
 }
 
 export const DynamicConfigSheet = () => {
-  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore(
-    (state) => state,
-  )
+  const { currentItemId, isItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === 'dynamic_config'
 
   const { data: config, isLoading, error } = useDynamicConfig(isOpen ? currentItemId : undefined)
+
+  const detailsContent = useMemo(
+    () => <ConfigDetails isLoading={isLoading} error={error} config={config} />,
+    [isLoading, error, config],
+  )
+
+  const rulesContent = useMemo(
+    () => (config ? <DynamicConfigRules configId={config.id} /> : null),
+    [config],
+  )
+
+  const overridesContent = useMemo(
+    () => (config ? <DynamicConfigOverrides configId={config.id} /> : null),
+    [config],
+  )
 
   return (
     <CommonSheet type="dynamic_config">
@@ -166,9 +179,9 @@ export const DynamicConfigSheet = () => {
         </SheetDescription>
       </SheetHeader>
       <SheetTabs
-        detailsContent={<ConfigDetails isLoading={isLoading} error={error} config={config} />}
-        rulesContent={config && <DynamicConfigRules configId={config.id} />}
-        overridesContent={config && <DynamicConfigOverrides configId={config.id} />}
+        detailsContent={detailsContent}
+        rulesContent={rulesContent}
+        overridesContent={overridesContent}
       />
     </CommonSheet>
   )

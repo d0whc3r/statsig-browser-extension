@@ -59,24 +59,13 @@ export const useDynamicConfigsTableLogic = () => {
     return filteredItems.slice(start, end)
   }, [page, filteredItems, rowsPerPage])
 
-  const setCurrentConfig = useCallback(
-    (configId: string) => {
-      setCurrentItemId(configId)
-      setCurrentItemType('dynamic_config')
-      setItemSheetOpen(true)
-    },
-    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
-  )
-
-  const handleRefetch = useCallback(() => {
-    refetch()
-  }, [refetch])
-
   return {
     error,
     fetchNextPage,
     filterValue,
-    handleRefetch,
+    handleRefetch: useCallback(() => {
+      refetch()
+    }, [refetch]),
     handleStatusFilter: handleSetStatusFilter,
     handleVisibleColumns: handleSetVisibleColumns,
     hasNextPage,
@@ -90,7 +79,14 @@ export const useDynamicConfigsTableLogic = () => {
     page,
     pages,
     rowsPerPage,
-    setCurrentConfig,
+    setCurrentConfig: useCallback(
+      (configId: string) => {
+        setCurrentItemId(configId)
+        setCurrentItemType('dynamic_config')
+        setItemSheetOpen(true)
+      },
+      [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
+    ),
     setFilterValue: handleSetFilterValue,
     setPage,
     statusFilter,

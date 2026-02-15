@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { featureGateColumns } from '@/src/components/tables/data'
 import { FeatureGatesTableBody } from '@/src/components/tables/FeatureGatesTableBody'
@@ -32,6 +34,10 @@ export function FeatureGatesTable() {
     statusFilter,
     visibleColumns,
   } = useFeatureGatesTableLogic()
+
+  const handleFetchNextPage = useCallback(() => {
+    fetchNextPage()
+  }, [fetchNextPage])
 
   return (
     <div className="flex flex-col h-full">
@@ -88,7 +94,7 @@ export function FeatureGatesTable() {
           <Button
             variant="secondary"
             className="w-full"
-            onClick={() => fetchNextPage()}
+            onClick={handleFetchNextPage}
             disabled={isFetchingNextPage}
           >
             {isFetchingNextPage ? 'Loading more...' : 'Load More Feature Gates'}

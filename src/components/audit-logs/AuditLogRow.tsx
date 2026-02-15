@@ -114,7 +114,7 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
         </div>
 
         {/* Actions Menu */}
-        <div className="flex-shrink-0">
+        <div className="shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button

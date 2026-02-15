@@ -32,7 +32,7 @@ export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthChec
           <div className="flex items-center gap-2" key={healthCheck.name}>
             <div
               className={cn(
-                'h-2.5 w-2.5 rounded-full flex-shrink-0',
+                'h-2.5 w-2.5 rounded-full shrink-0',
                 healthCheck.status === 'PASSED' ? 'bg-green-500' : 'bg-muted-foreground/30',
               )}
             />

@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
@@ -32,6 +34,10 @@ export function DynamicConfigsTable() {
     totalConfigs,
     visibleColumns,
   } = useDynamicConfigsTableLogic()
+
+  const handleFetchNextPage = useCallback(() => {
+    fetchNextPage()
+  }, [fetchNextPage])
 
   return (
     <div className="flex flex-col h-full">
@@ -88,7 +94,7 @@ export function DynamicConfigsTable() {
           <Button
             variant="secondary"
             className="w-full"
-            onClick={() => fetchNextPage()}
+            onClick={handleFetchNextPage}
             disabled={isFetchingNextPage}
           >
             {isFetchingNextPage ? 'Loading more...' : 'Load More Dynamic Configs'}

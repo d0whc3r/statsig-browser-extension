@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
 import { ExperimentRules } from '@/src/components/ExperimentRules'
@@ -11,7 +11,7 @@ import { CommonSheet, SheetTabs } from './CommonSheet'
 import { ExperimentSheetDetails } from './ExperimentSheetDetails'
 import { ExperimentSheetHeader } from './ExperimentSheetHeader'
 
-export const ExperimentSheet = () => {
+const useExperimentSheetState = () => {
   const {
     currentItemId,
     isItemSheetOpen,
@@ -35,9 +35,6 @@ export const ExperimentSheet = () => {
     error: overridesError,
   } = useOverrides(isOpen ? currentItemId : undefined)
 
-  const isLoading = isLoadingExperiment || isLoadingOverrides
-  const error = experimentError || overridesError
-
   const handleClose = useCallback(() => {
     setItemSheetOpen(false)
   }, [setItemSheetOpen])
@@ -45,6 +42,48 @@ export const ExperimentSheet = () => {
   const handleManage = useCallback(() => {
     setManageExperimentModalOpen(true)
   }, [setManageExperimentModalOpen])
+
+  return {
+    currentItemId,
+    error: experimentError || overridesError,
+    experiment,
+    handleClose,
+    handleManage,
+    isLoading: isLoadingExperiment || isLoadingOverrides,
+    overrides,
+    typeApiKey,
+  }
+}
+
+export const ExperimentSheet = () => {
+  const {
+    currentItemId,
+    error,
+    experiment,
+    handleClose,
+    handleManage,
+    isLoading,
+    overrides,
+    typeApiKey,
+  } = useExperimentSheetState()
+
+  const detailsContent = useMemo(
+    () => <ExperimentSheetDetails isLoading={isLoading} error={error} experiment={experiment} />,
+    [isLoading, error, experiment],
+  )
+
+  const rulesContent = useMemo(
+    () => (currentItemId ? <ExperimentRules experimentId={currentItemId} /> : null),
+    [currentItemId],
+  )
+
+  const overridesContent = useMemo(
+    () =>
+      overrides && experiment ? (
+        <ExperimentOverrides overrides={overrides} groups={experiment.groups} />
+      ) : null,
+    [overrides, experiment],
+  )
 
   return (
     <CommonSheet type="experiment">
@@ -57,14 +96,9 @@ export const ExperimentSheet = () => {
         onManage={handleManage}
       />
       <SheetTabs
-        detailsContent={
-          <ExperimentSheetDetails isLoading={isLoading} error={error} experiment={experiment} />
-        }
-        rulesContent={currentItemId && <ExperimentRules experimentId={currentItemId} />}
-        overridesContent={
-          overrides &&
-          experiment && <ExperimentOverrides overrides={overrides} groups={experiment.groups} />
-        }
+        detailsContent={detailsContent}
+        rulesContent={rulesContent}
+        overridesContent={overridesContent}
       />
     </CommonSheet>
   )

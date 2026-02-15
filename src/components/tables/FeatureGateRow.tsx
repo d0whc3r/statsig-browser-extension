@@ -20,11 +20,65 @@ interface FeatureGateCellProps {
   onRowClick: (id: string) => void
 }
 
-const FeatureGateCell = memo(({ item, columnKey, onRowClick }: FeatureGateCellProps) => {
+const FeatureGateActions = ({
+  item,
+  onRowClick,
+}: {
+  item: FeatureGate
+  onRowClick: (id: string) => void
+}) => {
   const handleRowClick = useCallback(() => {
     onRowClick(item.id)
   }, [onRowClick, item.id])
 
+  return (
+    <div className="relative flex justify-end items-center gap-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreVertical className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={handleRowClick}>
+            <Eye className="mr-2 h-4 w-4" />
+            View
+          </DropdownMenuItem>
+          <DropdownMenuItem asChild>
+            <a
+              href={`https://console.statsig.com/gates/${item.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Open on Statsig
+            </a>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
+  )
+}
+
+const FeatureGateStatus = ({ status }: { status: string }) => (
+  <Badge variant={status === 'In Progress' ? 'secondary' : 'outline'} className="capitalize">
+    {status}
+  </Badge>
+)
+
+const FeatureGateTags = ({ tags }: { tags: string[] }) => (
+  <div className="flex flex-wrap gap-1">
+    {tags?.map((tag: string) => (
+      <Badge key={tag} variant="secondary" className="capitalize">
+        {tag}
+      </Badge>
+    ))}
+  </div>
+)
+
+const FeatureGateCellContent = ({ item, columnKey, onRowClick }: FeatureGateCellProps) => {
   const cellValue = item[columnKey as keyof FeatureGate]
 
   switch (columnKey) {
@@ -32,26 +86,10 @@ const FeatureGateCell = memo(({ item, columnKey, onRowClick }: FeatureGateCellPr
       return <div className="cursor-pointer font-medium hover:underline">{item.name}</div>
     }
     case 'status': {
-      return (
-        <Badge
-          variant={item.status === 'In Progress' ? 'secondary' : 'outline'}
-          className="capitalize"
-        >
-          {item.status}
-        </Badge>
-      )
+      return <FeatureGateStatus status={item.status} />
     }
     case 'tags': {
-      const tags = cellValue as string[]
-      return (
-        <div className="flex flex-wrap gap-1">
-          {tags?.map((tag: string) => (
-            <Badge key={tag} variant="secondary" className="capitalize">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      )
+      return <FeatureGateTags tags={cellValue as string[]} />
     }
     case 'isEnabled': {
       return (
@@ -61,41 +99,18 @@ const FeatureGateCell = memo(({ item, columnKey, onRowClick }: FeatureGateCellPr
       )
     }
     case 'actions': {
-      return (
-        <div className="relative flex justify-end items-center gap-2">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={handleRowClick}>
-                <Eye className="mr-2 h-4 w-4" />
-                View
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <a
-                  href={`https://console.statsig.com/gates/${item.id}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center"
-                >
-                  <ExternalLink className="mr-2 h-4 w-4" />
-                  Open on Statsig
-                </a>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      )
+      return <FeatureGateActions item={item} onRowClick={onRowClick} />
     }
     default: {
+      if (typeof cellValue === 'object' && cellValue !== null) {
+        return <div>{JSON.stringify(cellValue)}</div>
+      }
       return <div>{String(cellValue)}</div>
     }
   }
-})
+}
+
+const FeatureGateCell = memo((props: FeatureGateCellProps) => <FeatureGateCellContent {...props} />)
 FeatureGateCell.displayName = 'FeatureGateCell'
 
 interface FeatureGateRowProps {

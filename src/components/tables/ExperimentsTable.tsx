@@ -1,3 +1,5 @@
+import { useCallback } from 'react'
+
 import { BottomContent } from '@/src/components/tables/BottomContent'
 import { ExperimentsTableBody } from '@/src/components/tables/ExperimentsTableBody'
 import { TopContent } from '@/src/components/tables/TopContent'
@@ -30,6 +32,10 @@ export function ExperimentsTable() {
     totalExperiments,
     visibleColumns,
   } = useExperimentsTableLogic()
+
+  const handleFetchNextPage = useCallback(() => {
+    fetchNextPage()
+  }, [fetchNextPage])
 
   return (
     <div className="flex flex-col h-full">
@@ -83,7 +89,7 @@ export function ExperimentsTable() {
           <Button
             variant="secondary"
             className="w-full"
-            onClick={() => fetchNextPage()}
+            onClick={handleFetchNextPage}
             disabled={isFetchingNextPage}
           >
             {isFetchingNextPage ? 'Loading more...' : 'Load More Experiments'}

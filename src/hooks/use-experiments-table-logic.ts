@@ -38,16 +38,14 @@ export const useExperimentsTableLogic = () => {
     [visibleColumns],
   )
 
-  const filteredByStatus = useMemo(() => {
-    if (statusFilter.size !== experimentStatusOptions.length) {
-      return experiments.filter((experiment) => statusFilter.has(experiment.status))
-    }
-    return experiments
-  }, [experiments, statusFilter])
-
   const filteredItems = useFusedItems({
     filterValue,
-    items: filteredByStatus,
+    items: useMemo(() => {
+      if (statusFilter.size !== experimentStatusOptions.length) {
+        return experiments.filter((experiment) => statusFilter.has(experiment.status))
+      }
+      return experiments
+    }, [experiments, statusFilter]),
     keys: ['name', 'id', 'description', 'hypothesis', 'tags'],
   })
 
@@ -59,15 +57,6 @@ export const useExperimentsTableLogic = () => {
 
     return filteredItems.slice(start, end)
   }, [page, filteredItems, rowsPerPage])
-
-  const setCurrentExperiment = useCallback(
-    (experimentId: string) => {
-      setCurrentItemId(experimentId)
-      setCurrentItemType('experiment')
-      setItemSheetOpen(true)
-    },
-    [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
-  )
 
   return {
     experimentColumns,
@@ -87,10 +76,17 @@ export const useExperimentsTableLogic = () => {
     page,
     pages,
     rowsPerPage,
-    setCurrentExperiment,
+    setCurrentExperiment: useCallback(
+      (experimentId: string) => {
+        setCurrentItemId(experimentId)
+        setCurrentItemType('experiment')
+        setItemSheetOpen(true)
+      },
+      [setCurrentItemId, setItemSheetOpen, setCurrentItemType],
+    ),
     setPage,
     statusFilter,
-    totalExperiments: totalServerItems || experiments.length,
+    totalExperiments: totalServerItems > 0 ? totalServerItems : experiments.length,
     visibleColumns,
   }
 }
