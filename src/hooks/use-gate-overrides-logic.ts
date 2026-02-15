@@ -25,13 +25,44 @@ export const useGateOverridesLogic = (
     isPending,
   } = useGateOverrideHandlers(currentItemId, overrides, setView)
 
-  const allOverrides = useMemo(
-    () => [
-      ...overrides.passingUserIDs.map((id: string) => ({ id, type: 'pass' as const })),
-      ...overrides.failingUserIDs.map((id: string) => ({ id, type: 'fail' as const })),
-    ],
-    [overrides],
-  )
+  const allOverrides = useMemo(() => {
+    const result: {
+      id: string
+      type: 'pass' | 'fail'
+      environment: string | null
+      idType: string | null
+    }[] = []
+
+    // Root overrides (implied default env, userID)
+    overrides.passing_user_ids.forEach((id) =>
+      result.push({ id, type: 'pass', environment: null, idType: 'userID' }),
+    )
+    overrides.failing_user_ids.forEach((id) =>
+      result.push({ id, type: 'fail', environment: null, idType: 'userID' }),
+    )
+
+    // Environment overrides
+    overrides.environment_overrides?.forEach((group) => {
+      group.passing_ids.forEach((id) =>
+        result.push({
+          id,
+          type: 'pass',
+          environment: group.environment,
+          idType: group.unit_id,
+        }),
+      )
+      group.failing_ids.forEach((id) =>
+        result.push({
+          id,
+          type: 'fail',
+          environment: group.environment,
+          idType: group.unit_id,
+        }),
+      )
+    })
+
+    return result
+  }, [overrides])
 
   const canEdit = typeApiKey === 'write-key'
 

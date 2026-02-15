@@ -175,15 +175,15 @@ export interface DynamicConfigOverride {
 }
 
 export interface GateOverride {
-  passingUserIDs: string[]
-  failingUserIDs: string[]
-  passingCustomIDs?: string[]
-  failingCustomIDs?: string[]
-  environmentOverrides: {
+  passing_user_ids: string[]
+  failing_user_ids: string[]
+  passing_custom_ids?: string[]
+  failing_custom_ids?: string[]
+  environment_overrides: {
     environment: string | null
-    unitID: string | null
-    passingIDs: string[]
-    failingIDs: string[]
+    unit_id: string | null
+    passing_ids: string[]
+    failing_ids: string[]
   }[]
 }
 

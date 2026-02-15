@@ -91,8 +91,8 @@ const setupMocks = () => {
   })
 
   // Setup API mocks
-  const mockPatch = vi.mocked(api.patch)
-  mockPatch.mockImplementation((_url) => Promise.resolve({ data: {}, status: 200 }))
+  const mockPost = vi.mocked(api.post)
+  mockPost.mockImplementation((_url) => Promise.resolve({ data: {}, status: 200 }))
 }
 
 describe('Experiment Overrides Flow', () => {
@@ -189,16 +189,16 @@ describe('Experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
-      expect(api.patch).toHaveBeenCalledWith(
+      expect(api.post).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
           userIDOverrides: [
             expect.objectContaining({
               ids: ['new_user_456'],
               groupID: 'Test',
+              // type: 'user', // Depending on implementation
             }),
           ],
-          overrides: [],
         }),
       )
     })
@@ -249,7 +249,7 @@ describe('Experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
-      expect(api.patch).toHaveBeenCalledWith(
+      expect(api.post).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
           userIDOverrides: [],

@@ -8,6 +8,13 @@ const ManageExperimentModal = lazy(() =>
     default: module.ManageExperimentModal,
   })),
 )
+const ManageGateOverridesModal = lazy(() =>
+  import('@/src/components/modals/manage-gate-overrides/ManageGateOverridesModal').then(
+    (module) => ({
+      default: module.ManageGateOverridesModal,
+    }),
+  ),
+)
 const AuditLogDetailSheet = lazy(() =>
   import('@/src/components/sheets/AuditLogDetailSheet').then((module) => ({
     default: module.AuditLogDetailSheet,
@@ -43,6 +50,7 @@ export const GlobalModals = memo(() => (
   <Suspense fallback={undefined}>
     <AuthModal />
     <ManageExperimentModal />
+    <ManageGateOverridesModal />
     <ExperimentSheet />
     <DynamicConfigSheet />
     <FeatureGateSheet />

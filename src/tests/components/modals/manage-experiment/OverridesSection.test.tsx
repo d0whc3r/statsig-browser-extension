@@ -8,11 +8,11 @@ vi.mock('@/src/hooks/use-overrides-section-logic')
 vi.mock('@/src/components/modals/manage-experiment/OverridesList', () => ({
   OverridesList: () => <div>OverridesList Mock</div>,
 }))
-vi.mock('@/src/components/modals/manage-experiment/CreateOverrideForm', () => ({
-  CreateOverrideForm: () => <div>CreateOverrideForm Mock</div>,
+vi.mock('@/src/components/modals/manage-experiment/AddOverrideForm', () => ({
+  AddOverrideForm: () => <div>AddOverrideForm Mock</div>,
 }))
-vi.mock('@/src/components/ExperimentPageContextCard', () => ({
-  ExperimentPageContextCard: ({ detectedUserId }: { detectedUserId: string }) => (
+vi.mock('@/src/components/modals/manage-experiment/PageContextCard', () => ({
+  PageContextCard: ({ detectedUserId }: { detectedUserId: string }) => (
     <div>
       Page Context
       <div>{detectedUserId}</div>
@@ -91,7 +91,7 @@ describe('OverridesSection', () => {
 
     render(<OverridesSection />)
 
-    expect(screen.getByText('CreateOverrideForm Mock')).toBeInTheDocument()
+    expect(screen.getByText('AddOverrideForm Mock')).toBeInTheDocument()
     expect(screen.queryByText('OverridesList Mock')).not.toBeInTheDocument()
   })
 })

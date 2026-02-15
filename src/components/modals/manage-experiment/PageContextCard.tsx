@@ -22,7 +22,7 @@ interface ExperimentPageContextCardProps {
   onAddOverride: (userId: string, groupId: string) => void
 }
 
-export const ExperimentPageContextCard = memo(
+export const PageContextCard = memo(
   ({
     detectedUser,
     detectedUserId,
@@ -79,4 +79,4 @@ export const ExperimentPageContextCard = memo(
   },
 )
 
-ExperimentPageContextCard.displayName = 'ExperimentPageContextCard'
+PageContextCard.displayName = 'PageContextCard'

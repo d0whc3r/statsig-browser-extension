@@ -16,10 +16,20 @@ import type { OverrideType } from './types'
 import { OverrideRow } from './OverrideRow'
 
 interface OverridesListProps {
-  allOverrides: { id: string; type: OverrideType }[]
+  allOverrides: {
+    id: string
+    type: OverrideType
+    environment: string | null
+    idType: string | null
+  }[]
   canEdit: boolean
   isPending: boolean
-  onDeleteOverride: (id: string, type: OverrideType) => void
+  onDeleteOverride: (
+    id: string,
+    type: OverrideType,
+    environment: string | null,
+    idType: string | null,
+  ) => void
   onSwitchToForm: () => void
 }
 
@@ -31,6 +41,8 @@ export const OverridesList = memo(
           <TableHeader>
             <TableRow>
               <TableHead>User ID</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Environment</TableHead>
               <TableHead>Result</TableHead>
               {canEdit && <TableHead className="w-[50px]" />}
             </TableRow>
@@ -38,7 +50,7 @@ export const OverridesList = memo(
           <TableBody>
             {allOverrides.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="h-24 text-center">
+                <TableCell colSpan={5} className="h-24 text-center">
                   <GeneralEmptyState variant="override" entityName="gate" />
                 </TableCell>
               </TableRow>

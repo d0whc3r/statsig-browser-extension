@@ -1,12 +1,13 @@
-import { ExperimentPageContextCard } from '@/src/components/ExperimentPageContextCard'
 import { useOverridesSectionLogic } from '@/src/hooks/use-overrides-section-logic'
 
-import { CreateOverrideForm } from './CreateOverrideForm'
+import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
+import { PageContextCard } from './PageContextCard'
 
 export const OverridesSection = () => {
   const {
     addOverride,
+    deleteOverride,
     currentItemId,
     detectedUser,
     detectedUserId,
@@ -29,34 +30,34 @@ export const OverridesSection = () => {
   } = useOverridesSectionLogic()
 
   return (
-    <div className="flex flex-col justify-between gap-4 pt-4">
+    <div className="flex flex-col gap-6">
+      <PageContextCard
+        detectedUser={detectedUser || undefined}
+        detectedUserId={detectedUserId || ''}
+        isDetectedUserOverridden={isDetectedUserOverridden}
+        canEdit={typeApiKey === 'write-key'}
+        isPending={isPending}
+        groups={groups}
+        onAddOverride={addOverride}
+      />
+
       {view === 'table' ? (
-        <>
-          <ExperimentPageContextCard
-            detectedUser={detectedUser || undefined}
-            detectedUserId={detectedUserId || ''}
-            isDetectedUserOverridden={isDetectedUserOverridden}
-            canEdit={typeApiKey === 'write-key'}
-            isPending={isPending}
-            groups={groups}
-            onAddOverride={addOverride}
-          />
-          <OverridesList
-            typeApiKey={typeApiKey}
-            onCreateOverrideClick={handleCreateOverrideClick}
-            overridesData={overridesData}
-            currentItemId={currentItemId}
-          />
-        </>
+        <OverridesList
+          canEdit={typeApiKey === 'write-key'}
+          onCreateOverrideClick={handleCreateOverrideClick}
+          overridesData={overridesData}
+          onDeleteOverride={deleteOverride}
+          isPending={isPending}
+        />
       ) : (
-        <CreateOverrideForm
+        <AddOverrideForm
           groups={groups}
           selectedGroup={selectedGroup}
           onSelectedGroupChange={setSelectedGroup}
           overrideValue={overrideValue}
           onOverrideValueChange={handleOverrideValueChange}
           setOverrideValue={setOverrideValue}
-          onBackClick={handleBackClick}
+          onCancel={handleBackClick}
           onAddOverride={() => addOverride()}
           isPending={isPending}
           overrideType={overrideType}

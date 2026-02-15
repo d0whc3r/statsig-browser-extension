@@ -19,7 +19,12 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
   const [overrideType, setOverrideType] = useState<OverrideType>('user')
   const [overrideValue, setOverrideValue] = useState('')
 
-  const { addMutation: mutate, isAdding: isPending } = useExperimentMutations({
+  const {
+    addMutation: mutate,
+    deleteMutation,
+    isAdding,
+    isDeleting,
+  } = useExperimentMutations({
     currentItemId: currentItemId ?? '',
     onAddSuccess: () => {
       onSuccess()
@@ -54,9 +59,23 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
     [currentItemId, mutate, selectedGroup, overrideValue, overrideType],
   )
 
+  const deleteOverride = useCallback(
+    (override: AnyOverride) => {
+      if (!currentItemId) {
+        return
+      }
+      deleteMutation({
+        experimentId: currentItemId,
+        override,
+      })
+    },
+    [currentItemId, deleteMutation],
+  )
+
   return {
     addOverride,
-    isPending,
+    deleteOverride,
+    isPending: isAdding || isDeleting,
     overrideValue,
     selectedGroup,
     setOverrideValue,
@@ -95,6 +114,7 @@ export const useOverridesSectionLogic = () => {
 
   const {
     addOverride,
+    deleteOverride,
     isPending,
     overrideValue,
     selectedGroup,
@@ -113,6 +133,7 @@ export const useOverridesSectionLogic = () => {
 
   return {
     addOverride,
+    deleteOverride,
     currentItemId,
     detectedUser,
     detectedUserId,

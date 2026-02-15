@@ -1,37 +1,31 @@
 import { Trash2 } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import type { ExperimentOverride } from '@/src/types/statsig'
+import type { AnyOverride } from '@/src/handlers/delete-override'
+import type { Override } from '@/src/hooks/use-overrides'
 
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import type { AnyOverride } from '@/src/handlers/delete-override'
 
-interface ExperimentOverrideRowProps {
-  override: ExperimentOverride
-  typeApiKey: string
-  currentItemId?: string
-  deleteMutation: (variables: { experimentId: string; override: AnyOverride }) => void
+interface OverrideRowProps {
+  override: Override
+  canEdit: boolean
+  isPending?: boolean
+  onDelete: (override: AnyOverride) => void
 }
 
-export const ExperimentOverrideRow = memo(
-  ({ override, typeApiKey, currentItemId, deleteMutation }: ExperimentOverrideRowProps) => {
+export const OverrideRow = memo(
+  ({ override, canEdit, isPending, onDelete }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
-      if (currentItemId) {
-        deleteMutation({
-          experimentId: currentItemId,
-          override,
-        })
-      }
-    }, [currentItemId, deleteMutation, override])
+      onDelete(override)
+    }, [onDelete, override])
 
     return (
       <TableRow>
-        <TableCell className="font-medium capitalize">{override.type}</TableCell>
-        <TableCell>{override.name}</TableCell>
+        <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
         <TableCell>{override.groupID}</TableCell>
-        {typeApiKey === 'write-key' && (
+        {canEdit && (
           <TableCell>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -40,6 +34,7 @@ export const ExperimentOverrideRow = memo(
                   size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   onClick={handleDelete}
+                  disabled={isPending}
                 >
                   <Trash2 className="h-4 w-4" />
                   <span className="sr-only">Delete override</span>
@@ -54,4 +49,4 @@ export const ExperimentOverrideRow = memo(
   },
 )
 
-ExperimentOverrideRow.displayName = 'ExperimentOverrideRow'
+OverrideRow.displayName = 'OverrideRow'

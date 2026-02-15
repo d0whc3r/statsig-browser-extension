@@ -8,21 +8,37 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 import type { OverrideType } from './types'
 
 interface OverrideRowProps {
-  item: { id: string; type: OverrideType }
+  item: {
+    id: string
+    type: OverrideType
+    environment: string | null
+    idType: string | null
+  }
   canEdit: boolean
   isPending: boolean
-  onDeleteOverride: (id: string, type: OverrideType) => void
+  onDeleteOverride: (
+    id: string,
+    type: OverrideType,
+    environment: string | null,
+    idType: string | null,
+  ) => void
 }
 
 export const OverrideRow = memo(
   ({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
-      onDeleteOverride(item.id, item.type)
-    }, [item.id, item.type, onDeleteOverride])
+      onDeleteOverride(item.id, item.type, item.environment, item.idType)
+    }, [item.id, item.type, item.environment, item.idType, onDeleteOverride])
 
     return (
       <TableRow>
         <TableCell className="font-mono text-xs">{item.id}</TableCell>
+        <TableCell className="text-xs text-muted-foreground">
+          {item.idType || 'userID'}
+        </TableCell>
+        <TableCell className="text-xs text-muted-foreground">
+          {item.environment || 'All Environments'}
+        </TableCell>
         <TableCell>
           <Badge variant={item.type === 'pass' ? 'default' : 'destructive'}>
             {item.type.toUpperCase()}

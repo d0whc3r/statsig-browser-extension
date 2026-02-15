@@ -3,54 +3,118 @@ import { useCallback } from 'react'
 
 import type { GateOverride } from '@/src/types/statsig'
 
-import { updateGateOverrides } from '@/src/handlers/gate-overrides'
+import { deleteGateOverrides, updateGateOverrides } from '@/src/handlers/gate-overrides'
 
 import type { OverrideType } from '../components/modals/manage-gate-overrides/types'
 
-const createUpdatedOverrides = (
-  overrides: GateOverride,
-  targetUserId: string,
-  targetType: OverrideType,
-): GateOverride => {
-  const updated = {
-    ...overrides,
-    failingUserIDs: [...overrides.failingUserIDs],
-    passingUserIDs: [...overrides.passingUserIDs],
+const updateList = (list: string[], id: string, add: boolean): string[] => {
+  const newList = list.filter((item) => item !== id)
+  if (add) {
+    newList.push(id)
   }
+  return newList
+}
 
-  if (targetType === 'pass') {
-    if (!updated.passingUserIDs.includes(targetUserId)) {
-      updated.passingUserIDs.push(targetUserId)
+const updateOverrides = (
+  overrides: GateOverride,
+  targetId: string,
+  targetType: OverrideType,
+  environment: string | null,
+  idType: string | null,
+  isDelete: boolean = false,
+): GateOverride => {
+  // Deep copy manually to avoid structuredClone issues if any, though structuredClone is standard now
+  const updated: GateOverride = JSON.parse(JSON.stringify(overrides)) as GateOverride
+
+  // Determine if we are targeting root fields or environmentOverrides
+  // If environment is null AND (idType is null or 'userID'), use root fields
+  const isRoot = !environment && (!idType || idType === 'userID')
+
+  if (isRoot) {
+    if (targetType === 'pass') {
+      updated.passing_user_ids = updateList(updated.passing_user_ids, targetId, !isDelete)
+      if (!isDelete) {
+        updated.failing_user_ids = updateList(updated.failing_user_ids, targetId, false)
+      }
+    } else {
+      updated.failing_user_ids = updateList(updated.failing_user_ids, targetId, !isDelete)
+      if (!isDelete) {
+        updated.passing_user_ids = updateList(updated.passing_user_ids, targetId, false)
+      }
     }
-    updated.failingUserIDs = updated.failingUserIDs.filter((id) => id !== targetUserId)
   } else {
-    if (!updated.failingUserIDs.includes(targetUserId)) {
-      updated.failingUserIDs.push(targetUserId)
+    // Ensure environment_overrides exists
+    if (!updated.environment_overrides) {
+      updated.environment_overrides = []
     }
-    updated.passingUserIDs = updated.passingUserIDs.filter((id) => id !== targetUserId)
+
+    // Find or create environment group
+    let groupIndex = updated.environment_overrides.findIndex(
+      (g) => g.environment === environment && g.unit_id === idType,
+    )
+
+    if (groupIndex === -1 && !isDelete) {
+      updated.environment_overrides.push({
+        environment,
+        unit_id: idType,
+        passing_ids: [],
+        failing_ids: [],
+      })
+      groupIndex = updated.environment_overrides.length - 1
+    }
+
+    if (groupIndex !== -1) {
+      const group = updated.environment_overrides[groupIndex]
+      if (targetType === 'pass') {
+        group.passing_ids = updateList(group.passing_ids, targetId, !isDelete)
+        if (!isDelete) {
+          group.failing_ids = updateList(group.failing_ids, targetId, false)
+        }
+      } else {
+        group.failing_ids = updateList(group.failing_ids, targetId, !isDelete)
+        if (!isDelete) {
+          group.passing_ids = updateList(group.passing_ids, targetId, false)
+        }
+      }
+
+      // Cleanup empty groups
+      if (group.passing_ids.length === 0 && group.failing_ids.length === 0) {
+        updated.environment_overrides.splice(groupIndex, 1)
+      }
+    }
   }
 
   return updated
 }
 
-const removeOverride = (
-  overrides: GateOverride,
-  idToRemove: string,
-  type: OverrideType,
-): GateOverride => {
-  const updated = {
-    ...overrides,
-    failingUserIDs: [...overrides.failingUserIDs],
-    passingUserIDs: [...overrides.passingUserIDs],
-  }
+const createDeletePayload = (
+  targetId: string,
+  targetType: OverrideType,
+  environment: string | null,
+  idType: string | null,
+): Partial<GateOverride> => {
+  const payload: Partial<GateOverride> = {}
 
-  if (type === 'pass') {
-    updated.passingUserIDs = updated.passingUserIDs.filter((id) => id !== idToRemove)
+  // Determine if we are targeting root fields or environmentOverrides
+  const isRoot = !environment && (!idType || idType === 'userID')
+
+  if (isRoot) {
+    if (targetType === 'pass') {
+      payload.passing_user_ids = [targetId]
+    } else {
+      payload.failing_user_ids = [targetId]
+    }
   } else {
-    updated.failingUserIDs = updated.failingUserIDs.filter((id) => id !== idToRemove)
+    payload.environment_overrides = [
+      {
+        environment: environment!,
+        unit_id: idType!,
+        passing_ids: targetType === 'pass' ? [targetId] : [],
+        failing_ids: targetType === 'fail' ? [targetId] : [],
+      },
+    ]
   }
-
-  return updated
+  return payload
 }
 
 export const useGateOverrideHandlers = (
@@ -60,7 +124,7 @@ export const useGateOverrideHandlers = (
 ) => {
   const queryClient = useQueryClient()
 
-  const { mutate, isPending } = useMutation({
+  const { mutate: updateMutate, isPending: isUpdatePending } = useMutation({
     mutationFn: updateGateOverrides,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
@@ -68,36 +132,60 @@ export const useGateOverrideHandlers = (
     },
   })
 
+  const { mutate: deleteMutate, isPending: isDeletePending } = useMutation({
+    mutationFn: deleteGateOverrides,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
+    },
+  })
+
   const handleAddOverride = useCallback(
-    (targetUserId: string, targetType: OverrideType) => {
+    (
+      targetUserId: string,
+      targetType: OverrideType,
+      environment: string | null = null,
+      idType: string | null = 'userID',
+    ) => {
       if (!currentItemId) {
         return
       }
 
-      const updated = createUpdatedOverrides(overrides, targetUserId, targetType)
+      const updated = updateOverrides(
+        overrides,
+        targetUserId,
+        targetType,
+        environment,
+        idType,
+        false,
+      )
 
-      mutate({
+      updateMutate({
         gateId: currentItemId,
         overrides: updated,
       })
     },
-    [currentItemId, overrides, mutate],
+    [currentItemId, overrides, updateMutate],
   )
 
   const handleDeleteOverride = useCallback(
-    (idToRemove: string, type: OverrideType) => {
+    (
+      idToRemove: string,
+      type: OverrideType,
+      environment: string | null = null,
+      idType: string | null = 'userID',
+    ) => {
       if (!currentItemId) {
         return
       }
 
-      const updated = removeOverride(overrides, idToRemove, type)
+      const payload = createDeletePayload(idToRemove, type, environment, idType)
 
-      mutate({
+      deleteMutate({
         gateId: currentItemId,
-        overrides: updated,
+        overrides: payload,
       })
     },
-    [currentItemId, overrides, mutate],
+    [currentItemId, deleteMutate],
   )
 
   const handleSwitchToForm = useCallback(() => {
@@ -113,6 +201,6 @@ export const useGateOverrideHandlers = (
     handleDeleteOverride,
     handleSwitchToForm,
     handleSwitchToTable,
-    isPending,
+    isPending: isUpdatePending || isDeletePending,
   }
 }

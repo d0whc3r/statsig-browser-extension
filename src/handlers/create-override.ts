@@ -41,7 +41,7 @@ export const createOverride = async ({
       ? { userIDOverrides: [override], overrides: [] }
       : { userIDOverrides: [], overrides: [override] }
 
-    const { data, status } = await api.patch(`/experiments/${experimentId}/overrides`, payload)
+    const { data, status } = await api.post(`/experiments/${experimentId}/overrides`, payload)
 
     if (status === HTTP_UNAUTHORIZED) {
       return {

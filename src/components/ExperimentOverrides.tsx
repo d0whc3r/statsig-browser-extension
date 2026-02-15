@@ -4,7 +4,7 @@ import type { Override } from '@/src/hooks/use-overrides'
 import type { Group } from '@/src/types/statsig'
 
 import { AddOverrideInput } from '@/src/components/AddOverrideInput'
-import { ExperimentPageContextCard } from '@/src/components/ExperimentPageContextCard'
+import { PageContextCard } from '@/src/components/modals/manage-experiment/PageContextCard'
 import { OverrideGroup } from '@/src/components/OverrideGroup'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
@@ -62,7 +62,7 @@ export const ExperimentOverrides = memo(({ overrides, groups = EMPTY_GROUPS }: P
 
       {canEdit && (
         <>
-          <ExperimentPageContextCard
+          <PageContextCard
             detectedUser={detectedUser || undefined}
             detectedUserId={detectedUserId || ''}
             isDetectedUserOverridden={isDetectedUserOverridden}
