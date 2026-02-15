@@ -1,8 +1,7 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom'
+
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'
 import { useUIStore } from '@/src/store/use-ui-store'

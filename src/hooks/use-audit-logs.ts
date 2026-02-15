@@ -43,6 +43,9 @@ const fetchAuditLogsPage = async (page: number): Promise<PaginatedResponse<Audit
 export const useAuditLogs = () =>
   useInfiniteQuery({
     getNextPageParam: (lastPage: PaginatedResponse<AuditLog>) => {
+      if (!lastPage?.pagination) {
+        return undefined
+      }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
         return lastPage.pagination.page + 1

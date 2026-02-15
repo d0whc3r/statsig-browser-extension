@@ -42,6 +42,9 @@ const fetchDynamicConfigsPage = async (page: number): Promise<PaginatedResponse<
 export const useDynamicConfigs = () =>
   useInfiniteQuery({
     getNextPageParam: (lastPage: PaginatedResponse<DynamicConfig>) => {
+      if (!lastPage?.pagination) {
+        return undefined
+      }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
         return lastPage.pagination.page + 1

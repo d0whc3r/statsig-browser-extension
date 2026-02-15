@@ -1,11 +1,13 @@
 import { useCallback } from 'react'
 
 import type { Override } from '@/src/hooks/use-overrides'
+import type { Group } from '@/src/types/statsig'
 
 interface UseExperimentOverrideHandlersProps {
   currentItemId: string | undefined
   newId: string
   selectedGroupId: string
+  groups?: Group[]
   addMutation: (data: {
     experimentId: string
     override: { groupID: string; ids: string[] }
@@ -24,6 +26,7 @@ export const useExperimentOverrideHandlers = ({
   selectedGroupId,
   addMutation,
   deleteMutation,
+  groups,
   overrides,
   saveToLocalStorage,
 }: UseExperimentOverrideHandlersProps) => {
@@ -44,6 +47,12 @@ export const useExperimentOverrideHandlers = ({
         return
       }
 
+      // Validate group exists if groups are provided
+      if (groups && !groups.some((g) => g.id === group)) {
+        console.error(`Group ID ${group} not found in experiment groups`)
+        return
+      }
+
       addMutation({
         experimentId: currentItemId,
         override: {
@@ -52,7 +61,7 @@ export const useExperimentOverrideHandlers = ({
         },
       })
     },
-    [currentItemId, newId, selectedGroupId, addMutation],
+    [currentItemId, newId, selectedGroupId, groups, addMutation],
   )
 
   const handleDelete = useCallback(

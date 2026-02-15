@@ -67,6 +67,7 @@ export const AddOverrideInput = memo(
             className="h-8"
             disabled={!newId || !selectedGroupId || isPending}
             onClick={onAdd}
+            aria-label="Add Override"
           >
             {isPending ? (
               <Loader2 className="h-3 w-3 animate-spin" />

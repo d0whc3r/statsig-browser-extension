@@ -40,6 +40,9 @@ const fetchFeatureGatesPage = async (page: number): Promise<PaginatedResponse<Fe
 export const useFeatureGates = () =>
   useInfiniteQuery({
     getNextPageParam: (lastPage: PaginatedResponse<FeatureGate>) => {
+      if (!lastPage?.pagination) {
+        return undefined
+      }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
         return lastPage.pagination.page + 1

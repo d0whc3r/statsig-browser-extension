@@ -23,7 +23,7 @@ export const useGateOverridesLogic = (
     handleSwitchToForm,
     handleSwitchToTable,
     isPending,
-  } = useGateOverrideHandlers(currentItemId, overrides, setView)
+  } = useGateOverrideHandlers(currentItemId, setView)
 
   const allOverrides = useMemo(() => {
     const result: {

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 
 import type { Override } from '@/src/hooks/use-overrides'
+import type { Group } from '@/src/types/statsig'
 
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
 import { useExperimentOverrideHandlers } from '@/src/hooks/use-experiment-override-handlers'
@@ -10,7 +11,7 @@ import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
-export const useExperimentOverridesLogic = (overrides: Override[]) => {
+export const useExperimentOverridesLogic = (overrides: Override[], groups?: Group[]) => {
   const { currentItemId } = useUIStore((state) => state)
   const [typeApiKey] = useWxtStorage(apiKeyTypeStorage)
   const { data: detectedUser } = useUserDetails()
@@ -29,6 +30,7 @@ export const useExperimentOverridesLogic = (overrides: Override[]) => {
     addMutation,
     currentItemId,
     deleteMutation,
+    groups,
     newId,
     overrides,
     saveToLocalStorage,

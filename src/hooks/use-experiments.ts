@@ -42,6 +42,9 @@ const fetchExperimentsPage = async (page: number): Promise<PaginatedResponse<Exp
 export const useExperiments = () =>
   useInfiniteQuery({
     getNextPageParam: (lastPage: PaginatedResponse<Experiment>) => {
+      if (!lastPage?.pagination) {
+        return undefined
+      }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
         return lastPage.pagination.page + 1

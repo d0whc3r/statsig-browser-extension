@@ -1,8 +1,7 @@
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-// eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom'
+
 import { AppContent } from '@/entrypoints/popup/App'
 import { api, fetcher, poster } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'

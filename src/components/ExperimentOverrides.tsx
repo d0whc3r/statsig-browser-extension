@@ -33,7 +33,7 @@ export const ExperimentOverrides = memo(({ overrides, groups = EMPTY_GROUPS }: P
     detectedUser,
     detectedUserId,
     isDetectedUserOverridden,
-  } = useExperimentOverridesLogic(overrides)
+  } = useExperimentOverridesLogic(overrides, groups)
 
   if (overrides.length === 0 && !canEdit) {
     return <GeneralEmptyState variant="override" entityName="experiment" />

@@ -1,5 +1,5 @@
 // eslint-disable-next-line import/no-unassigned-import
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
 
