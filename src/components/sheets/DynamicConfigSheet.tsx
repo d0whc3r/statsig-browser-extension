@@ -3,7 +3,6 @@ import { useCallback, useMemo } from 'react'
 
 import type { DynamicConfig } from '@/src/types/statsig'
 
-import { DynamicConfigOverrides } from '@/src/components/DynamicConfigOverrides'
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
 import { Button } from '@/src/components/ui/button'
 import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
@@ -165,11 +164,6 @@ export const DynamicConfigSheet = () => {
     [config],
   )
 
-  const overridesContent = useMemo(
-    () => (config ? <DynamicConfigOverrides configId={config.id} /> : null),
-    [config],
-  )
-
   return (
     <CommonSheet type="dynamic_config">
       <SheetHeader className="px-6 py-4 border-b pr-12">
@@ -178,11 +172,7 @@ export const DynamicConfigSheet = () => {
           Details for dynamic config {config?.name}
         </SheetDescription>
       </SheetHeader>
-      <SheetTabs
-        detailsContent={detailsContent}
-        rulesContent={rulesContent}
-        overridesContent={overridesContent}
-      />
+      <SheetTabs detailsContent={detailsContent} rulesContent={rulesContent} />
     </CommonSheet>
   )
 }

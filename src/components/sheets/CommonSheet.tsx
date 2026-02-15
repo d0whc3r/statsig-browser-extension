@@ -27,7 +27,7 @@ export function CommonSheet({ type, children }: CommonSheetProps) {
 interface SheetTabsProps {
   detailsContent: ReactNode
   rulesContent: ReactNode
-  overridesContent: ReactNode
+  overridesContent?: ReactNode
   labels?: {
     details?: string
     rules?: string
@@ -42,15 +42,16 @@ export function SheetTabs({
   labels = {},
 }: SheetTabsProps) {
   const { details = 'Details', rules = 'Rules', overrides = 'Overrides' } = labels
+  const gridCols = overridesContent ? 'grid-cols-3' : 'grid-cols-2'
 
   return (
     <div className="flex-1 overflow-hidden flex flex-col relative">
       <Tabs defaultValue="details" className="flex-1 flex flex-col min-h-0">
         <div className="px-6 pt-2 border-b shrink-0">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className={`grid w-full ${gridCols}`}>
             <TabsTrigger value="details">{details}</TabsTrigger>
             <TabsTrigger value="rules">{rules}</TabsTrigger>
-            <TabsTrigger value="overrides">{overrides}</TabsTrigger>
+            {overridesContent && <TabsTrigger value="overrides">{overrides}</TabsTrigger>}
           </TabsList>
         </div>
 
@@ -66,11 +67,16 @@ export function SheetTabs({
           </ScrollArea>
         </TabsContent>
 
-        <TabsContent value="overrides" className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden">
-          <ScrollArea className="h-full">
-            <div className="p-6">{overridesContent}</div>
-          </ScrollArea>
-        </TabsContent>
+        {overridesContent && (
+          <TabsContent
+            value="overrides"
+            className="flex-1 m-0 min-h-0 data-[state=inactive]:hidden"
+          >
+            <ScrollArea className="h-full">
+              <div className="p-6">{overridesContent}</div>
+            </ScrollArea>
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   )
