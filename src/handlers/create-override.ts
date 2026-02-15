@@ -38,8 +38,8 @@ export const createOverride = async ({
 }: CreateOverrideArgs): Promise<CreateOverrideResponse> => {
   try {
     const payload = isUserIDOverride(override)
-      ? { userIDOverrides: [override], overrides: [] }
-      : { userIDOverrides: [], overrides: [override] }
+      ? { overrides: [], userIDOverrides: [override] }
+      : { overrides: [override], userIDOverrides: [] }
 
     const { data, status } = await api.post(`/experiments/${experimentId}/overrides`, payload)
 
@@ -53,7 +53,7 @@ export const createOverride = async ({
     }
 
     // Since we invalidate queries after mutation, we don't strictly need to return the updated list here
-    // unless we want to use it for optimistic updates or display.
+    // Unless we want to use it for optimistic updates or display.
     // The previous implementation filtered and mapped userIDOverrides.
     // We'll return an empty array for now as we rely on query invalidation.
 

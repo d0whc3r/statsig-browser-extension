@@ -8,7 +8,6 @@ export const OverridesSection = () => {
   const {
     addOverride,
     deleteOverride,
-    currentItemId,
     detectedUser,
     detectedUserId,
     groups,

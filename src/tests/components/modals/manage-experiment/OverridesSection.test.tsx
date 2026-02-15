@@ -21,7 +21,7 @@ vi.mock('@/src/components/modals/manage-experiment/PageContextCard', () => ({
 }))
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
@@ -34,7 +34,7 @@ const mockGroup = {
   size: 50,
 }
 
-describe('OverridesSection', () => {
+describe(OverridesSection, () => {
   const mockAddOverride = vi.fn()
   const mockHandleCreateOverrideClick = vi.fn()
   const mockHandleBackClick = vi.fn()
@@ -47,21 +47,21 @@ describe('OverridesSection', () => {
     addOverride: mockAddOverride,
     detectedUser: undefined,
     detectedUserId: undefined,
+    featureGates: [],
     groups: [mockGroup],
     handleBackClick: mockHandleBackClick,
     handleCreateOverrideClick: mockHandleCreateOverrideClick,
     handleOverrideValueChange: mockHandleOverrideValueChange,
     isDetectedUserOverridden: false,
     isPending: false,
+    overrideType: 'user',
     overrideValue: '',
     selectedGroup: '',
+    setOverrideType: mockSetOverrideType,
+    setOverrideValue: mockSetOverrideValue,
     setSelectedGroup: mockSetSelectedGroup,
     typeApiKey: 'write-key',
     view: 'table',
-    overrideType: 'user',
-    setOverrideType: mockSetOverrideType,
-    featureGates: [],
-    setOverrideValue: mockSetOverrideValue,
   }
 
   beforeEach(() => {

@@ -13,10 +13,7 @@ export const useExperimentStorage = () => {
   const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore(
     (state) => state,
   )
-  const [storageKeyName] = useLocalStorage(
-    STORAGE_KEYS.LOCAL_STORAGE_KEY,
-    'statsig_gate_overrides',
-  )
+  const [storageKeyName] = useLocalStorage(STORAGE_KEYS.LOCAL_STORAGE_KEY, 'statsig_gate_overrides')
   const [storageType] = useLocalStorage<'cookie' | 'localStorage'>(
     STORAGE_KEYS.STORAGE_TYPE,
     'localStorage',

@@ -37,8 +37,8 @@ export const deleteOverride = async ({
 }: DeleteOverrideArgs): Promise<DeleteOverrideResponse> => {
   try {
     const payload = isUserIDOverride(override)
-      ? { userIDOverrides: [override], overrides: [] }
-      : { userIDOverrides: [], overrides: [override] }
+      ? { overrides: [], userIDOverrides: [override] }
+      : { overrides: [override], userIDOverrides: [] }
 
     const { data, status } = await api.delete(`/experiments/${experimentId}/overrides`, {
       data: payload,
@@ -54,10 +54,10 @@ export const deleteOverride = async ({
     }
 
     // This response processing is a bit simplistic if we want to return both types
-    // but for now let's just return what we can
+    // But for now let's just return what we can
     // The original code was returning UserIDOverride[]
     // We should probably return the full response or rely on react-query invalidation
-    
+
     return {
       // eslint-disable-next-line unicorn/no-null
       data: [], // We rely on invalidation usually, or we can parse the response

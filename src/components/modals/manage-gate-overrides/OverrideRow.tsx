@@ -33,9 +33,7 @@ export const OverrideRow = memo(
     return (
       <TableRow>
         <TableCell className="font-mono text-xs">{item.id}</TableCell>
-        <TableCell className="text-xs text-muted-foreground">
-          {item.idType || 'userID'}
-        </TableCell>
+        <TableCell className="text-xs text-muted-foreground">{item.idType || 'userID'}</TableCell>
         <TableCell className="text-xs text-muted-foreground">
           {item.environment || 'All Environments'}
         </TableCell>

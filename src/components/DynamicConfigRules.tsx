@@ -26,14 +26,13 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
           <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
             {rule.name}
           </CardTitle>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] text-muted-foreground font-mono">{rule.id}</span>
-            {rule.groupName && (
+          {rule.groupName && (
+            <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline" className="text-[10px] h-4 px-1.5">
                 {rule.groupName}
               </Badge>
-            )}
-          </div>
+            </div>
+          )}
         </div>
         <Badge
           variant={rule.passPercentage === FULL_PASS_PERCENTAGE ? 'default' : 'secondary'}

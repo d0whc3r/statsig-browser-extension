@@ -7,15 +7,9 @@ export const useSettingsStorage = () => {
     STORAGE_KEYS.LOCAL_STORAGE_KEY,
     'statsig_user',
   )
-  const [storageType, setStorageType] = useLocalStorage(
-    STORAGE_KEYS.STORAGE_TYPE,
-    'localStorage',
-  )
+  const [storageType, setStorageType] = useLocalStorage(STORAGE_KEYS.STORAGE_TYPE, 'localStorage')
   // Force write-key as default since user requested to remove the selector
-  const [typeApiKey, setTypeApiKey] = useLocalStorage(
-    STORAGE_KEYS.API_KEY_TYPE,
-    'write-key',
-  )
+  const [typeApiKey, setTypeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'write-key')
 
   // Ensure typeApiKey is always write-key if it was somehow set to read-key
   if (typeApiKey !== 'write-key') {

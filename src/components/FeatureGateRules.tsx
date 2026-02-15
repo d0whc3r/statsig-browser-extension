@@ -48,7 +48,6 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
       <div className="flex w-full justify-between items-start">
         <div className="flex-1">
           <CardTitle className="text-sm font-semibold">{rule.name}</CardTitle>
-          <p className="mt-1 text-xs text-muted-foreground">Rule ID: {rule.id}</p>
         </div>
         <div className="flex flex-col items-end space-y-1">
           <Badge variant={getBadgeVariant(rule.passPercentage)}>{rule.passPercentage}% Pass</Badge>

@@ -48,7 +48,7 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
       if (overrideType === 'user' || userId) {
         override = { groupID: group, ids: [id] }
       } else {
-        override = { groupID: group, type: overrideType, name: id }
+        override = { groupID: group, name: id, type: overrideType }
       }
 
       mutate({
@@ -76,12 +76,12 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
     addOverride,
     deleteOverride,
     isPending: isAdding || isDeleting,
+    overrideType,
     overrideValue,
     selectedGroup,
+    setOverrideType,
     setOverrideValue,
     setSelectedGroup,
-    overrideType,
-    setOverrideType,
   }
 }
 
@@ -93,9 +93,10 @@ export const useOverridesSectionLogic = () => {
   const groups = useMemo(() => experiment?.groups || [], [experiment?.groups])
 
   const { data: featureGatesData } = useFeatureGates()
-  const featureGates = useMemo(() => {
-    return featureGatesData?.pages.flatMap((page) => page.data) || []
-  }, [featureGatesData])
+  const featureGates = useMemo(
+    () => featureGatesData?.pages.flatMap((page) => page.data) || [],
+    [featureGatesData],
+  )
 
   const { data: detectedUser } = useUserDetails()
 
@@ -133,8 +134,8 @@ export const useOverridesSectionLogic = () => {
 
   return {
     addOverride,
-    deleteOverride,
     currentItemId,
+    deleteOverride,
     detectedUser,
     detectedUserId,
     featureGates,
@@ -144,9 +145,9 @@ export const useOverridesSectionLogic = () => {
     handleOverrideValueChange,
     isDetectedUserOverridden,
     isPending,
-    overridesData,
     overrideType,
     overrideValue,
+    overridesData,
     selectedGroup,
     setOverrideType,
     setOverrideValue,

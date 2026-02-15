@@ -21,10 +21,10 @@ const updateOverrides = (
   targetType: OverrideType,
   environment: string | null,
   idType: string | null,
-  isDelete: boolean = false,
+  isDelete = false,
 ): GateOverride => {
   // Deep copy manually to avoid structuredClone issues if any, though structuredClone is standard now
-  const updated: GateOverride = JSON.parse(JSON.stringify(overrides)) as GateOverride
+  const updated: GateOverride = structuredClone(overrides) as GateOverride
 
   // Determine if we are targeting root fields or environmentOverrides
   // If environment is null AND (idType is null or 'userID'), use root fields
@@ -32,54 +32,54 @@ const updateOverrides = (
 
   if (isRoot) {
     if (targetType === 'pass') {
-      updated.passing_user_ids = updateList(updated.passing_user_ids, targetId, !isDelete)
+      updated.passingUserIDs = updateList(updated.passingUserIDs, targetId, !isDelete)
       if (!isDelete) {
-        updated.failing_user_ids = updateList(updated.failing_user_ids, targetId, false)
+        updated.failingUserIDs = updateList(updated.failingUserIDs, targetId, false)
       }
     } else {
-      updated.failing_user_ids = updateList(updated.failing_user_ids, targetId, !isDelete)
+      updated.failingUserIDs = updateList(updated.failingUserIDs, targetId, !isDelete)
       if (!isDelete) {
-        updated.passing_user_ids = updateList(updated.passing_user_ids, targetId, false)
+        updated.passingUserIDs = updateList(updated.passingUserIDs, targetId, false)
       }
     }
   } else {
-    // Ensure environment_overrides exists
-    if (!updated.environment_overrides) {
-      updated.environment_overrides = []
+    // Ensure environmentOverrides exists
+    if (!updated.environmentOverrides) {
+      updated.environmentOverrides = []
     }
 
     // Find or create environment group
-    let groupIndex = updated.environment_overrides.findIndex(
-      (g) => g.environment === environment && g.unit_id === idType,
+    let groupIndex = updated.environmentOverrides.findIndex(
+      (g) => g.environment === environment && g.unitID === idType,
     )
 
     if (groupIndex === -1 && !isDelete) {
-      updated.environment_overrides.push({
+      updated.environmentOverrides.push({
         environment,
-        unit_id: idType,
-        passing_ids: [],
-        failing_ids: [],
+        failingIDs: [],
+        passingIDs: [],
+        unitID: idType,
       })
-      groupIndex = updated.environment_overrides.length - 1
+      groupIndex = updated.environmentOverrides.length - 1
     }
 
     if (groupIndex !== -1) {
-      const group = updated.environment_overrides[groupIndex]
+      const group = updated.environmentOverrides[groupIndex]
       if (targetType === 'pass') {
-        group.passing_ids = updateList(group.passing_ids, targetId, !isDelete)
+        group.passingIDs = updateList(group.passingIDs, targetId, !isDelete)
         if (!isDelete) {
-          group.failing_ids = updateList(group.failing_ids, targetId, false)
+          group.failingIDs = updateList(group.failingIDs, targetId, false)
         }
       } else {
-        group.failing_ids = updateList(group.failing_ids, targetId, !isDelete)
+        group.failingIDs = updateList(group.failingIDs, targetId, !isDelete)
         if (!isDelete) {
-          group.passing_ids = updateList(group.passing_ids, targetId, false)
+          group.passingIDs = updateList(group.passingIDs, targetId, false)
         }
       }
 
       // Cleanup empty groups
-      if (group.passing_ids.length === 0 && group.failing_ids.length === 0) {
-        updated.environment_overrides.splice(groupIndex, 1)
+      if (group.passingIDs.length === 0 && group.failingIDs.length === 0) {
+        updated.environmentOverrides.splice(groupIndex, 1)
       }
     }
   }
@@ -100,17 +100,17 @@ const createDeletePayload = (
 
   if (isRoot) {
     if (targetType === 'pass') {
-      payload.passing_user_ids = [targetId]
+      payload.passingUserIDs = [targetId]
     } else {
-      payload.failing_user_ids = [targetId]
+      payload.failingUserIDs = [targetId]
     }
   } else {
-    payload.environment_overrides = [
+    payload.environmentOverrides = [
       {
         environment: environment!,
-        unit_id: idType!,
-        passing_ids: targetType === 'pass' ? [targetId] : [],
-        failing_ids: targetType === 'fail' ? [targetId] : [],
+        failingIDs: targetType === 'fail' ? [targetId] : [],
+        passingIDs: targetType === 'pass' ? [targetId] : [],
+        unitID: idType!,
       },
     ]
   }

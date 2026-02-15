@@ -1,4 +1,4 @@
-import { screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 // eslint-disable-next-line import/no-unassigned-import
@@ -35,14 +35,14 @@ vi.mock('@/src/hooks/use-local-storage', () => ({
 
 const mockExperiments = [
   {
-    id: 'exp_1',
-    name: 'Test Experiment 1',
-    status: 'active',
-    lastModifiedTime: Date.now(),
     groups: [
       { id: 'group_1', name: 'Control', size: 50 },
       { id: 'group_2', name: 'Test', size: 50 },
     ],
+    id: 'exp_1',
+    lastModifiedTime: Date.now(),
+    name: 'Test Experiment 1',
+    status: 'active',
   },
 ]
 
@@ -51,11 +51,11 @@ const mockGates = [
 ]
 
 const mockOverrides = {
-  userIDOverrides: [{ ids: ['user_123'], groupID: 'Test' }],
   overrides: [
-    { type: 'gate', name: 'gate_1', groupID: 'Control' },
-    { type: 'segment', name: 'segment_1', groupID: 'Test' },
+    { groupID: 'Control', name: 'gate_1', type: 'gate' },
+    { groupID: 'Test', name: 'segment_1', type: 'segment' },
   ],
+  userIDOverrides: [{ groupID: 'Test', ids: ['user_123'] }],
 }
 
 const setupMocks = () => {
@@ -102,9 +102,9 @@ describe('Experiment Overrides Flow', () => {
       currentItemId: undefined,
       isAuthModalOpen: false,
       isItemSheetOpen: false,
+      isManageExperimentModalOpen: false,
       isSettingsSheetOpen: false,
       isUserDetailsSheetOpen: false,
-      isManageExperimentModalOpen: false,
     })
   })
 
@@ -194,9 +194,9 @@ describe('Experiment Overrides Flow', () => {
         expect.objectContaining({
           userIDOverrides: [
             expect.objectContaining({
-              ids: ['new_user_456'],
               groupID: 'Test',
-              // type: 'user', // Depending on implementation
+              ids: ['new_user_456'],
+              // Type: 'user', // Depending on implementation
             }),
           ],
         }),
@@ -252,14 +252,14 @@ describe('Experiment Overrides Flow', () => {
       expect(api.post).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
-          userIDOverrides: [],
           overrides: [
             expect.objectContaining({
-              type: 'gate',
-              name: 'gate_1',
               groupID: 'Control',
+              name: 'gate_1',
+              type: 'gate',
             }),
           ],
+          userIDOverrides: [],
         }),
       )
     })

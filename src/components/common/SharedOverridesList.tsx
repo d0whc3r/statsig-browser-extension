@@ -1,5 +1,6 @@
+import type { ReactNode } from 'react'
+
 import { Plus } from 'lucide-react'
-import { ReactNode } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 

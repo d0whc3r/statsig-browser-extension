@@ -1,4 +1,4 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 // eslint-disable-next-line import/no-unassigned-import
@@ -36,22 +36,22 @@ vi.mock('@/src/hooks/use-local-storage', () => ({
 
 const mockGate = {
   id: 'gate_1',
-  name: 'Test Gate 1',
   isEnabled: true,
   lastModifiedTime: Date.now(),
+  name: 'Test Gate 1',
 }
 
 const mockOverrides = {
-  passing_user_ids: ['user_pass'],
-  failing_user_ids: ['user_fail'],
-  environment_overrides: [
+  environmentOverrides: [
     {
       environment: 'Development',
-      unit_id: 'stableID',
-      passing_ids: ['stable_pass'],
-      failing_ids: [],
+      failingIDs: [],
+      passingIDs: ['stable_pass'],
+      unitID: 'stableID',
     },
   ],
+  failingUserIDs: ['user_fail'],
+  passingUserIDs: ['user_pass'],
 }
 
 const setupMocks = () => {
@@ -92,10 +92,10 @@ describe('Gate Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useUIStore.setState({
-      isAuthModalOpen: false,
-      isManageGateOverridesModalOpen: false,
-      isItemSheetOpen: false,
       currentItemId: undefined,
+      isAuthModalOpen: false,
+      isItemSheetOpen: false,
+      isManageGateOverridesModalOpen: false,
     })
   })
 
@@ -153,7 +153,7 @@ describe('Gate Overrides Flow', () => {
         '/gates/gate_1/overrides',
         expect.objectContaining({
           data: expect.objectContaining({
-            passing_user_ids: ['user_pass'],
+            passingUserIDs: ['user_pass'],
           }),
         }),
       )
@@ -187,11 +187,11 @@ describe('Gate Overrides Flow', () => {
         '/gates/gate_1/overrides',
         expect.objectContaining({
           data: expect.objectContaining({
-            environment_overrides: [
+            environmentOverrides: [
               expect.objectContaining({
                 environment: 'Development',
-                unit_id: 'stableID',
-                passing_ids: ['stable_pass'],
+                passingIDs: ['stable_pass'],
+                unitID: 'stableID',
               }),
             ],
           }),
@@ -244,11 +244,11 @@ describe('Gate Overrides Flow', () => {
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_1/overrides',
         expect.objectContaining({
-          environment_overrides: expect.arrayContaining([
+          environmentOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: 'Staging',
-              unit_id: 'stableID',
-              passing_ids: ['new_stable_id'],
+              passingIDs: ['new_stable_id'],
+              unitID: 'stableID',
             }),
           ]),
         }),
@@ -298,11 +298,11 @@ describe('Gate Overrides Flow', () => {
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_1/overrides',
         expect.objectContaining({
-          environment_overrides: expect.arrayContaining([
+          environmentOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: null,
-              unit_id: 'stableID',
-              passing_ids: ['all_env_stable_id'],
+              passingIDs: ['all_env_stable_id'],
+              unitID: 'stableID',
             }),
           ]),
         }),

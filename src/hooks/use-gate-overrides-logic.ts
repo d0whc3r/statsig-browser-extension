@@ -34,29 +34,29 @@ export const useGateOverridesLogic = (
     }[] = []
 
     // Root overrides (implied default env, userID)
-    overrides.passing_user_ids.forEach((id) =>
-      result.push({ id, type: 'pass', environment: null, idType: 'userID' }),
+    overrides?.passingUserIDs?.forEach((id) =>
+      result.push({ environment: null, id, idType: 'userID', type: 'pass' }),
     )
-    overrides.failing_user_ids.forEach((id) =>
-      result.push({ id, type: 'fail', environment: null, idType: 'userID' }),
+    overrides?.failingUserIDs?.forEach((id) =>
+      result.push({ environment: null, id, idType: 'userID', type: 'fail' }),
     )
 
     // Environment overrides
-    overrides.environment_overrides?.forEach((group) => {
-      group.passing_ids.forEach((id) =>
+    overrides?.environmentOverrides?.forEach((group) => {
+      group.passingIDs?.forEach((id) =>
         result.push({
-          id,
-          type: 'pass',
           environment: group.environment,
-          idType: group.unit_id,
+          id,
+          idType: group.unitID,
+          type: 'pass',
         }),
       )
-      group.failing_ids.forEach((id) =>
+      group.failingIDs?.forEach((id) =>
         result.push({
-          id,
-          type: 'fail',
           environment: group.environment,
-          idType: group.unit_id,
+          id,
+          idType: group.unitID,
+          type: 'fail',
         }),
       )
     })

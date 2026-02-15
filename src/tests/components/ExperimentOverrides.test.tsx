@@ -2,14 +2,13 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { useExperimentOverridesLogic } from '@/src/hooks/use-experiment-overrides-logic'
-
 import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
+import { useExperimentOverridesLogic } from '@/src/hooks/use-experiment-overrides-logic'
 
 vi.mock('@/src/hooks/use-experiment-overrides-logic')
 
 // Mock ResizeObserver
-global.ResizeObserver = class ResizeObserver {
+globalThis.ResizeObserver = class ResizeObserver {
   observe() {}
   unobserve() {}
   disconnect() {}
@@ -22,27 +21,27 @@ const mockGroup = {
   size: 50,
 }
 
-describe('ExperimentOverrides', () => {
+describe(ExperimentOverrides, () => {
   const mockHandleAdd = vi.fn()
   const mockHandleDelete = vi.fn()
   const mockSaveToLocalStorage = vi.fn()
   const mockClearOverride = vi.fn()
 
   const defaultMockValues = {
-    currentLocalStorageValue: '',
-    newId: '',
-    setNewId: vi.fn(),
-    selectedGroupId: '',
-    setSelectedGroupId: vi.fn(),
-    isPending: false,
-    saveToLocalStorage: mockSaveToLocalStorage,
-    clearOverride: mockClearOverride,
-    handleAdd: mockHandleAdd,
-    handleDelete: mockHandleDelete,
     canEdit: true,
+    clearOverride: mockClearOverride,
+    currentLocalStorageValue: '',
     detectedUser: undefined,
     detectedUserId: undefined,
+    handleAdd: mockHandleAdd,
+    handleDelete: mockHandleDelete,
     isDetectedUserOverridden: false,
+    isPending: false,
+    newId: '',
+    saveToLocalStorage: mockSaveToLocalStorage,
+    selectedGroupId: '',
+    setNewId: vi.fn(),
+    setSelectedGroupId: vi.fn(),
   }
 
   beforeEach(() => {

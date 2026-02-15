@@ -1,6 +1,10 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { ExperimentOverride, ExperimentOverridesResponse, UserIDOverride } from '@/src/types/statsig'
+import type {
+  ExperimentOverride,
+  ExperimentOverridesResponse,
+  UserIDOverride,
+} from '@/src/types/statsig'
 
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
@@ -22,8 +26,8 @@ const fetchOverrides = async (experimentId: string): Promise<OverridesData> => {
       `/experiments/${experimentId}/overrides`,
     )
     return {
-      userIDOverrides: result.data.userIDOverrides.filter((override) => override.ids.length > 0),
       overrides: result.data.overrides || [],
+      userIDOverrides: result.data.userIDOverrides.filter((override) => override.ids.length > 0),
     }
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })

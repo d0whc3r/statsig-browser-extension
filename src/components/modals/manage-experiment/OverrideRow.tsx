@@ -15,38 +15,36 @@ interface OverrideRowProps {
   onDelete: (override: AnyOverride) => void
 }
 
-export const OverrideRow = memo(
-  ({ override, canEdit, isPending, onDelete }: OverrideRowProps) => {
-    const handleDelete = useCallback(() => {
-      onDelete(override)
-    }, [onDelete, override])
+export const OverrideRow = memo(({ override, canEdit, isPending, onDelete }: OverrideRowProps) => {
+  const handleDelete = useCallback(() => {
+    onDelete(override)
+  }, [onDelete, override])
 
-    return (
-      <TableRow>
-        <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
-        <TableCell>{override.groupID}</TableCell>
-        {canEdit && (
-          <TableCell>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
-                  onClick={handleDelete}
-                  disabled={isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Delete override</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Delete override</TooltipContent>
-            </Tooltip>
-          </TableCell>
-        )}
-      </TableRow>
-    )
-  },
-)
+  return (
+    <TableRow>
+      <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
+      <TableCell>{override.groupID}</TableCell>
+      {canEdit && (
+        <TableCell>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-destructive hover:text-destructive"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete override</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Delete override</TooltipContent>
+          </Tooltip>
+        </TableCell>
+      )}
+    </TableRow>
+  )
+})
 
 OverrideRow.displayName = 'OverrideRow'

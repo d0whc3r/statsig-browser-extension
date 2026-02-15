@@ -38,9 +38,6 @@ const ExperimentRuleCard = memo(({ rule }: ExperimentRuleCardProps) => (
           <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
             {rule.name}
           </CardTitle>
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-[10px] text-muted-foreground font-mono">{rule.id}</span>
-          </div>
         </div>
         <Badge
           variant={rule.passPercentage === MAX_PERCENTAGE ? 'default' : 'secondary'}

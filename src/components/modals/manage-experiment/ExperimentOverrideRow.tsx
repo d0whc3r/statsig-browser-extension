@@ -1,12 +1,12 @@
 import { Trash2 } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
+import type { AnyOverride } from '@/src/handlers/delete-override'
 import type { ExperimentOverride } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
-import type { AnyOverride } from '@/src/handlers/delete-override'
 
 interface ExperimentOverrideRowProps {
   override: ExperimentOverride
