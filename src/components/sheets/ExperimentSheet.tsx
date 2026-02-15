@@ -5,6 +5,7 @@ import { ExperimentOverrides } from '@/src/components/ExperimentOverrides'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
 import { useOverrides } from '@/src/hooks/use-overrides'
+import { STORAGE_KEYS } from '@/src/lib/storage-keys'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
@@ -20,7 +21,7 @@ const useExperimentSheetState = () => {
     currentItemType,
   } = useUIStore((state) => state)
 
-  const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
+  const [typeApiKey] = useLocalStorage(STORAGE_KEYS.API_KEY_TYPE, 'read-key')
 
   const isOpen = isItemSheetOpen && currentItemType === 'experiment'
 
@@ -30,7 +31,7 @@ const useExperimentSheetState = () => {
     error: experimentError,
   } = useExperiment(isOpen ? currentItemId : undefined)
   const {
-    data: overrides,
+    data: overridesData,
     isLoading: isLoadingOverrides,
     error: overridesError,
   } = useOverrides(isOpen ? currentItemId : undefined)
@@ -50,7 +51,7 @@ const useExperimentSheetState = () => {
     handleClose,
     handleManage,
     isLoading: isLoadingExperiment || isLoadingOverrides,
-    overrides,
+    overridesData,
     typeApiKey,
   }
 }
@@ -63,7 +64,7 @@ export const ExperimentSheet = () => {
     handleClose,
     handleManage,
     isLoading,
-    overrides,
+    overridesData,
     typeApiKey,
   } = useExperimentSheetState()
 
@@ -79,10 +80,10 @@ export const ExperimentSheet = () => {
 
   const overridesContent = useMemo(
     () =>
-      overrides && experiment ? (
-        <ExperimentOverrides overrides={overrides} groups={experiment.groups} />
+      overridesData && experiment ? (
+        <ExperimentOverrides overrides={overridesData.userIDOverrides} groups={experiment.groups} />
       ) : null,
-    [overrides, experiment],
+    [overridesData, experiment],
   )
 
   return (

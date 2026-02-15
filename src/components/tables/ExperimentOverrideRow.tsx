@@ -1,22 +1,22 @@
 import { Trash2 } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import type { AnyOverride } from '@/src/handlers/delete-override'
-import type { Override } from '@/src/hooks/use-overrides'
+import type { ExperimentOverride } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
+import type { AnyOverride } from '@/src/handlers/delete-override'
 
-interface OverrideRowProps {
-  override: Override
+interface ExperimentOverrideRowProps {
+  override: ExperimentOverride
   typeApiKey: string
   currentItemId?: string
   deleteMutation: (variables: { experimentId: string; override: AnyOverride }) => void
 }
 
-export const OverrideRow = memo(
-  ({ override, typeApiKey, currentItemId, deleteMutation }: OverrideRowProps) => {
+export const ExperimentOverrideRow = memo(
+  ({ override, typeApiKey, currentItemId, deleteMutation }: ExperimentOverrideRowProps) => {
     const handleDelete = useCallback(() => {
       if (currentItemId) {
         deleteMutation({
@@ -28,7 +28,8 @@ export const OverrideRow = memo(
 
     return (
       <TableRow>
-        <TableCell className="font-medium">{override.ids.join(', ')}</TableCell>
+        <TableCell className="font-medium capitalize">{override.type}</TableCell>
+        <TableCell>{override.name}</TableCell>
         <TableCell>{override.groupID}</TableCell>
         {typeApiKey === 'write-key' && (
           <TableCell>
@@ -53,4 +54,4 @@ export const OverrideRow = memo(
   },
 )
 
-OverrideRow.displayName = 'OverrideRow'
+ExperimentOverrideRow.displayName = 'ExperimentOverrideRow'

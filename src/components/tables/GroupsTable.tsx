@@ -62,7 +62,7 @@ const GroupRow = memo(({ group, canEdit, onEdit }: GroupRowProps) => {
 GroupRow.displayName = 'GroupRow'
 
 export const GroupsTable = memo(({ changeView, setCurrentGroup }: Props) => {
-  const [typeApiKey] = useLocalStorage('statsig-type-api-key', 'read-key')
+  const [typeApiKey] = useLocalStorage('statsig-api-key-type', 'read-key')
   const { currentItemId } = useUIStore((state) => state)
   const { data: experiment } = useExperiment(currentItemId)
   const groups = experiment?.groups || []

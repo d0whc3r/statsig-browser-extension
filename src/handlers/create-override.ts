@@ -1,17 +1,18 @@
-import type { UserIDOverride } from '@/src/types/statsig'
+import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
 import { api } from '../lib/fetcher'
 import { handleApiError } from '../lib/utils'
 
 export type Override = UserIDOverride
+export type AnyOverride = UserIDOverride | ExperimentOverride
 
 interface CreateOverrideArgs {
   experimentId: string
-  override: Override
+  override: AnyOverride
 }
 
 interface CreateOverrideResponse {
-  data: Override[] | null
+  data: AnyOverride[] | null
   error?: string
   success: boolean
 }
@@ -19,12 +20,16 @@ interface CreateOverrideResponse {
 const HTTP_OK = 200
 const HTTP_UNAUTHORIZED = 401
 
+function isUserIDOverride(override: AnyOverride): override is UserIDOverride {
+  return 'ids' in override
+}
+
 /**
- * Creates a user override for a specific experiment.
+ * Creates an override for a specific experiment.
  *
  * @param args - The arguments for creating an override
  * @param args.experimentId - The ID of the experiment
- * @param args.override - The override details (user IDs, group ID)
+ * @param args.override - The override details (user IDs, group ID, or gate/segment override)
  * @returns A promise resolving to the updated list of overrides or an error
  */
 export const createOverride = async ({
@@ -32,10 +37,11 @@ export const createOverride = async ({
   override,
 }: CreateOverrideArgs): Promise<CreateOverrideResponse> => {
   try {
-    const { data, status } = await api.patch(`/experiments/${experimentId}/overrides`, {
-      overrides: [],
-      userIDOverrides: [override],
-    })
+    const payload = isUserIDOverride(override)
+      ? { userIDOverrides: [override], overrides: [] }
+      : { userIDOverrides: [], overrides: [override] }
+
+    const { data, status } = await api.patch(`/experiments/${experimentId}/overrides`, payload)
 
     if (status === HTTP_UNAUTHORIZED) {
       return {
@@ -46,13 +52,14 @@ export const createOverride = async ({
       }
     }
 
-    const overrides = data?.data?.userIDOverrides
-      ?.filter((override: Override) => override.ids.length > 0)
-      .map((override: Override) => Object.assign(override, { environment: undefined }))
+    // Since we invalidate queries after mutation, we don't strictly need to return the updated list here
+    // unless we want to use it for optimistic updates or display.
+    // The previous implementation filtered and mapped userIDOverrides.
+    // We'll return an empty array for now as we rely on query invalidation.
 
     return {
       // eslint-disable-next-line unicorn/no-null
-      data: overrides ?? null,
+      data: [],
       error: undefined,
       success: status === HTTP_OK,
     }

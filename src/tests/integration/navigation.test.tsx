@@ -9,16 +9,16 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock sub-components to isolate navigation logic and avoid complex data fetching setup
-vi.mock('@/src/components/tables/feature-gates-table', () => ({
-  default: () => <div data-testid="feature-gates-table">Feature Gates Table</div>,
+vi.mock('@/src/components/tables/FeatureGatesTable', () => ({
+  FeatureGatesTable: () => <div data-testid="feature-gates-table">Feature Gates Table</div>,
 }))
-vi.mock('@/src/components/tables/experiments-table', () => ({
-  default: () => <div data-testid="experiments-table">Experiments Table</div>,
+vi.mock('@/src/components/tables/ExperimentsTable', () => ({
+  ExperimentsTable: () => <div data-testid="experiments-table">Experiments Table</div>,
 }))
-vi.mock('@/src/components/tables/dynamic-configs-table', () => ({
-  default: () => <div data-testid="dynamic-configs-table">Dynamic Configs Table</div>,
+vi.mock('@/src/components/tables/DynamicConfigsTable', () => ({
+  DynamicConfigsTable: () => <div data-testid="dynamic-configs-table">Dynamic Configs Table</div>,
 }))
-vi.mock('@/src/components/audit-logs', () => ({
+vi.mock('@/src/components/AuditLogs', () => ({
   AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
 }))
 

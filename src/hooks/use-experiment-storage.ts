@@ -6,18 +6,22 @@ import {
   updateStorageValue,
 } from '@/src/handlers/local-storage-handlers'
 import { useLocalStorage } from '@/src/hooks/use-local-storage'
+import { STORAGE_KEYS } from '@/src/lib/storage-keys'
 import { useContextStore } from '@/src/store/use-context-store'
 
 export const useExperimentStorage = () => {
   const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore(
     (state) => state,
   )
-  const [storageKeyName] = useLocalStorage('statsig-local-storage-key', 'statsig_gate_overrides')
+  const [storageKeyName] = useLocalStorage(
+    STORAGE_KEYS.LOCAL_STORAGE_KEY,
+    'statsig_gate_overrides',
+  )
   const [storageType] = useLocalStorage<'cookie' | 'localStorage'>(
-    'statsig-storage-type',
+    STORAGE_KEYS.STORAGE_TYPE,
     'localStorage',
   )
-  const [, setCurrentOverrides] = useLocalStorage<unknown[]>('statsig-current-overrides', [])
+  const [, setCurrentOverrides] = useLocalStorage<unknown[]>(STORAGE_KEYS.CURRENT_OVERRIDES, [])
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {

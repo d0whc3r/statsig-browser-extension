@@ -23,3 +23,32 @@ globalThis.chrome = {
     sendMessage: vi.fn(),
   },
 } as unknown as typeof chrome
+
+// Mock ResizeObserver
+globalThis.ResizeObserver = class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+// Mock matchMedia
+Object.defineProperty(window, 'matchMedia', {
+  writable: true,
+  value: vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(), // deprecated
+    removeListener: vi.fn(), // deprecated
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  })),
+})
+
+// Mock PointerEvents if needed (jsdom doesn't support them well)
+// But usually Radix works with userEvent which dispatches pointer events.
+// However, setPointerCapture is often missing.
+Element.prototype.setPointerCapture = vi.fn()
+Element.prototype.releasePointerCapture = vi.fn()
+Element.prototype.hasPointerCapture = vi.fn()

@@ -35,19 +35,25 @@ export const useExperimentOverrideHandlers = ({
     [overrides, saveToLocalStorage],
   )
 
-  const handleAdd = useCallback(() => {
-    if (!currentItemId || !newId || !selectedGroupId) {
-      return
-    }
+  const handleAdd = useCallback(
+    (userId?: string, groupId?: string) => {
+      const id = userId || newId
+      const group = groupId || selectedGroupId
 
-    addMutation({
-      experimentId: currentItemId,
-      override: {
-        groupID: selectedGroupId,
-        ids: [newId],
-      },
-    })
-  }, [currentItemId, newId, selectedGroupId, addMutation])
+      if (!currentItemId || !id || !group) {
+        return
+      }
+
+      addMutation({
+        experimentId: currentItemId,
+        override: {
+          groupID: group,
+          ids: [id],
+        },
+      })
+    },
+    [currentItemId, newId, selectedGroupId, addMutation],
+  )
 
   const handleDelete = useCallback(
     (groupId: string, idToRemove: string) => {
