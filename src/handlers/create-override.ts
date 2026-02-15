@@ -41,7 +41,7 @@ export const createOverride = async ({
       ? { overrides: [], userIDOverrides: [override] }
       : { overrides: [override], userIDOverrides: [] }
 
-    const { data, status } = await api.post(`/experiments/${experimentId}/overrides`, payload)
+    const { status } = await api.post(`/experiments/${experimentId}/overrides`, payload)
 
     if (status === HTTP_UNAUTHORIZED) {
       return {

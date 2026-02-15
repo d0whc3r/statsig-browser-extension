@@ -13,15 +13,13 @@ import {
 } from '@/src/lib/storage'
 import { useContextStore } from '@/src/store/use-context-store'
 
-import type { ExperimentOverride } from '../types/statsig'
-
 export const useExperimentStorage = () => {
   const { currentLocalStorageValue, setCurrentLocalStorageValue } = useContextStore(
     (state) => state,
   )
   const [storageKeyName] = useWxtStorage<string>(localStorageKeyStorage)
   const [storageType] = useWxtStorage<'localStorage' | 'cookie'>(storageTypeStorage)
-  const [, setCurrentOverrides] = useWxtStorage<ExperimentOverride[]>(currentOverridesStorage)
+  const [, setCurrentOverrides] = useWxtStorage(currentOverridesStorage)
 
   useEffect(() => {
     chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {

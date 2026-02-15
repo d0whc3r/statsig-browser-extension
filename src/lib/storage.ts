@@ -25,7 +25,7 @@ export const apiKeyTypeStorage = storage.defineItem<'write-key' | 'read-key'>(
   },
 )
 
-export const currentOverridesStorage = storage.defineItem<unknown[]>(
+export const currentOverridesStorage = storage.defineItem<{ name: string }[]>(
   'local:statsig-current-overrides',
   {
     defaultValue: [],

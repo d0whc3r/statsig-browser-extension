@@ -18,8 +18,10 @@ export default defineBackground(() => {
           finalHeaders['STATSIG-API-KEY'] = apiKey.replaceAll('"', '')
         }
 
+        const body = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
+
         fetch(fullUrl, {
-          body: data ? JSON.stringify(data) : undefined,
+          body,
           headers: finalHeaders,
           method,
         })

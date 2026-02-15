@@ -8,10 +8,6 @@ export const api = axios.create({
   baseURL: API_BASE_URL,
 })
 
-api.interceptors.request.use((config) => {
-  return config
-})
-
 const backgroundAdapter: AxiosAdapter = async (config) => {
   // Use the api instance to resolve the full URL including params
   const url = api.getUri(config)

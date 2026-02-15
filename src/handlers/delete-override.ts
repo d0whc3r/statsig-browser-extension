@@ -40,7 +40,7 @@ export const deleteOverride = async ({
       ? { overrides: [], userIDOverrides: [override] }
       : { overrides: [override], userIDOverrides: [] }
 
-    const { data, status } = await api.delete(`/experiments/${experimentId}/overrides`, {
+    const { status } = await api.delete(`/experiments/${experimentId}/overrides`, {
       data: payload,
     })
 

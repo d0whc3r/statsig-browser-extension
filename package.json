@@ -79,6 +79,7 @@
     "lint-staged": "16.2.7",
     "oxfmt": "0.32.0",
     "oxlint": "1.47.0",
+    "oxlint-tsgolint": "0.13.0",
     "postcss": "8.5.6",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3",
