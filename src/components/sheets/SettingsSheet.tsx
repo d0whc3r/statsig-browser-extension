@@ -20,7 +20,6 @@ export const SettingsSheet = () => {
     value,
     handleValueChange,
     error,
-    apiKeyValue,
     storageType,
     handleStorageTypeChange,
     handleSave,
@@ -38,12 +37,7 @@ export const SettingsSheet = () => {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
-          <StatsigKeysSettings
-            value={value}
-            handleValueChange={handleValueChange}
-            error={error}
-            apiKeyValue={apiKeyValue}
-          />
+          <StatsigKeysSettings value={value} handleValueChange={handleValueChange} error={error} />
 
           <StorageSettings
             storageType={storageType}

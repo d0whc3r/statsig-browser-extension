@@ -4,6 +4,7 @@ import type { AuditLog } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
+import { Skeleton } from '@/src/components/ui/skeleton'
 
 import { AuditLogRow } from './AuditLogRow'
 
@@ -15,6 +16,7 @@ interface AuditLogListProps {
   onLoadMore: () => void
   hasNextPage: boolean
   isFetchingNextPage: boolean
+  isLoading: boolean
 }
 
 const EmptyState = ({
@@ -67,8 +69,34 @@ export const AuditLogList = memo(
     onLoadMore,
     hasNextPage,
     isFetchingNextPage,
-  }: AuditLogListProps) => (
-    <div className="flex-1 overflow-auto min-h-0">
+    isLoading,
+  }: AuditLogListProps) => {
+    if (isLoading) {
+      return (
+        <div className="flex-1 overflow-auto min-h-0 divide-y">
+          {Array.from({ length: 10 }).map((_, i) => (
+            <div key={i} className="px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <Skeleton className="h-5 w-16" />
+                    <Skeleton className="h-5 flex-1 max-w-[200px]" />
+                  </div>
+                  <Skeleton className="h-4 w-3/4 mb-1.5" />
+                  <div className="flex items-center gap-1.5">
+                    <Skeleton className="h-3 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )
+    }
+
+    return (
+      <div className="flex-1 overflow-auto min-h-0">
       {filteredItems.length === 0 ? (
         <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
       ) : (
@@ -89,6 +117,6 @@ export const AuditLogList = memo(
         </div>
       )}
     </div>
-  ),
-)
+  )
+})
 AuditLogList.displayName = 'AuditLogList'

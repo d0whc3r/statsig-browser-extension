@@ -4,6 +4,7 @@ import type { dynamicConfigColumns } from '@/src/components/tables/data'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRow } from '@/src/components/tables/DynamicConfigRow'
+import { TableLoadingState } from '@/src/components/tables/TableLoadingState'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
@@ -28,13 +29,7 @@ export const DynamicConfigsTableBody = ({
   setCurrentConfig,
 }: DynamicConfigsTableBodyProps) => {
   if (isLoading) {
-    return (
-      <TableRow>
-        <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          Loading...
-        </TableCell>
-      </TableRow>
-    )
+    return <TableLoadingState columnCount={headerColumns.length} />
   }
 
   if (isError) {

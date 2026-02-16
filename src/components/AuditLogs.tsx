@@ -1,8 +1,5 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 
-import type { PaginatedResponse } from '@/src/hooks/use-audit-logs'
-import type { AuditLog } from '@/src/types/statsig'
-
 import { useAuditLogFiltering } from '@/src/hooks/use-audit-log-filtering'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -13,17 +10,14 @@ import { AuditLogList } from './audit-logs/AuditLogList'
 export const AuditLogs = memo(() => {
   const [filterValue, setFilterValue] = useState('')
   const [actionFilter, setActionFilter] = useState('all')
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch } =
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } =
     useAuditLogs()
 
   const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useUIStore(
     (state) => state,
   )
 
-  const auditLogs = useMemo(
-    () => data?.pages.flatMap((page: PaginatedResponse<AuditLog>) => page.data) || [],
-    [data],
-  )
+  const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
 
   const setCurrentAuditLog = useCallback(
     (auditLogId: string) => {
@@ -59,6 +53,7 @@ export const AuditLogs = memo(() => {
         onLoadMore={fetchNextPage}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
+        isLoading={isLoading}
       />
     </div>
   )

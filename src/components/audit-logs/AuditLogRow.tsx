@@ -47,11 +47,23 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
     event.stopPropagation()
   }, [])
 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        onViewDetails(auditLog.id)
+      }
+    },
+    [onViewDetails, auditLog.id],
+  )
+
   return (
-    <button
-      type="button"
+    <div
       className="w-full text-left px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors focus:outline-none focus:bg-muted/50 block"
       onClick={handleRowClick}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
@@ -143,7 +155,7 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
           </DropdownMenu>
         </div>
       </div>
-    </button>
+    </div>
   )
 })
 

@@ -8,7 +8,7 @@ interface SettingsState {
 
   // Actions
   initialize: () => void
-  setApiKey: (key: string) => void
+  setApiKey: (key: string) => Promise<void>
 }
 
 export const useSettingsStore = create<SettingsState>((set) => ({
@@ -30,12 +30,14 @@ export const useSettingsStore = create<SettingsState>((set) => ({
 
   isApiKeyLoading: true,
 
-  setApiKey: (key: string) => {
-    // Optimistic update
-    set({ apiKey: key })
-    // Persist
-    apiKeyStorage.setValue(key).catch((error) => {
+  setApiKey: async (key: string) => {
+    try {
+      // Persist first to ensure background script can read it
+      await apiKeyStorage.setValue(key)
+      // Optimistic update
+      set({ apiKey: key })
+    } catch (error) {
       console.error('Failed to persist API key:', error)
-    })
+    }
   },
 }))

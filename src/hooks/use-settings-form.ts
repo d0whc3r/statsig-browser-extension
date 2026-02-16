@@ -1,4 +1,3 @@
-import { useQueryClient } from '@tanstack/react-query'
 import { useCallback } from 'react'
 
 import { useSettingsFormState } from '@/src/hooks/use-settings-form-state'
@@ -6,12 +5,9 @@ import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useSettingsForm = () => {
-  const queryClient = useQueryClient()
   const { isSettingsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
   const {
-    apiKey,
     localStorageValue,
-    setApiKey,
     setLocalStorageKey,
     setStorageType,
     setTypeApiKey,
@@ -19,8 +15,7 @@ export const useSettingsForm = () => {
     typeApiKey,
   } = useSettingsStorage()
 
-  const { apiKeyValue, error, handleApiKeyChange, handleValueChange, setError, value } =
-    useSettingsFormState(apiKey, localStorageValue)
+  const { error, handleValueChange, setError, value } = useSettingsFormState(localStorageValue)
 
   const handleSave = useCallback(() => {
     if (value === '') {
@@ -29,22 +24,9 @@ export const useSettingsForm = () => {
     }
 
     setLocalStorageKey(value)
-    if (apiKeyValue !== apiKey) {
-      setApiKey(apiKeyValue)
-      queryClient.invalidateQueries()
-    }
     setSettingsSheetOpen(false)
     setError(false)
-  }, [
-    value,
-    setLocalStorageKey,
-    apiKeyValue,
-    apiKey,
-    setApiKey,
-    queryClient,
-    setSettingsSheetOpen,
-    setError,
-  ])
+  }, [value, setLocalStorageKey, setSettingsSheetOpen, setError])
 
   const handleClose = useCallback(
     (open: boolean) => {
@@ -70,9 +52,7 @@ export const useSettingsForm = () => {
   )
 
   return {
-    apiKeyValue,
     error,
-    handleApiKeyChange,
     handleClose,
     handleSave,
     handleStorageTypeChange,

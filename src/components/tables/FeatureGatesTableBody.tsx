@@ -4,6 +4,7 @@ import type { featureGateColumns } from '@/src/components/tables/data'
 import type { FeatureGate } from '@/src/types/statsig'
 
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
+import { TableLoadingState } from '@/src/components/tables/TableLoadingState'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
@@ -28,13 +29,7 @@ export const FeatureGatesTableBody = ({
   setCurrentFeatureGate,
 }: FeatureGatesTableBodyProps) => {
   if (isLoading) {
-    return (
-      <TableRow>
-        <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          Loading...
-        </TableCell>
-      </TableRow>
-    )
+    return <TableLoadingState columnCount={headerColumns.length} />
   }
 
   if (isError) {

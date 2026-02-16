@@ -82,9 +82,9 @@ export function AppContent() {
     [setItemSheetOpen, setCurrentItemId],
   )
 
-  const handleLogout = useCallback(() => {
+  const handleLogout = useCallback(async () => {
     // 1. Reset Settings (clears API Key)
-    resetSettings()
+    await resetSettings()
 
     // 2. Clear Query Cache (removes all fetched data)
     queryClient.clear()

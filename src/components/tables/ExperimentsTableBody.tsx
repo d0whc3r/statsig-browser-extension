@@ -4,6 +4,7 @@ import type { experimentColumns } from '@/src/components/tables/data'
 import type { Experiment } from '@/src/types/statsig'
 
 import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
+import { TableLoadingState } from '@/src/components/tables/TableLoadingState'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
@@ -21,13 +22,7 @@ export function ExperimentsTableBody({
   setCurrentExperiment,
 }: ExperimentsTableBodyProps) {
   if (isLoading) {
-    return (
-      <TableRow>
-        <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          Loading...
-        </TableCell>
-      </TableRow>
-    )
+    return <TableLoadingState columnCount={headerColumns.length} />
   }
 
   if (items.length === 0) {
