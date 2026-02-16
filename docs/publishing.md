@@ -11,34 +11,60 @@ Before setting up the automation, ensure you have:
 
 ## Environment Variables
 
-The following environment variables must be set in your CI/CD environment (e.g., GitHub Secrets).
+The publishing workflow uses the [PlasmoHQ/bpp](https://github.com/PlasmoHQ/bpp) action, which requires a single JSON secret named `SUBMIT_KEYS`.
 
-### Chrome Web Store
+### `SUBMIT_KEYS` Secret
 
-1.  **Extension ID (`CHROME_EXTENSION_ID`)**: Found in the Chrome Web Store URL of your extension (e.g., `https://chrome.google.com/webstore/detail/.../EXTENSION_ID`).
-2.  **Client ID (`CHROME_CLIENT_ID`)**, **Client Secret (`CHROME_CLIENT_SECRET`)**, **Refresh Token (`CHROME_REFRESH_TOKEN`)**:
-    - Go to the [Google Cloud Console](https://console.cloud.google.com/).
-    - Create a project.
-    - Enable the **Chrome Web Store API**.
-    - Configure the OAuth consent screen (Internal or External).
-    - Create credentials -> OAuth client ID (Desktop app).
-    - Use the `clientId` and `clientSecret` to obtain a `refreshToken`. You can use a tool like [chrome-webstore-upload-cli](https://github.com/DrewML/chrome-webstore-upload-cli) or follow the [official guide](https://developer.chrome.com/docs/webstore/using_webstore_api/#before_you_begin) to generate the token.
+You must create a single repository secret named `SUBMIT_KEYS` containing a JSON object with the credentials for all stores you want to publish to.
 
-### Firefox Add-ons (AMO)
+**Format:**
 
-1.  **Extension ID (`FIREFOX_EXTENSION_ID`)**: The UUID of your extension (e.g., `{uuid}`). You can find this in the Developer Hub after your first submission.
-2.  **JWT Issuer (`FIREFOX_JWT_ISSUER`)** and **JWT Secret (`FIREFOX_JWT_SECRET`)**:
-    - Log in to the [Mozilla Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/).
-    - Go to **Settings** -> **Manage API Keys**.
-    - Generate a new set of credentials. The "JWT issuer" is your Issuer string, and the "JWT secret" is your Secret string.
+```json
+{
+  "chrome": {
+    "extensionId": "your-extension-id",
+    "clientId": "your-client-id",
+    "clientSecret": "your-client-secret",
+    "refreshToken": "your-refresh-token"
+  },
+  "firefox": {
+    "extensionId": "your-extension-id",
+    "jwtIssuer": "your-jwt-issuer",
+    "jwtSecret": "your-jwt-secret"
+  },
+  "edge": {
+    "productId": "your-product-id",
+    "clientId": "your-client-id",
+    "clientSecret": "your-client-secret"
+  }
+}
+```
 
-### Microsoft Edge Add-ons
+### Credentials Guide
 
-1.  **Product ID (`EDGE_PRODUCT_ID`)**: The Store ID of your extension found in the [Partner Center](https://partner.microsoft.com/en-us/dashboard/microsoftedge/overview).
-2.  **Client ID (`EDGE_CLIENT_ID`)** and **API Key (`EDGE_API_KEY`)**:
-    - Go to **Partner Center** -> **Microsoft Edge** -> **Settings** -> **Developer settings**.
-    - Under "Associating Azure Active Directory with your Partner Center account", ensure you have linked an AD tenant.
-    - Create a new client secret (API Key) and copy the Client ID and Secret (API Key).
+#### Chrome Web Store
+
+1.  **extensionId**: Found in the Chrome Web Store URL.
+2.  **clientId**, **clientSecret**, **refreshToken**:
+    - Go to [Google Cloud Console](https://console.cloud.google.com/).
+    - Enable **Chrome Web Store API**.
+    - Create OAuth 2.0 Client ID (Desktop app).
+    - Use credentials to generate a refresh token (e.g., via [chrome-webstore-upload-cli](https://github.com/DrewML/chrome-webstore-upload-cli)).
+
+#### Firefox Add-ons (AMO)
+
+1.  **extensionId**: The UUID of your extension (e.g., `{uuid}`).
+2.  **jwtIssuer**, **jwtSecret**:
+    - Go to [Mozilla Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/) -> Settings -> Manage API Keys.
+
+#### Microsoft Edge Add-ons
+
+1.  **productId**: Store ID found in [Partner Center](https://partner.microsoft.com/en-us/dashboard/microsoftedge/overview).
+2.  **clientId**, **clientSecret**:
+    - Go to Partner Center -> Microsoft Edge -> Settings -> Developer settings.
+    - Create a new client secret (API Key). **Note**: `clientSecret` here corresponds to the "API Key" or "Secret" from Partner Center.
+
+### GitHub Token
 
 ### GitHub Token
 

@@ -13,8 +13,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm zip:all",
-        "publishCmd": "node scripts/publish-extensions.mjs"
+        "prepareCmd": "pnpm zip:all"
       }
     ],
     [

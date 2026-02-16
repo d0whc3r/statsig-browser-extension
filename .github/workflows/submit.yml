@@ -3,30 +3,34 @@ on:
   release:
     types: [published]
 
+env:
+  NODE_OPTIONS: "--max-old-space-size=4096 --trace-warnings"
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
 
-      - name: Use Node.js 18.x
-        uses: actions/setup-node@v6
-        with:
-          node-version: 18.x
-          cache: "npm"
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
 
-      - name: Install dependencies with npm
-        run: npm i
+      - name: Use Node.js 24.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Build and zip extension artifact
-        run: |
-          export NODE_OPTIONS="--max-old-space-size=4096 --trace-warnings"
-          npm run build
-        env:
-          NODE_ENV: production
+        run: pnpm run zip:all
 
       - name: Browser Platform Publish
         uses: PlasmoHQ/bpp@v3
         with:
           keys: ${{ secrets.SUBMIT_KEYS }}
-          artifact: build/chrome-mv3-prod.zip
+          chrome-file: .output/statsig-browser-extension-{version}-chrome.zip
+          firefox-file: .output/statsig-browser-extension-{version}-firefox.zip
+          edge-file: .output/statsig-browser-extension-{version}-edge.zip
