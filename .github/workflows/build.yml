@@ -29,7 +29,7 @@ jobs:
           NODE_ENV: production
 
       - name: Archive the extension production build as ZIP
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: ${{ github.sha }}-prod-build
           path: build/chrome-mv3-prod.zip
