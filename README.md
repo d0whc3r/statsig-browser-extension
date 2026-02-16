@@ -14,6 +14,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 > **Note**: This extension allows you to inspect current configurations and apply overrides using your **Statsig Console API Key**. These overrides are applied via the Statsig API, effectively changing them in the project context (depending on the scope of the override, usually user or gate specific), not just a local browser hack. It requires a Write-access Console API Key to perform these actions.
 
 **Key Capabilities:**
+
 - **Debug Feature Flags**: Instantly see why a gate is returning `false` or `true`.
 - **Test Variations**: Force a specific experiment group to verify UI changes on the fly.
 - **Audit SDK State**: Ensure the SDK is initialized with the correct keys and user object.
@@ -32,7 +33,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 1.  **Install the Extension**: Download it from your browser's extension store (links above) or load it as an unpacked extension.
 2.  **Navigate to your App**: Open any web application that has the Statsig SDK initialized.
 3.  **Open the Extension**: Click the Statsig icon in your browser toolbar.
-    - *Note: The extension automatically detects the Statsig SDK on the page.*
+    - _Note: The extension automatically detects the Statsig SDK on the page._
 4.  **Configure API Key**: Go to Settings and enter your **Statsig Console API Key** (Write access required for overrides).
 5.  **Interact**:
     - **Toggle Gates**: Click on a gate to override its value (requires Console API Key).
