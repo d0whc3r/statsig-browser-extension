@@ -22,7 +22,7 @@ jobs:
           persist-credentials: false # Required for semantic-release/git
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v3
+        uses: pnpm/action-setup@v4
         with:
           version: 9 # Use version from package.json if possible, or 9
       
