@@ -28,13 +28,11 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build the extension
-        run: pnpm run build
-        env:
-          NODE_ENV: production
+        run: pnpm run zip:chrome
 
       - name: Archive the extension production build as ZIP
         uses: actions/upload-artifact@v6
         with:
           name: ${{ github.sha }}-prod-build
-          path: build/chrome-mv3-prod.zip
+          path: .output/*-chrome.zip
           retention-days: 30
