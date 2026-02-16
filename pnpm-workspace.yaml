@@ -1,7 +1,12 @@
+hoist: true
+
+hoistWorkspacePackages: true
+
 onlyBuiltDependencies:
+  - core-js
+  - dtrace-provider
   - esbuild
+  - fsevents
   - spawn-sync
 
-hoist: true
 shamefullyHoist: true
-hoistWorkspacePackages: true

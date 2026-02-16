@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Statsig Community Slack
+    url: https://statsig.com/slack
+    about: Ask questions and discuss with the community.
+  - name: Statsig Documentation
+    url: https://docs.statsig.com
+    about: Read the official documentation.

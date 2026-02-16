@@ -66,10 +66,15 @@ export default defineConfig({
       },
     },
     {
-      files: ['**/*.config.{js,ts,mjs,cjs}', 'entrypoints/background.ts', 'entrypoints/content.ts'],
+      files: [
+        '**/*.config.{js,ts,mjs,cjs}',
+        'entrypoints/background.ts',
+        'entrypoints/content.ts',
+        'scripts/**/*',
+      ],
       rules: {
         'import/no-default-export': 'off',
-        'no-nodejs-modules': 'off',
+        'import/no-nodejs-modules': 'off',
       },
     },
     {

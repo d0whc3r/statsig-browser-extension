@@ -1,16 +1,27 @@
 {
   "name": "statsig-browser-extension",
   "version": "1.0.0",
-  "description": "Statsig Browser Extension",
+  "private": true,
+  "description": "Manage Statsig feature gates and experiments directly from your browser. View user details, override gates, and debug efficiently.",
   "keywords": [
+    "ab-testing",
     "browser-extension",
+    "developer-tools",
+    "experimentation",
     "feature-flags",
     "statsig"
   ],
+  "homepage": "https://github.com/d0whc3r/statsig-browser-extension#readme",
+  "bugs": {
+    "url": "https://github.com/d0whc3r/statsig-browser-extension/issues"
+  },
   "license": "ISC",
-  "author": "",
+  "author": "d0whc3r",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/d0whc3r/statsig-browser-extension.git"
+  },
   "type": "module",
-  "main": "index.js",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",
@@ -24,6 +35,7 @@
     "zip:firefox": "wxt zip -b firefox",
     "zip:chrome": "wxt zip -b chrome",
     "zip:edge": "wxt zip -b edge",
+    "zip:all": "pnpm zip:chrome && pnpm zip:firefox && pnpm zip:edge",
     "prepare": "wxt prepare",
     "compile": "tsc --noEmit",
     "postinstall": "wxt prepare",
@@ -58,6 +70,9 @@
     "zustand": "5.0.11"
   },
   "devDependencies": {
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^10.0.1",
     "@tailwindcss/postcss": "4.1.18",
     "@tailwindcss/vite": "4.1.18",
     "@testing-library/dom": "10.4.1",
@@ -81,6 +96,10 @@
     "oxlint": "1.47.0",
     "oxlint-tsgolint": "0.13.0",
     "postcss": "8.5.6",
+    "publish-browser-extension": "^4.0.3",
+    "semantic-release": "^25.0.3",
+    "semantic-release-chrome": "^3.2.0",
+    "semantic-release-firefox-add-on": "^0.2.8",
     "tailwindcss": "4.1.18",
     "typescript": "5.9.3",
     "vitest": "4.0.18",
@@ -91,6 +110,10 @@
       "oxlint --fix",
       "oxfmt --write"
     ]
+  },
+  "engines": {
+    "node": ">=24.0.0",
+    "pnpm": ">=10.0.0"
   },
   "packageManager": "pnpm@10.29.3"
 }
