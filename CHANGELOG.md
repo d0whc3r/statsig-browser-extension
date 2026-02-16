@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.0.0...v1.0.1) (2026-02-16)
+
+### Bug Fixes
+
+- fixrefox config ([5eb7190](https://github.com/d0whc3r/statsig-browser-extension/commit/5eb7190bc55307d770bce8fe9844e49b3a71ba03))
+- update images ([2110066](https://github.com/d0whc3r/statsig-browser-extension/commit/21100662d740525e96e165e05eed315b9939f9f7))
+- update permissions ([1323765](https://github.com/d0whc3r/statsig-browser-extension/commit/13237651c2a5e25f23dd739fb2b80bea3aa66c26))
+
 # 1.0.0 (2026-02-16)
 
 ### Bug Fixes
