@@ -39,7 +39,11 @@ export default defineConfig({
         'max-lines': 'off',
         'max-lines-per-function': 'off',
         'max-statements': 'off',
+        'no-explicit-any': 'off',
         'no-magic-numbers': 'off',
+        'typescript/consistent-type-imports': 'off',
+        'typescript/no-explicit-any': 'off',
+        'vitest/prefer-called-once': 'off',
       },
     },
     {

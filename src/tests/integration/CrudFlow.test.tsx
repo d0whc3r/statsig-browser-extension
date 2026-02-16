@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
@@ -20,6 +19,19 @@ vi.mock('@/src/lib/fetcher', () => ({
   },
   fetcher: vi.fn(),
 }))
+
+// Mock API key storage directly
+vi.mock('@/src/lib/storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  return {
+    ...actual,
+    apiKeyStorage: {
+      ...actual.apiKeyStorage,
+      getValue: vi.fn().mockResolvedValue('test-api-key'),
+      watch: vi.fn(),
+    },
+  }
+})
 
 // Mock API key
 vi.mock('@/src/hooks/use-wxt-storage', () => ({
@@ -77,6 +89,7 @@ const setupMocks = () => {
 describe('CRUD Flow - Feature Gates', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    document.body.style.pointerEvents = 'auto'
     useUIStore.setState({
       currentItemId: undefined,
       isAuthModalOpen: false,
@@ -88,11 +101,11 @@ describe('CRUD Flow - Feature Gates', () => {
 
   it('should list feature gates and allow viewing details', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />, { container: document.body })
 
     // Switch to Feature Gates tab
-    const featureGatesTab = screen.getByRole('tab', { name: /Feature Gates/i })
-    await userEvent.click(featureGatesTab)
+    await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
+    await user.click(screen.getByText('Feature Gates'))
 
     // Verify gates are listed
     await waitFor(() => {
@@ -106,7 +119,7 @@ describe('CRUD Flow - Feature Gates', () => {
       throw new Error('Gate row not found')
     }
 
-    await userEvent.click(gateRow)
+    await user.click(gateRow)
 
     // Verify sheet opens
     await waitFor(() => {

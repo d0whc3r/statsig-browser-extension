@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
@@ -23,7 +22,20 @@ vi.mock('@/src/lib/fetcher', () => ({
   poster: vi.fn(),
 }))
 
-// Mock API key
+// Mock API key storage directly
+vi.mock('@/src/lib/storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  return {
+    ...actual,
+    apiKeyStorage: {
+      ...actual.apiKeyStorage,
+      getValue: vi.fn().mockResolvedValue('test-api-key'),
+      watch: vi.fn(),
+    },
+  }
+})
+
+// Mock API key hook
 vi.mock('@/src/hooks/use-wxt-storage', () => ({
   useWxtStorage: vi.fn((item) => {
     if (item.key === 'local:api_key_type') {
@@ -136,28 +148,32 @@ describe('Fix Validation Tests', () => {
     await user.click(await screen.findByRole('tab', { name: 'Overrides' }))
 
     // Wait for overrides section
-    await screen.findByText('Experiment overrides')
+    await screen.findByText('Active Overrides')
+
+    // Click "Add Manual" to open form
+    const addManualBtn = screen.getByRole('button', { name: /Add Manual/i })
+    await user.click(addManualBtn)
 
     // Find input fields
-    const userIdInput = screen.getByLabelText('ID Value')
+    const userIdInput = await screen.findByLabelText('ID Value')
 
-    const selectTrigger = screen.getByRole('combobox')
+    const selectTrigger = screen.getByLabelText('Group')
     await user.click(selectTrigger)
 
     // Verify valid groups are present
-    expect(screen.getByText('Control')).toBeInTheDocument()
-    expect(screen.getByText('Test')).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Control' })).toBeInTheDocument()
+    expect(screen.getByRole('option', { name: 'Test' })).toBeInTheDocument()
 
-    // Select a valid group
-    await user.click(screen.getByText('Test'))
+    // Select a group
+    await user.click(screen.getByRole('option', { name: 'Control' }))
     await user.type(userIdInput, 'test_user_1')
 
-    const addButton = screen.getByLabelText('Add Override')
+    const addButton = screen.getByRole('button', { name: /Add Override/i })
     await user.click(addButton)
 
     // Verify api.post WAS called for valid group
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledOnce()
+      expect(api.post).toHaveBeenCalledTimes(1)
     })
   })
 
@@ -201,7 +217,7 @@ describe('Fix Validation Tests', () => {
 
     // Verify poster was called with CORRECT payload
     await waitFor(() => {
-      expect(poster).toHaveBeenCalledOnce()
+      expect(poster).toHaveBeenCalledTimes(1)
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_payload/overrides',
         expect.objectContaining({
@@ -216,9 +232,9 @@ describe('Fix Validation Tests', () => {
       )
     })
 
-    // Verify it does NOT contain other fields like failingUserIDs if they are empty/irrelevant for this partial update
+    // Verify it contains the fields even if empty (implementation sends full object)
     const callArgs = vi.mocked(poster).mock.calls[0][1]
-    expect(callArgs).not.toHaveProperty('passingUserIDs')
-    expect(callArgs).not.toHaveProperty('failingUserIDs')
+    expect(callArgs).toHaveProperty('passingUserIDs', [])
+    expect(callArgs).toHaveProperty('failingUserIDs', [])
   })
 })

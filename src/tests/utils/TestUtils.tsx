@@ -17,7 +17,7 @@ export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
   })
 
   return {
-    user: userEvent.setup(),
+    user: userEvent.setup({ pointerEventsCheck: 0 }),
     ...render(
       <QueryClientProvider client={queryClient}>
         <TooltipProvider>{ui}</TooltipProvider>

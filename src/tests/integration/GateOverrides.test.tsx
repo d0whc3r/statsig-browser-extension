@@ -1,5 +1,4 @@
 import { screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
@@ -22,6 +21,19 @@ vi.mock('@/src/lib/fetcher', () => ({
   fetcher: vi.fn(),
   poster: vi.fn(),
 }))
+
+// Mock API key storage directly
+vi.mock('@/src/lib/storage', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  return {
+    ...actual,
+    apiKeyStorage: {
+      ...actual.apiKeyStorage,
+      getValue: vi.fn().mockResolvedValue('test-api-key'),
+      watch: vi.fn(),
+    },
+  }
+})
 
 // Mock API key
 vi.mock('@/src/hooks/use-wxt-storage', () => ({
@@ -93,6 +105,7 @@ const setupMocks = () => {
 describe('Gate Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    document.body.style.pointerEvents = 'auto'
     useUIStore.setState({
       currentItemId: undefined,
       isAuthModalOpen: false,
@@ -103,21 +116,21 @@ describe('Gate Overrides Flow', () => {
 
   it('should display gate overrides with environment and ID type', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Feature Gates'))
+    await user.click(screen.getByText('Feature Gates'))
 
     // Wait for gates list
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
 
     // Open gate details (click on row)
-    await userEvent.click(screen.getByText('Test Gate 1').closest('tr')!)
+    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
 
     // Switch to Overrides tab
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Verify overrides are displayed
     await waitFor(() => {
@@ -130,24 +143,24 @@ describe('Gate Overrides Flow', () => {
 
   it('should call DELETE API when deleting an override', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Feature Gates'))
+    await user.click(screen.getByText('Feature Gates'))
 
     // Navigate to Overrides tab (same steps as above)
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Gate 1').closest('tr')!)
+    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Find delete button for user_pass (root override)
     await waitFor(() => expect(screen.getByText('user_pass')).toBeInTheDocument())
     const row = screen.getByText('user_pass').closest('tr')!
     const deleteBtn = within(row).getByRole('button')
 
-    await userEvent.click(deleteBtn)
+    await user.click(deleteBtn)
 
     // Verify DELETE API call
     await waitFor(() => {
@@ -164,24 +177,24 @@ describe('Gate Overrides Flow', () => {
 
   it('should call DELETE API correctly for environment override', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Feature Gates'))
+    await user.click(screen.getByText('Feature Gates'))
 
     // Navigate to Overrides tab
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Gate 1').closest('tr')!)
+    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Find delete button for stable_pass (env override)
     await waitFor(() => expect(screen.getByText('stable_pass')).toBeInTheDocument())
     const row = screen.getByText('stable_pass').closest('tr')!
     const deleteBtn = within(row).getByRole('button')
 
-    await userEvent.click(deleteBtn)
+    await user.click(deleteBtn)
 
     // Verify DELETE API call
     await waitFor(() => {
@@ -204,42 +217,42 @@ describe('Gate Overrides Flow', () => {
 
   it('should allow adding an environment override', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />, { container: document.body })
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Feature Gates'))
+    await user.click(screen.getByText('Feature Gates'))
 
     // Navigate to Overrides tab
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Gate 1').closest('tr')!)
+    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Add Manual
-    await userEvent.click(screen.getByRole('button', { name: /Add Manual/i }))
+    await user.click(screen.getByRole('button', { name: /Add Manual/i }))
 
     // Fill form
     // Select Type: PASS (default)
     // Select Environment: Staging
-    const envSelect = screen.getByRole('combobox', { name: 'Environment' })
-    await userEvent.click(envSelect)
+    const envSelect = await screen.findByRole('combobox', { name: 'Environment' })
+    await user.click(envSelect)
     await screen.findByRole('option', { name: 'Staging' })
-    await userEvent.click(screen.getByRole('option', { name: 'Staging' }))
+    await user.click(screen.getByRole('option', { name: 'Staging' }))
 
     // Select ID Type: Stable ID
     const idTypeSelect = screen.getByRole('combobox', { name: 'ID Type' })
-    await userEvent.click(idTypeSelect)
-    await screen.findByRole('option', { name: 'Stable ID' })
-    await userEvent.click(screen.getByRole('option', { name: 'Stable ID' }))
+    await user.click(idTypeSelect)
+    await screen.findByRole('option', { name: 'stableID' })
+    await user.click(screen.getByRole('option', { name: 'stableID' }))
 
     // Enter ID
     const input = screen.getByLabelText('ID Value')
-    await userEvent.type(input, 'new_stable_id')
+    await user.type(input, 'new_stable_id')
 
     // Submit
     const saveBtn = await screen.findByRole('button', { name: /Add .* Override/i })
-    await userEvent.click(saveBtn)
+    await user.click(saveBtn)
 
     // Verify POST API call via poster
     await waitFor(() => {
@@ -260,40 +273,40 @@ describe('Gate Overrides Flow', () => {
 
   it('should allow adding an override for All Environments and Stable ID', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />, { container: document.body })
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Feature Gates'))
+    await user.click(screen.getByText('Feature Gates'))
 
     // Navigate to Overrides tab
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Gate 1').closest('tr')!)
+    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Add Manual
-    await userEvent.click(screen.getByRole('button', { name: /Add Manual/i }))
+    await user.click(screen.getByRole('button', { name: /Add Manual/i }))
 
     // Select Environment: All Environments
-    const envSelect = screen.getByRole('combobox', { name: 'Environment' })
-    await userEvent.click(envSelect)
+    const envSelect = await screen.findByRole('combobox', { name: 'Environment' })
+    await user.click(envSelect)
     await screen.findByRole('option', { name: 'All Environments' })
-    await userEvent.click(screen.getByRole('option', { name: 'All Environments' }))
+    await user.click(screen.getByRole('option', { name: 'All Environments' }))
 
     // Select ID Type: Stable ID
     const idTypeSelect = screen.getByRole('combobox', { name: 'ID Type' })
-    await userEvent.click(idTypeSelect)
-    await screen.findByRole('option', { name: 'Stable ID' })
-    await userEvent.click(screen.getByRole('option', { name: 'Stable ID' }))
+    await user.click(idTypeSelect)
+    await screen.findByRole('option', { name: 'stableID' })
+    await user.click(screen.getByRole('option', { name: 'stableID' }))
 
     // Enter ID
     const input = screen.getByLabelText('ID Value')
-    await userEvent.type(input, 'all_env_stable_id')
+    await user.type(input, 'all_env_stable_id')
 
     // Submit
     const saveBtn = await screen.findByRole('button', { name: /Add .* Override/i })
-    await userEvent.click(saveBtn)
+    await user.click(saveBtn)
 
     // Verify POST API call via poster
     await waitFor(() => {

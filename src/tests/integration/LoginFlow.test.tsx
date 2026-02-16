@@ -4,6 +4,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'
+import { useSettingsStore } from '@/src/store/use-settings-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
@@ -14,11 +15,10 @@ vi.mock('@/src/handlers/initial-login', () => ({
 }))
 
 // Mock useWxtStorage
-const mockSetApiKey = vi.fn()
 vi.mock('@/src/hooks/use-wxt-storage', () => ({
   useWxtStorage: vi.fn((item) => {
     if (item.key === 'local:statsig-console-api-key') {
-      return ['', mockSetApiKey, false]
+      return ['', vi.fn(), false]
     }
     return [item.defaultValue, vi.fn(), false]
   }),
@@ -29,6 +29,7 @@ describe('Login Flow', () => {
     vi.clearAllMocks()
     // Reset store
     useUIStore.setState({ isAuthModalOpen: true })
+    useSettingsStore.setState({ apiKey: '' })
   })
 
   it('should render the login modal when open', () => {
@@ -68,7 +69,7 @@ describe('Login Flow', () => {
       expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
     })
 
-    expect(mockSetApiKey).toHaveBeenCalledWith('console-test-key')
+    expect(useSettingsStore.getState().apiKey).toBe('console-test-key')
   })
 
   it('should show error message on API failure', async () => {
