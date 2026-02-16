@@ -40,7 +40,33 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
     - **Change Groups**: Select a different experiment group to see how the app behaves.
     - **Review Configs**: Check if your dynamic configs are delivering the expected JSON.
 
-## 🛠 Tech Stack
+## � Screenshots
+
+### 1. Setup
+
+When you first open the extension, you'll be prompted to enter your Statsig Console API Key to enable read/write access.
+
+![Setup Screen](images/image-start.jpeg)
+
+### 2. Main Dashboard
+
+View all your Feature Gates, Dynamic Configs, and Experiments in one place. You can see their current status and values.
+
+![Main Dashboard](images/image1.jpeg)
+
+### 3. Entity Details
+
+Click on any item to see detailed information, including its rules, return values, and evaluation details. You can also apply overrides here.
+
+![Entity Details](images/image-detail.jpeg)
+
+### 4. Audit Log
+
+Track all changes and user activities within the session to ensure everything is working as expected.
+
+![Audit Log](images/image-audit.jpeg)
+
+## �🛠 Tech Stack
 
 - **Framework**: [WXT](https://wxt.dev/) (Web Extension Tools)
 - **UI Library**: [shadcn/ui](https://ui.shadcn.com/) (built on Radix UI and Tailwind CSS)

@@ -1,7 +1,9 @@
 name: "Submit to Web Store"
 on:
-  release:
-    types: [published]
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096 --trace-warnings"

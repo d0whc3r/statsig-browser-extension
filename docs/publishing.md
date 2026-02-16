@@ -29,13 +29,14 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
   },
   "firefox": {
     "extensionId": "your-extension-id",
-    "jwtIssuer": "your-jwt-issuer",
-    "jwtSecret": "your-jwt-secret"
+    "apiKey": "your-jwt-issuer",
+    "apiSecret": "your-jwt-secret"
   },
   "edge": {
     "productId": "your-product-id",
     "clientId": "your-client-id",
-    "clientSecret": "your-client-secret"
+    "clientSecret": "your-client-secret",
+    "accessTokenUrl": "https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/token"
   }
 }
 ```
@@ -79,35 +80,30 @@ The release process is fully automated via GitHub Actions on the `main` branch.
     - `feat(...)`: Triggers a Minor release (v1.1.0).
     - `BREAKING CHANGE`: Triggers a Major release (v2.0.0).
 2.  **Push**: Push to `main`.
-3.  **CI/CD**: The workflow will:
-    - Install dependencies.
-    - Lint and Test.
-    - Determine the next version based on commits.
-    - Update `package.json` and `CHANGELOG.md`.
-    - Build the extension for all browsers using `wxt`.
-    - Zip the artifacts.
+3.  **Release Workflow (`release.yml`)**:
+    - Installs dependencies, runs linting and tests.
+    - Determines the next version using `semantic-release`.
+    - Updates `package.json` and `CHANGELOG.md`.
+    - Creates a GitHub Release and a git tag.
+4.  **Submit Workflow (`submit.yml`)**:
+    - Triggered automatically by the `release` (published) event.
+    - Can also be triggered manually via "Run workflow" (workflow_dispatch).
+    - Builds the extension for Chrome, Firefox, and Edge using `wxt` (`pnpm zip:all`).
+    - Publishes the generated `.zip` artifacts to all configured stores using `PlasmoHQ/bpp`.
 
-- Publish the zips to Chrome, Firefox, and Edge stores.
-- Create a GitHub Release with the zips attached.
+## Manual Trigger (Emergency)
+
+If the automatic submission fails or you need to retry without creating a new version:
+
+1.  Go to the "Actions" tab in GitHub.
+2.  Select the **"Submit to Web Store"** workflow.
+3.  Click **"Run workflow"**.
+4.  Select the `main` branch and click **"Run workflow"**.
 
 ## Local Testing & Troubleshooting
 
-### Dry Run
-
-You can simulate a publishing run without actually uploading to stores by setting the `DRY_RUN` environment variable to `true`.
-
-```bash
-# Build the extension first
-pnpm zip:all
-
-# Run the publish script in dry-run mode
-DRY_RUN=true node scripts/publish-extensions.mjs
-```
-
-This will attempt to locate the artifacts and print what would happen, but will not make API calls to the stores.
-
 ### Common Issues
 
-1.  **"No extension artifacts found"**: Ensure you have run `pnpm zip:all` before running the publish script. The script looks for `.zip` files in `.output/` or its subdirectories.
-2.  **Authentication Errors**: Double-check your environment variables. Ensure tokens haven't expired (especially for Chrome, though the refresh token should handle it).
+1.  **"No extension artifacts found"**: The workflow uses `pnpm zip:all` to generate artifacts in `.output/`. Ensure this command works locally.
+2.  **Authentication Errors**: Double-check your `SUBMIT_KEYS` secret in GitHub. Ensure tokens haven't expired (especially for Chrome, though the refresh token should handle it).
 3.  **Version Conflicts**: If the version in `package.json` (managed by semantic-release) conflicts with a version already on the store (e.g., if you manually uploaded a version with the same number), the publish will fail. Always let semantic-release handle versioning.
