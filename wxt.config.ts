@@ -23,7 +23,7 @@ export default defineConfig({
       '96': 'icon/96.png',
     },
     name: 'Statsig Browser Extension',
-    permissions: ['storage', 'tabs', 'scripting', 'activeTab'],
+    permissions: ['storage', 'scripting', 'activeTab'],
   },
   modules: ['@wxt-dev/module-react'],
 })
