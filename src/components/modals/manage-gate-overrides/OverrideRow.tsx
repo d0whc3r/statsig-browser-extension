@@ -5,7 +5,7 @@ import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
-import type { OverrideType } from './types'
+import type { DeleteGateOverrideParams, OverrideType } from './types'
 
 interface OverrideRowProps {
   item: {
@@ -16,19 +16,19 @@ interface OverrideRowProps {
   }
   canEdit: boolean
   isPending: boolean
-  onDeleteOverride: (
-    id: string,
-    type: OverrideType,
-    environment: string | null,
-    idType: string | null,
-  ) => void
+  onDeleteOverride: (params: DeleteGateOverrideParams) => void
 }
 
 export const OverrideRow = memo(
   ({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
-      onDeleteOverride(item.id, item.type, item.environment, item.idType)
-    }, [item.id, item.type, item.environment, item.idType, onDeleteOverride])
+      onDeleteOverride({
+        environment: item.environment,
+        idType: item.idType,
+        type: item.type,
+        userId: item.id,
+      })
+    }, [item, onDeleteOverride])
 
     return (
       <TableRow>

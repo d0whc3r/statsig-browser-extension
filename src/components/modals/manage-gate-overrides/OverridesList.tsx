@@ -11,7 +11,7 @@ import {
   TableRow,
 } from '@/src/components/ui/table'
 
-import type { OverrideType } from './types'
+import type { DeleteGateOverrideParams, OverrideType } from './types'
 
 import { OverrideRow } from './OverrideRow'
 
@@ -24,12 +24,7 @@ interface OverridesListProps {
   }[]
   canEdit: boolean
   isPending: boolean
-  onDeleteOverride: (
-    id: string,
-    type: OverrideType,
-    environment: string | null,
-    idType: string | null,
-  ) => void
+  onDeleteOverride: (params: DeleteGateOverrideParams) => void
   onSwitchToForm: () => void
 }
 

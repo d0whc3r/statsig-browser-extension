@@ -58,12 +58,11 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
   )
 
   return (
-    <div
-      className="w-full text-left px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors focus:outline-none focus:bg-muted/50 block"
+    <button
+      className="w-full text-left px-4 py-3 hover:bg-muted/50 cursor-pointer transition-colors focus:outline-none focus:bg-muted/50 block border-0 bg-transparent"
       onClick={handleRowClick}
       onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
+      type="button"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="flex-1 min-w-0">
@@ -155,7 +154,7 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
           </DropdownMenu>
         </div>
       </div>
-    </div>
+    </button>
   )
 })
 

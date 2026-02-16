@@ -59,13 +59,18 @@ export const BaseOverrideContextCard = memo(
                 <SelectContent>
                   <SelectItem
                     value="All Environments"
-                    disabled={detectedUserOverrides.some((o) => o.environment === null)}
+                    disabled={detectedUserOverrides.some(
+                      (override) => override.environment === null,
+                    )}
                   >
                     All Environments{' '}
-                    {detectedUserOverrides.some((o) => o.environment === null) && '(Overridden)'}
+                    {detectedUserOverrides.some((override) => override.environment === null) &&
+                      '(Overridden)'}
                   </SelectItem>
                   {ENVIRONMENTS.map((env) => {
-                    const isOverridden = detectedUserOverrides.some((o) => o.environment === env)
+                    const isOverridden = detectedUserOverrides.some(
+                      (override) => override.environment === env,
+                    )
                     return (
                       <SelectItem key={env} value={env} disabled={isOverridden}>
                         {env} {isOverridden && '(Overridden)'}

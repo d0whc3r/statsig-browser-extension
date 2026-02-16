@@ -3,8 +3,8 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 
 interface UsePersistentTableStateOptions {
-  visibleColumnsStorage: WxtStorageItem<string[], any>
-  rowsPerPageStorage: WxtStorageItem<number, any>
+  visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
+  rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
 }
 
 export const usePersistentTableState = ({

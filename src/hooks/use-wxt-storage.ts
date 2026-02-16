@@ -2,7 +2,9 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { useEffect, useState } from 'react'
 
-export function useWxtStorage<T>(item: WxtStorageItem<T, any>): [T, (value: T) => void, boolean] {
+export function useWxtStorage<T>(
+  item: WxtStorageItem<T, Record<string, unknown>>,
+): [T, (value: T) => void, boolean] {
   const [value, setValue] = useState<T>(item.defaultValue as T)
   const [isLoading, setIsLoading] = useState(true)
 

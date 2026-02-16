@@ -24,7 +24,7 @@ export const OverrideRow = memo(
     }, [onDelete, override])
 
     const groupName = useMemo(
-      () => groups.find((g) => g.id === override.groupID)?.name || override.groupID,
+      () => groups.find((group) => group.id === override.groupID)?.name || override.groupID,
       [groups, override.groupID],
     )
 

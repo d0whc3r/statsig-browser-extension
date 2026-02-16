@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 
-import type { FeatureGate, GateOverride } from '@/src/types/statsig'
+import type { FeatureGate, GateOverride, StatsigUser } from '@/src/types/statsig'
 
 import { useGateOverrideHandlers } from '@/src/hooks/use-gate-override-handlers'
 import { useUserDetails } from '@/src/hooks/use-user-details'
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 import { apiKeyTypeStorage } from '@/src/lib/storage'
+import { getDetectedUserId } from '@/src/lib/user-utils'
 
 type View = 'form' | 'table'
 
@@ -77,30 +78,10 @@ export const useGateOverridesLogic = (
 
   const canEdit = typeApiKey === 'write-key'
 
-  const detectedUserId = useMemo(() => {
-    if (!detectedUser) {
-      return
-    }
-
-    const idType = featureGate?.idType || 'userID'
-
-    if (idType === 'userID') {
-      return (detectedUser.userID || detectedUser.id) as string | undefined
-    }
-
-    // Check for customIDs
-    const customIDs = detectedUser.customIDs as Record<string, string> | undefined
-    if (customIDs && typeof customIDs === 'object' && idType in customIDs) {
-      return customIDs[idType]
-    }
-
-    // Check top level
-    if (idType in detectedUser) {
-      return detectedUser[idType] as string
-    }
-
-    return
-  }, [detectedUser, featureGate])
+  const detectedUserId = useMemo(
+    () => getDetectedUserId(detectedUser as StatsigUser | undefined, featureGate?.idType),
+    [detectedUser, featureGate],
+  )
 
   const detectedUserOverrides = useMemo(() => {
     if (!detectedUserId) {

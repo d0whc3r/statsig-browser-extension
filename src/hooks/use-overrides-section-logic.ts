@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import type { AnyOverride } from '@/src/handlers/create-override'
+import type { StatsigUser } from '@/src/types/statsig'
 
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
@@ -9,6 +10,7 @@ import { useOverrides } from '@/src/hooks/use-overrides'
 import { useUserDetails } from '@/src/hooks/use-user-details'
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 import { apiKeyTypeStorage } from '@/src/lib/storage'
+import { getDetectedUserId } from '@/src/lib/user-utils'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 type View = 'form' | 'table'
@@ -61,10 +63,7 @@ const useOverridesFormState = (onSuccess: () => void, currentItemId: string | un
   }
 }
 
-export const useOverridesSectionLogic = () => {
-  const [typeApiKey] = useWxtStorage(apiKeyTypeStorage)
-  const [view, setView] = useState<View>('table')
-  const { currentItemId } = useUIStore((state) => state)
+const useOverrideData = (currentItemId: string | undefined) => {
   const { data: experiment } = useExperiment(currentItemId)
   const groups = useMemo(() => experiment?.groups || [], [experiment?.groups])
 
@@ -76,32 +75,10 @@ export const useOverridesSectionLogic = () => {
 
   const { data: detectedUser } = useUserDetails()
 
-  const detectedUserId = useMemo(() => {
-    if (!detectedUser) {
-      return
-    }
-
-    const idType = experiment?.idType || 'userID'
-
-    if (idType === 'userID') {
-      return (detectedUser.userID || (detectedUser as Record<string, unknown>).id) as
-        | string
-        | undefined
-    }
-
-    // Check for customIDs
-    const customIDs = detectedUser.customIDs as Record<string, string> | undefined
-    if (customIDs && typeof customIDs === 'object' && idType in customIDs) {
-      return customIDs[idType]
-    }
-
-    // Check top level
-    if (idType in detectedUser) {
-      return (detectedUser as Record<string, unknown>)[idType] as string
-    }
-
-    return
-  }, [detectedUser, experiment?.idType])
+  const detectedUserId = useMemo(
+    () => getDetectedUserId(detectedUser as StatsigUser | undefined, experiment?.idType),
+    [detectedUser, experiment?.idType],
+  )
 
   const { data: overridesData } = useOverrides(currentItemId)
 
@@ -113,18 +90,44 @@ export const useOverridesSectionLogic = () => {
     const currentIdType = experiment?.idType || 'userID'
 
     return overridesData.userIDOverrides
-      .filter((o) => {
-        const hasId = o.ids.includes(detectedUserId)
-        const overrideIdType = o.unitType || 'userID'
+      .filter((override) => {
+        const hasId = override.ids.includes(detectedUserId)
+        const overrideIdType = override.unitType || 'userID'
         return hasId && overrideIdType === currentIdType
       })
-      .map((o) => ({
-        environment: o.environment || null,
-        groupID: o.groupID,
+      .map((override) => ({
+        environment: override.environment || null,
+        groupID: override.groupID,
       }))
   }, [detectedUserId, overridesData, experiment?.idType])
 
-  const isDetectedUserOverridden = detectedUserOverrides.length > 0
+  return {
+    detectedUser,
+    detectedUserId,
+    detectedUserOverrides,
+    experiment,
+    featureGates,
+    groups,
+    isDetectedUserOverridden: detectedUserOverrides.length > 0,
+    overridesData,
+  }
+}
+
+export const useOverridesSectionLogic = () => {
+  const [typeApiKey] = useWxtStorage(apiKeyTypeStorage)
+  const [view, setView] = useState<View>('table')
+  const { currentItemId } = useUIStore((state) => state)
+
+  const {
+    detectedUser,
+    detectedUserId,
+    detectedUserOverrides,
+    experiment,
+    featureGates,
+    groups,
+    isDetectedUserOverridden,
+    overridesData,
+  } = useOverrideData(currentItemId)
 
   const { addOverride, deleteOverride, isPending } = useOverridesFormState(
     () => setView('table'),

@@ -60,6 +60,8 @@ const Footer = ({
   )
 }
 
+const SKELETON_IDS = Array.from({ length: 10 }, (_unused, index) => `skeleton-${index}`)
+
 export const AuditLogList = memo(
   ({
     filteredItems,
@@ -74,8 +76,8 @@ export const AuditLogList = memo(
     if (isLoading) {
       return (
         <div className="flex-1 overflow-auto min-h-0 divide-y">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="px-4 py-3">
+          {SKELETON_IDS.map((key) => (
+            <div key={key} className="px-4 py-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-1.5">
@@ -97,26 +99,27 @@ export const AuditLogList = memo(
 
     return (
       <div className="flex-1 overflow-auto min-h-0">
-      {filteredItems.length === 0 ? (
-        <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
-      ) : (
-        <div className="divide-y">
-          {filteredItems.map((auditLog) => (
-            <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
-          ))}
-        </div>
-      )}
+        {filteredItems.length === 0 ? (
+          <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
+        ) : (
+          <div className="divide-y">
+            {filteredItems.map((auditLog) => (
+              <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
+            ))}
+          </div>
+        )}
 
-      {filteredItems.length > 0 && (
-        <div className="flex-none p-3 border-t bg-background">
-          <Footer
-            hasNextPage={hasNextPage}
-            isFetchingNextPage={isFetchingNextPage}
-            onLoadMore={onLoadMore}
-          />
-        </div>
-      )}
-    </div>
-  )
-})
+        {filteredItems.length > 0 && (
+          <div className="flex-none p-3 border-t bg-background">
+            <Footer
+              hasNextPage={hasNextPage}
+              isFetchingNextPage={isFetchingNextPage}
+              onLoadMore={onLoadMore}
+            />
+          </div>
+        )}
+      </div>
+    )
+  },
+)
 AuditLogList.displayName = 'AuditLogList'

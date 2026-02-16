@@ -1,5 +1,6 @@
 import type { AnyOverride } from '@/src/handlers/delete-override'
-import type { Group } from '@/src/types/statsig'
+import type { Override } from '@/src/hooks/use-overrides'
+import type { ExperimentOverride, Group } from '@/src/types/statsig'
 
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
@@ -22,8 +23,8 @@ interface OverridesListProps {
   isPending: boolean
   overridesData:
     | {
-        userIDOverrides: any[]
-        overrides: any[]
+        userIDOverrides: Override[]
+        overrides: ExperimentOverride[]
       }
     | undefined
   groups: Group[]

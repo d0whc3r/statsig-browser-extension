@@ -34,14 +34,14 @@ globalThis.ResizeObserver = class ResizeObserver {
 // Mock matchMedia
 Object.defineProperty(globalThis, 'matchMedia', {
   value: vi.fn().mockImplementation((query) => ({
+    addEventListener: vi.fn(),
+    addListener: vi.fn(), // Deprecated
+    dispatchEvent: vi.fn(),
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // Deprecated
-    removeListener: vi.fn(), // Deprecated
-    addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
-    dispatchEvent: vi.fn(),
+    removeListener: vi.fn(), // Deprecated
   })),
   writable: true,
 })

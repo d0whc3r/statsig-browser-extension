@@ -1,3 +1,5 @@
+import type { LucideIcon } from 'lucide-react'
+
 import { Copy, Database, Globe, Lock, Mail, MapPin, Monitor, Network, User } from 'lucide-react'
 import { memo, useCallback, useState } from 'react'
 
@@ -16,6 +18,8 @@ import {
 } from '@/src/components/ui/tooltip'
 import { cn } from '@/src/lib/utils'
 
+const COPIED_TIMEOUT = 2000
+
 interface UserDetailsContentProps {
   userDetails: StatsigUser | null | undefined
   onRefetch: () => void
@@ -25,17 +29,32 @@ const CopyableValue = ({ value }: { value: string }) => {
   const [copied, setCopied] = useState(false)
 
   const copyToClipboard = useCallback(
-    (e: React.MouseEvent) => {
-      e.stopPropagation()
+    (event: React.MouseEvent | React.KeyboardEvent) => {
+      event.stopPropagation()
       navigator.clipboard.writeText(value)
       setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      setTimeout(() => setCopied(false), COPIED_TIMEOUT)
     },
     [value],
   )
 
+  const handleKeyDown = useCallback(
+    (event: React.KeyboardEvent) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault()
+        copyToClipboard(event)
+      }
+    },
+    [copyToClipboard],
+  )
+
   return (
-    <div className="flex items-center gap-2 group cursor-pointer" onClick={copyToClipboard}>
+    <button
+      className="flex items-center gap-2 group cursor-pointer border-0 bg-transparent p-0 text-left w-full"
+      onClick={copyToClipboard}
+      onKeyDown={handleKeyDown}
+      type="button"
+    >
       <span className="text-sm font-mono break-all text-foreground" title={value}>
         {value}
       </span>
@@ -57,7 +76,7 @@ const CopyableValue = ({ value }: { value: string }) => {
           <TooltipContent>{copied ? 'Copied!' : 'Copy'}</TooltipContent>
         </Tooltip>
       </TooltipProvider>
-    </div>
+    </button>
   )
 }
 
@@ -113,7 +132,7 @@ const InfoItem = ({
   value,
   className,
 }: {
-  icon: any
+  icon: LucideIcon
   label: string
   value?: string
   className?: string
@@ -160,7 +179,7 @@ const UserOverview = memo(({ userDetails }: { userDetails: StatsigUser }) => {
         icon={Monitor}
         label="User Agent"
         value={userDetails.userAgent}
-        className={!userDetails.ip ? 'sm:col-span-2' : ''}
+        className={userDetails.ip ? '' : 'sm:col-span-2'}
       />
     </div>
   )
@@ -175,7 +194,7 @@ const PropertySection = ({
   variant = 'default',
 }: {
   title: string
-  icon: any
+  icon: LucideIcon
   data?: Record<string, unknown>
   variant?: 'default' | 'private'
 }) => {

@@ -6,8 +6,8 @@ import { usePersistentTableState } from '@/src/hooks/use-persistent-table-state'
 import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
 
 interface UseTableStateOptions {
-  visibleColumnsStorage: WxtStorageItem<string[], any>
-  rowsPerPageStorage: WxtStorageItem<number, any>
+  visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
+  rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
   initialStatusFilter?: Set<string>
 }
 

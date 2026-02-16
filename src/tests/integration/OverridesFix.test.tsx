@@ -233,7 +233,10 @@ describe('Fix Validation Tests', () => {
     })
 
     // Verify it contains the fields even if empty (implementation sends full object)
-    const callArgs = vi.mocked(poster).mock.calls[0][1]
+    const {
+      mock: { calls },
+    } = vi.mocked(poster)
+    const [[, callArgs]] = calls
     expect(callArgs).toHaveProperty('passingUserIDs', [])
     expect(callArgs).toHaveProperty('failingUserIDs', [])
   })

@@ -1,55 +1,54 @@
-;(function () {
-  try {
-    const el = document.querySelector('#__statsig_action_args')
-    if (!el) {
-      return null
-    }
-
-    const args = JSON.parse(el.textContent || '{}')
-    const { op, key, value } = args
-
-    if (op === 'getLocalStorage') {
-      return localStorage.getItem(key)
-    }
-
-    if (op === 'setLocalStorage') {
-      localStorage.setItem(key, value)
-      return null
-    }
-
-    if (op === 'removeLocalStorage') {
-      localStorage.removeItem(key)
-      return null
-    }
-
-    if (op === 'getCookie') {
-      const nameEQ = key + '='
+;(function storageHelper() {
+  const handlers = {
+    getCookie: (key) => {
+      const nameEQ = `${key}=`
       const ca = document.cookie.split(';')
-      for (let i = 0; i < ca.length; i++) {
-        let c = ca[i]
-        while (c.charAt(0) === ' ') {
-          c = c.slice(1)
-        }
-        if (c.indexOf(nameEQ) === 0) {
-          return c.slice(nameEQ.length)
+      for (const element of ca) {
+        const cookie = element.trimStart()
+        if (cookie.startsWith(nameEQ)) {
+          return cookie.slice(nameEQ.length)
         }
       }
       return null
-    }
-
-    if (op === 'setCookie') {
-      document.cookie = `${key}=${value};path=/;max-age=31536000`
-      return null
-    }
-
-    if (op === 'removeCookie') {
+    },
+    getLocalStorage: (key) => localStorage.getItem(key),
+    removeCookie: (key) => {
       document.cookie = `${key}=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;`
       return null
-    }
-
-    return null
-  } catch (error) {
-    console.error('Statsig Extension: Error in storage helper', error)
-    return null
+    },
+    removeLocalStorage: (key) => {
+      localStorage.removeItem(key)
+      return null
+    },
+    setCookie: (key, value) => {
+      document.cookie = `${key}=${value};path=/;max-age=31536000`
+      return null
+    },
+    setLocalStorage: (key, value) => {
+      localStorage.setItem(key, value)
+      return null
+    },
   }
+
+  function execute() {
+    try {
+      const el = document.querySelector('#__statsig_action_args')
+      if (!el) {
+        return null
+      }
+
+      const { op, key, value } = JSON.parse(el.textContent || '{}')
+
+      if (handlers[op]) {
+        return handlers[op](key, value)
+      }
+
+      return null
+    } catch (error) {
+      console.error('Statsig Extension: Error in storage helper', error)
+      return null
+    }
+  }
+
+  return execute()
 })()

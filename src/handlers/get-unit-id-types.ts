@@ -20,14 +20,15 @@ export const getUnitIDTypes = async (): Promise<string[]> => {
     // Normalize data to string array
     // The API might return strings or objects depending on version/config
     if (Array.isArray(response.data)) {
-      return response.data
-        .map((item) => {
+      return [
+        ...response.data.map((item) => {
           if (typeof item === 'string') {
             return item
           }
           return item.name
-        })
-        .concat(defaultUnitIDTypes)
+        }),
+        ...defaultUnitIDTypes,
+      ]
     }
     return defaultUnitIDTypes // Fallback
   } catch (error) {

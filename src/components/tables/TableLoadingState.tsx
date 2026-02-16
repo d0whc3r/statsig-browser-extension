@@ -9,10 +9,12 @@ interface TableLoadingStateProps {
 export function TableLoadingState({ columnCount, rowCount = 5 }: TableLoadingStateProps) {
   return (
     <>
-      {Array.from({ length: rowCount }).map((_, i) => (
-        <TableRow key={i}>
-          {Array.from({ length: columnCount }).map((_, j) => (
-            <TableCell key={j}>
+      {Array.from({ length: rowCount }).map((_row, rowIndex) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <TableRow key={rowIndex}>
+          {Array.from({ length: columnCount }).map((_col, colIndex) => (
+            // eslint-disable-next-line react/no-array-index-key
+            <TableCell key={colIndex}>
               <Skeleton className="h-6 w-full" />
             </TableCell>
           ))}

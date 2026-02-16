@@ -1,18 +1,20 @@
 import { handleApiError } from '../lib/utils'
 
-// Helper to execute script safely avoiding inline script CSP violations
-const executeStorageOp = async (
-  tabId: number,
+interface ExecuteStorageOpParams {
+  tabId: number
   op:
     | 'getLocalStorage'
     | 'setLocalStorage'
     | 'removeLocalStorage'
     | 'getCookie'
     | 'setCookie'
-    | 'removeCookie',
-  key: string,
-  value?: string,
-) => {
+    | 'removeCookie'
+  key: string
+  value?: string
+}
+
+// Helper to execute script safely avoiding inline script CSP violations
+const executeStorageOp = async ({ tabId, op, key, value }: ExecuteStorageOpParams) => {
   // 1. Inject args into DOM (ISOLATED world) - Safe from CSP
   await chrome.scripting.executeScript({
     args: [{ key, op, value }],
@@ -54,7 +56,12 @@ export const updateLocalStorageValue = async (
   localStorageValue: string,
 ): Promise<void> => {
   try {
-    await executeStorageOp(tabId, 'setLocalStorage', localStorageKey, localStorageValue)
+    await executeStorageOp({
+      key: localStorageKey,
+      op: 'setLocalStorage',
+      tabId,
+      value: localStorageValue,
+    })
   } catch (error) {
     console.error('Failed to update localStorage value:', handleApiError(error))
     throw new Error(handleApiError(error), { cause: error })
@@ -66,7 +73,11 @@ export const removeLocalStorageValue = async (
   localStorageKey: string,
 ): Promise<void> => {
   try {
-    await executeStorageOp(tabId, 'removeLocalStorage', localStorageKey)
+    await executeStorageOp({
+      key: localStorageKey,
+      op: 'removeLocalStorage',
+      tabId,
+    })
   } catch (error) {
     console.error('Failed to remove localStorage value:', handleApiError(error))
     throw new Error(handleApiError(error), { cause: error })
@@ -78,7 +89,11 @@ export const getCurrentLocalStorageValue = async (
   localStorageKey: string,
 ): Promise<string | null> => {
   try {
-    const result = await executeStorageOp(tabId, 'getLocalStorage', localStorageKey)
+    const result = await executeStorageOp({
+      key: localStorageKey,
+      op: 'getLocalStorage',
+      tabId,
+    })
     // eslint-disable-next-line unicorn/no-null
     return (result as string | null) ?? null
   } catch (error) {
@@ -93,7 +108,12 @@ export const updateCookieValue = async (
   cookieValue: string,
 ): Promise<void> => {
   try {
-    await executeStorageOp(tabId, 'setCookie', cookieKey, cookieValue)
+    await executeStorageOp({
+      key: cookieKey,
+      op: 'setCookie',
+      tabId,
+      value: cookieValue,
+    })
   } catch (error) {
     console.error('Failed to update cookie value:', handleApiError(error))
     throw new Error(handleApiError(error), { cause: error })
@@ -102,7 +122,11 @@ export const updateCookieValue = async (
 
 export const removeCookieValue = async (tabId: number, cookieKey: string): Promise<void> => {
   try {
-    await executeStorageOp(tabId, 'removeCookie', cookieKey)
+    await executeStorageOp({
+      key: cookieKey,
+      op: 'removeCookie',
+      tabId,
+    })
   } catch (error) {
     console.error('Failed to remove cookie value:', handleApiError(error))
     throw new Error(handleApiError(error), { cause: error })
@@ -111,7 +135,11 @@ export const removeCookieValue = async (tabId: number, cookieKey: string): Promi
 
 export const getCurrentCookieValue = async (tabId: number, cookieKey: string): Promise<string> => {
   try {
-    const result = await executeStorageOp(tabId, 'getCookie', cookieKey)
+    const result = await executeStorageOp({
+      key: cookieKey,
+      op: 'getCookie',
+      tabId,
+    })
     return (result as string) ?? ''
   } catch (error) {
     console.error('Failed to get cookie value:', handleApiError(error))

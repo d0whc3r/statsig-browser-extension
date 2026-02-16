@@ -14,14 +14,16 @@ import {
 } from '@/src/components/ui/select'
 import { useUnitIDTypes } from '@/src/hooks/use-unit-id-types'
 
+export interface AddOverrideParams<TValue> {
+  id: string
+  value: TValue
+  environment: string | null
+  idType: string | null
+}
+
 export interface GenericAddOverrideFormProps<TValue> {
   isPending: boolean
-  onAddOverride: (
-    id: string,
-    value: TValue,
-    environment: string | null,
-    idType: string | null,
-  ) => void
+  onAddOverride: (params: AddOverrideParams<TValue>) => void
   onCancel: () => void
   // Value selection (Pass/Fail or Group)
   valueLabel: string
@@ -60,7 +62,7 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
 
   const handleAdd = useCallback(() => {
     const env = environment === 'All Environments' ? null : environment
-    onAddOverride(id, selectedValue, env, idType)
+    onAddOverride({ environment: env, id, idType, value: selectedValue })
   }, [id, selectedValue, environment, idType, onAddOverride])
 
   const handleIdChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -78,9 +80,9 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
               <SelectValue placeholder={`Select ${valueLabel.toLowerCase()}`} />
             </SelectTrigger>
             <SelectContent>
-              {values.map((v) => (
-                <SelectItem key={v.value} value={v.value}>
-                  {v.label}
+              {values.map((item) => (
+                <SelectItem key={item.value} value={item.value}>
+                  {item.label}
                 </SelectItem>
               ))}
             </SelectContent>

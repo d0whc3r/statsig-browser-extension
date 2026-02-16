@@ -1,4 +1,8 @@
+import { useCallback } from 'react'
+
 import { useOverridesSectionLogic } from '@/src/hooks/use-overrides-section-logic'
+
+import type { AddOverrideParams } from './PageContextCard'
 
 import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
@@ -22,6 +26,18 @@ export const OverridesSection = () => {
     experiment,
   } = useOverridesSectionLogic()
 
+  const handleAddOverride = useCallback(
+    ({ userId, groupId, environment, idType }: AddOverrideParams) => {
+      addOverride({
+        environment: environment || undefined,
+        groupID: groupId,
+        ids: [userId],
+        unitType: idType || undefined,
+      })
+    },
+    [addOverride],
+  )
+
   return (
     <div className="flex flex-col gap-6">
       <PageContextCard
@@ -32,14 +48,7 @@ export const OverridesSection = () => {
         canEdit={typeApiKey === 'write-key'}
         isPending={isPending}
         groups={groups}
-        onAddOverride={(id, groupID, env, idType) =>
-          addOverride({
-            environment: env || undefined,
-            groupID,
-            ids: [id],
-            unitType: idType || undefined,
-          })
-        }
+        onAddOverride={handleAddOverride}
         experiment={experiment}
       />
 
