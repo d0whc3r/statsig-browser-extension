@@ -108,7 +108,7 @@
   "lint-staged": {
     "*": [
       "oxlint --fix",
-      "oxfmt --write"
+      "oxfmt --no-error-on-unmatched-pattern --write"
     ]
   },
   "engines": {
