@@ -97,9 +97,7 @@ const setupMocks = () => {
   // Setup API mocks
   const mockDelete = vi.mocked(api.delete)
   mockDelete.mockImplementation((_url) => Promise.resolve({ data: { data: {} }, status: 200 }))
-
-  const mockPoster = vi.mocked(poster)
-  mockPoster.mockImplementation((_url) => Promise.resolve({ data: {}, status: 200 }))
+  vi.mocked(poster).mockResolvedValue({ data: {}, status: 200 })
 }
 
 describe('Gate Overrides Flow', () => {
@@ -266,6 +264,8 @@ describe('Gate Overrides Flow', () => {
               unitID: 'stableID',
             }),
           ]),
+          failingUserIDs: ['user_fail'],
+          passingUserIDs: ['user_pass'],
         }),
       )
     })
