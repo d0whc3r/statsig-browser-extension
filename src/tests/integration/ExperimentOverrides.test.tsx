@@ -3,23 +3,29 @@ import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
-import { api, fetcher } from '@/src/lib/fetcher'
+import { fetcher } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
+const { mockJson, mockWretch } = vi.hoisted(() => {
+  const mockJson = vi.fn()
+  const mockWretch = {
+    delete: vi.fn().mockReturnThis(),
+    get: vi.fn().mockReturnThis(),
+    headers: vi.fn().mockReturnThis(),
+    json: mockJson,
+    post: vi.fn().mockReturnThis(),
+    url: vi.fn().mockReturnThis(),
+  }
+  return { mockJson, mockWretch }
+})
+
 vi.mock('@/src/lib/fetcher', () => ({
-  api: {
-    delete: vi.fn(),
-    get: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn() },
-    },
-    patch: vi.fn(),
-    post: vi.fn(),
-  },
+  api: mockWretch,
   fetcher: vi.fn(),
+  poster: vi.fn(),
 }))
 
 // Mock API key
@@ -106,8 +112,7 @@ const setupMocks = () => {
   })
 
   // Setup API mocks
-  const mockPost = vi.mocked(api.post)
-  mockPost.mockImplementation((_url) => Promise.resolve({ data: {}, status: 200 }))
+  mockJson.mockResolvedValue({ data: {}, status: 200 })
 }
 
 describe('Experiment Overrides Flow', () => {
@@ -189,8 +194,8 @@ describe('Experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith(
-        '/experiments/exp_1/overrides',
+      expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
+      expect(mockWretch.post).toHaveBeenCalledWith(
         expect.objectContaining({
           userIDOverrides: [
             expect.objectContaining({
@@ -240,8 +245,8 @@ describe('Experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
-      expect(api.post).toHaveBeenCalledWith(
-        '/experiments/exp_1/overrides',
+      expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
+      expect(mockWretch.post).toHaveBeenCalledWith(
         expect.objectContaining({
           overrides: [
             expect.objectContaining({

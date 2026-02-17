@@ -16,9 +16,6 @@ interface DeleteOverrideResponse {
   success: boolean
 }
 
-const HTTP_OK = 200
-const HTTP_UNAUTHORIZED = 401
-
 function isUserIDOverride(override: AnyOverride): override is UserIDOverride {
   return 'ids' in override
 }
@@ -40,18 +37,7 @@ export const deleteOverride = async ({
       ? { overrides: [], userIDOverrides: [override] }
       : { overrides: [override], userIDOverrides: [] }
 
-    const { status } = await api.delete(`/experiments/${experimentId}/overrides`, {
-      data: payload,
-    })
-
-    if (status === HTTP_UNAUTHORIZED) {
-      return {
-        // eslint-disable-next-line unicorn/no-null
-        data: null,
-        error: 'Invalid Statsig Console API Key, please try again with a valid key.',
-        success: false,
-      }
-    }
+    await api.url(`/experiments/${experimentId}/overrides`).json(payload).delete().json()
 
     // This response processing is a bit simplistic if we want to return both types
     // But for now let's just return what we can
@@ -62,7 +48,7 @@ export const deleteOverride = async ({
       // eslint-disable-next-line unicorn/no-null
       data: [], // We rely on invalidation usually, or we can parse the response
       error: undefined,
-      success: status === HTTP_OK,
+      success: true,
     }
   } catch (error) {
     console.error('Failed to delete override:', error)

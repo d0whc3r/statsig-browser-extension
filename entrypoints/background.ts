@@ -6,10 +6,8 @@ import { apiKeyStorage } from '@/src/lib/storage'
 export default defineBackground(() => {
   // Listen for API requests from the popup/options pages
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.type === 'AXIOS_REQUEST' && message.config) {
-      const { url, method, data, headers, baseURL } = message.config
-
-      const fullUrl = baseURL ? `${baseURL}${url}` : url
+    if (message.type === 'API_REQUEST' && message.config) {
+      const { url, method, body, headers } = message.config
 
       // Perform the fetch request
       apiKeyStorage.getValue().then((apiKey: string | null) => {
@@ -19,15 +17,20 @@ export default defineBackground(() => {
           finalHeaders['STATSIG-API-KEY'] = apiKey.replaceAll('"', '')
         }
 
-        const body = data ? (typeof data === 'string' ? data : JSON.stringify(data)) : undefined
-
-        fetch(fullUrl, {
+        fetch(url, {
           body,
           headers: finalHeaders,
           method,
         })
           .then(async (response) => {
-            const responseData = await response.json().catch(() => null) // Handle non-JSON responses
+            const responseData = await response.text().then((text) => {
+              try {
+                return JSON.parse(text)
+              } catch {
+                return text
+              }
+            })
+
             const responseHeaders: Record<string, string> = {}
             response.headers.forEach((value, key) => {
               responseHeaders[key] = value
@@ -37,8 +40,10 @@ export default defineBackground(() => {
               response: {
                 data: responseData,
                 headers: responseHeaders,
+                ok: response.ok,
                 status: response.status,
                 statusText: response.statusText,
+                url: response.url,
               },
               success: true,
             })

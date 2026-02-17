@@ -17,9 +17,6 @@ interface CreateOverrideResponse {
   success: boolean
 }
 
-const HTTP_OK = 200
-const HTTP_UNAUTHORIZED = 401
-
 function isUserIDOverride(override: AnyOverride): override is UserIDOverride {
   return 'ids' in override
 }
@@ -41,16 +38,7 @@ export const createOverride = async ({
       ? { overrides: [], userIDOverrides: [override] }
       : { overrides: [override], userIDOverrides: [] }
 
-    const { status } = await api.post(`/experiments/${experimentId}/overrides`, payload)
-
-    if (status === HTTP_UNAUTHORIZED) {
-      return {
-        // eslint-disable-next-line unicorn/no-null
-        data: null,
-        error: 'Invalid Statsig Console API Key, please try again with a valid key.',
-        success: false,
-      }
-    }
+    await api.url(`/experiments/${experimentId}/overrides`).post(payload).json()
 
     // Since we invalidate queries after mutation, we don't strictly need to return the updated list here
     // Unless we want to use it for optimistic updates or display.
@@ -61,7 +49,7 @@ export const createOverride = async ({
       // eslint-disable-next-line unicorn/no-null
       data: [],
       error: undefined,
-      success: status === HTTP_OK,
+      success: true,
     }
   } catch (error) {
     console.error('Failed to create override:', error)

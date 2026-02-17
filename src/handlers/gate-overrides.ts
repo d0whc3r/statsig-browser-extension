@@ -35,10 +35,12 @@ export const deleteGateOverrides = async ({
   overrides,
 }: DeleteGateOverridesArgs): Promise<GateOverride> => {
   try {
-    const result = await api.delete<ApiResponse<GateOverride>>(`/gates/${gateId}/overrides`, {
-      data: overrides,
-    })
-    return result.data.data
+    const result = await api
+      .url(`/gates/${gateId}/overrides`)
+      .json(overrides)
+      .delete()
+      .json<ApiResponse<GateOverride>>()
+    return result.data
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

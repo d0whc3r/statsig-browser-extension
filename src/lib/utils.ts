@@ -1,7 +1,6 @@
 import type { ClassValue } from 'clsx'
 import type { IFuseOptions } from 'fuse.js'
 
-import { isAxiosError } from 'axios'
 import { clsx } from 'clsx'
 import Fuse from 'fuse.js'
 import { twMerge } from 'tailwind-merge'
@@ -185,18 +184,25 @@ function getErrorMessageFromResponse(response: any): string | undefined {
  * @returns Error message string
  */
 export function handleApiError(error: unknown): string {
-  if (isAxiosError(error)) {
-    const { response, request, message } = error
-    if (response) {
-      return getErrorMessageFromResponse(response) || message
+  // Check for Wretch error
+  if (error && typeof error === 'object' && 'response' in error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const err = error as { response: Response & { _data?: any }; status: number; message: string }
+    const { response } = err
+    const data = response._data
+
+    if (data) {
+      const msg = getErrorMessageFromResponse({ data, status: err.status })
+      if (msg) {
+        return msg
+      }
     }
-    return request
-      ? 'No response received from server. Please check your internet connection.'
-      : message
+    return err.message
   }
 
   if (error instanceof Error) {
     return error.message
   }
-  return typeof error === 'string' ? error : 'An unexpected error occurred'
+
+  return 'An unknown error occurred'
 }

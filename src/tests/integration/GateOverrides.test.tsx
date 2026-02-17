@@ -2,22 +2,34 @@ import { screen, waitFor, within } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
-import { api, fetcher, poster } from '@/src/lib/fetcher'
+import { fetcher, poster } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
+const { mockWretch } = vi.hoisted(() => {
+  const mockJson = vi.fn()
+  const mockWretch = {
+    delete: vi.fn().mockReturnThis(),
+    get: vi.fn().mockReturnThis(),
+    headers: vi.fn().mockReturnThis(),
+    json: mockJson,
+    post: vi.fn().mockReturnThis(),
+    url: vi.fn().mockReturnThis(),
+  }
+  // Handle both .json(body) for request and .json() for response
+  mockJson.mockImplementation((body) => {
+    if (body) {
+      return mockWretch
+    }
+    return Promise.resolve({ data: { data: {} }, status: 200 })
+  })
+  return { mockJson, mockWretch }
+})
+
 vi.mock('@/src/lib/fetcher', () => ({
-  api: {
-    delete: vi.fn(),
-    get: vi.fn(),
-    interceptors: {
-      request: { use: vi.fn() },
-    },
-    patch: vi.fn(),
-    post: vi.fn(),
-  },
+  api: mockWretch,
   fetcher: vi.fn(),
   poster: vi.fn(),
 }))
@@ -95,9 +107,7 @@ const setupMocks = () => {
   })
 
   // Setup API mocks
-  const mockDelete = vi.mocked(api.delete)
-  mockDelete.mockImplementation((_url) => Promise.resolve({ data: { data: {} }, status: 200 }))
-  vi.mocked(poster).mockResolvedValue({ data: {}, status: 200 })
+  vi.mocked(poster).mockResolvedValue({ data: {}, status: 200 } as any)
 }
 
 describe('Gate Overrides Flow', () => {
@@ -162,14 +172,13 @@ describe('Gate Overrides Flow', () => {
 
     // Verify DELETE API call
     await waitFor(() => {
-      expect(api.delete).toHaveBeenCalledWith(
-        '/gates/gate_1/overrides',
+      expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
+      expect(mockWretch.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({
-            passingUserIDs: ['user_pass'],
-          }),
+          passingUserIDs: ['user_pass'],
         }),
       )
+      expect(mockWretch.delete).toHaveBeenCalled()
     })
   })
 
@@ -196,20 +205,19 @@ describe('Gate Overrides Flow', () => {
 
     // Verify DELETE API call
     await waitFor(() => {
-      expect(api.delete).toHaveBeenCalledWith(
-        '/gates/gate_1/overrides',
+      expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
+      expect(mockWretch.json).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({
-            environmentOverrides: [
-              expect.objectContaining({
-                environment: 'Development',
-                passingIDs: ['stable_pass'],
-                unitID: 'stableID',
-              }),
-            ],
-          }),
+          environmentOverrides: [
+            expect.objectContaining({
+              environment: 'Development',
+              passingIDs: ['stable_pass'],
+              unitID: 'stableID',
+            }),
+          ],
         }),
       )
+      expect(mockWretch.delete).toHaveBeenCalled()
     })
   })
 

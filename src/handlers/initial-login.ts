@@ -7,9 +7,6 @@ interface InitialLoginResponse {
   success: boolean
 }
 
-const HTTP_OK = 200
-const HTTP_UNAUTHORIZED = 401
-
 /**
  * Verifies the Statsig Console API Key by making a request to the /gates endpoint.
  *
@@ -18,27 +15,11 @@ const HTTP_UNAUTHORIZED = 401
  */
 export const initialLogin = async (apiKey: string): Promise<InitialLoginResponse> => {
   try {
-    const { data, status } = await api.get('/gates?limit=1', {
-      headers: {
-        'STATSIG-API-KEY': apiKey,
-      },
-    })
-
-    if (status === HTTP_UNAUTHORIZED) {
-      return {
-        data: undefined,
-        error: 'Invalid Statsig Console API Key, please try again with a valid key.',
-        success: false,
-      }
-    }
-
-    if (status !== HTTP_OK) {
-      return {
-        data: undefined,
-        error: 'An unknown error occurred, please try again.',
-        success: false,
-      }
-    }
+    const data = await api
+      .headers({ 'STATSIG-API-KEY': apiKey })
+      .url('/gates?limit=1')
+      .get()
+      .json<{ data: unknown }>()
 
     return {
       data: data?.data,
