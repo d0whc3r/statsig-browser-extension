@@ -46,8 +46,8 @@
     "format:check": "oxfmt --check",
     "type-check": "tsc --noEmit",
     "test": "vitest",
-    "pre-commit": "lint-staged",
-    "pre-push": "pnpm test"
+    "pre-push": "pnpm test",
+    "pre-commit": "lint-staged"
   },
   "dependencies": {
     "@fontsource/inter": "5.2.8",
