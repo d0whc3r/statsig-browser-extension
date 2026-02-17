@@ -1,156 +1,125 @@
-interface StatsigInstance {
-  _user?: Record<string, unknown>
-  identity?: {
-    user: Record<string, unknown>
-    stableID?: string
-  }
-  _stableID?: string
-  getStableID?: () => string
-  getContext?: () => { stableID?: string }
-}
-
-interface StatsigGlobal {
-  instance?: StatsigInstance
-  instances?: Record<string, StatsigInstance>
-}
-
-interface WindowWithStatsig {
-  __STATSIG_JS_SDK__?: StatsigGlobal
-  __STATSIG_SDK__?: StatsigGlobal
-  __STATSIG__?: {
-    instances?: Record<string, StatsigInstance>
-    instance: (key?: string) => StatsigInstance
-  }
-}
-
-const getStatsigInstance = (win: WindowWithStatsig) => {
-  // Check for monorepo/multiple instance structure first
-  if (win.__STATSIG__?.instances) {
-    const { instances } = win.__STATSIG__
-    const [firstKey] = Object.keys(instances)
-    if (firstKey) {
-      // Prefer the first instance found
-      return { instance: instances[firstKey], isJsMonoClient: true }
-    }
-  }
-
-  // Fallback to legacy single instance SDKs
-  let instance = win.__STATSIG_JS_SDK__?.instance
-  instance ??= win.__STATSIG_SDK__?.instance
-
-  if (instance) {
-    return { instance, isJsMonoClient: false }
-  }
-}
-
-const mergeCustomParams = (
-  user: Record<string, unknown>,
-  instanceUser: Record<string, unknown>,
-) => {
-  const custom = instanceUser.custom as Record<string, unknown> | undefined
-  if (custom) {
-    user.custom = {
-      ...(user.custom as Record<string, unknown>),
-      ...custom,
-    }
-  }
-}
-
-const mergeTopLevelProperties = (
-  user: Record<string, unknown>,
-  instanceUser: Record<string, unknown>,
-) => {
-  for (const [key, value] of Object.entries(instanceUser)) {
-    // Only add if not already present or if current value is empty/null
-    if (!(key in user) || user[key] === undefined || user[key] === null) {
-      user[key] = value
-    }
-  }
-}
-
-const enrichUserFromGlobal = (user: Record<string, unknown>, win: WindowWithStatsig) => {
-  // Try to enrich with data from __STATSIG__ global if available
-  if (!win.__STATSIG__?.instances) {
-    return
-  }
-
-  const { instances } = win.__STATSIG__
-  const [firstKey] = Object.keys(instances)
-  if (!firstKey) {
-    return
-  }
-
-  const instanceData = instances[firstKey]
-
-  if (instanceData._user) {
-    mergeCustomParams(user, instanceData._user)
-    mergeTopLevelProperties(user, instanceData._user)
-  }
-}
-
-const getStableIDFromMethod = (instance: StatsigInstance): string | undefined => {
-  if (typeof instance.getStableID === 'function') {
-    return instance.getStableID()
-  }
-}
-
-const getStableIDFromContext = (instance: StatsigInstance): string | undefined => {
-  if (typeof instance.getContext === 'function') {
-    return instance.getContext()?.stableID
-  }
-}
-
-const extractStableID = (instance: StatsigInstance): string | undefined => {
-  const fromMethod = getStableIDFromMethod(instance)
-  if (fromMethod) {
-    return fromMethod
-  }
-
-  const fromContext = getStableIDFromContext(instance)
-  if (fromContext) {
-    return fromContext
-  }
-
-  return instance._stableID || instance.identity?.stableID
-}
-
-const getInitialUser = (instance: StatsigInstance, isJsMonoClient: boolean) => {
-  if (isJsMonoClient && instance._user) {
-    return { ...instance._user }
-  }
-  if (instance.identity?.user) {
-    return { ...instance.identity.user }
-  }
-  return {}
-}
-
-const assembleUser = (
-  instance: StatsigInstance,
-  isJsMonoClient: boolean,
-  win: WindowWithStatsig,
-) => {
-  const user = getInitialUser(instance, isJsMonoClient)
-  enrichUserFromGlobal(user, win)
-  const stableID = extractStableID(instance)
-
-  if (stableID) {
-    user.stableID = stableID
-  }
-  return user
-}
+// oxlint-disable no-inner-declarations
+// oxlint-disable max-statements
+import type { StatsigInstance, WindowWithStatsig } from '../types/statsig'
 
 export const getUserDetailsFromPage = () => {
   try {
-    const theWindow = globalThis as unknown as WindowWithStatsig
-    const result = getStatsigInstance(theWindow)
-    if (!result?.instance) {
+    const win = globalThis as unknown as WindowWithStatsig
+
+    // oxlint-disable-next-line unicorn/consistent-function-scoping
+    function getUser(instance: StatsigInstance) {
+      if (!instance) {
+        return null
+      }
+
+      // Try getCurrentUser()
+      if (typeof instance.getCurrentUser === 'function') {
+        return instance.getCurrentUser()
+      }
+
+      // Try internal properties
+      if (instance._user) {
+        return instance._user
+      }
+      if (instance.identity?.user) {
+        return instance.identity.user
+      }
+
+      return null
+    }
+
+    function getStableID(instance: StatsigInstance) {
+      // 1. Try instance.getStableID()
+      if (typeof instance.getStableID === 'function') {
+        const sid = instance.getStableID()
+        if (sid) {
+          return sid
+        }
+      }
+
+      // 2. Try instance.getContext().stableID
+      if (typeof instance.getContext === 'function') {
+        const ctx = instance.getContext()
+        if (ctx?.stableID) {
+          return ctx.stableID
+        }
+      }
+
+      // 3. Fallback: window.__STATSIG__.firstInstance.getContext()
+      // This is specifically requested by the user for React SDK scenarios
+      if (win.__STATSIG__?.firstInstance) {
+        const { firstInstance } = win.__STATSIG__
+        if (typeof firstInstance.getContext === 'function') {
+          const ctx = firstInstance.getContext()
+          if (ctx?.stableID) {
+            return ctx.stableID
+          }
+        }
+      }
+
+      // 4. Fallback: instance properties
+      if (instance._stableID) {
+        return instance._stableID
+      }
+      if (instance.identity?.stableID) {
+        return instance.identity.stableID
+      }
+
+      return null
+    }
+
+    function getStatsigInstance() {
+      // 1. Check window.statsig (JS SDK)
+      if (win.statsig) {
+        if (typeof win.statsig.getCurrentUser === 'function') {
+          return win.statsig
+        }
+        // Fallback for JS SDK instance properties
+        if (win.statsig._user || win.statsig.identity) {
+          return win.statsig
+        }
+      }
+
+      // 2. Check window.__STATSIG__ (React SDK / multiple instances)
+      if (win.__STATSIG__) {
+        // Check instances map
+        if (win.__STATSIG__.instances) {
+          const instances = Object.values(win.__STATSIG__.instances)
+          if (instances.length > 0) {
+            return instances[0]
+          }
+        }
+        // Check firstInstance
+        if (win.__STATSIG__.firstInstance) {
+          return win.__STATSIG__.firstInstance
+        }
+      }
+
+      // 3. Check window.__STATSIG_JS_SDK__
+      if (win.__STATSIG_JS_SDK__?.instance) {
+        return win.__STATSIG_JS_SDK__.instance
+      }
+
+      return null
+    }
+
+    const instance = getStatsigInstance()
+    if (!instance) {
       return
     }
 
-    const { instance, isJsMonoClient } = result
+    const user = getUser(instance) || {}
+    const stableID = getStableID(instance)
+
+    if (stableID) {
+      user.stableID = stableID
+    }
+
+    const context = typeof instance.getContext === 'function' ? instance.getContext() : undefined
 
     return {
-      user: assembleUser(instance, isJsMonoClient, theWindow),
+      context,
+      user,
     }
   } catch {
     // Ignore errors to prevent crashing the extension

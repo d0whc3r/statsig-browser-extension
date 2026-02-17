@@ -11,6 +11,7 @@ import {
   localStorageKeyStorage,
   storageTypeStorage,
 } from '@/src/lib/storage'
+import { getActiveTab } from '@/src/lib/tabs'
 import { useContextStore } from '@/src/store/use-context-store'
 
 export const useExperimentStorage = () => {
@@ -22,42 +23,48 @@ export const useExperimentStorage = () => {
   const [, setCurrentOverrides] = useWxtStorage(currentOverridesStorage)
 
   useEffect(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      if (tabs[0]?.id) {
-        const result = await getCurrentStorageValue(tabs[0].id, storageKeyName, storageType)
+    const fetchStorageValue = async () => {
+      const tab = await getActiveTab()
+      const activeTabId = tab?.id
+
+      if (activeTabId) {
+        const result = await getCurrentStorageValue(activeTabId, storageKeyName, storageType)
         if (result !== null) {
           setCurrentLocalStorageValue(result)
         }
       }
-    })
+    }
+    fetchStorageValue()
   }, [setCurrentLocalStorageValue, storageType, storageKeyName])
 
   const saveToLocalStorage = useCallback(
-    (value: string, allOverrideIds: string[]) => {
+    async (value: string, allOverrideIds: string[]) => {
       setCurrentOverrides(allOverrideIds.map((id) => ({ name: id }))) // Use generic object structure if needed, or adjust type
 
-      chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-        if (tabs[0]?.id) {
-          setCurrentLocalStorageValue(value)
-          await updateStorageValue({
-            storageKey: storageKeyName,
-            storageType,
-            storageValue: value,
-            tabId: tabs[0].id,
-          })
-        }
-      })
+      const tab = await getActiveTab()
+      const activeTabId = tab?.id
+
+      if (activeTabId) {
+        setCurrentLocalStorageValue(value)
+        await updateStorageValue({
+          storageKey: storageKeyName,
+          storageType,
+          storageValue: value,
+          tabId: activeTabId,
+        })
+      }
     },
     [setCurrentOverrides, setCurrentLocalStorageValue, storageKeyName, storageType],
   )
 
-  const clearOverride = useCallback(() => {
-    chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
-      if (tabs[0]?.id) {
-        setCurrentLocalStorageValue('')
-        await removeStorageValue(tabs[0].id, storageKeyName, storageType)
-      }
-    })
+  const clearOverride = useCallback(async () => {
+    const tab = await getActiveTab()
+    const activeTabId = tab?.id
+
+    if (activeTabId) {
+      setCurrentLocalStorageValue('')
+      await removeStorageValue(activeTabId, storageKeyName, storageType)
+    }
   }, [setCurrentLocalStorageValue, storageKeyName, storageType])
 
   return {

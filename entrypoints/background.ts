@@ -1,10 +1,11 @@
+import { browser } from 'wxt/browser'
 import { defineBackground } from 'wxt/utils/define-background'
 
 import { apiKeyStorage } from '@/src/lib/storage'
 
 export default defineBackground(() => {
   // Listen for API requests from the popup/options pages
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.type === 'AXIOS_REQUEST' && message.config) {
       const { url, method, data, headers, baseURL } = message.config
 

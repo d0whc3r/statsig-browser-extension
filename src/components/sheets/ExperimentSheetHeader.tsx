@@ -1,4 +1,4 @@
-import { Copy, ExternalLink, Settings2 } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
 import type { Experiment } from '@/src/types/statsig'
@@ -23,24 +23,12 @@ interface ExperimentSheetHeaderProps {
 }
 
 export const ExperimentSheetHeader = memo(
-  ({
-    isLoading,
-    experiment,
-    currentItemId,
-    typeApiKey,
-    onClose,
-    onManage,
-  }: ExperimentSheetHeaderProps) => {
+  ({ isLoading, experiment, currentItemId }: ExperimentSheetHeaderProps) => {
     const handleCopyId = useCallback(() => {
       if (currentItemId) {
         navigator.clipboard.writeText(currentItemId)
       }
     }, [currentItemId])
-
-    const handleManage = useCallback(() => {
-      onClose()
-      onManage()
-    }, [onClose, onManage])
 
     return (
       <SheetHeader className="px-6 py-4 border-b shrink-0 pr-12">
@@ -72,24 +60,6 @@ export const ExperimentSheetHeader = memo(
             )}
           </div>
           <div className="shrink-0 flex gap-2">
-            {typeApiKey === 'write-key' && (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={handleManage}
-                    >
-                      <Settings2 className="h-4 w-4" />
-                      <span className="sr-only">Manage experiment</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Manage experiment</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            )}
             {experiment?.id && (
               <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
                 <a
@@ -98,7 +68,6 @@ export const ExperimentSheetHeader = memo(
                   rel="noopener noreferrer"
                 >
                   Statsig
-                  <ExternalLink className="h-3 w-3" />
                 </a>
               </Button>
             )}

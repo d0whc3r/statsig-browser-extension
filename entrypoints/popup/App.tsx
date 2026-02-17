@@ -14,7 +14,7 @@ export function AppContent() {
 
   return (
     <div className="w-[780px] h-[600px] flex flex-col bg-background text-foreground overflow-hidden">
-      <Header onNavigate={handleTabChange} onLogout={handleLogout} />
+      <Header onLogout={handleLogout} />
 
       <MainTabs activeTab={activeTab} onTabChange={handleTabChange} />
 

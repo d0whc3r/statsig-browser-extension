@@ -1,4 +1,4 @@
-import { Copy, ExternalLink } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 
 import type { DynamicConfig } from '@/src/types/statsig'
@@ -59,7 +59,6 @@ const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => {
               rel="noopener noreferrer"
             >
               Statsig
-              <ExternalLink className="h-3 w-3" />
             </a>
           </Button>
         )}

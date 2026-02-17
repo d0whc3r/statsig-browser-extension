@@ -1,3 +1,5 @@
+import { browser } from 'wxt/browser'
+
 import { handleApiError } from '../lib/utils'
 
 interface ExecuteStorageOpParams {
@@ -16,7 +18,7 @@ interface ExecuteStorageOpParams {
 // Helper to execute script safely avoiding inline script CSP violations
 const executeStorageOp = async ({ tabId, op, key, value }: ExecuteStorageOpParams) => {
   // 1. Inject args into DOM (ISOLATED world) - Safe from CSP
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     args: [{ key, op, value }],
     func: (args) => {
       const el = document.createElement('div')
@@ -30,14 +32,14 @@ const executeStorageOp = async ({ tabId, op, key, value }: ExecuteStorageOpParam
 
   // 2. Execute external file (MAIN world) - Allowed by CSP (chrome-extension://...)
   // The file reads the args from DOM, executes logic, and returns result
-  const result = await chrome.scripting.executeScript({
+  const result = await browser.scripting.executeScript({
     files: ['storage-helper.js'],
     target: { tabId },
     world: 'MAIN',
   })
 
   // 3. Cleanup DOM (ISOLATED world)
-  await chrome.scripting.executeScript({
+  await browser.scripting.executeScript({
     func: () => {
       const el = document.querySelector('#__statsig_action_args')
       if (el) {
@@ -47,7 +49,10 @@ const executeStorageOp = async ({ tabId, op, key, value }: ExecuteStorageOpParam
     target: { tabId },
   })
 
-  return result[0]?.result
+  if (result && Array.isArray(result) && result.length > 0 && 'result' in result[0]) {
+    return result[0].result
+  }
+  return null
 }
 
 export const updateLocalStorageValue = async (

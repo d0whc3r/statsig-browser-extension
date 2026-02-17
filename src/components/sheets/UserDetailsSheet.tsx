@@ -7,18 +7,23 @@ import { UserDetailsHeader } from '@/src/components/sheets/user-details/UserDeta
 import { UserDetailsSkeleton } from '@/src/components/sheets/user-details/UserDetailsSkeleton'
 import { ScrollArea } from '@/src/components/ui/scroll-area'
 import { Sheet, SheetContent } from '@/src/components/ui/sheet'
+import { useDetectedUser } from '@/src/hooks/use-detected-user'
 import { useUserDetails } from '@/src/hooks/use-user-details'
+import { useContextStore } from '@/src/store/use-context-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const UserDetailsSheet = () => {
   const { isUserDetailsSheetOpen, setUserDetailsSheetOpen } = useUIStore((state) => state)
   const { data: userDetailsData, isLoading, refetch } = useUserDetails()
+  const { retryDetection } = useDetectedUser()
+  const detectionError = useContextStore((state) => state.detectionError)
 
   const userDetails = userDetailsData as StatsigUser | undefined
 
   const handleRefetch = useCallback(() => {
     refetch()
-  }, [refetch])
+    retryDetection()
+  }, [refetch, retryDetection])
 
   return (
     <Sheet open={isUserDetailsSheetOpen} onOpenChange={setUserDetailsSheetOpen}>
@@ -30,7 +35,11 @@ export const UserDetailsSheet = () => {
             {isLoading ? (
               <UserDetailsSkeleton />
             ) : (
-              <UserDetailsContent userDetails={userDetails} onRefetch={handleRefetch} />
+              <UserDetailsContent
+                userDetails={userDetails}
+                onRefetch={handleRefetch}
+                error={detectionError}
+              />
             )}
           </div>
         </ScrollArea>

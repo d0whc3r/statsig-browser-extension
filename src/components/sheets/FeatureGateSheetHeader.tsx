@@ -1,4 +1,4 @@
-import { Copy, ExternalLink } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
 import type { FeatureGate } from '@/src/types/statsig'
@@ -65,7 +65,6 @@ export const FeatureGateSheetHeader = memo(
               target="_blank"
               rel="noopener noreferrer"
             >
-              <ExternalLink className="mr-2 h-4 w-4" />
               Statsig
             </a>
           </Button>

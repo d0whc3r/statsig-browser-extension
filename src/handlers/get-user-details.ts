@@ -1,13 +1,16 @@
+import { browser } from 'wxt/browser'
+
 import { getUserDetailsFromPage } from '../lib/get-user-details-injector'
 import { handleApiError } from '../lib/utils'
 
 export interface UserDetails {
   user: Record<string, unknown>
+  context?: Record<string, unknown>
 }
 
 export const getUserDetails = async (tabId: number): Promise<UserDetails | undefined> => {
   try {
-    const [result] = await chrome.scripting.executeScript({
+    const [result] = await browser.scripting.executeScript({
       func: getUserDetailsFromPage,
       target: { tabId },
       world: 'MAIN',

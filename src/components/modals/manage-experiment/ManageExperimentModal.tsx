@@ -1,10 +1,8 @@
 import { useCallback } from 'react'
 
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 import { useUIStore } from '@/src/store/use-ui-store'
 
-import { GroupsSection } from './GroupsSection'
 import { OverridesSection } from './OverridesSection'
 
 export function ManageExperimentModal() {
@@ -33,20 +31,9 @@ export function ManageExperimentModal() {
     <Dialog open={isManageExperimentModalOpen} onOpenChange={handleCloseModal}>
       <DialogContent className="max-w-3xl">
         <DialogHeader>
-          <DialogTitle>Manage Experiment: {currentItemId}</DialogTitle>
+          <DialogTitle>Manage Experiment Overrides: {currentItemId}</DialogTitle>
         </DialogHeader>
-        <Tabs defaultValue="groups" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="groups">Groups</TabsTrigger>
-            <TabsTrigger value="overrides">Overrides</TabsTrigger>
-          </TabsList>
-          <TabsContent value="groups">
-            <GroupsSection />
-          </TabsContent>
-          <TabsContent value="overrides">
-            <OverridesSection />
-          </TabsContent>
-        </Tabs>
+        <OverridesSection />
       </DialogContent>
     </Dialog>
   )

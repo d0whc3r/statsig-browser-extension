@@ -13,13 +13,9 @@ import { ExperimentSheetDetails } from './ExperimentSheetDetails'
 import { ExperimentSheetHeader } from './ExperimentSheetHeader'
 
 const useExperimentSheetState = () => {
-  const {
-    currentItemId,
-    isItemSheetOpen,
-    setItemSheetOpen,
-    setManageExperimentModalOpen,
-    currentItemType,
-  } = useUIStore((state) => state)
+  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore(
+    (state) => state,
+  )
 
   const [typeApiKey] = useWxtStorage<'write-key' | 'read-key'>(apiKeyTypeStorage)
 
@@ -40,24 +36,21 @@ const useExperimentSheetState = () => {
     setItemSheetOpen(false)
   }, [setItemSheetOpen])
 
-  const handleManage = useCallback(() => {
-    setManageExperimentModalOpen(true)
-  }, [setManageExperimentModalOpen])
-
   return {
     currentItemId,
     error: experimentError || overridesError,
     experiment,
     handleClose,
-    handleManage,
     isLoading: isLoadingExperiment || isLoadingOverrides,
     overridesData,
     typeApiKey,
   }
 }
 
+const noOp = () => {}
+
 export const ExperimentSheet = () => {
-  const { currentItemId, error, experiment, handleClose, handleManage, isLoading, typeApiKey } =
+  const { currentItemId, error, experiment, handleClose, isLoading, typeApiKey } =
     useExperimentSheetState()
 
   const detailsContent = useMemo(
@@ -80,7 +73,7 @@ export const ExperimentSheet = () => {
         currentItemId={currentItemId}
         typeApiKey={typeApiKey}
         onClose={handleClose}
-        onManage={handleManage}
+        onManage={noOp} // No-op as manage button is removed
       />
       <SheetTabs
         detailsContent={detailsContent}

@@ -1,15 +1,17 @@
 import { useQuery } from '@tanstack/react-query'
 
+import { getActiveTab } from '@/src/lib/tabs'
+
 import { getUserDetails } from '../handlers/get-user-details'
 
 export const useUserDetails = () =>
   useQuery({
     queryFn: async () => {
-      const tabs = await chrome.tabs.query({ active: true, currentWindow: true })
-      if (!tabs[0]?.id) {
+      const tab = await getActiveTab()
+      if (!tab?.id) {
         throw new Error('No active tab found')
       }
-      const details = await getUserDetails(tabs[0].id)
+      const details = await getUserDetails(tab.id)
       return details?.user || {}
     },
     queryKey: ['user-details'],

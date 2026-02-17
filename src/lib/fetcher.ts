@@ -1,6 +1,7 @@
 import type { AxiosAdapter } from 'axios'
 
 import axios, { AxiosHeaders } from 'axios'
+import { browser } from 'wxt/browser'
 
 export const API_BASE_URL = 'https://statsigapi.net/console/v1'
 
@@ -18,7 +19,7 @@ const backgroundAdapter: AxiosAdapter = async (config) => {
       : (config.headers as Record<string, string>)
 
   // Send request to background
-  const response = await chrome.runtime.sendMessage({
+  const response = await browser.runtime.sendMessage({
     config: {
       data: config.data,
       headers,

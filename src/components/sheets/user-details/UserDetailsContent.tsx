@@ -23,6 +23,7 @@ const COPIED_TIMEOUT = 2000
 interface UserDetailsContentProps {
   userDetails: StatsigUser | null | undefined
   onRefetch: () => void
+  error?: string | null
 }
 
 const CopyableValue = ({ value }: { value: string }) => {
@@ -249,35 +250,37 @@ const UserAdditionalProperties = memo(({ userDetails }: { userDetails: StatsigUs
 
 UserAdditionalProperties.displayName = 'UserAdditionalProperties'
 
-export const UserDetailsContent = memo(({ userDetails, onRefetch }: UserDetailsContentProps) => {
-  if (!userDetails || Object.keys(userDetails).length === 0) {
-    return <UserEmptyState onRefetch={onRefetch} />
-  }
+export const UserDetailsContent = memo(
+  ({ userDetails, onRefetch, error }: UserDetailsContentProps) => {
+    if (!userDetails || Object.keys(userDetails).length === 0 || error) {
+      return <UserEmptyState onRefetch={onRefetch} error={error} />
+    }
 
-  return (
-    <div className="space-y-8 pb-8">
-      <UserHeader userDetails={userDetails} />
+    return (
+      <div className="space-y-8 pb-8">
+        <UserHeader userDetails={userDetails} />
 
-      <div className="space-y-6">
-        <UserOverview userDetails={userDetails} />
+        <div className="space-y-6">
+          <UserOverview userDetails={userDetails} />
 
-        {(userDetails.custom ||
-          userDetails.privateAttributes ||
-          Object.keys(userDetails).length > 10) && <Separator />}
+          {(userDetails.custom ||
+            userDetails.privateAttributes ||
+            Object.keys(userDetails).length > 10) && <Separator />}
 
-        <PropertySection title="Custom Properties" icon={Database} data={userDetails.custom} />
+          <PropertySection title="Custom Properties" icon={Database} data={userDetails.custom} />
 
-        <PropertySection
-          title="Private Attributes"
-          icon={Lock}
-          data={userDetails.privateAttributes}
-          variant="private"
-        />
+          <PropertySection
+            title="Private Attributes"
+            icon={Lock}
+            data={userDetails.privateAttributes}
+            variant="private"
+          />
 
-        <UserAdditionalProperties userDetails={userDetails} />
+          <UserAdditionalProperties userDetails={userDetails} />
+        </div>
       </div>
-    </div>
-  )
-})
+    )
+  },
+)
 
 UserDetailsContent.displayName = 'UserDetailsContent'

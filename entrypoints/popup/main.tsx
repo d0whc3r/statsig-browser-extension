@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom/client'
 
 import { TooltipProvider } from '@/src/components/ui/tooltip'
 import { queryClient } from '@/src/lib/query-client.ts'
-
 import '@fontsource/inter'
 import { App } from './App'
 

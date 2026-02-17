@@ -12,16 +12,11 @@ import {
 import { useUIStore } from '@/src/store/use-ui-store'
 
 interface HeaderProps {
-  onNavigate: (tab: string) => void
   onLogout: () => void
 }
 
-export const Header = memo(({ onNavigate, onLogout }: HeaderProps) => {
+export const Header = memo(({ onLogout }: HeaderProps) => {
   const { setUserDetailsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
-
-  const handleNavigateAuditLogs = useCallback(() => {
-    onNavigate('audit_logs')
-  }, [onNavigate])
 
   const handleOpenUserDetails = useCallback(() => {
     setUserDetailsSheetOpen(true)
@@ -44,7 +39,6 @@ export const Header = memo(({ onNavigate, onLogout }: HeaderProps) => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={handleNavigateAuditLogs}>Audit Logs</DropdownMenuItem>
             <DropdownMenuItem onClick={handleOpenUserDetails}>
               <User className="mr-2 h-4 w-4" />
               User Details
