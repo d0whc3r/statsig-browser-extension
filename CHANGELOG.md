@@ -1,3 +1,9 @@
+## [1.0.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.0.1...v1.0.2) (2026-02-17)
+
+### Bug Fixes
+
+- correct user detection ([0d92f2e](https://github.com/d0whc3r/statsig-browser-extension/commit/0d92f2e383b7eba722d3bf6c83846ca74ae6dea2))
+
 ## [1.0.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.0.0...v1.0.1) (2026-02-16)
 
 ### Bug Fixes
