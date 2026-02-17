@@ -93,20 +93,11 @@ describe('Navigation Flow', () => {
     expect(useUIStore.getState().isSettingsSheetOpen).toBeTruthy()
   })
 
-  it('should navigate to Audit Logs via menu', async () => {
+  it('should switch to Audit Logs tab', async () => {
     renderWithProviders(<AppContent />)
 
-    expect(screen.queryByTestId('audit-logs')).not.toBeInTheDocument()
-
-    const menuTrigger = document.querySelector('button[aria-haspopup="menu"]')
-    if (!menuTrigger) {
-      throw new Error('Menu trigger not found')
-    }
-
-    await userEvent.click(menuTrigger)
-
-    const auditLogsItem = screen.getByRole('menuitem', { name: 'Audit Logs' })
-    await userEvent.click(auditLogsItem)
+    const auditLogsTab = screen.getByRole('tab', { name: /Audit Logs/i })
+    await userEvent.click(auditLogsTab)
 
     expect(screen.getByTestId('audit-logs')).toBeInTheDocument()
   })

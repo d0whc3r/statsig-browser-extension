@@ -138,15 +138,6 @@ describe('Experiment Overrides Flow', () => {
 
     // Wait for sheet to open
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Manage experiment/i })).toBeInTheDocument()
-    })
-
-    // Click Manage button
-    const manageBtn = screen.getByRole('button', { name: /Manage experiment/i })
-    await userEvent.click(manageBtn)
-
-    // Wait for modal and switch to Overrides tab
-    await waitFor(() => {
       expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
     })
     await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
@@ -170,12 +161,6 @@ describe('Experiment Overrides Flow', () => {
     // Open experiment details
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
     await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
-
-    // Open Manage Modal
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Manage experiment/i })).toBeInTheDocument(),
-    )
-    await userEvent.click(screen.getByRole('button', { name: /Manage experiment/i }))
 
     // Switch to Overrides tab
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
@@ -227,12 +212,6 @@ describe('Experiment Overrides Flow', () => {
     // Open experiment details
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
     await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
-
-    // Open Manage Modal
-    await waitFor(() =>
-      expect(screen.getByRole('button', { name: /Manage experiment/i })).toBeInTheDocument(),
-    )
-    await userEvent.click(screen.getByRole('button', { name: /Manage experiment/i }))
 
     // Switch to Overrides tab
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
