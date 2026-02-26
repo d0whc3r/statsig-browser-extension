@@ -27,7 +27,6 @@ Thank you for your interest in contributing to the Statsig Browser Extension! Th
     # Or specific browser:
     pnpm dev:chrome
     pnpm dev:firefox
-    pnpm dev:edge
     ```
 
 ## Code Standards

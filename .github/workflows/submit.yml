@@ -27,7 +27,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Build and zip extension artifact
-        run: pnpm run zip:all
+        run: pnpm run zip:chrome && pnpm run zip:firefox
 
       - name: Browser Platform Publish
         uses: PlasmoHQ/bpp@v3
@@ -35,4 +35,3 @@ jobs:
           keys: ${{ secrets.SUBMIT_KEYS }}
           chrome-file: .output/statsig-browser-extension-{version}-chrome.zip
           firefox-file: .output/statsig-browser-extension-{version}-firefox.zip
-          edge-file: .output/statsig-browser-extension-{version}-edge.zip

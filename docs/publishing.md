@@ -1,6 +1,6 @@
 # Publishing Guide
 
-This project uses `semantic-release` to automatically publish new versions of the extension to the Chrome Web Store, Firefox Add-ons (AMO), and Microsoft Edge Add-ons.
+This project uses `semantic-release` to automatically publish new versions of the extension to the [Chrome Web Store](https://chromewebstore.google.com/detail/statsig-browser-extension/dcoabmhfndkoogomhielncgjbaomfkmh) and [Firefox Add-ons (AMO)](https://addons.mozilla.org/en-GB/firefox/addon/statsig-browser-extension/).
 
 ## Prerequisites
 
@@ -22,7 +22,7 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
 ```json
 {
   "chrome": {
-    "extensionId": "your-extension-id",
+    "extensionId": "dcoabmhfndkoogomhielncgjbaomfkmh",
     "clientId": "your-client-id",
     "clientSecret": "your-client-secret",
     "refreshToken": "your-refresh-token"
@@ -31,12 +31,6 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
     "extensionId": "your-extension-id",
     "apiKey": "your-jwt-issuer",
     "apiSecret": "your-jwt-secret"
-  },
-  "edge": {
-    "productId": "your-product-id",
-    "clientId": "your-client-id",
-    "clientSecret": "your-client-secret",
-    "accessTokenUrl": "https://login.microsoftonline.com/your-tenant-id/oauth2/v2.0/token"
   }
 }
 ```
@@ -57,13 +51,6 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
 1.  **extensionId**: The UUID of your extension (e.g., `{uuid}`).
 2.  **jwtIssuer**, **jwtSecret**:
     - Go to [Mozilla Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/) -> Settings -> Manage API Keys.
-
-#### Microsoft Edge Add-ons
-
-1.  **productId**: Store ID found in [Partner Center](https://partner.microsoft.com/en-us/dashboard/microsoftedge/overview).
-2.  **clientId**, **clientSecret**:
-    - Go to Partner Center -> Microsoft Edge -> Settings -> Developer settings.
-    - Create a new client secret (API Key). **Note**: `clientSecret` here corresponds to the "API Key" or "Secret" from Partner Center.
 
 ### GitHub Token
 
@@ -88,8 +75,8 @@ The release process is fully automated via GitHub Actions on the `main` branch.
 4.  **Submit Workflow (`submit.yml`)**:
     - Triggered automatically by the `release` (published) event.
     - Can also be triggered manually via "Run workflow" (workflow_dispatch).
-    - Builds the extension for Chrome, Firefox, and Edge using `wxt` (`pnpm zip:all`).
-    - Publishes the generated `.zip` artifacts to all configured stores using `PlasmoHQ/bpp`.
+    - Builds the extension for Chrome and Firefox using `wxt` (`pnpm zip:chrome && pnpm zip:firefox`).
+    - Publishes the generated `.zip` artifacts to Chrome Web Store and Firefox AMO using `PlasmoHQ/bpp`.
 
 ## Manual Trigger (Emergency)
 

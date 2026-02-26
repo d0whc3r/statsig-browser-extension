@@ -13,7 +13,7 @@
     [
       "@semantic-release/exec",
       {
-        "prepareCmd": "pnpm zip:all"
+        "prepareCmd": "pnpm zip:chrome && pnpm zip:firefox"
       }
     ],
     [
@@ -34,10 +34,6 @@
           {
             "path": ".output/*-firefox.zip",
             "label": "Firefox Extension"
-          },
-          {
-            "path": ".output/*-edge.zip",
-            "label": "Edge Extension"
           }
         ]
       }

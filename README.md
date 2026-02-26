@@ -1,9 +1,8 @@
 # Statsig Browser Extension
 
 [![Statsig](https://img.shields.io/badge/Statsig-Enabled-194bfa?style=for-the-badge&logo=statsig&logoColor=white)](https://statsig.com)
-[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web_Store-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chrome.google.com/webstore)
-[![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org)
-[![Microsoft Edge Add-ons](https://img.shields.io/badge/Edge-Add--ons-0078D7?style=for-the-badge&logo=microsoft-edge&logoColor=white)](https://microsoftedge.microsoft.com/addons)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome-Web_Store-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/statsig-browser-extension/dcoabmhfndkoogomhielncgjbaomfkmh)
+[![Firefox Add-ons](https://img.shields.io/badge/Firefox-Add--ons-FF7139?style=for-the-badge&logo=firefox-browser&logoColor=white)](https://addons.mozilla.org/en-GB/firefox/addon/statsig-browser-extension/)
 
 A powerful browser extension for managing Statsig feature gates, experiments, and dynamic configs directly from your browser.
 
@@ -97,7 +96,6 @@ pnpm dev
 # or for specific browsers
 pnpm dev:chrome
 pnpm dev:firefox
-pnpm dev:edge
 ```
 
 This will start the development server and open a browser instance with the extension loaded.
@@ -128,4 +126,4 @@ Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details on our code of conduc
 
 ## 📦 Release & Publishing
 
-We use `semantic-release` to automate our release process. For detailed instructions on how to publish the extension to Chrome, Firefox, and Edge stores, please refer to [docs/publishing.md](docs/publishing.md).
+We use `semantic-release` to automate our release process. For detailed instructions on how to publish the extension to the Chrome Web Store and Firefox Add-ons, please refer to [docs/publishing.md](docs/publishing.md).
