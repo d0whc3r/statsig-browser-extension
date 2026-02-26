@@ -33,5 +33,3 @@ jobs:
         uses: PlasmoHQ/bpp@v3
         with:
           keys: ${{ secrets.SUBMIT_KEYS }}
-          chrome-file: .output/statsig-browser-extension-{version}-chrome.zip
-          firefox-file: .output/statsig-browser-extension-{version}-firefox.zip

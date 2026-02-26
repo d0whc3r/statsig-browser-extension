@@ -21,14 +21,18 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
 
 ```json
 {
+  "$schema": "https://github.com/PlasmoHQ/bpp/raw/main/keys.schema.json",
   "chrome": {
-    "extensionId": "dcoabmhfndkoogomhielncgjbaomfkmh",
+    "zip": ".output/statsig-browser-extension-{version}-chrome.zip", // Pattern for the built zip
+    "extId": "dcoabmhfndkoogomhielncgjbaomfkmh",
     "clientId": "your-client-id",
     "clientSecret": "your-client-secret",
     "refreshToken": "your-refresh-token"
   },
   "firefox": {
-    "extensionId": "your-extension-id",
+    "file": ".output/statsig-browser-extension-{version}-firefox.zip", // Pattern for the built output
+    "sourceFile": ".output/statsig-browser-extension-{version}-sources.zip", // Pattern for source code
+    "extId": "your-extension-id",
     "apiKey": "your-jwt-issuer",
     "apiSecret": "your-jwt-secret"
   }
@@ -39,7 +43,7 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
 
 #### Chrome Web Store
 
-1.  **extensionId**: Found in the Chrome Web Store URL.
+1.  **extId**: Found in the Chrome Web Store URL.
 2.  **clientId**, **clientSecret**, **refreshToken**:
     - Go to [Google Cloud Console](https://console.cloud.google.com/).
     - Enable **Chrome Web Store API**.
@@ -48,8 +52,8 @@ You must create a single repository secret named `SUBMIT_KEYS` containing a JSON
 
 #### Firefox Add-ons (AMO)
 
-1.  **extensionId**: The UUID of your extension (e.g., `{uuid}`).
-2.  **jwtIssuer**, **jwtSecret**:
+1.  **extId**: The UUID of your extension (e.g., `{uuid}`).
+2.  **apiKey**, **apiSecret**:
     - Go to [Mozilla Add-on Developer Hub](https://addons.mozilla.org/en-US/developers/) -> Settings -> Manage API Keys.
 
 ### GitHub Token
