@@ -31,3 +31,4 @@ secret.json
 !/.specify/
 !/specs/
 !/.kiro/
+*.tsbuildinfo
