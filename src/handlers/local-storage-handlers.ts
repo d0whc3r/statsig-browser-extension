@@ -33,7 +33,7 @@ const executeStorageOp = async ({ tabId, op, key, value }: ExecuteStorageOpParam
   // 2. Execute external file (MAIN world) - Allowed by CSP (chrome-extension://...)
   // The file reads the args from DOM, executes logic, and returns result
   const result = await browser.scripting.executeScript({
-    files: ['storage-helper.js'],
+    files: ['/storage-helper.js'],
     target: { tabId },
     world: 'MAIN',
   })

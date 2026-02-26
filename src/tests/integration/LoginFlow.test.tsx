@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'
@@ -10,19 +9,23 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the initialLogin handler
-vi.mock('@/src/handlers/initial-login', () => ({
+vi.mock(import('@/src/handlers/initial-login'), () => ({
   initialLogin: vi.fn(),
 }))
 
 // Mock useWxtStorage
-vi.mock('@/src/hooks/use-wxt-storage', () => ({
-  useWxtStorage: vi.fn((item) => {
-    if (item.key === 'local:statsig-console-api-key') {
-      return ['', vi.fn(), false]
-    }
-    return [item.defaultValue, vi.fn(), false]
-  }),
-}))
+vi.mock(
+  import('@/src/hooks/use-wxt-storage'),
+  () =>
+    ({
+      useWxtStorage: vi.fn((item) => {
+        if (item.key === 'local:statsig-console-api-key') {
+          return ['', vi.fn(), false]
+        }
+        return [item.defaultValue, vi.fn(), false]
+      }),
+    }) as any,
+)
 
 describe('Login Flow', () => {
   beforeEach(() => {

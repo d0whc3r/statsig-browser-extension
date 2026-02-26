@@ -1,6 +1,5 @@
 import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -8,28 +7,36 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock sub-components to isolate navigation logic and avoid complex data fetching setup
-vi.mock('@/src/components/tables/FeatureGatesTable', () => ({
+vi.mock(import('@/src/components/tables/FeatureGatesTable'), () => ({
   FeatureGatesTable: () => <div data-testid="feature-gates-table">Feature Gates Table</div>,
 }))
-vi.mock('@/src/components/tables/ExperimentsTable', () => ({
+vi.mock(import('@/src/components/tables/ExperimentsTable'), () => ({
   ExperimentsTable: () => <div data-testid="experiments-table">Experiments Table</div>,
 }))
-vi.mock('@/src/components/tables/DynamicConfigsTable', () => ({
+vi.mock(import('@/src/components/tables/DynamicConfigsTable'), () => ({
   DynamicConfigsTable: () => <div data-testid="dynamic-configs-table">Dynamic Configs Table</div>,
 }))
-vi.mock('@/src/components/AuditLogs', () => ({
-  AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
-}))
+vi.mock(
+  import('@/src/components/AuditLogs'),
+  () =>
+    ({
+      AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
+    }) as any,
+)
 
 // Mock API key to bypass login modal
-vi.mock('@/src/hooks/use-wxt-storage', () => ({
-  useWxtStorage: vi.fn((item) => {
-    if (item.key === 'local:statsig-console-api-key') {
-      return ['test-api-key', vi.fn(), false]
-    }
-    return [item.defaultValue, vi.fn(), false]
-  }),
-}))
+vi.mock(
+  import('@/src/hooks/use-wxt-storage'),
+  () =>
+    ({
+      useWxtStorage: vi.fn((item) => {
+        if (item.key === 'local:statsig-console-api-key') {
+          return ['test-api-key', vi.fn(), false]
+        }
+        return [item.defaultValue, vi.fn(), false]
+      }),
+    }) as any,
+)
 
 describe('Navigation Flow', () => {
   beforeEach(() => {

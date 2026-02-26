@@ -44,7 +44,7 @@
     "format:fix": "pnpm lint:fix --fix-suggestions --fix-dangerously && pnpm format",
     "format": "oxfmt --write",
     "format:check": "oxfmt --check",
-    "type-check": "tsc --noEmit",
+    "type-check": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.test.json",
     "test": "vitest",
     "pre-push": "pnpm test",
     "pre-commit": "lint-staged"

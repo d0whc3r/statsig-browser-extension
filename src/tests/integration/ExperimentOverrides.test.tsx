@@ -1,6 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher } from '@/src/lib/fetcher'
@@ -22,26 +21,35 @@ const { mockJson, mockWretch } = vi.hoisted(() => {
   return { mockJson, mockWretch }
 })
 
-vi.mock('@/src/lib/fetcher', () => ({
-  api: mockWretch,
-  fetcher: vi.fn(),
-  poster: vi.fn(),
-}))
+vi.mock(
+  import('@/src/lib/fetcher'),
+  async (originalImport) =>
+    ({
+      ...(await originalImport()),
+      api: mockWretch,
+      fetcher: vi.fn(),
+      poster: vi.fn(),
+    }) as any,
+)
 
 // Mock API key
-vi.mock('@/src/hooks/use-wxt-storage', () => ({
-  useWxtStorage: vi.fn((item) => {
-    if (item.key === 'local:api_key_type') {
-      return ['write-key', vi.fn(), false]
-    }
-    if (item.key === 'local:statsig-console-api-key') {
-      return ['test-api-key', vi.fn(), false]
-    }
-    return [item.defaultValue, vi.fn(), false]
-  }),
-}))
+vi.mock(import('@/src/hooks/use-wxt-storage'), async (originalImport) => {
+  const actual = await originalImport<typeof import('@/src/hooks/use-wxt-storage')>()
+  return {
+    ...actual,
+    useWxtStorage: vi.fn((item) => {
+      if (item.key === 'local:api_key_type') {
+        return ['write-key', vi.fn(), false]
+      }
+      if (item.key === 'local:statsig-console-api-key') {
+        return ['test-api-key', vi.fn(), false]
+      }
+      return [item.defaultValue, vi.fn(), false]
+    }),
+  } as any
+})
 
-vi.mock('@/src/lib/storage', async (importOriginal) => {
+vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/src/lib/storage')>()
   return {
     ...actual,
