@@ -5,6 +5,7 @@ export interface StatsigUser {
   statsigEnvironment?: {
     tier?: string
   }
+  customIDs?: Record<string, string>
   custom?: Record<string, unknown>
   privateAttributes?: Record<string, unknown>
   email?: string

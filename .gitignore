@@ -31,4 +31,7 @@ secret.json
 !/.specify/
 !/specs/
 !/.kiro/
+
 *.tsbuildinfo
+coverage
+.pnpm-store/

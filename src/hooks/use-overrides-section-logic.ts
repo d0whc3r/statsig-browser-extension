@@ -1,7 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import type { AnyOverride } from '@/src/handlers/create-override'
-import type { StatsigUser } from '@/src/types/statsig'
+import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
@@ -16,50 +15,130 @@ import { useUIStore } from '@/src/store/use-ui-store'
 type View = 'form' | 'table'
 export type OverrideType = 'user' | 'gate' | 'segment'
 
-const useOverridesFormState = (onSuccess: () => void, currentItemId: string | undefined) => {
-  const {
-    addMutation: mutate,
-    deleteMutation,
-    isAdding,
-    isDeleting,
-  } = useExperimentMutations({
+interface OverridesData {
+  userIDOverrides: UserIDOverride[]
+  overrides: ExperimentOverride[]
+}
+
+const useOverridesFormState = (
+  onSuccess: () => void,
+  currentItemId: string | undefined,
+  currentData: OverridesData | undefined,
+) => {
+  const { deleteMutation, isPending, updateMutation } = useExperimentMutations({
     currentItemId: currentItemId ?? '',
     onAddSuccess: () => {
+      onSuccess()
+    },
+    onDeleteSuccess: () => {
       onSuccess()
     },
   })
 
   const addOverride = useCallback(
-    (override: AnyOverride) => {
-      if (!currentItemId) {
+    (newOverride: UserIDOverride | ExperimentOverride) => {
+      if (!currentItemId || !currentData) {
         return
       }
 
-      mutate({
+      const payload: OverridesData = {
+        overrides: [...(currentData.overrides || [])],
+        userIDOverrides: [...(currentData.userIDOverrides || [])],
+      }
+
+      if ('ids' in newOverride) {
+        // User ID override
+        const [userId] = newOverride.ids
+        const env = newOverride.environment || null
+        const unitType = newOverride.unitType || 'userID'
+
+        // 1. Remove this userId from any existing override for the SAME environment & item type
+        payload.userIDOverrides = payload.userIDOverrides
+          .map((item) => {
+            const itemEnv = item.environment || null
+            const itemUnitType = item.unitType || 'userID'
+            if (itemEnv === env && itemUnitType === unitType) {
+              return { ...item, ids: item.ids.filter((id) => id !== userId) }
+            }
+            return item
+          })
+          .filter((item) => item.ids.length > 0)
+
+        // 2. Add to the correct entry
+        const existingEntry = payload.userIDOverrides.find((item) => {
+          const itemEnv = item.environment || null
+          const itemUnitType = item.unitType || 'userID'
+          return (
+            item.groupID === newOverride.groupID && itemEnv === env && itemUnitType === unitType
+          )
+        })
+
+        if (existingEntry) {
+          if (!existingEntry.ids.includes(userId)) {
+            existingEntry.ids.push(userId)
+          }
+        } else {
+          payload.userIDOverrides.push(newOverride)
+        }
+      } else {
+        // Gate/Segment override
+        // Remove any existing one for same name/type
+        payload.overrides = payload.overrides.filter(
+          (o) => o.name !== newOverride.name || o.type !== newOverride.type,
+        )
+        payload.overrides.push(newOverride)
+      }
+
+      updateMutation({
         experimentId: currentItemId,
-        override,
+        overrides: payload,
       })
     },
-    [currentItemId, mutate],
+    [currentItemId, currentData, updateMutation],
   )
 
   const deleteOverride = useCallback(
-    (override: AnyOverride) => {
-      if (!currentItemId) {
+    (toRemove: UserIDOverride | ExperimentOverride) => {
+      if (!currentItemId || !currentData) {
         return
       }
+
+      const payload: OverridesData = {
+        overrides: [],
+        userIDOverrides: [],
+      }
+
+      if ('ids' in toRemove) {
+        // User ID override cleanup
+        const clean: UserIDOverride = {
+          environment: toRemove.environment || null,
+          groupID: toRemove.groupID,
+          ids: toRemove.ids,
+          unitType: toRemove.unitType || 'userID',
+        }
+        payload.userIDOverrides = [clean]
+      } else {
+        // Experiment override (gate/segment) cleanup
+        const clean: ExperimentOverride = {
+          groupID: toRemove.groupID,
+          name: toRemove.name,
+          type: toRemove.type,
+        }
+        payload.overrides = [clean]
+      }
+
       deleteMutation({
         experimentId: currentItemId,
-        override,
+        overrides: payload,
       })
     },
-    [currentItemId, deleteMutation],
+    [currentItemId, currentData, deleteMutation],
   )
 
   return {
     addOverride,
     deleteOverride,
-    isPending: isAdding || isDeleting,
+    isPending,
   }
 }
 
@@ -76,11 +155,24 @@ const useOverrideData = (currentItemId: string | undefined) => {
   const { data: detectedUser } = useUserDetails()
 
   const detectedUserId = useMemo(
-    () => getDetectedUserId(detectedUser as StatsigUser | undefined, experiment?.idType),
+    () => getDetectedUserId(detectedUser as any, experiment?.idType),
     [detectedUser, experiment?.idType],
   )
 
   const { data: overridesData } = useOverrides(currentItemId)
+
+  const userIDOverrides = useMemo(() => {
+    if (!overridesData) {
+      return []
+    }
+
+    return overridesData.userIDOverrides.map((override) => {
+      const idType = override.unitType || 'userID'
+      const detectedId = getDetectedUserId(detectedUser as any, idType)
+      const isCurrentUser = detectedId ? override.ids.includes(detectedId) : false
+      return { ...override, isCurrentUser }
+    })
+  }, [overridesData, detectedUser])
 
   const detectedUserOverrides = useMemo(() => {
     if (!detectedUserId || !overridesData) {
@@ -109,7 +201,8 @@ const useOverrideData = (currentItemId: string | undefined) => {
     featureGates,
     groups,
     isDetectedUserOverridden: detectedUserOverrides.length > 0,
-    overridesData,
+    overridesData: overridesData ? { ...overridesData, userIDOverrides } : undefined,
+    rawOverrides: overridesData,
   }
 }
 
@@ -127,11 +220,13 @@ export const useOverridesSectionLogic = () => {
     groups,
     isDetectedUserOverridden,
     overridesData,
+    rawOverrides,
   } = useOverrideData(currentItemId)
 
   const { addOverride, deleteOverride, isPending } = useOverridesFormState(
     () => setView('table'),
     currentItemId,
+    rawOverrides,
   )
 
   const handleCreateOverrideClick = useCallback(() => setView('form'), [])
@@ -143,8 +238,8 @@ export const useOverridesSectionLogic = () => {
     deleteOverride,
     detectedUser,
     detectedUserId,
-    detectedUserOverrides, // Added this
-    experiment, // Added this
+    detectedUserOverrides,
+    experiment,
     featureGates,
     groups,
     handleBackClick,

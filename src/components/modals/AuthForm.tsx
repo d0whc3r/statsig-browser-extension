@@ -1,6 +1,11 @@
+import type { ControllerRenderProps } from 'react-hook-form'
+
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ExternalLink, Loader2 } from 'lucide-react'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
 import { Button } from '@/src/components/ui/button'
 import {
@@ -9,10 +14,26 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/src/components/ui/dialog'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/src/components/ui/form'
 import { Input } from '@/src/components/ui/input'
-import { Label } from '@/src/components/ui/label'
 import { initialLogin } from '@/src/handlers/initial-login'
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
+
+const authSchema = z.object({
+  apiKey: z
+    .string()
+    .min(1, 'Please enter an API key')
+    .startsWith('console-', 'API key should start with "console-"'),
+})
+
+type AuthFormValues = z.infer<typeof authSchema>
 
 interface AuthFormProps {
   onSuccess: () => void
@@ -21,24 +42,30 @@ interface AuthFormProps {
 
 export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
   const { setApiKey } = useSettingsStorage()
-  const [value, setValue] = useState('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
   const queryClient = useQueryClient()
+
+  const form = useForm<AuthFormValues>({
+    defaultValues: {
+      apiKey: '',
+    },
+    resolver: zodResolver(authSchema),
+  })
 
   const { mutate, isPending } = useMutation({
     mutationFn: initialLogin,
     onError: (error) => {
-      setErrorMessage(error instanceof Error ? error.message : 'An unknown error occurred')
+      form.setError('apiKey', {
+        message: error instanceof Error ? error.message : 'An unknown error occurred',
+      })
     },
-    onSuccess: (data) => {
+    onSuccess: (data, variables) => {
       if (data.error) {
-        setErrorMessage(data.error)
+        form.setError('apiKey', { message: data.error })
         return
       }
 
       if (data.success) {
-        setApiKey(value)
-        setErrorMessage(undefined)
+        setApiKey(variables)
         queryClient.invalidateQueries()
         onSuccess()
       }
@@ -47,30 +74,29 @@ export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
 
   useEffect(() => {
     if (isOpen) {
-      setErrorMessage(undefined)
+      form.reset()
     }
-  }, [isOpen])
+  }, [isOpen, form])
 
-  const handleLogin = useCallback(() => {
-    if (!value.trim()) {
-      setErrorMessage('Please enter an API key')
-      return
-    }
-    mutate(value)
-  }, [value, mutate])
-
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter') {
-        handleLogin()
-      }
+  const onSubmit = useCallback(
+    (values: AuthFormValues) => {
+      mutate(values.apiKey)
     },
-    [handleLogin],
+    [mutate],
   )
 
-  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value)
-  }, [])
+  const renderApiKeyField = useCallback(
+    ({ field }: { field: ControllerRenderProps<AuthFormValues, 'apiKey'> }) => (
+      <FormItem>
+        <FormLabel>Statsig Console API Key</FormLabel>
+        <FormControl>
+          <Input placeholder="console-..." {...field} disabled={isPending} />
+        </FormControl>
+        <FormMessage />
+      </FormItem>
+    ),
+    [isPending],
+  )
 
   return (
     <>
@@ -92,27 +118,18 @@ export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
         </DialogDescription>
       </DialogHeader>
 
-      <div className="grid gap-4 py-4">
-        <div className="grid gap-2">
-          <Label htmlFor="api-key">Statsig Console API Key</Label>
-          <Input
-            id="api-key"
-            placeholder="console-..."
-            value={value}
-            onChange={handleChange}
-            onKeyDown={handleKeyDown}
-            disabled={isPending}
-          />
-          {errorMessage && <p className="text-sm font-medium text-destructive">{errorMessage}</p>}
-        </div>
-      </div>
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+          <FormField control={form.control} name="apiKey" render={renderApiKeyField} />
 
-      <DialogFooter>
-        <Button onClick={handleLogin} disabled={isPending}>
-          {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Login
-        </Button>
-      </DialogFooter>
+          <DialogFooter>
+            <Button type="submit" disabled={isPending}>
+              {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Login
+            </Button>
+          </DialogFooter>
+        </form>
+      </Form>
     </>
   )
 }

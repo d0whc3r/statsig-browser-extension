@@ -1,8 +1,7 @@
 import { memo, useCallback, useMemo, useState } from 'react'
 
 import type { AddOverrideParams } from '@/src/components/common/GenericAddOverrideForm'
-import type { AnyOverride } from '@/src/handlers/create-override'
-import type { Experiment, Group } from '@/src/types/statsig'
+import type { AnyOverride, Experiment, Group } from '@/src/types/statsig'
 
 import { GenericAddOverrideForm } from '@/src/components/common/GenericAddOverrideForm'
 import { Button } from '@/src/components/ui/button'

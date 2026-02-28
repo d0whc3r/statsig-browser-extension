@@ -1,6 +1,8 @@
-import { memo, useState } from 'react'
+import { CheckCircle2 } from 'lucide-react'
+import { memo, useMemo, useState } from 'react'
 
 import { SharedPageContextCard } from '@/src/components/common/SharedPageContextCard'
+import { Badge } from '@/src/components/ui/badge'
 import { Label } from '@/src/components/ui/label'
 import {
   Select,
@@ -22,6 +24,7 @@ export interface BaseOverrideContextCardProps {
   children: (selectedEnvironment: string | null) => React.ReactNode
 }
 
+const ALL_ENVIRONMENTS = 'All Environments'
 const ENVIRONMENTS = ['development', 'staging', 'production']
 
 export const BaseOverrideContextCard = memo(
@@ -34,20 +37,49 @@ export const BaseOverrideContextCard = memo(
     idType = 'userID',
     children,
   }: BaseOverrideContextCardProps) => {
-    const [environment, setEnvironment] = useState<string>('All Environments')
-    const currentEnvValue = environment === 'All Environments' ? null : environment
+    // Determine the default environment to select (first one not overridden)
+    const initialEnv = useMemo(() => {
+      if (!detectedUserOverrides.some((override) => override.environment === null)) {
+        return ALL_ENVIRONMENTS
+      }
+      for (const env of ENVIRONMENTS) {
+        if (!detectedUserOverrides.some((override) => override.environment === env)) {
+          return env
+        }
+      }
+      return ALL_ENVIRONMENTS // Fallback to the first one even if overridden
+    }, [detectedUserOverrides])
+
+    const [environment, setEnvironment] = useState<string>(initialEnv)
+    const currentEnvValue = environment === ALL_ENVIRONMENTS ? null : environment
 
     return (
-      <SharedPageContextCard
-        detectedUser={detectedUser}
-        detectedUserId={detectedUserId}
-        isDetectedUserOverridden={isDetectedUserOverridden}
-      >
+      <SharedPageContextCard detectedUser={detectedUser} detectedUserId={detectedUserId}>
         {idType !== 'userID' && (
           <div className="text-xs text-muted-foreground pt-1">
             Using ID Type: <span className="font-medium text-foreground">{idType}</span>
           </div>
         )}
+
+        {isDetectedUserOverridden && (
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            <span className="text-[10px] text-muted-foreground w-full mb-0.5">
+              Active overrides for this user:
+            </span>
+            {detectedUserOverrides.map((override, index) => (
+              <Badge
+                // eslint-disable-next-line react/no-array-index-key
+                key={`${override.environment || 'global'}-${index}`}
+                variant="secondary"
+                className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
+              >
+                <CheckCircle2 className="mr-1 h-3 w-3" />
+                {override.environment || 'Global'}
+              </Badge>
+            ))}
+          </div>
+        )}
+
         {canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
           <div className="mt-3 space-y-3">
             <div className="flex flex-col gap-1.5">
@@ -58,14 +90,14 @@ export const BaseOverrideContextCard = memo(
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem
-                    value="All Environments"
+                    value={ALL_ENVIRONMENTS}
                     disabled={detectedUserOverrides.some(
                       (override) => override.environment === null,
                     )}
                   >
                     All Environments{' '}
                     {detectedUserOverrides.some((override) => override.environment === null) &&
-                      '(Overridden)'}
+                      '(Already Set)'}
                   </SelectItem>
                   {ENVIRONMENTS.map((env) => {
                     const isOverridden = detectedUserOverrides.some(
@@ -73,7 +105,7 @@ export const BaseOverrideContextCard = memo(
                     )
                     return (
                       <SelectItem key={env} value={env} disabled={isOverridden}>
-                        {env} {isOverridden && '(Overridden)'}
+                        {env} {isOverridden && '(Already Set)'}
                       </SelectItem>
                     )
                   })}

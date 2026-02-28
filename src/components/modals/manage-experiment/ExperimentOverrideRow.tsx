@@ -1,8 +1,7 @@
 import { Trash2 } from 'lucide-react'
 import { memo, useCallback, useMemo } from 'react'
 
-import type { AnyOverride } from '@/src/handlers/delete-override'
-import type { ExperimentOverride, Group } from '@/src/types/statsig'
+import type { AnyOverride, ExperimentOverride, Group } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
 import { TableCell, TableRow } from '@/src/components/ui/table'

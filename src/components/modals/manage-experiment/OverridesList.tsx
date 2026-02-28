@@ -1,8 +1,10 @@
-import type { AnyOverride } from '@/src/handlers/delete-override'
-import type { Override } from '@/src/hooks/use-overrides'
-import type { ExperimentOverride, Group } from '@/src/types/statsig'
+import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useMemo, useState } from 'react'
+
+import type { AnyOverride, ExperimentOverride, Group, UserIDOverride } from '@/src/types/statsig'
 
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
+import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import {
   Table,
@@ -23,7 +25,7 @@ interface OverridesListProps {
   isPending: boolean
   overridesData:
     | {
-        userIDOverrides: Override[]
+        userIDOverrides: (UserIDOverride & { isCurrentUser?: boolean })[]
         overrides: ExperimentOverride[]
       }
     | undefined
@@ -37,86 +39,138 @@ export const OverridesList = ({
   isPending,
   overridesData,
   groups,
-}: OverridesListProps) => (
-  <SharedOverridesList onAddManual={onCreateOverrideClick} canEdit={canEdit}>
-    <div className="flex flex-col gap-6">
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium">User Overrides</h4>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>IDs</TableHead>
-                <TableHead>Environment</TableHead>
-                <TableHead>ID Type</TableHead>
-                <TableHead>Group</TableHead>
-                {canEdit && <TableHead className="w-[50px]" />}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {overridesData?.userIDOverrides.length ? (
-                overridesData.userIDOverrides.map((override, index) => (
-                  <OverrideRow
-                    // eslint-disable-next-line react/no-array-index-key
-                    key={`${override.groupID}-${override.ids?.join(',') || index}`}
-                    override={override}
-                    canEdit={canEdit}
-                    isPending={isPending}
-                    onDelete={onDeleteOverride}
-                    groups={groups}
-                  />
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={canEdit ? 5 : 4} className="h-24 text-center">
-                    <div className="flex justify-center">
-                      <GeneralEmptyState variant="override" entityName="item" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+}: OverridesListProps) => {
+  const [showOthers, setShowOthers] = useState(false)
 
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium">Gate/Segment Overrides</h4>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Type</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Group</TableHead>
-                {canEdit && <TableHead className="w-[50px]" />}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {overridesData?.overrides && overridesData.overrides.length > 0 ? (
-                overridesData.overrides.map((override) => (
-                  <ExperimentOverrideRow
-                    key={`${override.type}-${override.name}-${override.groupID}`}
-                    override={override}
-                    canEdit={canEdit}
-                    isPending={isPending}
-                    onDelete={onDeleteOverride}
-                    groups={groups}
-                  />
-                ))
-              ) : (
+  const toggleOthers = useCallback(() => {
+    setShowOthers((prev) => !prev)
+  }, [])
+
+  const { currentUserOverrides, otherOverrides } = useMemo(() => {
+    const userIDOverrides = overridesData?.userIDOverrides || []
+    const current = userIDOverrides.filter((override) => override.isCurrentUser)
+    const others = userIDOverrides.filter((override) => !override.isCurrentUser)
+    return { currentUserOverrides: current, otherOverrides: others }
+  }, [overridesData?.userIDOverrides])
+
+  return (
+    <SharedOverridesList onAddManual={onCreateOverrideClick} canEdit={canEdit}>
+      <div className="flex flex-col gap-6">
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium">User Overrides</h4>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={canEdit ? 4 : 3} className="h-24 text-center">
-                    <div className="flex justify-center">
-                      <GeneralEmptyState variant="override" entityName="item" />
-                    </div>
-                  </TableCell>
+                  <TableHead>IDs</TableHead>
+                  <TableHead>Environment</TableHead>
+                  <TableHead>ID Type</TableHead>
+                  <TableHead>Group</TableHead>
+                  {canEdit && <TableHead className="w-[50px]" />}
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {currentUserOverrides.length > 0 || otherOverrides.length > 0 ? (
+                  <>
+                    {currentUserOverrides.map((override, index) => (
+                      <OverrideRow
+                        // eslint-disable-next-line react/no-array-index-key
+                        key={`${override.groupID}-${override.ids?.join(',') || index}`}
+                        override={override}
+                        canEdit={canEdit}
+                        isPending={isPending}
+                        onDelete={onDeleteOverride}
+                        groups={groups}
+                      />
+                    ))}
+                    {showOthers &&
+                      otherOverrides.map((override, index) => (
+                        <OverrideRow
+                          // eslint-disable-next-line react/no-array-index-key
+                          key={`${override.groupID}-${override.ids?.join(',') || index}`}
+                          override={override}
+                          canEdit={canEdit}
+                          isPending={isPending}
+                          onDelete={onDeleteOverride}
+                          groups={groups}
+                        />
+                      ))}
+                  </>
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={canEdit ? 5 : 4} className="h-24 text-center">
+                      <div className="flex justify-center">
+                        <GeneralEmptyState variant="override" entityName="item" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
+
+          {otherOverrides.length > 0 && (
+            <div className="flex justify-center pt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground"
+                onClick={toggleOthers}
+              >
+                {showOthers ? (
+                  <>
+                    <ChevronUp className="mr-2 h-3 w-3" />
+                    Hide {otherOverrides.length} other overrides
+                  </>
+                ) : (
+                  <>
+                    <ChevronDown className="mr-2 h-3 w-3" />
+                    Show {otherOverrides.length} other overrides
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <h4 className="text-sm font-medium">Gate/Segment Overrides</h4>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Group</TableHead>
+                  {canEdit && <TableHead className="w-[50px]" />}
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {overridesData?.overrides && overridesData.overrides.length > 0 ? (
+                  overridesData.overrides.map((override) => (
+                    <ExperimentOverrideRow
+                      key={`${override.type}-${override.name}-${override.groupID}`}
+                      override={override}
+                      canEdit={canEdit}
+                      isPending={isPending}
+                      onDelete={onDeleteOverride}
+                      groups={groups}
+                    />
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={canEdit ? 4 : 3} className="h-24 text-center">
+                      <div className="flex justify-center">
+                        <GeneralEmptyState variant="override" entityName="item" />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </div>
         </div>
       </div>
-    </div>
-  </SharedOverridesList>
-)
+    </SharedOverridesList>
+  )
+}

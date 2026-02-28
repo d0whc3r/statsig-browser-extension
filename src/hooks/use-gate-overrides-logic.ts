@@ -33,14 +33,26 @@ export const useGateOverridesLogic = (
       type: 'pass' | 'fail'
       environment: string | null
       idType: string | null
+      isCurrentUser: boolean
     }[] = []
+
+    const currentIdType = featureGate?.idType || 'userID'
+
+    const checkIsCurrentUser = (id: string, idType: string | null) => {
+      const detectedId = getDetectedUserId(
+        detectedUser as StatsigUser | undefined,
+        idType || 'userID',
+      )
+      return id === detectedId
+    }
 
     // Root overrides (implied default env, userID)
     overrides?.passingUserIDs?.forEach((id) =>
       result.push({
         environment: null,
         id,
-        idType: featureGate?.idType || 'userID',
+        idType: currentIdType,
+        isCurrentUser: checkIsCurrentUser(id, currentIdType),
         type: 'pass',
       }),
     )
@@ -48,7 +60,8 @@ export const useGateOverridesLogic = (
       result.push({
         environment: null,
         id,
-        idType: featureGate?.idType || 'userID',
+        idType: currentIdType,
+        isCurrentUser: checkIsCurrentUser(id, currentIdType),
         type: 'fail',
       }),
     )
@@ -60,6 +73,7 @@ export const useGateOverridesLogic = (
           environment: group.environment,
           id,
           idType: group.unitID,
+          isCurrentUser: checkIsCurrentUser(id, group.unitID),
           type: 'pass',
         }),
       )
@@ -68,13 +82,14 @@ export const useGateOverridesLogic = (
           environment: group.environment,
           id,
           idType: group.unitID,
+          isCurrentUser: checkIsCurrentUser(id, group.unitID),
           type: 'fail',
         }),
       )
     })
 
     return result
-  }, [overrides])
+  }, [overrides, detectedUser, featureGate])
 
   const canEdit = typeApiKey === 'write-key'
 

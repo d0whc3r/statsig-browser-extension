@@ -7,21 +7,18 @@ export const getDetectedUserId = (
   if (!detectedUser) {
     return undefined
   }
-
   if (idType === 'userID') {
     return (detectedUser.userID || detectedUser.id) as string | undefined
   }
 
-  // Check for customIDs
-  const customIDs = detectedUser.customIDs as Record<string, string> | undefined
-  if (customIDs && typeof customIDs === 'object' && idType in customIDs) {
-    return customIDs[idType]
+  const { customIDs, custom } = (detectedUser || {}) as {
+    customIDs?: Record<string, string>
+    custom?: Record<string, unknown>
   }
 
-  // Check top level
-  if (idType in detectedUser) {
-    return detectedUser[idType] as string
-  }
-
-  return undefined
+  return (
+    (typeof customIDs?.[idType] === 'string' ? customIDs[idType] : undefined) ??
+    (typeof detectedUser[idType] === 'string' ? (detectedUser[idType] as string) : undefined) ??
+    (typeof custom?.[idType] === 'string' ? (custom[idType] as string) : undefined)
+  )
 }

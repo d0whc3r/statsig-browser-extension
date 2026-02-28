@@ -39,9 +39,11 @@ export interface ExperimentOverride {
 export interface UserIDOverride {
   ids: string[]
   groupID: string
-  environment?: string
-  unitType?: string
+  environment?: string | null
+  unitType?: string | null
 }
+
+export type AnyOverride = UserIDOverride | ExperimentOverride
 
 export interface ExperimentOverridesResponse {
   overrides: ExperimentOverride[]

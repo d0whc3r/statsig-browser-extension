@@ -1,32 +1,46 @@
-import { useCallback } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useCallback, useEffect } from 'react'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
 
-import { useSettingsFormState } from '@/src/hooks/use-settings-form-state'
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
+const settingsSchema = z.object({
+  localStorageKey: z.string().min(1, 'This field is required.'),
+  storageType: z.enum(['localStorage', 'cookie']),
+})
+
+export type SettingsFormValues = z.infer<typeof settingsSchema>
+
 export const useSettingsForm = () => {
   const { isSettingsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
-  const {
-    localStorageValue,
-    setLocalStorageKey,
-    setStorageType,
-    setTypeApiKey,
-    storageType,
-    typeApiKey,
-  } = useSettingsStorage()
+  const { localStorageValue, setLocalStorageKey, setStorageType, storageType } =
+    useSettingsStorage()
 
-  const { error, handleValueChange, setError, value } = useSettingsFormState(localStorageValue)
+  const form = useForm<SettingsFormValues>({
+    defaultValues: {
+      localStorageKey: localStorageValue || 'statsig_user',
+      storageType: (storageType as 'localStorage' | 'cookie') || 'localStorage',
+    },
+    resolver: zodResolver(settingsSchema),
+  })
 
-  const handleSave = useCallback(() => {
-    if (value === '') {
-      setError(true)
-      return
+  // Update form values when storage values change or when sheet opens
+  useEffect(() => {
+    if (isSettingsSheetOpen) {
+      form.reset({
+        localStorageKey: localStorageValue || 'statsig_user',
+        storageType: (storageType as 'localStorage' | 'cookie') || 'localStorage',
+      })
     }
+  }, [isSettingsSheetOpen, localStorageValue, storageType, form])
 
-    setLocalStorageKey(value)
+  const handleSave = form.handleSubmit((values: SettingsFormValues) => {
+    setLocalStorageKey(values.localStorageKey)
+    setStorageType(values.storageType)
     setSettingsSheetOpen(false)
-    setError(false)
-  }, [value, setLocalStorageKey, setSettingsSheetOpen, setError])
+  })
 
   const handleClose = useCallback(
     (open: boolean) => {
@@ -37,30 +51,10 @@ export const useSettingsForm = () => {
     [setSettingsSheetOpen],
   )
 
-  const handleWriteAccessChange = useCallback(
-    (checked: boolean) => {
-      setTypeApiKey(checked ? 'write-key' : 'read-key')
-    },
-    [setTypeApiKey],
-  )
-
-  const handleStorageTypeChange = useCallback(
-    (val: string) => {
-      setStorageType(val as 'localStorage' | 'cookie')
-    },
-    [setStorageType],
-  )
-
   return {
-    error,
+    form,
     handleClose,
     handleSave,
-    handleStorageTypeChange,
-    handleValueChange,
-    handleWriteAccessChange,
     isSettingsSheetOpen,
-    storageType,
-    typeApiKey,
-    value,
   }
 }

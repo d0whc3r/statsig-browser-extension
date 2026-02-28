@@ -8,17 +8,11 @@ import { Card, CardContent } from '@/src/components/ui/card'
 interface SharedPageContextCardProps {
   detectedUser: Record<string, unknown> | undefined
   detectedUserId: string
-  isDetectedUserOverridden: boolean
   children?: ReactNode
 }
 
 export const SharedPageContextCard = memo(
-  ({
-    detectedUser,
-    detectedUserId,
-    isDetectedUserOverridden,
-    children,
-  }: SharedPageContextCardProps) => (
+  ({ detectedUser, detectedUserId, children }: SharedPageContextCardProps) => (
     <Card className="bg-muted/30">
       <CardContent>
         <div className="flex items-start gap-4">
@@ -37,12 +31,7 @@ export const SharedPageContextCard = memo(
                   <User className="h-3 w-3" />
                   <span className="truncate">{detectedUserId || 'Unknown ID'}</span>
                 </div>
-                {!isDetectedUserOverridden && children}
-                {isDetectedUserOverridden && (
-                  <p className="mt-2 text-xs text-green-600">
-                    Override already active for this user.
-                  </p>
-                )}
+                {children}
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">

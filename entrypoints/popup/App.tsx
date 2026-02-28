@@ -24,6 +24,10 @@ export function AppContent() {
 }
 
 export function App() {
+  useEffect(() => {
+    console.log('App mounted')
+  }, [])
+
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>

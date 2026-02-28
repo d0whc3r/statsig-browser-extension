@@ -1,7 +1,9 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 
-import { createOverride } from '@/src/handlers/create-override'
-import { deleteOverride } from '@/src/handlers/delete-override'
+import {
+  deleteExperimentOverrides,
+  updateExperimentOverrides,
+} from '@/src/handlers/experiment-overrides'
 
 interface UseExperimentMutationsProps {
   currentItemId?: string
@@ -16,8 +18,8 @@ export const useExperimentMutations = ({
 }: UseExperimentMutationsProps) => {
   const queryClient = useQueryClient()
 
-  const { mutate: addMutation, isPending: isAdding } = useMutation({
-    mutationFn: createOverride,
+  const { mutate: updateMutation, isPending: isUpdating } = useMutation({
+    mutationFn: updateExperimentOverrides,
     onSuccess: () => {
       if (currentItemId) {
         queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
@@ -27,7 +29,7 @@ export const useExperimentMutations = ({
   })
 
   const { mutate: deleteMutation, isPending: isDeleting } = useMutation({
-    mutationFn: deleteOverride,
+    mutationFn: deleteExperimentOverrides,
     onSuccess: () => {
       if (currentItemId) {
         queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
@@ -36,5 +38,5 @@ export const useExperimentMutations = ({
     },
   })
 
-  return { addMutation, deleteMutation, isAdding, isDeleting }
+  return { deleteMutation, isPending: isUpdating || isDeleting, updateMutation }
 }

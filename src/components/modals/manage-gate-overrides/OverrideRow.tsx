@@ -13,6 +13,7 @@ interface OverrideRowProps {
     type: OverrideType
     environment: string | null
     idType: string | null
+    isCurrentUser: boolean
   }
   canEdit: boolean
   isPending: boolean
@@ -22,6 +23,16 @@ interface OverrideRowProps {
 export const OverrideRow = memo(
   ({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
+      const isOtherUser = !item.isCurrentUser
+      const confirmDialog = globalThis.confirm || window.confirm
+      if (
+        isOtherUser &&
+        confirmDialog &&
+        !confirmDialog('This override is for another user. Are you sure you want to delete it?')
+      ) {
+        return
+      }
+
       onDeleteOverride({
         environment: item.environment,
         idType: item.idType,
@@ -31,8 +42,17 @@ export const OverrideRow = memo(
     }, [item, onDeleteOverride])
 
     return (
-      <TableRow>
-        <TableCell className="font-mono text-xs">{item.id}</TableCell>
+      <TableRow className={item.isCurrentUser ? 'bg-muted/30' : undefined}>
+        <TableCell className="font-mono text-xs">
+          <div className="flex items-center gap-2">
+            {item.id}
+            {item.isCurrentUser && (
+              <Badge variant="secondary" className="h-4 px-1 text-[10px] uppercase">
+                You
+              </Badge>
+            )}
+          </div>
+        </TableCell>
         <TableCell className="text-xs text-muted-foreground">{item.idType || 'userID'}</TableCell>
         <TableCell className="text-xs text-muted-foreground">
           {item.environment || 'All Environments'}
