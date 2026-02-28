@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 
-import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
+import type { AnyOverride, ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useExperimentMutations } from '@/src/hooks/use-experiment-mutations'
@@ -11,6 +11,8 @@ import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { getDetectedUserId } from '@/src/lib/user-utils'
 import { useUIStore } from '@/src/store/use-ui-store'
+
+import { getUpdatedUserIDOverrides } from './use-overrides-section-logic.utils'
 
 type View = 'form' | 'table'
 export type OverrideType = 'user' | 'gate' | 'segment'
@@ -34,43 +36,6 @@ const useOverridesFormState = (
       onSuccess()
     },
   })
-
-  const getUpdatedUserIDOverrides = useCallback(
-    (existing: UserIDOverride[], newOverride: UserIDOverride) => {
-      const [userId] = newOverride.ids
-      const env = newOverride.environment || null
-      const unitType = newOverride.unitType || 'userID'
-
-      // 1. Remove this userId from any existing override for the SAME environment & item type
-      const filtered = existing
-        .map((item) => {
-          const itemEnv = item.environment || null
-          const itemUnitType = item.unitType || 'userID'
-          if (itemEnv === env && itemUnitType === unitType) {
-            return { ...item, ids: item.ids.filter((id) => id !== userId) }
-          }
-          return item
-        })
-        .filter((item) => item.ids.length > 0)
-
-      // 2. Add to the correct entry
-      const existingEntry = filtered.find((item) => {
-        const itemEnv = item.environment || null
-        const itemUnitType = item.unitType || 'userID'
-        return item.groupID === newOverride.groupID && itemEnv === env && itemUnitType === unitType
-      })
-
-      if (existingEntry) {
-        if (!existingEntry.ids.includes(userId)) {
-          existingEntry.ids.push(userId)
-        }
-        return filtered
-      }
-
-      return [...filtered, newOverride]
-    },
-    [],
-  )
 
   const addOverride = useCallback(
     (newOverride: UserIDOverride | ExperimentOverride) => {
@@ -97,11 +62,11 @@ const useOverridesFormState = (
         overrides: payload,
       })
     },
-    [currentItemId, currentData, updateMutation, getUpdatedUserIDOverrides],
+    [currentItemId, currentData, updateMutation],
   )
 
   const deleteOverride = useCallback(
-    (toRemove: UserIDOverride | ExperimentOverride) => {
+    (toRemove: AnyOverride) => {
       if (!currentItemId || !currentData) {
         return
       }

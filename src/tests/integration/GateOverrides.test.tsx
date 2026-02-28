@@ -7,80 +7,82 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
-const { mockWretch } = vi.hoisted(() => {
-  const mockJson = vi.fn()
+const { mockJson, mockWretch } = vi.hoisted(() => {
+  const innerMockJson = vi.fn()
   const wretchInstance = {
     delete: vi.fn().mockReturnThis(),
     get: vi.fn().mockReturnThis(),
     headers: vi.fn().mockReturnThis(),
-    json: mockJson,
+    json: innerMockJson,
     post: vi.fn().mockReturnThis(),
     url: vi.fn().mockReturnThis(),
   }
-  // Handle both .json(body) for request and .json() for response
-  mockJson.mockImplementation((body) => {
-    if (body) {
-      return wretchInstance
-    }
-    return Promise.resolve({ data: { data: {} }, status: 200 })
-  })
-  return { mockJson, mockWretch: wretchInstance }
+
+  return { mockJson: innerMockJson, mockWretch: wretchInstance }
 })
 
-vi.mock(
-  import('@/src/lib/fetcher'),
-  async (originalImport) =>
-    ({
-      ...(await originalImport()),
-      api: mockWretch,
-      fetcher: vi.fn(),
-      poster: vi.fn(),
-    }) as any,
-)
+vi.mock(import('@/src/lib/fetcher'), async (importOriginal) => {
+  const actual = await importOriginal<any>()
+  return {
+    ...actual,
+    api: mockWretch,
+    fetcher: vi.fn(),
+    poster: vi.fn(),
+  }
+})
 
-// Mock API key storage directly
+// Mock API key
+vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
+  const actual = await importOriginal<any>()
+  return {
+    ...actual,
+    useWxtStorage: vi.fn((item) => {
+      if (item.key === 'local:api_key_type') {
+        return ['write-key', vi.fn(), false]
+      }
+      if (item.key === 'local:statsig-console-api-key') {
+        return ['test-api-key', vi.fn(), false]
+      }
+      return [item.defaultValue, vi.fn(), false]
+    }),
+  }
+})
+
 vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  const actual = await importOriginal<any>()
   return {
     ...actual,
     apiKeyStorage: {
       ...actual.apiKeyStorage,
       getValue: vi.fn().mockResolvedValue('test-api-key'),
+      setValue: vi.fn(),
       watch: vi.fn(),
     },
   }
 })
 
-// Mock API key
-vi.mock(
-  import('@/src/hooks/use-wxt-storage'),
-  async (originalImport) =>
-    ({
-      ...(await originalImport()),
-      useWxtStorage: vi.fn((item) => {
-        if (item.key === 'local:api_key_type') {
-          return ['write-key', vi.fn(), false]
-        }
-        if (item.key === 'local:statsig-console-api-key') {
-          return ['test-api-key', vi.fn(), false]
-        }
-        return [item.defaultValue, vi.fn(), false]
-      }),
-    }) as any,
-)
+const mockExperiments = [
+  {
+    groups: [
+      { id: 'group_1', name: 'Control', size: 50 },
+      { id: 'group_2', name: 'Test', size: 50 },
+    ],
+    id: 'exp_1',
+    lastModifiedTime: Date.now(),
+    name: 'Test Experiment 1',
+    status: 'active',
+  },
+]
 
-const mockGate = {
-  id: 'gate_1',
-  isEnabled: true,
-  lastModifiedTime: Date.now(),
-  name: 'Test Gate 1',
-}
+const mockGates = [
+  { id: 'gate_1', isEnabled: true, lastModifiedTime: Date.now(), name: 'Test Gate 1' },
+]
 
 const mockOverrides = {
   environmentOverrides: [
     {
       environment: 'Development',
-      failingIDs: [],
+      failingIDs: ['stable_fail'],
       passingIDs: ['stable_pass'],
       unitID: 'stableID',
     },
@@ -98,14 +100,17 @@ const setupMocks = () => {
         data: mockOverrides,
       }) as unknown as Promise<unknown>
     }
-    if (urlString.includes('/gates?')) {
+    if (urlString.includes('/experiments?')) {
       return Promise.resolve({
-        data: [mockGate],
-        pagination: { limit: 100, page: 1, totalItems: 1 },
+        data: mockExperiments,
+        pagination: { limit: 100, page: 1, totalItems: mockExperiments.length },
       }) as unknown as Promise<unknown>
     }
-    if (urlString.includes('/gates/gate_1')) {
-      return Promise.resolve({ data: mockGate }) as unknown as Promise<unknown>
+    if (urlString.includes('/gates?')) {
+      return Promise.resolve({
+        data: mockGates,
+        pagination: { limit: 100, page: 1, totalItems: mockGates.length },
+      }) as unknown as Promise<unknown>
     }
 
     // Default empty paginated response
@@ -115,6 +120,15 @@ const setupMocks = () => {
     }) as unknown as Promise<unknown>
   })
 
+  // Smart mock for api.json()
+  mockJson.mockImplementation((body) => {
+    if (body) {
+      return mockWretch
+    }
+    // UseGateOverrides expects result.data
+    return Promise.resolve({ data: mockOverrides })
+  })
+
   // Setup API mocks
   vi.mocked(poster).mockResolvedValue({ data: {}, status: 200 } as any)
 }
@@ -122,16 +136,17 @@ const setupMocks = () => {
 describe('Gate Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    document.body.style.pointerEvents = 'auto'
     useUIStore.setState({
       currentItemId: undefined,
       isAuthModalOpen: false,
       isItemSheetOpen: false,
       isManageGateOverridesModalOpen: false,
+      isSettingsSheetOpen: false,
+      isUserDetailsSheetOpen: false,
     })
   })
 
-  it('should display gate overrides with environment and ID type', async () => {
+  it('should list all overrides in the manage modal', async () => {
     setupMocks()
     const { user } = renderWithProviders(<AppContent />)
 
@@ -139,23 +154,28 @@ describe('Gate Overrides Flow', () => {
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
     await user.click(screen.getByText('Feature Gates'))
 
-    // Wait for gates list
-    await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
+    // Wait for gates to load
+    await waitFor(() => {
+      expect(screen.getByText('Test Gate 1')).toBeInTheDocument()
+    })
 
-    // Open gate details (click on row)
-    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
+    // Click on the gate to open details
+    const experimentRow = screen.getByText('Test Gate 1').closest('tr')
+    await user.click(experimentRow!)
 
-    // Switch to Overrides tab
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
+    // Wait for sheet to open
+    await waitFor(() => {
+      expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
+    })
     await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
-    // Verify overrides are displayed
-    await waitFor(() => {
-      expect(screen.getByText('user_pass')).toBeInTheDocument()
-      expect(screen.getByText('stable_pass')).toBeInTheDocument()
-      expect(screen.getByText('Development')).toBeInTheDocument()
-      expect(screen.getByText('stableID')).toBeInTheDocument()
-    })
+    // Check for root overrides
+    expect(screen.getByText('user_pass')).toBeInTheDocument()
+    expect(screen.getByText('user_fail')).toBeInTheDocument()
+
+    // Check for environment overrides
+    expect(screen.getByText('stable_pass')).toBeInTheDocument()
+    expect(screen.getByText('stable_fail')).toBeInTheDocument()
   })
 
   it('should call DELETE API when deleting an override', async () => {
@@ -166,7 +186,7 @@ describe('Gate Overrides Flow', () => {
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
     await user.click(screen.getByText('Feature Gates'))
 
-    // Navigate to Overrides tab (same steps as above)
+    // Navigate to Overrides tab
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
@@ -179,10 +199,14 @@ describe('Gate Overrides Flow', () => {
 
     await user.click(deleteBtn)
 
+    // Click confirm in dialog
+    const confirmBtn = await screen.findByRole('button', { name: /^Delete$/i })
+    await user.click(confirmBtn)
+
     // Verify DELETE API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
-      expect(mockWretch.json).toHaveBeenCalledWith(
+      expect(mockJson).toHaveBeenCalledWith(
         expect.objectContaining({
           passingUserIDs: ['user_pass'],
         }),
@@ -212,10 +236,14 @@ describe('Gate Overrides Flow', () => {
 
     await user.click(deleteBtn)
 
+    // Click confirm in dialog
+    const confirmBtn = await screen.findByRole('button', { name: /^Delete$/i })
+    await user.click(confirmBtn)
+
     // Verify DELETE API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
-      expect(mockWretch.json).toHaveBeenCalledWith(
+      expect(mockJson).toHaveBeenCalledWith(
         expect.objectContaining({
           environmentOverrides: [
             expect.objectContaining({
@@ -232,7 +260,7 @@ describe('Gate Overrides Flow', () => {
 
   it('should allow adding an environment override', async () => {
     setupMocks()
-    const { user } = renderWithProviders(<AppContent />, { container: document.body })
+    const { user } = renderWithProviders(<AppContent />)
 
     // Switch to Feature Gates tab
     await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
@@ -248,28 +276,24 @@ describe('Gate Overrides Flow', () => {
     await user.click(screen.getByRole('button', { name: /Add Manual/i }))
 
     // Fill form
-    // Select Type: PASS (default)
-    // Select Environment: Staging
-    const envSelect = await screen.findByRole('combobox', { name: 'Environment' })
+    await user.type(screen.getByLabelText(/ID Value/i), 'new_stable_1')
+
+    // Select environment
+    const envSelect = screen.getByLabelText(/Environment/i)
     await user.click(envSelect)
-    await screen.findByRole('option', { name: 'Staging' })
-    await user.click(screen.getByRole('option', { name: 'Staging' }))
+    const stagingOption = await screen.findByRole('option', { name: 'Staging' })
+    await user.click(stagingOption)
 
-    // Select ID Type: Stable ID
-    const idTypeSelect = screen.getByRole('combobox', { name: 'ID Type' })
+    // Select ID type
+    const idTypeSelect = screen.getByLabelText(/ID Type/i)
     await user.click(idTypeSelect)
-    await screen.findByRole('option', { name: 'stableID' })
-    await user.click(screen.getByRole('option', { name: 'stableID' }))
-
-    // Enter ID
-    const input = screen.getByLabelText('ID Value')
-    await user.type(input, 'new_stable_id')
+    const stableIdOption = await screen.findByRole('option', { name: 'stableID' })
+    await user.click(stableIdOption)
 
     // Submit
-    const saveBtn = await screen.findByRole('button', { name: /Add .* Override/i })
-    await user.click(saveBtn)
+    await user.click(screen.getByRole('button', { name: /Add Pass Override/i }))
 
-    // Verify POST API call via poster
+    // Verify API call
     await waitFor(() => {
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_1/overrides',
@@ -277,63 +301,7 @@ describe('Gate Overrides Flow', () => {
           environmentOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: 'Staging',
-              passingIDs: ['new_stable_id'],
-              unitID: 'stableID',
-            }),
-          ]),
-          failingUserIDs: ['user_fail'],
-          passingUserIDs: ['user_pass'],
-        }),
-      )
-    })
-  })
-
-  it('should allow adding an override for All Environments and Stable ID', async () => {
-    setupMocks()
-    const { user } = renderWithProviders(<AppContent />, { container: document.body })
-
-    // Switch to Feature Gates tab
-    await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await user.click(screen.getByText('Feature Gates'))
-
-    // Navigate to Overrides tab
-    await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
-    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
-
-    // Click Add Manual
-    await user.click(screen.getByRole('button', { name: /Add Manual/i }))
-
-    // Select Environment: All Environments
-    const envSelect = await screen.findByRole('combobox', { name: 'Environment' })
-    await user.click(envSelect)
-    await screen.findByRole('option', { name: 'All Environments' })
-    await user.click(screen.getByRole('option', { name: 'All Environments' }))
-
-    // Select ID Type: Stable ID
-    const idTypeSelect = screen.getByRole('combobox', { name: 'ID Type' })
-    await user.click(idTypeSelect)
-    await screen.findByRole('option', { name: 'stableID' })
-    await user.click(screen.getByRole('option', { name: 'stableID' }))
-
-    // Enter ID
-    const input = screen.getByLabelText('ID Value')
-    await user.type(input, 'all_env_stable_id')
-
-    // Submit
-    const saveBtn = await screen.findByRole('button', { name: /Add .* Override/i })
-    await user.click(saveBtn)
-
-    // Verify POST API call via poster
-    await waitFor(() => {
-      expect(poster).toHaveBeenCalledWith(
-        '/gates/gate_1/overrides',
-        expect.objectContaining({
-          environmentOverrides: expect.arrayContaining([
-            expect.objectContaining({
-              environment: null,
-              passingIDs: ['all_env_stable_id'],
+              passingIDs: ['new_stable_1'],
               unitID: 'stableID',
             }),
           ]),

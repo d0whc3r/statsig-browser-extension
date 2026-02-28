@@ -7,6 +7,22 @@ import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
+export function TestProviders({ children }: { children: ReactNode }) {
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        retry: false,
+      },
+    },
+  })
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>{children}</TooltipProvider>
+    </QueryClientProvider>
+  )
+}
+
 export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,14 +33,9 @@ export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
   })
 
   return {
-    user: userEvent.setup({ pointerEventsCheck: 0 }),
-    ...render(
-      <QueryClientProvider client={queryClient}>
-        <TooltipProvider>{ui}</TooltipProvider>
-      </QueryClientProvider>,
-      options,
-    ),
     queryClient,
+    user: userEvent.setup({ pointerEventsCheck: 0 }),
+    ...render(<TestProviders>{ui}</TestProviders>, options),
   }
 }
 

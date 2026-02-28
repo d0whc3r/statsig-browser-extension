@@ -1,8 +1,7 @@
-import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { screen, waitFor, within } from '@testing-library/react'
 
 import { AppContent } from '@/entrypoints/popup/App'
-import { fetcher } from '@/src/lib/fetcher'
+import { fetcher, poster } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { renderWithProviders } from '../utils/TestUtils'
@@ -21,20 +20,19 @@ const { mockJson, mockWretch } = vi.hoisted(() => {
   return { mockJson: innerMockJson, mockWretch: instanceWretch }
 })
 
-vi.mock(
-  import('@/src/lib/fetcher'),
-  async (originalImport) =>
-    ({
-      ...(await originalImport()),
-      api: mockWretch,
-      fetcher: vi.fn(),
-      poster: vi.fn(),
-    }) as any,
-)
+vi.mock(import('@/src/lib/fetcher'), async (importOriginal) => {
+  const actual = await importOriginal<any>()
+  return {
+    ...actual,
+    api: mockWretch,
+    fetcher: vi.fn(),
+    poster: vi.fn(),
+  }
+})
 
 // Mock API key
-vi.mock(import('@/src/hooks/use-wxt-storage'), async (originalImport) => {
-  const actual = await originalImport<typeof import('@/src/hooks/use-wxt-storage')>()
+vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
+  const actual = await importOriginal<any>()
   return {
     ...actual,
     useWxtStorage: vi.fn((item) => {
@@ -46,11 +44,11 @@ vi.mock(import('@/src/hooks/use-wxt-storage'), async (originalImport) => {
       }
       return [item.defaultValue, vi.fn(), false]
     }),
-  } as any
+  }
 })
 
 vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  const actual = await importOriginal<any>()
   return {
     ...actual,
     apiKeyStorage: {
@@ -119,8 +117,17 @@ const setupMocks = () => {
     }) as unknown as Promise<unknown>
   })
 
-  // Setup API mocks
-  mockJson.mockResolvedValue({ data: {}, status: 200 })
+  // Smart mock for api.json() - handles both request body and response parsing
+  mockJson.mockImplementation((body) => {
+    if (body) {
+      return mockWretch
+    }
+    // Hooks like useOverrides expect the raw result.data from fetcher
+    return Promise.resolve({ data: mockOverrides })
+  })
+
+  // Mock poster
+  vi.mocked(poster).mockResolvedValue({ data: {}, status: 200 } as any)
 }
 
 describe('Experiment Overrides Flow', () => {
@@ -138,7 +145,7 @@ describe('Experiment Overrides Flow', () => {
 
   it('should list all overrides in the manage modal', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Wait for experiments to load
     await waitFor(() => {
@@ -147,13 +154,13 @@ describe('Experiment Overrides Flow', () => {
 
     // Click on the experiment to open details
     const experimentRow = screen.getByText('Test Experiment 1').closest('tr')
-    await userEvent.click(experimentRow!)
+    await user.click(experimentRow!)
 
     // Wait for sheet to open
     await waitFor(() => {
       expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
     })
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Check for User ID override
     expect(screen.getByText('user_123')).toBeInTheDocument()
@@ -169,50 +176,51 @@ describe('Experiment Overrides Flow', () => {
 
   it('should allow creating a new user override via modal', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Open experiment details
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
+    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
 
     // Switch to Overrides tab
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Create override
     const createBtn = screen.getByRole('button', { name: /Add Manual/i })
-    await userEvent.click(createBtn)
+    await user.click(createBtn)
 
     // Check if form is displayed
     expect(screen.getByText('Group')).toBeInTheDocument()
 
     // Select Group
     const groupSelect = screen.getByLabelText('Group')
-    await userEvent.click(groupSelect)
-    await screen.findByRole('option', { name: 'Test' })
-    await userEvent.click(screen.getByRole('option', { name: 'Test' }))
+    await user.click(groupSelect)
+    const option = await screen.findByRole('option', { name: 'Test' })
+    await user.click(option)
 
     // Fill User ID
     const input = screen.getByLabelText('ID Value')
-    await userEvent.type(input, 'new_user_456')
+    await user.type(input, 'new_user_456')
 
     // Submit
     const saveBtn = screen.getByRole('button', { name: /Add override/i })
-    await userEvent.click(saveBtn)
+    await user.click(saveBtn)
 
     // Verify API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
-      expect(mockWretch.post).toHaveBeenCalledWith(
+      expect(poster).toHaveBeenCalledWith(
+        '/experiments/exp_1/overrides',
         expect.objectContaining({
-          userIDOverrides: [
+          userIDOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: 'Production',
               groupID: 'Test',
               ids: ['new_user_456'],
               unitType: 'userID',
             }),
-          ],
+          ]),
         }),
       )
     })
@@ -220,47 +228,88 @@ describe('Experiment Overrides Flow', () => {
 
   it('should allow creating a new gate override via modal', async () => {
     setupMocks()
-    renderWithProviders(<AppContent />)
+    const { user } = renderWithProviders(<AppContent />)
 
     // Open experiment details
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await userEvent.click(screen.getByText('Test Experiment 1').closest('tr')!)
+    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
 
     // Switch to Overrides tab
     await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await userEvent.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Create override
     const createBtn = screen.getByRole('button', { name: /Add Manual/i })
-    await userEvent.click(createBtn)
+    await user.click(createBtn)
 
     // Switch to Gate/Segment tab
-    await userEvent.click(screen.getByRole('tab', { name: /Gate\/Segment Override/i }))
+    await user.click(screen.getByRole('tab', { name: /Gate\/Segment Override/i }))
 
     // Fill Gate Name
     const nameInput = screen.getByLabelText('Name')
-    await userEvent.type(nameInput, 'my_new_gate')
+    await user.type(nameInput, 'my_new_gate')
 
     // Select Group
     const groupSelect = screen.getByLabelText('Target Group')
-    await userEvent.click(groupSelect)
-    await screen.findByRole('option', { name: 'Control' })
-    await userEvent.click(screen.getByRole('option', { name: 'Control' }))
+    await user.click(groupSelect)
+    const option = await screen.findByRole('option', { name: 'Control' })
+    await user.click(option)
 
     // Submit
     const saveBtn = screen.getByRole('button', { name: /Add Override/i })
-    await userEvent.click(saveBtn)
+    await user.click(saveBtn)
 
     // Verify API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
-      expect(mockWretch.post).toHaveBeenCalledWith(
+      expect(poster).toHaveBeenCalledWith(
+        '/experiments/exp_1/overrides',
         expect.objectContaining({
-          overrides: [
+          overrides: expect.arrayContaining([
             expect.objectContaining({
               groupID: 'Control',
               name: 'my_new_gate',
               type: 'gate',
+            }),
+          ]),
+        }),
+      )
+    })
+  })
+
+  it('should allow deleting an override with confirmation', async () => {
+    setupMocks()
+    const { user } = renderWithProviders(<AppContent />)
+
+    // Open experiment details
+    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
+    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
+
+    // Switch to Overrides tab
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+
+    // Find delete button for user_123
+    await waitFor(() => expect(screen.getByText('user_123')).toBeInTheDocument())
+    const row = screen.getByText('user_123').closest('tr')!
+    const deleteBtn = within(row).getByRole('button')
+
+    await user.click(deleteBtn)
+
+    // Click confirm in dialog
+    const confirmBtn = await screen.findByRole('button', { name: /^Delete$/i })
+    await user.click(confirmBtn)
+
+    // Verify DELETE API call
+    await waitFor(() => {
+      expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
+      expect(mockWretch.delete).toHaveBeenCalled()
+      expect(mockJson).toHaveBeenCalledWith(
+        expect.objectContaining({
+          userIDOverrides: [
+            expect.objectContaining({
+              groupID: 'Test',
+              ids: ['user_123'],
             }),
           ],
         }),

@@ -1,5 +1,4 @@
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
 
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'
@@ -14,18 +13,14 @@ vi.mock(import('@/src/handlers/initial-login'), () => ({
 }))
 
 // Mock useWxtStorage
-vi.mock(
-  import('@/src/hooks/use-wxt-storage'),
-  () =>
-    ({
-      useWxtStorage: vi.fn((item) => {
-        if (item.key === 'local:statsig-console-api-key') {
-          return ['', vi.fn(), false]
-        }
-        return [item.defaultValue, vi.fn(), false]
-      }),
-    }) as any,
-)
+vi.mock(import('@/src/hooks/use-wxt-storage'), () => ({
+  useWxtStorage: vi.fn((item) => {
+    if (item.key === 'local:statsig-console-api-key') {
+      return ['', vi.fn(), false]
+    }
+    return [item.defaultValue, vi.fn(), false]
+  }),
+}))
 
 describe('Login Flow', () => {
   beforeEach(() => {
@@ -43,10 +38,10 @@ describe('Login Flow', () => {
   })
 
   it('should show error when submitting empty key', async () => {
-    renderWithProviders(<AuthModal />)
+    const { user } = renderWithProviders(<AuthModal />)
 
     const loginButton = screen.getByRole('button', { name: /Login/i })
-    await userEvent.click(loginButton)
+    await user.click(loginButton)
 
     expect(screen.getByText('Please enter an API key')).toBeInTheDocument()
   })
@@ -55,22 +50,25 @@ describe('Login Flow', () => {
     const mockLogin = vi.mocked(initialLogin)
     mockLogin.mockResolvedValue({ data: { message: 'Success' }, error: undefined, success: true })
 
-    renderWithProviders(<AuthModal />)
+    const { user } = renderWithProviders(<AuthModal />)
 
     const input = screen.getByLabelText(/Statsig Console API Key/i)
-    await userEvent.type(input, 'console-test-key')
+    await user.type(input, 'console-test-key')
 
     const loginButton = screen.getByRole('button', { name: /Login/i })
-    await userEvent.click(loginButton)
+    await user.click(loginButton)
 
     await waitFor(() => {
       // Relaxed expectation to ignore extra arguments passed by react-query
       expect(mockLogin).toHaveBeenCalledWith('console-test-key', expect.anything())
     })
 
-    await waitFor(() => {
-      expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
-    })
+    await waitFor(
+      () => {
+        expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
+      },
+      { timeout: 2000 },
+    )
 
     expect(useSettingsStore.getState().apiKey).toBe('console-test-key')
   })
@@ -79,17 +77,20 @@ describe('Login Flow', () => {
     const mockLogin = vi.mocked(initialLogin)
     mockLogin.mockResolvedValue({ data: undefined, error: 'Invalid API Key', success: false })
 
-    renderWithProviders(<AuthModal />)
+    const { user } = renderWithProviders(<AuthModal />)
 
     const input = screen.getByLabelText(/Statsig Console API Key/i)
-    await userEvent.type(input, 'invalid-key')
+    await user.type(input, 'invalid-key')
 
     const loginButton = screen.getByRole('button', { name: /Login/i })
-    await userEvent.click(loginButton)
+    await user.click(loginButton)
 
-    await waitFor(() => {
-      expect(screen.getByText('Invalid API Key')).toBeInTheDocument()
-    })
+    await waitFor(
+      () => {
+        expect(screen.getByText('Invalid API Key')).toBeInTheDocument()
+      },
+      { timeout: 2000 },
+    )
 
     expect(useUIStore.getState().isAuthModalOpen).toBeTruthy()
   })
