@@ -37,6 +37,8 @@ export const OverridesList = memo(
     const [showOthers, setShowOthers] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState<DeleteGateOverrideParams | null>(null)
 
+    const toggleOthers = useCallback(() => setShowOthers((prev) => !prev), [])
+
     const handleDeleteClick = useCallback(
       (params: DeleteGateOverrideParams, isCurrentUser: boolean) => {
         if (isCurrentUser) {
@@ -54,6 +56,8 @@ export const OverridesList = memo(
         setConfirmDelete(null)
       }
     }, [confirmDelete, onDeleteOverride])
+
+    const handleCloseConfirm = useCallback(() => setConfirmDelete(null), [])
 
     const { currentUserOverrides, otherOverrides } = useMemo(() => {
       const current = allOverrides.filter((override) => override.isCurrentUser)
@@ -117,7 +121,7 @@ export const OverridesList = memo(
                 variant="ghost"
                 size="sm"
                 className="text-xs text-muted-foreground"
-                onClick={() => setShowOthers(!showOthers)}
+                onClick={toggleOthers}
               >
                 {showOthers ? (
                   <>
@@ -136,7 +140,7 @@ export const OverridesList = memo(
         </div>
         <ConfirmDialog
           isOpen={Boolean(confirmDelete)}
-          onClose={() => setConfirmDelete(null)}
+          onClose={handleCloseConfirm}
           onConfirm={handleConfirmDelete}
           title="Delete Override"
           description="This override is for another user. Are you sure you want to delete it?"

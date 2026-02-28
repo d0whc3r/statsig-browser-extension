@@ -35,6 +35,43 @@ const useOverridesFormState = (
     },
   })
 
+  const getUpdatedUserIDOverrides = useCallback(
+    (existing: UserIDOverride[], newOverride: UserIDOverride) => {
+      const [userId] = newOverride.ids
+      const env = newOverride.environment || null
+      const unitType = newOverride.unitType || 'userID'
+
+      // 1. Remove this userId from any existing override for the SAME environment & item type
+      const filtered = existing
+        .map((item) => {
+          const itemEnv = item.environment || null
+          const itemUnitType = item.unitType || 'userID'
+          if (itemEnv === env && itemUnitType === unitType) {
+            return { ...item, ids: item.ids.filter((id) => id !== userId) }
+          }
+          return item
+        })
+        .filter((item) => item.ids.length > 0)
+
+      // 2. Add to the correct entry
+      const existingEntry = filtered.find((item) => {
+        const itemEnv = item.environment || null
+        const itemUnitType = item.unitType || 'userID'
+        return item.groupID === newOverride.groupID && itemEnv === env && itemUnitType === unitType
+      })
+
+      if (existingEntry) {
+        if (!existingEntry.ids.includes(userId)) {
+          existingEntry.ids.push(userId)
+        }
+        return filtered
+      }
+
+      return [...filtered, newOverride]
+    },
+    [],
+  )
+
   const addOverride = useCallback(
     (newOverride: UserIDOverride | ExperimentOverride) => {
       if (!currentItemId || !currentData) {
@@ -47,44 +84,10 @@ const useOverridesFormState = (
       }
 
       if ('ids' in newOverride) {
-        // User ID override
-        const [userId] = newOverride.ids
-        const env = newOverride.environment || null
-        const unitType = newOverride.unitType || 'userID'
-
-        // 1. Remove this userId from any existing override for the SAME environment & item type
-        payload.userIDOverrides = payload.userIDOverrides
-          .map((item) => {
-            const itemEnv = item.environment || null
-            const itemUnitType = item.unitType || 'userID'
-            if (itemEnv === env && itemUnitType === unitType) {
-              return { ...item, ids: item.ids.filter((id) => id !== userId) }
-            }
-            return item
-          })
-          .filter((item) => item.ids.length > 0)
-
-        // 2. Add to the correct entry
-        const existingEntry = payload.userIDOverrides.find((item) => {
-          const itemEnv = item.environment || null
-          const itemUnitType = item.unitType || 'userID'
-          return (
-            item.groupID === newOverride.groupID && itemEnv === env && itemUnitType === unitType
-          )
-        })
-
-        if (existingEntry) {
-          if (!existingEntry.ids.includes(userId)) {
-            existingEntry.ids.push(userId)
-          }
-        } else {
-          payload.userIDOverrides.push(newOverride)
-        }
+        payload.userIDOverrides = getUpdatedUserIDOverrides(payload.userIDOverrides, newOverride)
       } else {
-        // Gate/Segment override
-        // Remove any existing one for same name/type
         payload.overrides = payload.overrides.filter(
-          (o) => o.name !== newOverride.name || o.type !== newOverride.type,
+          (override) => override.name !== newOverride.name || override.type !== newOverride.type,
         )
         payload.overrides.push(newOverride)
       }
@@ -94,7 +97,7 @@ const useOverridesFormState = (
         overrides: payload,
       })
     },
-    [currentItemId, currentData, updateMutation],
+    [currentItemId, currentData, updateMutation, getUpdatedUserIDOverrides],
   )
 
   const deleteOverride = useCallback(

@@ -9,7 +9,7 @@ import { renderWithProviders } from '../utils/TestUtils'
 // Mock the api instance methods
 const { mockWretch } = vi.hoisted(() => {
   const mockJson = vi.fn()
-  const mockWretch = {
+  const wretchInstance = {
     delete: vi.fn().mockReturnThis(),
     get: vi.fn().mockReturnThis(),
     headers: vi.fn().mockReturnThis(),
@@ -20,11 +20,11 @@ const { mockWretch } = vi.hoisted(() => {
   // Handle both .json(body) for request and .json() for response
   mockJson.mockImplementation((body) => {
     if (body) {
-      return mockWretch
+      return wretchInstance
     }
     return Promise.resolve({ data: { data: {} }, status: 200 })
   })
-  return { mockJson, mockWretch }
+  return { mockJson, mockWretch: wretchInstance }
 })
 
 vi.mock(

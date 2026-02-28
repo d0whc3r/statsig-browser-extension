@@ -27,10 +27,54 @@ interface DynamicConfigCellProps {
   onOpenStatsig: (event: React.MouseEvent) => void
 }
 
+interface DynamicConfigActionsProps {
+  config: DynamicConfig
+  onRowClick: (id: string) => void
+  onOpenStatsig: (event: React.MouseEvent) => void
+}
+
+const DynamicConfigActions = memo(
+  ({ config, onRowClick, onOpenStatsig }: DynamicConfigActionsProps) => {
+    const handleView = useCallback(() => onRowClick(config.id), [onRowClick, config.id])
+
+    return (
+      <div className="relative flex justify-end items-center gap-2">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={handleView}>
+              <Eye className="mr-2 h-4 w-4" />
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <a
+                href={`https://console.statsig.com/dynamic_configs/${config.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+                onClick={onOpenStatsig}
+              >
+                <ExternalLink className="mr-2 h-4 w-4" />
+                Open on Statsig
+              </a>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    )
+  },
+)
+
+DynamicConfigActions.displayName = 'DynamicConfigActions'
+
 const DynamicConfigCell = memo(
   ({ config, columnKey, onRowClick, onOpenStatsig }: DynamicConfigCellProps) => {
     const cellValue = config[columnKey as keyof DynamicConfig]
-    const handleView = useCallback(() => onRowClick(config.id), [onRowClick, config.id])
 
     switch (columnKey) {
       case 'name': {
@@ -57,34 +101,11 @@ const DynamicConfigCell = memo(
       }
       case 'actions': {
         return (
-          <div className="relative flex justify-end items-center gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                  <span className="sr-only">Open menu</span>
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleView}>
-                  <Eye className="mr-2 h-4 w-4" />
-                  View
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <a
-                    href={`https://console.statsig.com/dynamic_configs/${config.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center"
-                    onClick={onOpenStatsig}
-                  >
-                    <ExternalLink className="mr-2 h-4 w-4" />
-                    Open on Statsig
-                  </a>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DynamicConfigActions
+            config={config}
+            onRowClick={onRowClick}
+            onOpenStatsig={onOpenStatsig}
+          />
         )
       }
       default: {

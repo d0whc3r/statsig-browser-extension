@@ -9,16 +9,16 @@ import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
 const { mockJson, mockWretch } = vi.hoisted(() => {
-  const mockJson = vi.fn()
-  const mockWretch = {
+  const innerMockJson = vi.fn()
+  const instanceWretch = {
     delete: vi.fn().mockReturnThis(),
     get: vi.fn().mockReturnThis(),
     headers: vi.fn().mockReturnThis(),
-    json: mockJson,
+    json: innerMockJson,
     post: vi.fn().mockReturnThis(),
     url: vi.fn().mockReturnThis(),
   }
-  return { mockJson, mockWretch }
+  return { mockJson: innerMockJson, mockWretch: instanceWretch }
 })
 
 vi.mock(
