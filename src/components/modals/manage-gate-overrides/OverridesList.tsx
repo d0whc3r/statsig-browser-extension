@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronUp } from 'lucide-react'
-import { memo, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo, useState } from 'react'
 
+import { ConfirmDialog } from '@/src/components/common/ConfirmDialog'
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
@@ -34,6 +35,25 @@ interface OverridesListProps {
 export const OverridesList = memo(
   ({ allOverrides, canEdit, isPending, onDeleteOverride, onSwitchToForm }: OverridesListProps) => {
     const [showOthers, setShowOthers] = useState(false)
+    const [confirmDelete, setConfirmDelete] = useState<DeleteGateOverrideParams | null>(null)
+
+    const handleDeleteClick = useCallback(
+      (params: DeleteGateOverrideParams, isCurrentUser: boolean) => {
+        if (isCurrentUser) {
+          onDeleteOverride(params)
+        } else {
+          setConfirmDelete(params)
+        }
+      },
+      [onDeleteOverride],
+    )
+
+    const handleConfirmDelete = useCallback(() => {
+      if (confirmDelete) {
+        onDeleteOverride(confirmDelete)
+        setConfirmDelete(null)
+      }
+    }, [confirmDelete, onDeleteOverride])
 
     const { currentUserOverrides, otherOverrides } = useMemo(() => {
       const current = allOverrides.filter((override) => override.isCurrentUser)
@@ -66,7 +86,7 @@ export const OverridesList = memo(
                         item={item}
                         canEdit={canEdit}
                         isPending={isPending}
-                        onDeleteOverride={onDeleteOverride}
+                        onDeleteOverride={handleDeleteClick}
                       />
                     ))}
                     {showOthers &&
@@ -76,7 +96,7 @@ export const OverridesList = memo(
                           item={item}
                           canEdit={canEdit}
                           isPending={isPending}
-                          onDeleteOverride={onDeleteOverride}
+                          onDeleteOverride={handleDeleteClick}
                         />
                       ))}
                   </>
@@ -114,6 +134,15 @@ export const OverridesList = memo(
             </div>
           )}
         </div>
+        <ConfirmDialog
+          isOpen={Boolean(confirmDelete)}
+          onClose={() => setConfirmDelete(null)}
+          onConfirm={handleConfirmDelete}
+          title="Delete Override"
+          description="This override is for another user. Are you sure you want to delete it?"
+          confirmText="Delete"
+          variant="destructive"
+        />
       </SharedOverridesList>
     )
   },

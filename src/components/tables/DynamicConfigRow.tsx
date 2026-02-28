@@ -20,6 +20,85 @@ interface DynamicConfigRowProps {
   onRowClick: (id: string) => void
 }
 
+interface DynamicConfigCellProps {
+  config: DynamicConfig
+  columnKey: string
+  onRowClick: (id: string) => void
+  onOpenStatsig: (event: React.MouseEvent) => void
+}
+
+const DynamicConfigCell = memo(
+  ({ config, columnKey, onRowClick, onOpenStatsig }: DynamicConfigCellProps) => {
+    const cellValue = config[columnKey as keyof DynamicConfig]
+    const handleView = useCallback(() => onRowClick(config.id), [onRowClick, config.id])
+
+    switch (columnKey) {
+      case 'name': {
+        return <div className="cursor-pointer font-medium hover:underline">{config.name}</div>
+      }
+      case 'isEnabled': {
+        return (
+          <Badge variant={config.isEnabled ? 'default' : 'destructive'} className="capitalize">
+            {config.isEnabled ? 'Enabled' : 'Disabled'}
+          </Badge>
+        )
+      }
+      case 'tags': {
+        const tags = cellValue as string[]
+        return (
+          <div className="flex flex-wrap gap-1">
+            {tags?.map((tag: string) => (
+              <Badge key={tag} variant="secondary" className="text-xs">
+                {tag}
+              </Badge>
+            ))}
+          </div>
+        )
+      }
+      case 'actions': {
+        return (
+          <div className="relative flex justify-end items-center gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreVertical className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleView}>
+                  <Eye className="mr-2 h-4 w-4" />
+                  View
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a
+                    href={`https://console.statsig.com/dynamic_configs/${config.id}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center"
+                    onClick={onOpenStatsig}
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Open on Statsig
+                  </a>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        )
+      }
+      default: {
+        if (typeof cellValue === 'object' && cellValue !== null) {
+          return <div>{JSON.stringify(cellValue)}</div>
+        }
+        return <div>{String(cellValue)}</div>
+      }
+    }
+  },
+)
+
+DynamicConfigCell.displayName = 'DynamicConfigCell'
+
 export const DynamicConfigRow = memo(
   ({ item, headerColumns, onRowClick }: DynamicConfigRowProps) => {
     const handleRowClick = useCallback(() => {
@@ -33,81 +112,16 @@ export const DynamicConfigRow = memo(
       [], // External link handling
     )
 
-    const renderCell = useCallback(
-      (config: DynamicConfig, columnKey: string) => {
-        const cellValue = config[columnKey as keyof DynamicConfig]
-
-        switch (columnKey) {
-          case 'name': {
-            return <div className="cursor-pointer font-medium hover:underline">{config.name}</div>
-          }
-          case 'isEnabled': {
-            return (
-              <Badge variant={config.isEnabled ? 'default' : 'destructive'} className="capitalize">
-                {config.isEnabled ? 'Enabled' : 'Disabled'}
-              </Badge>
-            )
-          }
-          case 'tags': {
-            const tags = cellValue as string[]
-            return (
-              <div className="flex flex-wrap gap-1">
-                {tags?.map((tag: string) => (
-                  <Badge key={tag} variant="secondary" className="capitalize">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
-            )
-          }
-          case 'actions': {
-            return (
-              <div className="relative flex justify-end items-center gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-                      <span className="sr-only">Open menu</span>
-                      <MoreVertical className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={handleRowClick}>
-                      <Eye className="mr-2 h-4 w-4" />
-                      View
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <a
-                        href={`https://console.statsig.com/dynamic_configs/${config.id}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center"
-                        onClick={handleOpenStatsig}
-                      >
-                        <ExternalLink className="mr-2 h-4 w-4" />
-                        Open on Statsig
-                      </a>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </div>
-            )
-          }
-          default: {
-            if (typeof cellValue === 'object' && cellValue !== null) {
-              return <div>{JSON.stringify(cellValue)}</div>
-            }
-            return <div>{String(cellValue)}</div>
-          }
-        }
-      },
-      [handleRowClick, handleOpenStatsig],
-    )
-
     return (
       <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
         {headerColumns.map((column) => (
           <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
-            {renderCell(item, column.uid)}
+            <DynamicConfigCell
+              config={item}
+              columnKey={column.uid}
+              onRowClick={onRowClick}
+              onOpenStatsig={handleOpenStatsig}
+            />
           </TableCell>
         ))}
       </TableRow>

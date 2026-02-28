@@ -3,7 +3,7 @@ import type { ControllerRenderProps } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { ExternalLink, Loader2 } from 'lucide-react'
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
@@ -37,10 +37,9 @@ type AuthFormValues = z.infer<typeof authSchema>
 
 interface AuthFormProps {
   onSuccess: () => void
-  isOpen: boolean
 }
 
-export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
+export const AuthForm = ({ onSuccess }: AuthFormProps) => {
   const { setApiKey } = useSettingsStorage()
   const queryClient = useQueryClient()
 
@@ -71,12 +70,6 @@ export const AuthForm = ({ onSuccess, isOpen }: AuthFormProps) => {
       }
     },
   })
-
-  useEffect(() => {
-    if (isOpen) {
-      form.reset()
-    }
-  }, [isOpen, form])
 
   const onSubmit = useCallback(
     (values: AuthFormValues) => {

@@ -148,6 +148,7 @@ export const AddOverrideForm = memo(
         </TabsList>
         <TabsContent value="user">
           <GenericAddOverrideForm
+            key={experiment?.id}
             isPending={isPending}
             onAddOverride={handleAddUserOverride}
             onCancel={onCancel}

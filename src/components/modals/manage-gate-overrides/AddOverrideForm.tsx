@@ -49,6 +49,7 @@ export const AddOverrideForm = memo(
 
     return (
       <GenericAddOverrideForm
+        key={featureGate?.id}
         isPending={isPending}
         onAddOverride={handleAddOverride}
         onCancel={onCancel}

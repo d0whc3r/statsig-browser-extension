@@ -66,10 +66,9 @@ export const BaseOverrideContextCard = memo(
             <span className="text-[10px] text-muted-foreground w-full mb-0.5">
               Active overrides for this user:
             </span>
-            {detectedUserOverrides.map((override, index) => (
+            {detectedUserOverrides.map((override) => (
               <Badge
-                // eslint-disable-next-line react/no-array-index-key
-                key={`${override.environment || 'global'}-${index}`}
+                key={override.environment || 'global'}
                 variant="secondary"
                 className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
               >

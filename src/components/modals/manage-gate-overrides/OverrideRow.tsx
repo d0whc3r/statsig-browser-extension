@@ -17,28 +17,21 @@ interface OverrideRowProps {
   }
   canEdit: boolean
   isPending: boolean
-  onDeleteOverride: (params: DeleteGateOverrideParams) => void
+  onDeleteOverride: (params: DeleteGateOverrideParams, isCurrentUser: boolean) => void
 }
 
 export const OverrideRow = memo(
   ({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
-      const isOtherUser = !item.isCurrentUser
-      const confirmDialog = globalThis.confirm || window.confirm
-      if (
-        isOtherUser &&
-        confirmDialog &&
-        !confirmDialog('This override is for another user. Are you sure you want to delete it?')
-      ) {
-        return
-      }
-
-      onDeleteOverride({
-        environment: item.environment,
-        idType: item.idType,
-        type: item.type,
-        userId: item.id,
-      })
+      onDeleteOverride(
+        {
+          environment: item.environment,
+          idType: item.idType,
+          type: item.type,
+          userId: item.id,
+        },
+        item.isCurrentUser,
+      )
     }, [item, onDeleteOverride])
 
     return (

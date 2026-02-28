@@ -5,7 +5,7 @@ import { Button } from '@/src/components/ui/button'
 
 interface BottomContentProps {
   page: number
-  setPage: (page: number) => void
+  setPage: React.Dispatch<React.SetStateAction<number>>
   total: number
 }
 
@@ -63,16 +63,12 @@ export const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
   const totalPages = total || 1
 
   const handlePrevious = useCallback(() => {
-    if (page > 1) {
-      setPage(page - 1)
-    }
-  }, [page, setPage])
+    setPage((prev) => Math.max(1, prev - 1))
+  }, [setPage])
 
   const handleNext = useCallback(() => {
-    if (page < totalPages) {
-      setPage(page + 1)
-    }
-  }, [page, totalPages, setPage])
+    setPage((prev) => Math.min(totalPages, prev + 1))
+  }, [totalPages, setPage])
 
   const handlePageClick = useCallback(
     (pageNumber: number) => {

@@ -155,7 +155,7 @@ const useOverrideData = (currentItemId: string | undefined) => {
   const { data: detectedUser } = useUserDetails()
 
   const detectedUserId = useMemo(
-    () => getDetectedUserId(detectedUser as any, experiment?.idType),
+    () => getDetectedUserId(detectedUser, experiment?.idType),
     [detectedUser, experiment?.idType],
   )
 
@@ -168,7 +168,7 @@ const useOverrideData = (currentItemId: string | undefined) => {
 
     return overridesData.userIDOverrides.map((override) => {
       const idType = override.unitType || 'userID'
-      const detectedId = getDetectedUserId(detectedUser as any, idType)
+      const detectedId = getDetectedUserId(detectedUser, idType)
       const isCurrentUser = detectedId ? override.ids.includes(detectedId) : false
       return { ...override, isCurrentUser }
     })

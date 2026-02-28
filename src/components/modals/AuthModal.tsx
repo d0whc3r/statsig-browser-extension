@@ -28,7 +28,7 @@ export const AuthModal = () => {
         onPointerDownOutside={handlePointerDownOutside}
         onEscapeKeyDown={handleEscapeKeyDown}
       >
-        <AuthForm onSuccess={handleSuccess} isOpen={isAuthModalOpen} />
+        <AuthForm key={isAuthModalOpen ? 'open' : 'closed'} onSuccess={handleSuccess} />
       </DialogContent>
     </Dialog>
   )

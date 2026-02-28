@@ -35,11 +35,13 @@ interface SheetTabsProps {
   }
 }
 
+const EMPTY_LABELS = {}
+
 export function SheetTabs({
   detailsContent,
   rulesContent,
   overridesContent,
-  labels = {},
+  labels = EMPTY_LABELS,
 }: SheetTabsProps) {
   const { details = 'Details', rules = 'Rules', overrides = 'Overrides' } = labels
   const gridCols = overridesContent ? 'grid-cols-3' : 'grid-cols-2'

@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react'
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useState } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent } from '@/src/components/ui/card'
@@ -54,11 +54,6 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
   const [idType, setIdType] = useState<string>(defaultIdType)
 
   const { data: availableIdTypes = ['userID', 'stableID'] } = useUnitIDTypes()
-
-  // Update idType if defaultIdType changes (e.g. when switching entities)
-  useEffect(() => {
-    setIdType(defaultIdType)
-  }, [defaultIdType])
 
   const handleAdd = useCallback(() => {
     const env = environment === 'All Environments' ? null : environment

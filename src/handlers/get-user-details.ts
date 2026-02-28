@@ -1,10 +1,12 @@
 import { browser } from 'wxt/browser'
 
+import type { StatsigUser } from '../types/statsig'
+
 import { getUserDetailsFromPage } from '../lib/get-user-details-injector'
 import { handleApiError } from '../lib/utils'
 
 export interface UserDetails {
-  user: Record<string, unknown>
+  user: StatsigUser
   context?: Record<string, unknown>
 }
 
@@ -17,7 +19,7 @@ export const getUserDetails = async (tabId: number): Promise<UserDetails | undef
     })
 
     if (result?.result) {
-      return result.result as UserDetails
+      return result.result
     }
   } catch (error) {
     // Ignore error when accessing restricted URLs like about:blank

@@ -74,9 +74,8 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
         <div>
           <p className="mb-2 text-xs font-medium text-muted-foreground">Conditions</p>
           <div className="flex flex-wrap gap-1">
-            {rule.conditions.map((condition, index) => (
-              // eslint-disable-next-line react/no-array-index-key
-              <Badge key={`${condition.type}-${index}`} variant="secondary" className="text-xs">
+            {rule.conditions.map((condition) => (
+              <Badge key={`${rule.id}-${condition.type}`} variant="secondary" className="text-xs">
                 {getConditionLabel(condition.type)}
               </Badge>
             ))}
