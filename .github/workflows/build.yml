@@ -11,7 +11,7 @@ env:
 
 jobs:
   build:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
 
@@ -31,7 +31,7 @@ jobs:
         run: pnpm run zip:chrome
 
       - name: Archive the extension production build as ZIP
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ github.sha }}-prod-build
           path: .output/*-chrome.zip

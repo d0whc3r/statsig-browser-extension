@@ -98,7 +98,7 @@
     "autoprefixer": "10.4.27",
     "happy-dom": "20.7.0",
     "husky": "9.1.7",
-    "lint-staged": "16.3.0",
+    "lint-staged": "16.3.1",
     "oxfmt": "0.35.0",
     "oxlint": "1.50.0",
     "oxlint-tsgolint": "0.15.0",
@@ -110,6 +110,9 @@
     "vitest": "4.0.18",
     "webextension-polyfill": "0.12.0",
     "wxt": "0.20.18"
+  },
+  "overrides": {
+    "rollup": "^4.59.0"
   },
   "lint-staged": {
     "*": [
