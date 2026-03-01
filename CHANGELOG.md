@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.1.1...v1.2.0) (2026-03-01)
+
+### Bug Fixes
+
+- memoize component handlers and extract user ID override logic for improved performance and readability. ([88383c4](https://github.com/d0whc3r/statsig-browser-extension/commit/88383c416b0259559b7e4db81cbb82da3c5f97ae))
+- Migrate forms to react-hook-form and consolidate override management. ([bd0a4cd](https://github.com/d0whc3r/statsig-browser-extension/commit/bd0a4cd2aedad3f0ff7be716af6c09b39e7a2d42))
+- update tests ([0937de0](https://github.com/d0whc3r/statsig-browser-extension/commit/0937de0f8469773d4bf13a7f9933b80d199cbcb2))
+
+### Features
+
+- Introduce a confirmation dialog for override deletions and enhance form resetting with component keying. ([08b5eb6](https://github.com/d0whc3r/statsig-browser-extension/commit/08b5eb672d8dbb8cd1deff07d873c442b1b1db7a))
+
 ## [1.1.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.1.0...v1.1.1) (2026-02-26)
 
 ### Bug Fixes
