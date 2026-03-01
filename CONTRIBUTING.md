@@ -11,7 +11,7 @@ Thank you for your interest in contributing to the Statsig Browser Extension! Th
 2.  **Clone the repository**:
 
     ```bash
-    git clone https://github.com/statsig/statsig-browser-extension.git
+    git clone https://github.com/d0whc3r/statsig-browser-extension.git
     cd statsig-browser-extension
     ```
 
@@ -31,9 +31,10 @@ Thank you for your interest in contributing to the Statsig Browser Extension! Th
 
 ## Code Standards
 
-- **Linting**: We use `oxlint` for linting. Run `pnpm lint` to check for issues and `pnpm lint:fix` to fix them.
-- **Formatting**: We use `oxfmt` for formatting. Run `pnpm format` to format your code.
-- **Testing**: We use `vitest` for testing. Run `pnpm test` to run tests.
+- **Linting**: We use `oxlint` for high-performance linting. Run `pnpm lint` to check for issues and `pnpm lint:fix` to fix them.
+- **Formatting**: We use `oxfmt` for lightning-fast formatting. Run `pnpm format` to format your code or `pnpm format:check` to verify.
+- **Testing**: We use `vitest` for unit and integration testing. Run `pnpm test` to run tests.
+- **Data Fetching**: Use `wretch` for API requests and `tanstack-query` for managing the server state in the UI. All network calls from the popup must be routed through `background.ts` via the `API_REQUEST` message (available in `src/lib/fetcher.ts`).
 
 ## Commit Message Guidelines
 

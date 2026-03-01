@@ -55,7 +55,7 @@ View all your Feature Gates, Dynamic Configs, and Experiments in one place. You 
 
 ### 3. Entity Details
 
-Click on any item to see detailed information, including its rules, return values, and evaluation details. You can also apply overrides here.
+Click on any item to open a **Side Sheet** with detailed information, including its rules, return values, and evaluation details. You can also apply overrides directly from these sheets.
 
 ![Entity Details](images/image-detail.jpeg)
 
@@ -68,10 +68,12 @@ Track all changes and user activities within the session to ensure everything is
 ## �🛠 Tech Stack
 
 - **Framework**: [WXT](https://wxt.dev/) (Web Extension Tools)
-- **UI Library**: [shadcn/ui](https://ui.shadcn.com/) (built on Radix UI and Tailwind CSS)
+- **UI Library**: [shadcn/ui](https://ui.shadcn.com/) (built on Radix UI)
+- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Data Fetching**: [wretch](https://github.com/elbywan/wretch) (base) & [TanStack Query v5](https://tanstack.com/query/latest) (management)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand)
-- **Data Fetching**: [TanStack Query](https://tanstack.com/query/latest)
-- **Styling**: Tailwind CSS
+- **Testing**: [Vitest](https://vitest.dev/)
+- **Linting & Formatting**: [oxlint](https://oxlint.dev/) & [oxfmt](https://github.com/oxc-project/oxc)
 - **Icons**: Lucide React
 
 ## 💻 Development
@@ -112,13 +114,18 @@ The output artifacts will be in the `.output/` directory.
 
 ## 📂 Project Structure
 
-- `entrypoints/`: Extension entry points (popup, background, content scripts)
-- `src/components/`: React components (UI, sheets, modals, tables)
-- `src/hooks/`: Custom React hooks (TanStack Query, local storage)
-- `src/handlers/`: API handlers and mutations
-- `src/store/`: Zustand store configuration
-- `src/types/`: TypeScript definitions
-- `src/lib/`: Utility functions and configurations
+- `entrypoints/`: Extension entry points (popup, background, content scripts, and statsig-detector).
+- `src/components/`:
+  - `sheets/`: Detailed side sheets for Gates, Experiments, and Configs.
+  - `modals/`: Authentication and override management modals.
+  - `tables/`: Data tables for listing entities.
+  - `ui/`: Reusable primitive components (shadcn/ui).
+  - `audit-logs/`: Components specific to the audit trail.
+- `src/hooks/`: Custom React hooks for data fetching (TanStack Query), storage, and logic.
+- `src/handlers/`: API interaction logic and Statsig mutations using `wretch`.
+- `src/store/`: Zustand stores for UI and settings state.
+- `src/types/`: TypeScript definitions and API types.
+- `src/lib/`: Core utilities, storage wrappers, and query client configuration (including the `wretch` base).
 
 ## 🤝 Contributing
 
