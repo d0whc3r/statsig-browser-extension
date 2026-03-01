@@ -1,48 +1,40 @@
-import { useMutation } from '@tanstack/react-query'
 import { screen, waitFor } from '@testing-library/react'
+
+import { Dialog, DialogContent } from '@/src/components/ui/dialog'
+import { initialLogin } from '@/src/handlers/initial-login'
 
 import { AuthForm } from '../../components/modals/AuthForm'
 import { renderWithProviders } from '../utils/TestUtils'
 
-// Mocking dependencies with simpler string-based mocks to avoid TS complexity in this environment
-vi.mock(import('@tanstack/react-query'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
-  return {
-    ...actual,
-    useMutation: vi.fn(),
-    useQueryClient: vi.fn(() => ({
-      invalidateQueries: vi.fn(),
-    })),
-  }
-})
+// Mock initialLogin handler
+vi.mock(import('@/src/handlers/initial-login'), () => ({
+  initialLogin: vi.fn(),
+}))
 
-vi.mock(import('@/src/hooks/use-settings-storage'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
-  return {
-    ...actual,
-    useSettingsStorage: vi.fn(() => ({
-      setApiKey: vi.fn(),
-    })),
-  }
-})
+// Mock useSettingsStorage
+vi.mock(import('@/src/hooks/use-settings-storage'), () => ({
+  useSettingsStorage: vi.fn(() => ({
+    setApiKey: vi.fn(),
+  })),
+}))
 
 describe('AuthForm component', () => {
   const defaultProps = {
     onSuccess: vi.fn(),
   }
 
-  const mockMutate = vi.fn()
-
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(useMutation as any).mockReturnValue({
-      isPending: false,
-      mutate: mockMutate,
-    })
   })
 
   it('renders initial state correctly', () => {
-    renderWithProviders(<AuthForm {...defaultProps} />)
+    renderWithProviders(
+      <Dialog open>
+        <DialogContent>
+          <AuthForm {...defaultProps} />
+        </DialogContent>
+      </Dialog>,
+    )
 
     expect(screen.getByText('Login to Statsig')).toBeInTheDocument()
     expect(screen.getByLabelText(/Statsig Console API Key/i)).toBeInTheDocument()
@@ -50,18 +42,30 @@ describe('AuthForm component', () => {
   })
 
   it('shows validation error for empty API key', async () => {
-    const { user } = renderWithProviders(<AuthForm {...defaultProps} />)
+    const { user } = renderWithProviders(
+      <Dialog open>
+        <DialogContent>
+          <AuthForm {...defaultProps} />
+        </DialogContent>
+      </Dialog>,
+    )
 
     await user.click(screen.getByRole('button', { name: /Login/i }))
 
     await waitFor(() => {
       expect(screen.getByText('Please enter an API key')).toBeInTheDocument()
     })
-    expect(mockMutate).not.toHaveBeenCalled()
+    expect(initialLogin).not.toHaveBeenCalled()
   })
 
   it('shows validation error for invalid API key prefix', async () => {
-    const { user } = renderWithProviders(<AuthForm {...defaultProps} />)
+    const { user } = renderWithProviders(
+      <Dialog open>
+        <DialogContent>
+          <AuthForm {...defaultProps} />
+        </DialogContent>
+      </Dialog>,
+    )
 
     const input = screen.getByPlaceholderText('console-...')
     await user.type(input, 'wrong-prefix-key')
@@ -70,30 +74,56 @@ describe('AuthForm component', () => {
     await waitFor(() => {
       expect(screen.getByText('API key should start with "console-"')).toBeInTheDocument()
     })
-    expect(mockMutate).not.toHaveBeenCalled()
+    expect(initialLogin).not.toHaveBeenCalled()
   })
 
   it('calls mutate with correct API key on valid submission', async () => {
-    const { user } = renderWithProviders(<AuthForm {...defaultProps} />)
+    const mockLogin = vi.mocked(initialLogin)
+    mockLogin.mockResolvedValue({ data: { message: 'Success' }, error: undefined, success: true })
+
+    const { user } = renderWithProviders(
+      <Dialog open>
+        <DialogContent>
+          <AuthForm {...defaultProps} />
+        </DialogContent>
+      </Dialog>,
+    )
 
     const input = screen.getByPlaceholderText('console-...')
     await user.type(input, 'console-valid-key')
     await user.click(screen.getByRole('button', { name: /Login/i }))
 
     await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalledWith('console-valid-key')
+      expect(mockLogin).toHaveBeenCalledWith('console-valid-key', expect.anything())
     })
   })
 
-  it('disables input and button when pending', () => {
-    ;(useMutation as any).mockReturnValue({
-      isPending: true,
-      mutate: mockMutate,
+  it('disables input and button when pending', async () => {
+    // To test pending state, we need a promise that doesn't resolve immediately
+    const mockLogin = vi.mocked(initialLogin)
+    // oxlint-disable-next-line init-declarations
+    let resolveLogin: (value: any) => void
+    const loginPromise = new Promise((resolve) => {
+      resolveLogin = resolve
     })
+    mockLogin.mockReturnValue(loginPromise as any)
 
-    renderWithProviders(<AuthForm {...defaultProps} />)
+    const { user } = renderWithProviders(
+      <Dialog open>
+        <DialogContent>
+          <AuthForm {...defaultProps} />
+        </DialogContent>
+      </Dialog>,
+    )
 
-    expect(screen.getByPlaceholderText('console-...')).toBeDisabled()
+    const input = screen.getByPlaceholderText('console-...')
+    await user.type(input, 'console-valid-key')
+    await user.click(screen.getByRole('button', { name: /Login/i }))
+
+    expect(input).toBeDisabled()
     expect(screen.getByRole('button', { name: /Login/i })).toBeDisabled()
+
+    // Clean up
+    resolveLogin!({ success: true })
   })
 })

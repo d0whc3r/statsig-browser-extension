@@ -43,7 +43,9 @@ describe('Login Flow', () => {
     const loginButton = screen.getByRole('button', { name: /Login/i })
     await user.click(loginButton)
 
-    expect(screen.getByText('Please enter an API key')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(screen.getByText('Please enter an API key')).toBeInTheDocument()
+    })
   })
 
   it('should call login API and close modal on success', async () => {
@@ -59,16 +61,12 @@ describe('Login Flow', () => {
     await user.click(loginButton)
 
     await waitFor(() => {
-      // Relaxed expectation to ignore extra arguments passed by react-query
       expect(mockLogin).toHaveBeenCalledWith('console-test-key', expect.anything())
     })
 
-    await waitFor(
-      () => {
-        expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
-      },
-      { timeout: 2000 },
-    )
+    await waitFor(() => {
+      expect(useUIStore.getState().isAuthModalOpen).toBeFalsy()
+    })
 
     expect(useSettingsStore.getState().apiKey).toBe('console-test-key')
   })
@@ -80,17 +78,15 @@ describe('Login Flow', () => {
     const { user } = renderWithProviders(<AuthModal />)
 
     const input = screen.getByLabelText(/Statsig Console API Key/i)
-    await user.type(input, 'invalid-key')
+    // Add "console-" to satisfy Zod validation
+    await user.type(input, 'console-invalid-key')
 
     const loginButton = screen.getByRole('button', { name: /Login/i })
     await user.click(loginButton)
 
-    await waitFor(
-      () => {
-        expect(screen.getByText('Invalid API Key')).toBeInTheDocument()
-      },
-      { timeout: 2000 },
-    )
+    await waitFor(() => {
+      expect(screen.getByText('Invalid API Key')).toBeInTheDocument()
+    })
 
     expect(useUIStore.getState().isAuthModalOpen).toBeTruthy()
   })

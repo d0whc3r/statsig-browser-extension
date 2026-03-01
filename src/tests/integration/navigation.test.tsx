@@ -15,21 +15,29 @@ vi.mock(import('@/src/components/tables/ExperimentsTable'), () => ({
 vi.mock(import('@/src/components/tables/DynamicConfigsTable'), () => ({
   DynamicConfigsTable: () => <div data-testid="dynamic-configs-table">Dynamic Configs Table</div>,
 }))
-vi.mock(import('@/src/components/AuditLogs'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
-}))
+vi.mock(
+  import('@/src/components/AuditLogs'),
+  async (importOriginal) =>
+    ({
+      ...(await importOriginal()),
+      AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
+    }) as any,
+)
 
 // Mock API key to bypass login modal
-vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => ({
-  ...(await importOriginal()),
-  useWxtStorage: vi.fn((item) => {
-    if (item.key === 'local:statsig-console-api-key') {
-      return ['test-api-key', vi.fn(), false]
-    }
-    return [item.defaultValue, vi.fn(), false]
-  }),
-}))
+vi.mock(
+  import('@/src/hooks/use-wxt-storage'),
+  async (importOriginal) =>
+    ({
+      ...(await importOriginal()),
+      useWxtStorage: vi.fn((item) => {
+        if (item.key === 'local:statsig-console-api-key') {
+          return ['test-api-key', vi.fn(), false]
+        }
+        return [item.defaultValue, vi.fn(), false]
+      }),
+    }) as any,
+)
 
 describe('Navigation Flow', () => {
   beforeEach(() => {

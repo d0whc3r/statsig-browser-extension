@@ -12,7 +12,7 @@ export const useExperimentsTableLogic = () => {
 
   const experiments = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
 
-  const totalServerItems = useMemo(() => data?.pages[0]?.pagination.totalItems || 0, [data])
+  const totalServerItems = useMemo(() => data?.pages[0]?.pagination?.totalItems || 0, [data])
 
   const {
     filterValue,

@@ -7,14 +7,23 @@ import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-export function TestProviders({ children }: { children: ReactNode }) {
-  const queryClient = new QueryClient({
+export const createTestQueryClient = () =>
+  new QueryClient({
     defaultOptions: {
       queries: {
         retry: false,
       },
     },
   })
+
+export function TestProviders({
+  children,
+  queryClient: externalQueryClient,
+}: {
+  children: ReactNode
+  queryClient?: QueryClient
+}) {
+  const [queryClient] = React.useState(() => externalQueryClient ?? createTestQueryClient())
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -24,18 +33,12 @@ export function TestProviders({ children }: { children: ReactNode }) {
 }
 
 export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: false,
-      },
-    },
-  })
+  const queryClient = createTestQueryClient()
 
   return {
     queryClient,
     user: userEvent.setup({ pointerEventsCheck: 0 }),
-    ...render(<TestProviders>{ui}</TestProviders>, options),
+    ...render(<TestProviders queryClient={queryClient}>{ui}</TestProviders>, options),
   }
 }
 

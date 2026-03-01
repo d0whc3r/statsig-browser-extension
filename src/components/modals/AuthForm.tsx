@@ -55,11 +55,12 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
     onError: (error) => {
       form.setError('apiKey', {
         message: error instanceof Error ? error.message : 'An unknown error occurred',
+        type: 'manual',
       })
     },
     onSuccess: (data, variables) => {
       if (data.error) {
-        form.setError('apiKey', { message: data.error })
+        form.setError('apiKey', { message: data.error, type: 'manual' })
         return
       }
 
