@@ -11,7 +11,6 @@ interface StatsigUserMessage {
 
 const RESPONSE_TIMEOUT_MS = 1000
 
-// State variables at module scope
 let detectedUser: unknown = null
 let detectedContext: unknown = null
 let detectedError: string | null = null
