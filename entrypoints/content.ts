@@ -187,7 +187,6 @@ const handleWindowMessage = (event: MessageEvent) => {
 
 export default defineContentScript({
   main() {
-    console.log('[Statsig Extension] Content script started (ISOLATED)')
     globalThis.window.addEventListener('message', handleWindowMessage)
     browser.runtime.onMessage.addListener(handleRuntimeMessage)
   },

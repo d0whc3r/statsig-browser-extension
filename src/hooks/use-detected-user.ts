@@ -32,7 +32,6 @@ export function useDetectedUser() {
   )
 
   const retryDetection = useCallback(async () => {
-    console.log('[Statsig Extension] Retrying detection...')
     setDetectionError(null)
 
     const tab = await getActiveTab()

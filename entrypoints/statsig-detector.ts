@@ -4,13 +4,11 @@ import { getUserDetailsFromPage } from '@/src/lib/get-user-details-injector'
 export default defineContentScript({
   main() {
     const MAX_ATTEMPTS = 20
-    console.log('[Statsig Extension] Main world script started')
 
     function checkStatsig() {
       const result = getUserDetailsFromPage()
 
       if (result) {
-        console.log('[Statsig Extension] User detected:', result.user)
         window.postMessage(
           { context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user },
           '*',
