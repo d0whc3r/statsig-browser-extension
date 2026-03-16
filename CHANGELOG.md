@@ -1,3 +1,9 @@
+## [1.2.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.2.0...v1.2.1) (2026-03-16)
+
+### Bug Fixes
+
+- update content ([bf99999](https://github.com/d0whc3r/statsig-browser-extension/commit/bf99999a277728d070274f421ba85bcec853c879))
+
 # [1.2.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.1.1...v1.2.0) (2026-03-01)
 
 ### Bug Fixes
