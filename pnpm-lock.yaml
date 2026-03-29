@@ -151,8 +151,8 @@ importers:
         specifier: 10.4.27
         version: 10.4.27(postcss@8.5.8)
       happy-dom:
-        specifier: 20.8.4
-        version: 20.8.4
+        specifier: 20.8.9
+        version: 20.8.9
       husky:
         specifier: 9.1.7
         version: 9.1.7
@@ -185,7 +185,7 @@ importers:
         version: 5.9.3
       vitest:
         specifier: 4.1.0
-        version: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.4)
+        version: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.9)
       webextension-polyfill:
         specifier: 0.12.0
         version: 0.12.0
@@ -2916,8 +2916,8 @@ packages:
     engines: {node: '>=0.4.7'}
     hasBin: true
 
-  happy-dom@20.8.4:
-    resolution: {integrity: sha512-GKhjq4OQCYB4VLFBzv8mmccUadwlAusOZOI7hC1D9xDIT5HhzkJK17c4el2f6R6C715P9xB4uiMxeKUa2nHMwQ==}
+  happy-dom@20.8.9:
+    resolution: {integrity: sha512-Tz23LR9T9jOGVZm2x1EPdXqwA37G/owYMxRwU0E4miurAtFsPMQ1d2Jc2okUaSjZqAFz2oEn3FLXC5a0a+siyA==}
     engines: {node: '>=20.0.0'}
 
   has-flag@3.0.0:
@@ -6535,7 +6535,7 @@ snapshots:
       obug: 2.1.1
       std-env: 4.0.0
       tinyrainbow: 3.1.0
-      vitest: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.4)
+      vitest: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.9)
 
   '@vitest/expect@4.1.0':
     dependencies:
@@ -6579,7 +6579,7 @@ snapshots:
       sirv: 3.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.1.0
-      vitest: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.4)
+      vitest: 4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.9)
 
   '@vitest/utils@4.1.0':
     dependencies:
@@ -7342,7 +7342,7 @@ snapshots:
     optionalDependencies:
       uglify-js: 3.19.3
 
-  happy-dom@20.8.4:
+  happy-dom@20.8.9:
     dependencies:
       '@types/node': 24.12.0
       '@types/whatwg-mimetype': 3.0.2
@@ -8991,7 +8991,7 @@ snapshots:
       jiti: 2.6.1
       yaml: 2.8.2
 
-  vitest@4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.4):
+  vitest@4.1.0(@types/node@24.12.0)(@vitest/ui@4.1.0)(happy-dom@20.8.9):
     dependencies:
       '@vitest/expect': 4.1.0
       '@vitest/mocker': 4.1.0
@@ -9015,7 +9015,7 @@ snapshots:
     optionalDependencies:
       '@types/node': 24.12.0
       '@vitest/ui': 4.1.0(vitest@4.1.0)
-      happy-dom: 20.8.4
+      happy-dom: 20.8.9
     transitivePeerDependencies:
       - msw
 
