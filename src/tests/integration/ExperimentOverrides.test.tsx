@@ -325,7 +325,7 @@ describe('Experiment Overrides Flow', () => {
 
     // Click delete
     const row = screen.getByText('other_user').closest('tr')!
-    const deleteBtn = within(row).getByRole('button')
+    const deleteBtn = within(row).getByRole('button', { name: /Delete override/i })
     await user.click(deleteBtn)
 
     // Confirm in dialog
