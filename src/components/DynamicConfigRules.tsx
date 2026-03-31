@@ -4,6 +4,7 @@ import type { DynamicConfigRule } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useDynamicConfigRules } from '@/src/hooks/use-dynamic-config-rules'
 import { getConditionLabel } from '@/src/lib/rules'
@@ -26,6 +27,22 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
           <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
             {rule.name}
           </CardTitle>
+          <CopyableText
+            value={`rule_id: ${rule.id}`}
+            copyValue={rule.id}
+            copyLabel="Copy rule ID"
+            containerClassName="mt-1 text-[11px] font-mono text-muted-foreground"
+            valueClassName="truncate hover:text-foreground transition-colors"
+          />
+          {rule.baseID && rule.baseID !== rule.id && (
+            <CopyableText
+              value={`base_rule_id: ${rule.baseID}`}
+              copyValue={rule.baseID}
+              copyLabel="Copy base rule ID"
+              containerClassName="text-[11px] font-mono text-muted-foreground"
+              valueClassName="truncate hover:text-foreground transition-colors"
+            />
+          )}
           {rule.groupName && (
             <div className="flex items-center gap-2 mt-1">
               <Badge variant="outline" className="text-[10px] h-4 px-1.5">

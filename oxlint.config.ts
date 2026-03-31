@@ -44,6 +44,8 @@ export default defineConfig({
         'typescript/consistent-type-imports': 'off',
         'typescript/no-explicit-any': 'off',
         'vitest/prefer-called-once': 'off',
+        'vitest/prefer-strict-boolean-matchers': 'off',
+        'vitest/require-mock-type-parameters': 'off',
       },
     },
     {

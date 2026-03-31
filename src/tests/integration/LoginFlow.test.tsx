@@ -13,14 +13,19 @@ vi.mock(import('@/src/handlers/initial-login'), () => ({
 }))
 
 // Mock useWxtStorage
-vi.mock(import('@/src/hooks/use-wxt-storage'), () => ({
-  useWxtStorage: vi.fn((item) => {
-    if (item.key === 'local:statsig-console-api-key') {
-      return ['', vi.fn(), false]
-    }
-    return [item.defaultValue, vi.fn(), false]
-  }),
-}))
+vi.mock(
+  import('@/src/hooks/use-wxt-storage'),
+  async (importOriginal) =>
+    ({
+      ...(await importOriginal()),
+      useWxtStorage: vi.fn((item) => {
+        if (item.key === 'local:statsig-console-api-key') {
+          return ['', vi.fn(), false] as any
+        }
+        return [item.defaultValue, vi.fn(), false] as any
+      }),
+    }) as any,
+)
 
 describe('Login Flow', () => {
   beforeEach(() => {

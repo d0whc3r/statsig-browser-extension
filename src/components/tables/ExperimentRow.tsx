@@ -17,32 +17,35 @@ interface ExperimentCellProps {
   item: Experiment
   columnKey: string
   onRowClick: (id: string) => void
+  showInlineId: boolean
 }
 
-const ExperimentCell = memo(({ item, columnKey, onRowClick }: ExperimentCellProps) => {
-  const cellValue = item[columnKey as keyof Experiment]
+const ExperimentCell = memo(
+  ({ item, columnKey, onRowClick, showInlineId }: ExperimentCellProps) => {
+    const cellValue = item[columnKey as keyof Experiment]
 
-  switch (columnKey) {
-    case 'name': {
-      return <ExperimentNameCell item={item} onRowClick={onRowClick} />
+    switch (columnKey) {
+      case 'name': {
+        return <ExperimentNameCell item={item} showInlineId={showInlineId} />
+      }
+      case 'status': {
+        return <ExperimentStatusCell item={item} onRowClick={onRowClick} />
+      }
+      case 'allocation': {
+        return <ExperimentAllocationCell item={item} onRowClick={onRowClick} />
+      }
+      case 'tags': {
+        return <ExperimentTagsCell item={item} onRowClick={onRowClick} />
+      }
+      case 'actions': {
+        return <ExperimentActionsCell item={item} onRowClick={onRowClick} />
+      }
+      default: {
+        return <ExperimentDefaultCell value={cellValue} />
+      }
     }
-    case 'status': {
-      return <ExperimentStatusCell item={item} onRowClick={onRowClick} />
-    }
-    case 'allocation': {
-      return <ExperimentAllocationCell item={item} onRowClick={onRowClick} />
-    }
-    case 'tags': {
-      return <ExperimentTagsCell item={item} onRowClick={onRowClick} />
-    }
-    case 'actions': {
-      return <ExperimentActionsCell item={item} onRowClick={onRowClick} />
-    }
-    default: {
-      return <ExperimentDefaultCell value={cellValue} />
-    }
-  }
-})
+  },
+)
 ExperimentCell.displayName = 'ExperimentCell'
 
 interface ExperimentRowProps {
@@ -60,7 +63,7 @@ export const ExperimentRow = memo(({ item, headerColumns, onRowClick }: Experime
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
         <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
-          <ExperimentCell item={item} columnKey={column.uid} onRowClick={onRowClick} />
+          <ExperimentCell item={item} columnKey={column.uid} onRowClick={onRowClick} showInlineId />
         </TableCell>
       ))}
     </TableRow>

@@ -1,4 +1,4 @@
-import { Copy, ExternalLink } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 
 import type { PaginatedResponse } from '@/src/hooks/use-audit-logs'
@@ -6,6 +6,7 @@ import type { AuditLog } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { ScrollArea } from '@/src/components/ui/scroll-area'
 import {
   Sheet,
@@ -15,12 +16,6 @@ import {
   SheetTitle,
 } from '@/src/components/ui/sheet'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/src/components/ui/tooltip'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
 import { useUIStore } from '@/src/store/use-ui-store'
 import { getActionTypeColor } from '@/src/utils/audit-log-utils'
@@ -29,12 +24,10 @@ const AuditLogHeader = ({
   auditLog,
   isLoading,
   currentAuditLogId,
-  onCopyId,
 }: {
   auditLog?: AuditLog
   isLoading: boolean
   currentAuditLogId?: string
-  onCopyId: () => void
 }) => (
   <SheetHeader className="px-6 py-4 border-b pr-12">
     <div className="flex justify-between items-center gap-4">
@@ -46,21 +39,12 @@ const AuditLogHeader = ({
             auditLog?.name || 'Audit Log Detail'
           )}
         </SheetTitle>
-        {!isLoading && auditLog && (
-          <div className="flex items-center gap-2 mt-1">
-            <span className="text-xs text-muted-foreground font-mono">{currentAuditLogId}</span>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button variant="ghost" size="icon" className="h-4 w-4" onClick={onCopyId}>
-                    <Copy className="h-3 w-3" />
-                    <span className="sr-only">Copy ID</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Copy ID</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </div>
+        {!isLoading && auditLog && currentAuditLogId && (
+          <CopyableText
+            value={currentAuditLogId}
+            copyLabel="Copy ID"
+            containerClassName="mt-1 text-xs text-muted-foreground font-mono"
+          />
         )}
       </div>
       <div className="shrink-0">
@@ -193,12 +177,6 @@ export const AuditLogDetailSheet = () => {
     [setAuditLogDetailSheetOpen],
   )
 
-  const handleCopyId = useCallback(() => {
-    if (currentAuditLogId) {
-      navigator.clipboard.writeText(currentAuditLogId)
-    }
-  }, [currentAuditLogId])
-
   return (
     <Sheet open={isAuditLogDetailSheetOpen} onOpenChange={handleClose}>
       <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0 gap-0">
@@ -206,7 +184,6 @@ export const AuditLogDetailSheet = () => {
           auditLog={auditLog}
           isLoading={isLoading}
           currentAuditLogId={currentAuditLogId}
-          onCopyId={handleCopyId}
         />
         <AuditLogContent auditLog={auditLog} isLoading={isLoading} />
       </SheetContent>

@@ -6,8 +6,9 @@ import { Header } from '@/src/components/layout/Header'
 import { MainTabs } from '@/src/components/layout/MainTabs'
 import { useAppLogic } from '@/src/hooks/use-app-logic'
 import { queryClient } from '@/src/lib/query-client'
+
 // eslint-disable-next-line import/no-unassigned-import
-import '@/src/styles/globals.css'
+import '../../src/styles/globals.css'
 
 export function AppContent() {
   const { activeTab, handleTabChange, handleLogout } = useAppLogic()

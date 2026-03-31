@@ -4,6 +4,7 @@ import type { FeatureGateRule } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useFeatureGateRules } from '@/src/hooks/use-feature-gate-rules'
 import { getConditionLabel } from '@/src/lib/rules'
@@ -48,6 +49,22 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
       <div className="flex w-full justify-between items-start">
         <div className="flex-1">
           <CardTitle className="text-sm font-semibold">{rule.name}</CardTitle>
+          <CopyableText
+            value={`rule_id: ${rule.id}`}
+            copyValue={rule.id}
+            copyLabel="Copy rule ID"
+            containerClassName="mt-1 text-[11px] font-mono text-muted-foreground"
+            valueClassName="truncate hover:text-foreground transition-colors"
+          />
+          {rule.baseID && rule.baseID !== rule.id && (
+            <CopyableText
+              value={`base_rule_id: ${rule.baseID}`}
+              copyValue={rule.baseID}
+              copyLabel="Copy base rule ID"
+              containerClassName="text-[11px] font-mono text-muted-foreground"
+              valueClassName="truncate hover:text-foreground transition-colors"
+            />
+          )}
         </div>
         <div className="flex flex-col items-end space-y-1">
           <Badge variant={getBadgeVariant(rule.passPercentage)}>{rule.passPercentage}% Pass</Badge>
