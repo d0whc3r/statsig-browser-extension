@@ -1,1 +1,3 @@
-import '@total-typescript/ts-reset'
+/// <reference types="@total-typescript/ts-reset" />
+
+declare module '*.css' {}

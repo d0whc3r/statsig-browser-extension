@@ -1,13 +1,12 @@
-import { Copy } from 'lucide-react'
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useDynamicConfig } from '@/src/hooks/use-dynamic-config'
 import { useUIStore } from '@/src/store/use-ui-store'
 
@@ -18,54 +17,39 @@ interface ConfigHeaderProps {
   config?: DynamicConfig
 }
 
-const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => {
-  const handleCopyId = useCallback(() => {
-    if (config?.id) {
-      navigator.clipboard.writeText(config.id)
-    }
-  }, [config?.id])
-
-  return (
-    <div className="flex justify-between items-start gap-4">
-      <div className="space-y-1">
-        <SheetTitle className="text-xl font-bold break-all">
-          {isLoading ? (
-            <Skeleton className="h-6 w-32" />
-          ) : (
-            config?.name || config?.id || 'Dynamic Config'
-          )}
-        </SheetTitle>
-        {config?.id && (
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-            <span className="font-mono">{config.id}</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-4 w-4" onClick={handleCopyId}>
-                  <Copy className="h-3 w-3" />
-                  <span className="sr-only">Copy ID</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Copy ID</TooltipContent>
-            </Tooltip>
-          </div>
+const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => (
+  <div className="flex justify-between items-start gap-4">
+    <div className="space-y-1">
+      <SheetTitle className="text-xl font-bold break-all">
+        {isLoading ? (
+          <Skeleton className="h-6 w-32" />
+        ) : (
+          config?.name || config?.id || 'Dynamic Config'
         )}
-      </div>
-      <div className="shrink-0">
-        {config?.id && (
-          <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
-            <a
-              href={`https://console.statsig.com/dynamic_configs/${config.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Statsig
-            </a>
-          </Button>
-        )}
-      </div>
+      </SheetTitle>
+      {config?.id && (
+        <CopyableText
+          value={config.id}
+          copyLabel="Copy ID"
+          containerClassName="text-xs text-muted-foreground font-mono"
+        />
+      )}
     </div>
-  )
-}
+    <div className="shrink-0">
+      {config?.id && (
+        <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
+          <a
+            href={`https://console.statsig.com/dynamic_configs/${config.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Statsig
+          </a>
+        </Button>
+      )}
+    </div>
+  </div>
+)
 
 interface ConfigDetailsProps {
   isLoading: boolean

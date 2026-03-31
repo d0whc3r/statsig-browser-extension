@@ -6,6 +6,7 @@ import type { DynamicConfig } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -25,6 +26,7 @@ interface DynamicConfigCellProps {
   columnKey: string
   onRowClick: (id: string) => void
   onOpenStatsig: (event: React.MouseEvent) => void
+  showInlineId: boolean
 }
 
 interface DynamicConfigActionsProps {
@@ -73,12 +75,24 @@ const DynamicConfigActions = memo(
 DynamicConfigActions.displayName = 'DynamicConfigActions'
 
 const DynamicConfigCell = memo(
-  ({ config, columnKey, onRowClick, onOpenStatsig }: DynamicConfigCellProps) => {
+  ({ config, columnKey, onRowClick, onOpenStatsig, showInlineId }: DynamicConfigCellProps) => {
     const cellValue = config[columnKey as keyof DynamicConfig]
 
     switch (columnKey) {
       case 'name': {
-        return <div className="cursor-pointer font-medium hover:underline">{config.name}</div>
+        return (
+          <div className="min-w-0">
+            <div className="cursor-pointer font-medium hover:underline truncate">{config.name}</div>
+            {showInlineId && (
+              <CopyableText
+                value={config.id}
+                copyLabel="Copy ID"
+                containerClassName="text-xs text-muted-foreground font-mono"
+                valueClassName="truncate hover:text-foreground transition-colors"
+              />
+            )}
+          </div>
+        )
       }
       case 'isEnabled': {
         return (
@@ -142,6 +156,7 @@ export const DynamicConfigRow = memo(
               columnKey={column.uid}
               onRowClick={onRowClick}
               onOpenStatsig={handleOpenStatsig}
+              showInlineId
             />
           </TableCell>
         ))}

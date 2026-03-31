@@ -5,6 +5,7 @@ import type { Experiment } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,8 +36,23 @@ interface BaseCellProps {
   onRowClick: (id: string) => void
 }
 
-export const ExperimentNameCell = memo(({ item }: BaseCellProps) => (
-  <div className="cursor-pointer font-medium hover:underline">{item.name}</div>
+interface ExperimentNameCellProps {
+  item: Experiment
+  showInlineId: boolean
+}
+
+export const ExperimentNameCell = memo(({ item, showInlineId }: ExperimentNameCellProps) => (
+  <div className="min-w-0">
+    <div className="cursor-pointer font-medium hover:underline truncate">{item.name}</div>
+    {showInlineId && (
+      <CopyableText
+        value={item.id}
+        copyLabel="Copy ID"
+        containerClassName="text-xs text-muted-foreground font-mono"
+        valueClassName="truncate hover:text-foreground transition-colors"
+      />
+    )}
+  </div>
 ))
 
 ExperimentNameCell.displayName = 'ExperimentNameCell'

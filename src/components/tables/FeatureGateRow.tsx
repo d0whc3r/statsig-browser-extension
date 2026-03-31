@@ -6,6 +6,7 @@ import type { FeatureGate } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ interface FeatureGateCellProps {
   item: FeatureGate
   columnKey: string
   onRowClick: (id: string) => void
+  showInlineId: boolean
 }
 
 const FeatureGateActions = ({
@@ -78,12 +80,29 @@ const FeatureGateTags = ({ tags }: { tags: string[] }) => (
   </div>
 )
 
-const FeatureGateCellContent = ({ item, columnKey, onRowClick }: FeatureGateCellProps) => {
+const FeatureGateCellContent = ({
+  item,
+  columnKey,
+  onRowClick,
+  showInlineId,
+}: FeatureGateCellProps) => {
   const cellValue = item[columnKey as keyof FeatureGate]
 
   switch (columnKey) {
     case 'name': {
-      return <div className="cursor-pointer font-medium hover:underline">{item.name}</div>
+      return (
+        <div className="min-w-0">
+          <div className="cursor-pointer font-medium hover:underline truncate">{item.name}</div>
+          {showInlineId && (
+            <CopyableText
+              value={item.id}
+              copyLabel="Copy ID"
+              containerClassName="text-xs text-muted-foreground font-mono"
+              valueClassName="truncate hover:text-foreground transition-colors"
+            />
+          )}
+        </div>
+      )
     }
     case 'status': {
       return <FeatureGateStatus status={item.status} />
@@ -128,7 +147,12 @@ export const FeatureGateRow = memo(({ item, headerColumns, onRowClick }: Feature
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
         <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
-          <FeatureGateCell item={item} columnKey={column.uid} onRowClick={onRowClick} />
+          <FeatureGateCell
+            item={item}
+            columnKey={column.uid}
+            onRowClick={onRowClick}
+            showInlineId
+          />
         </TableCell>
       ))}
     </TableRow>

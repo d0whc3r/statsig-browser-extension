@@ -1,84 +1,21 @@
 import type { LucideIcon } from 'lucide-react'
 
-import { Copy, Database, Globe, Lock, Mail, MapPin, Monitor, Network, User } from 'lucide-react'
-import { memo, useCallback, useState } from 'react'
+import { Database, Globe, Lock, Mail, MapPin, Monitor, Network, User } from 'lucide-react'
+import { memo } from 'react'
 
 import type { StatsigUser } from '@/src/types/statsig'
 
 import { UserEmptyState } from '@/src/components/sheets/user-details/UserEmptyState'
 import { Badge } from '@/src/components/ui/badge'
-import { Button } from '@/src/components/ui/button'
 import { Card } from '@/src/components/ui/card'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { Separator } from '@/src/components/ui/separator'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/src/components/ui/tooltip'
 import { cn } from '@/src/lib/utils'
-
-const COPIED_TIMEOUT = 2000
 
 interface UserDetailsContentProps {
   userDetails: StatsigUser | null | undefined
   onRefetch: () => void
   error?: string | null
-}
-
-const CopyableValue = ({ value }: { value: string }) => {
-  const [copied, setCopied] = useState(false)
-
-  const copyToClipboard = useCallback(
-    (event: React.MouseEvent | React.KeyboardEvent) => {
-      event.stopPropagation()
-      navigator.clipboard.writeText(value)
-      setCopied(true)
-      setTimeout(() => setCopied(false), COPIED_TIMEOUT)
-    },
-    [value],
-  )
-
-  const handleKeyDown = useCallback(
-    (event: React.KeyboardEvent) => {
-      if (event.key === 'Enter' || event.key === ' ') {
-        event.preventDefault()
-        copyToClipboard(event)
-      }
-    },
-    [copyToClipboard],
-  )
-
-  return (
-    <button
-      className="flex items-center gap-2 group cursor-pointer border-0 bg-transparent p-0 text-left w-full"
-      onClick={copyToClipboard}
-      onKeyDown={handleKeyDown}
-      type="button"
-    >
-      <span className="text-sm font-mono break-all text-foreground" title={value}>
-        {value}
-      </span>
-      <TooltipProvider>
-        <Tooltip open={copied}>
-          <TooltipTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity p-0"
-            >
-              {copied ? (
-                <div className="text-green-500">✓</div>
-              ) : (
-                <Copy className="h-3 w-3 text-muted-foreground" />
-              )}
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>{copied ? 'Copied!' : 'Copy'}</TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </button>
-  )
 }
 
 const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
@@ -104,7 +41,14 @@ const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
             <User className="h-3.5 w-3.5 shrink-0" />
             <span className="w-16 text-xs font-medium uppercase tracking-wider">User ID</span>
             {userDetails.userID ? (
-              <CopyableValue value={userDetails.userID} />
+              <CopyableText
+                value={userDetails.userID}
+                copyLabel="Copy"
+                containerClassName="w-full gap-2"
+                valueClassName="text-sm font-mono break-all text-foreground"
+                buttonClassName="text-muted-foreground"
+                hideButtonUntilHover
+              />
             ) : (
               <span className="font-mono text-muted-foreground/50">No User ID</span>
             )}
@@ -114,7 +58,14 @@ const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
             <Lock className="h-3.5 w-3.5 shrink-0" />
             <span className="w-16 text-xs font-medium uppercase tracking-wider">Stable ID</span>
             {userDetails.stableID ? (
-              <CopyableValue value={userDetails.stableID} />
+              <CopyableText
+                value={userDetails.stableID}
+                copyLabel="Copy"
+                containerClassName="w-full gap-2"
+                valueClassName="text-sm font-mono break-all text-foreground"
+                buttonClassName="text-muted-foreground"
+                hideButtonUntilHover
+              />
             ) : (
               <span className="font-mono text-muted-foreground/50">No Stable ID</span>
             )}
@@ -216,8 +167,13 @@ const PropertySection = ({
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="p-3 flex flex-col gap-1 hover:bg-muted/50 transition-colors">
               <span className="text-xs font-medium text-muted-foreground">{key}</span>
-              <CopyableValue
+              <CopyableText
                 value={typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                copyLabel="Copy"
+                containerClassName="w-full gap-2"
+                valueClassName="text-sm font-mono break-all text-foreground"
+                buttonClassName="text-muted-foreground"
+                hideButtonUntilHover
               />
             </div>
           ))}

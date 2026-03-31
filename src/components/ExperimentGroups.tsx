@@ -4,6 +4,7 @@ import type { Experiment } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { Progress } from '@/src/components/ui/progress'
 
 interface ExperimentGroupsProps {
@@ -36,11 +37,12 @@ export const ExperimentGroups = memo(({ experiment }: ExperimentGroupsProps) => 
             <CardTitle className="text-sm font-semibold">Targeting Gate</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <span className="text-sm font-mono bg-secondary px-2 py-1 rounded">
-                {targetingGateID}
-              </span>
-            </div>
+            <CopyableText
+              value={targetingGateID}
+              copyLabel="Copy Targeting Gate ID"
+              containerClassName="text-sm font-mono bg-secondary px-2 py-1 rounded w-fit"
+              valueClassName="truncate"
+            />
           </CardContent>
         </Card>
       )}
@@ -61,9 +63,12 @@ export const ExperimentGroups = memo(({ experiment }: ExperimentGroupsProps) => 
               <CardContent className="p-4 space-y-3">
                 <div className="space-y-1">
                   <span className="text-xs text-muted-foreground font-medium uppercase">ID</span>
-                  <div className="text-xs font-mono truncate bg-secondary/50 p-1.5 rounded">
-                    {group.id}
-                  </div>
+                  <CopyableText
+                    value={group.id}
+                    copyLabel="Copy Group ID"
+                    containerClassName="text-xs font-mono bg-secondary/50 p-1.5 rounded"
+                    valueClassName="truncate"
+                  />
                 </div>
                 {group.parameterValues && Object.keys(group.parameterValues).length > 0 && (
                   <div className="space-y-1">

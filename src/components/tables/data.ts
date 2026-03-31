@@ -1,5 +1,4 @@
 export const experimentColumns = [
-  { name: 'ID', sortable: false, uid: 'id' },
   { name: 'NAME', sortable: false, uid: 'name' },
   { name: 'HYPOTHESIS', sortable: false, uid: 'hypothesis' },
   { name: 'ALLOCATION', sortable: false, uid: 'allocation' },
@@ -9,7 +8,6 @@ export const experimentColumns = [
 ]
 
 export const dynamicConfigColumns = [
-  { name: 'ID', sortable: false, uid: 'id' },
   { name: 'NAME', sortable: false, uid: 'name' },
   { name: 'TAGS', sortable: false, uid: 'tags' },
   { name: 'ENABLED', sortable: false, uid: 'isEnabled' },
@@ -17,7 +15,6 @@ export const dynamicConfigColumns = [
 ]
 
 export const featureGateColumns = [
-  { name: 'ID', sortable: false, uid: 'id' },
   { name: 'NAME', sortable: false, uid: 'name' },
   { name: 'TAGS', sortable: false, uid: 'tags' },
   { name: 'STATUS', sortable: false, uid: 'status' },

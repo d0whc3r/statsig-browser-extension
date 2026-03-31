@@ -12,11 +12,25 @@ vi.mock(import('@/src/handlers/initial-login'), () => ({
 }))
 
 // Mock useSettingsStorage
-vi.mock(import('@/src/hooks/use-settings-storage'), () => ({
-  useSettingsStorage: vi.fn(() => ({
-    setApiKey: vi.fn(),
-  })),
-}))
+vi.mock(
+  import('@/src/hooks/use-settings-storage'),
+  async (importOriginal) =>
+    ({
+      ...(await importOriginal()),
+      useSettingsStorage: vi.fn(() => ({
+        apiKey: '',
+        isApiKeyLoading: false,
+        localStorageValue: 'statsig_user',
+        reset: vi.fn(async () => {}),
+        setApiKey: vi.fn(async () => {}),
+        setLocalStorageKey: vi.fn(),
+        setStorageType: vi.fn(),
+        setTypeApiKey: vi.fn(),
+        storageType: 'localStorage',
+        typeApiKey: 'write-key',
+      })),
+    }) as any,
+)
 
 describe('AuthForm component', () => {
   const defaultProps = {
