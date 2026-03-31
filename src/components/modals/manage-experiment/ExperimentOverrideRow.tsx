@@ -4,6 +4,7 @@ import { memo, useCallback, useMemo } from 'react'
 import type { AnyOverride, ExperimentOverride, Group } from '@/src/types/statsig'
 
 import { Button } from '@/src/components/ui/button'
+import { CopyableText } from '@/src/components/ui/copyable-text'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 
@@ -30,7 +31,17 @@ export const ExperimentOverrideRow = memo(
       <TableRow>
         <TableCell className="font-medium capitalize">{override.type}</TableCell>
         <TableCell>{override.name}</TableCell>
-        <TableCell>{groupName}</TableCell>
+        <TableCell>
+          <div className="min-w-0">
+            <div className="truncate">{groupName}</div>
+            <CopyableText
+              value={override.groupID}
+              copyLabel="Copy Group ID"
+              containerClassName="text-[11px] font-mono text-muted-foreground"
+              valueClassName="truncate hover:text-foreground transition-colors"
+            />
+          </div>
+        </TableCell>
         {canEdit && (
           <TableCell>
             <Tooltip>
