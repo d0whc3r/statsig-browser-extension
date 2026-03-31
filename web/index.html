@@ -4,37 +4,125 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Statsig Browser Extension</title>
-    <meta name="description" content="Simple overview page for the Statsig Browser Extension." />
+    <meta
+      name="description"
+      content="Inspect feature gates, experiments, and dynamic configs directly in your browser."
+    />
+    <meta property="og:title" content="Statsig Browser Extension" />
+    <meta
+      property="og:description"
+      content="A browser extension for faster Statsig debugging, QA, and product validation."
+    />
+    <meta property="og:image" content="./statsig_full.png" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32.png" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <main class="container">
-      <section class="card">
-        <h1 class="hero-title">Statsig Browser Extension</h1>
-        <p class="hero-subtitle">
-          Manage feature gates, experiments, and dynamic configs directly in your browser.
-        </p>
-        <nav class="nav" aria-label="Main links">
-          <a class="btn primary" href="./privacy-policy.html">Privacy Policy</a>
-          <a class="btn" href="./terms-and-conditions.html">Terms & Conditions</a>
+      <header class="topbar">
+        <a class="brand" href="./index.html">
+          <img class="brand-logo" src="./favicon-32.png" alt="Statsig logo" />
+          <span class="brand-name">Statsig Browser Extension</span>
+        </a>
+        <nav class="topbar-nav" aria-label="Top navigation">
+          <a class="pill" href="./privacy-policy.html">Privacy</a>
+          <a class="pill" href="./terms-and-conditions.html">Terms</a>
+          <a
+            class="pill"
+            href="https://chromewebstore.google.com/detail/statsig-browser-extension/dcoabmhfndkoogomhielncgjbaomfkmh"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Chrome Store</a
+          >
+          <a
+            class="pill"
+            href="https://addons.mozilla.org/en-GB/firefox/addon/statsig-browser-extension/"
+            target="_blank"
+            rel="noopener noreferrer"
+            >Firefox Add-ons</a
+          >
+          <a
+            class="pill"
+            href="https://github.com/d0whc3r/statsig-browser-extension"
+            target="_blank"
+            rel="noopener noreferrer"
+            >GitHub</a
+          >
         </nav>
+      </header>
+
+      <section class="card">
+        <div class="hero">
+          <div>
+            <h1 class="hero-title">Debug and validate Statsig behavior without leaving your app</h1>
+            <p class="hero-subtitle">
+              Inspect gates, experiments, and dynamic configs in real time. Apply controlled
+              overrides to speed up product QA and release confidence.
+            </p>
+            <nav class="nav" aria-label="Main links">
+              <a class="btn primary" href="./privacy-policy.html">Privacy Policy</a>
+              <a class="btn" href="./terms-and-conditions.html">Terms & Conditions</a>
+              <a
+                class="btn subtle"
+                href="https://chromewebstore.google.com/detail/statsig-browser-extension/dcoabmhfndkoogomhielncgjbaomfkmh"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Install on Chrome</a
+              >
+              <a
+                class="btn subtle"
+                href="https://addons.mozilla.org/en-GB/firefox/addon/statsig-browser-extension/"
+                target="_blank"
+                rel="noopener noreferrer"
+                >Install on Firefox</a
+              >
+            </nav>
+            <div class="hero-meta">
+              <span class="chip">Feature Gates</span>
+              <span class="chip">Experiments</span>
+              <span class="chip">Dynamic Configs</span>
+              <span class="chip">Audit Logs</span>
+            </div>
+          </div>
+          <div class="hero-image-wrap">
+            <img
+              class="hero-image"
+              src="./statsig_full.png"
+              alt="Statsig Browser Extension preview"
+            />
+          </div>
+        </div>
       </section>
 
       <section class="card">
-        <h2>What this app does</h2>
-        <ul>
-          <li>View the current status of feature gates and experiments in real time.</li>
-          <li>Inspect dynamic configs and user targeting context.</li>
-          <li>Apply overrides to speed up QA, debugging, and product validation.</li>
-          <li>Review activity through audit logs during test sessions.</li>
-        </ul>
+        <h2>What you can do</h2>
+        <div class="grid-two">
+          <article class="feature-card">
+            <h3>Inspect evaluations</h3>
+            <p>See gate, config, and experiment results with the active user context.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Apply overrides</h3>
+            <p>Force values for tests and demos without changing app source code.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Review audit history</h3>
+            <p>Track recent actions and changes while validating behavior with your team.</p>
+          </article>
+          <article class="feature-card">
+            <h3>Move faster</h3>
+            <p>Reduce back-and-forth between console, app, and QA checks during releases.</p>
+          </article>
+        </div>
       </section>
 
       <section class="card">
-        <h2>Who it is for</h2>
+        <h2>Built for product teams</h2>
         <p>
-          This extension is designed for developers, product managers, and QA teams working with
-          Statsig-enabled applications.
+          The extension is ideal for developers, product managers, and QA engineers working on
+          Statsig-powered applications in staging and production-like environments.
         </p>
       </section>
 
