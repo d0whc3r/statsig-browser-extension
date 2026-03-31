@@ -1,3 +1,13 @@
+# [1.3.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.2.2...v1.3.0) (2026-03-31)
+
+### Bug Fixes
+
+- Merge pull request [#43](https://github.com/d0whc3r/statsig-browser-extension/issues/43) from d0whc3r/feat/tools ([f17537d](https://github.com/d0whc3r/statsig-browser-extension/commit/f17537db6dc889dda1bfea5d0a4dea49716d2d88))
+
+### Features
+
+- new page ([9ff62eb](https://github.com/d0whc3r/statsig-browser-extension/commit/9ff62ebab9c570a52d68f59add6a8ca8f9d1593f))
+
 ## [1.2.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.2.1...v1.2.2) (2026-03-31)
 
 ### Bug Fixes
