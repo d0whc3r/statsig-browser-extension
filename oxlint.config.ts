@@ -119,8 +119,6 @@ export default defineConfig({
     'import/no-default-export': 'error',
     'import/no-duplicates': 'error',
     'import/no-named-default': 'warn',
-    'import/no-unresolved': 'error',
-    'import/no-unused-modules': 'warn',
     'max-dependencies': 'off',
     'max-lines': ['warn', MAX_LINES],
     'max-lines-per-function': ['warn', MAX_LINES_PER_FUNCTION],
@@ -146,13 +144,6 @@ export default defineConfig({
     ],
     'no-named-export': 'allow',
     'no-nested-ternary': 'off',
-    'no-restricted-syntax': [
-      'error',
-      {
-        message: 'Export objects are not allowed. Use inline exports instead.',
-        selector: 'ExportNamedDeclaration[declaration=null][source=null]',
-      },
-    ],
     'no-ternary': 'allow',
     'prefer-default-export': 'off',
     'sort-imports': 'off',
@@ -161,9 +152,5 @@ export default defineConfig({
     'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
     'unicorn/no-nested-ternary': 'error',
     'unicorn/no-null': 'off',
-    'unicorn/prevent-abbreviations': [
-      'warn',
-      { allowList: { Params: true, Props: true, Ref: true, params: true, props: true, ref: true } },
-    ],
   },
 })

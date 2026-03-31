@@ -4,5 +4,5 @@
     "types": ["chrome", "node"]
   },
   "include": ["src/**/*", "entrypoints/**/*", "types/**/*", ".wxt/wxt.d.ts"],
-  "exclude": [".output", "src/tests"]
+  "exclude": [".output", "src/tests", "**/*.test.*", "**/*.spec.*"]
 }
