@@ -2,20 +2,15 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+The following versions are currently receiving security updates:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 1.0.x   | :white_check_mark: |
-| < 1.0   | :x:                |
+| 1.3.x   | :white_check_mark: |
+| < 1.3   | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you discover a security vulnerability, please **do not** open a public issue. Instead, report it privately by opening a [GitHub Security Advisory](https://github.com/d0whc3r/statsig-browser-extension/security/advisories/new).
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-rejected, etc.
-
-If you discover a security vulnerability, please send an email to [INSERT EMAIL ADDRESS]. All security vulnerabilities will be promptly addressed.
+You can expect an initial response within 72 hours. If the vulnerability is confirmed, a fix will be released as soon as possible and you will be credited in the release notes. If the report is rejected, you will receive an explanation.
