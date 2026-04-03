@@ -1,4 +1,4 @@
-import { memo } from 'react'
+import { memo, useEffect, useRef } from 'react'
 
 import type { AuditLog } from '@/src/types/statsig'
 
@@ -40,17 +40,40 @@ const Footer = ({
   isFetchingNextPage: boolean
   onLoadMore: () => void
 }) => {
+  const loadMoreRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
+          onLoadMore()
+        }
+      },
+      { rootMargin: '100px' },
+    )
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current)
+    }
+
+    return () => {
+      observer.disconnect()
+    }
+  }, [hasNextPage, isFetchingNextPage, onLoadMore])
+
   if (hasNextPage) {
     return (
-      <Button
-        variant="secondary"
-        onClick={onLoadMore}
-        disabled={isFetchingNextPage}
-        size="sm"
-        className="h-8 w-full"
-      >
-        {isFetchingNextPage ? 'Loading...' : 'Load More'}
-      </Button>
+      <div ref={loadMoreRef} className="w-full">
+        <Button
+          variant="secondary"
+          onClick={onLoadMore}
+          disabled={isFetchingNextPage}
+          size="sm"
+          className="h-8 w-full"
+        >
+          {isFetchingNextPage ? 'Loading...' : 'Load More'}
+        </Button>
+      </div>
     )
   }
   return (

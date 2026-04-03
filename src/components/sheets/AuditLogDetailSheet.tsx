@@ -4,6 +4,13 @@ import { useCallback, useMemo } from 'react'
 import type { PaginatedResponse } from '@/src/hooks/use-audit-logs'
 import type { AuditLog } from '@/src/types/statsig'
 
+import {
+  EntityDetailsContainer,
+  EntityDetailsDivider,
+  EntityDetailsField,
+  EntityDetailsHeader,
+  EntityDetailsSection,
+} from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { CopyableText } from '@/src/components/ui/copyable-text'
@@ -95,29 +102,26 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
   return (
     <ScrollArea className="flex-1 min-h-0">
       <div className="p-4 space-y-4">
-        <div className="bg-muted/30 rounded-lg border border-border/50 overflow-hidden">
-          <div className="flex flex-col gap-px bg-border/50">
-            <div className="bg-background p-3">
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-                Action
-              </h3>
+        <EntityDetailsContainer>
+          <EntityDetailsHeader>
+            <EntityDetailsField label="Action">
               <Badge variant={getActionTypeColor(auditLog.actionType)} className="rounded-sm px-2">
                 {auditLog.actionType}
               </Badge>
-            </div>
-            <div className="bg-background p-3">
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-                Date
-              </h3>
+            </EntityDetailsField>
+
+            <EntityDetailsDivider />
+
+            <EntityDetailsField label="Date">
               <div className="flex flex-col">
                 <span className="text-xs font-medium">{auditLog.date}</span>
                 <span className="text-[10px] text-muted-foreground font-mono">{auditLog.time}</span>
               </div>
-            </div>
-            <div className="bg-background p-3">
-              <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-                User
-              </h3>
+            </EntityDetailsField>
+
+            <EntityDetailsDivider />
+
+            <EntityDetailsField label="User">
               <div className="flex items-center gap-2.5">
                 <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-primary/20">
                   {auditLog.updatedBy.charAt(0).toUpperCase()}
@@ -129,27 +133,26 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
                   </span>
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
+            </EntityDetailsField>
+          </EntityDetailsHeader>
 
-        <div className="space-y-2">
-          <h3 className="text-sm font-semibold px-1">Details</h3>
-          <div className="bg-muted/50 rounded-md p-3 border border-border/50 overflow-x-auto">
-            <pre className="text-[10px] font-mono whitespace-pre-wrap break-all leading-relaxed">
-              {JSON.stringify(
-                {
-                  changeLog: auditLog.changeLog,
-                  changes: auditLog.changes,
-                  tags: auditLog.tags,
-                  targetAppIDs: auditLog.targetAppIDs,
-                },
-                undefined,
-                2,
-              )}
-            </pre>
-          </div>
-        </div>
+          <EntityDetailsSection title="Details">
+            <div className="bg-muted/50 rounded-md p-3 border border-border/50 overflow-x-auto mt-2">
+              <pre className="text-[10px] font-mono whitespace-pre-wrap break-all leading-relaxed">
+                {JSON.stringify(
+                  {
+                    changeLog: auditLog.changeLog,
+                    changes: auditLog.changes,
+                    tags: auditLog.tags,
+                    targetAppIDs: auditLog.targetAppIDs,
+                  },
+                  undefined,
+                  2,
+                )}
+              </pre>
+            </div>
+          </EntityDetailsSection>
+        </EntityDetailsContainer>
       </div>
     </ScrollArea>
   )

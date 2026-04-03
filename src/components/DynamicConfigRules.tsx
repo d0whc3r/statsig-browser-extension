@@ -125,11 +125,6 @@ export const DynamicConfigRules = memo(({ configId }: Props) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-          Rules ({rules.length})
-        </h3>
-      </div>
       <div className="space-y-3">
         {rules.map((rule) => (
           <DynamicConfigRuleCard key={rule.id} rule={rule} />

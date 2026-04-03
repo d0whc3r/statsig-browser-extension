@@ -1,3 +1,4 @@
+import { Beaker, Settings2, ToggleLeft, History } from 'lucide-react'
 import { memo } from 'react'
 
 import { AuditLogs } from '@/src/components/AuditLogs'
@@ -12,14 +13,26 @@ interface MainTabsProps {
 }
 
 export const MainTabs = memo(({ activeTab, onTabChange }: MainTabsProps) => (
-  <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+  <div className="flex-1 flex flex-col min-h-0 overflow-hidden bg-background">
     <Tabs value={activeTab} onValueChange={onTabChange} className="flex-1 flex flex-col min-h-0">
       <div className="px-4 py-2 border-b flex-none">
         <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="experiments">Experiments</TabsTrigger>
-          <TabsTrigger value="dynamic_configs">Dynamic Configs</TabsTrigger>
-          <TabsTrigger value="feature_gates">Feature Gates</TabsTrigger>
-          <TabsTrigger value="audit_logs">Audit Logs</TabsTrigger>
+          <TabsTrigger value="experiments">
+            <Beaker className="w-4 h-4 mr-2" />
+            Experiments
+          </TabsTrigger>
+          <TabsTrigger value="dynamic_configs">
+            <Settings2 className="w-4 h-4 mr-2" />
+            Configs
+          </TabsTrigger>
+          <TabsTrigger value="feature_gates">
+            <ToggleLeft className="w-4 h-4 mr-2" />
+            Gates
+          </TabsTrigger>
+          <TabsTrigger value="audit_logs">
+            <History className="w-4 h-4 mr-2" />
+            Audit Logs
+          </TabsTrigger>
         </TabsList>
       </div>
 

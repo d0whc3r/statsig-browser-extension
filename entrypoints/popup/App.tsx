@@ -18,10 +18,12 @@ export function AppContent() {
   }, [handleLogout])
 
   return (
-    <div className="w-[780px] h-[600px] flex flex-col bg-background text-foreground overflow-hidden">
+    <div className="w-[800px] h-[600px] flex flex-col bg-background text-foreground overflow-hidden">
       <Header onLogout={handleLogoutClick} />
 
-      <MainTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      <main className="flex-1 flex flex-col min-h-0">
+        <MainTabs activeTab={activeTab} onTabChange={handleTabChange} />
+      </main>
 
       <GlobalModals />
     </div>

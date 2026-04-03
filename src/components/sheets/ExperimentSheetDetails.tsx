@@ -4,6 +4,14 @@ import type { Experiment } from '@/src/types/statsig'
 
 import { HealthCheckSection } from '@/src/components/HealthCheckSection'
 import { HypothesisSection } from '@/src/components/HypothesisSection'
+import {
+  EntityDetailsContainer,
+  EntityDetailsDivider,
+  EntityDetailsField,
+  EntityDetailsHeader,
+  EntityDetailsSection,
+  EntityDetailsTags,
+} from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { TimeAgo } from '@/src/components/ui/time-ago'
@@ -39,73 +47,47 @@ export const ExperimentSheetDetails = memo(
     }
 
     return (
-      <div className="space-y-6">
+      <EntityDetailsContainer>
         {/* Status Section */}
-        <div className="space-y-3">
-          <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-            Status
-          </h3>
-          <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg border border-border">
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground mb-1">Status</span>
-              <Badge
-                variant={experiment.status === 'active' ? 'default' : 'secondary'}
-                className="w-fit"
-              >
-                {experiment.status}
-              </Badge>
-            </div>
-            <div className="h-8 w-px bg-border" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground mb-1">Created</span>
-              <span className="text-sm font-medium">
-                <TimeAgo date={experiment.createdTime} />
-              </span>
-            </div>
-            <div className="h-8 w-px bg-border" />
-            <div className="flex flex-col">
-              <span className="text-xs text-muted-foreground mb-1">Updated</span>
-              <span className="text-sm font-medium">
-                <TimeAgo date={experiment.lastModifiedTime} />
-              </span>
-            </div>
-          </div>
-        </div>
+        <EntityDetailsHeader>
+          <EntityDetailsField label="Status">
+            <Badge
+              variant={experiment.status === 'active' ? 'default' : 'secondary'}
+              className="w-fit"
+            >
+              {experiment.status}
+            </Badge>
+          </EntityDetailsField>
+
+          <EntityDetailsDivider />
+
+          <EntityDetailsField label="Created">
+            <TimeAgo date={experiment.createdTime} />
+          </EntityDetailsField>
+
+          <EntityDetailsDivider />
+
+          <EntityDetailsField label="Updated">
+            <TimeAgo date={experiment.lastModifiedTime} />
+          </EntityDetailsField>
+        </EntityDetailsHeader>
 
         {/* Description */}
         {experiment.description && (
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Description
-            </h3>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              {experiment.description}
-            </p>
-          </div>
+          <EntityDetailsSection title="Description">
+            <p>{experiment.description}</p>
+          </EntityDetailsSection>
         )}
 
         {/* Tags */}
-        {experiment.tags && experiment.tags.length > 0 && (
-          <div className="space-y-2">
-            <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
-              Tags
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {experiment.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
-          </div>
-        )}
+        <EntityDetailsTags tags={experiment.tags} />
 
         {/* Health Checks */}
         {experiment.healthChecks && <HealthCheckSection healthChecks={experiment.healthChecks} />}
 
         {/* Hypothesis */}
         {experiment.hypothesis && <HypothesisSection hypothesis={experiment.hypothesis} />}
-      </div>
+      </EntityDetailsContainer>
     )
   },
 )

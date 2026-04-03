@@ -67,18 +67,19 @@ const SearchControls = ({
   actionFilter: string
   onActionFilterChange: (value: string) => void
 }) => (
-  <div className="flex gap-2">
+  <div className="flex gap-2 items-center">
     <div className="relative flex-1">
       <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-3.5 h-3.5" />
       <Input
-        className="w-full pl-9 h-8 text-xs"
+        type="search"
+        className="w-full pl-9 h-9 text-xs"
         placeholder="Search audit logs..."
         value={filterValue}
         onChange={onFilterChange}
       />
     </div>
     <Select value={actionFilter} onValueChange={onActionFilterChange}>
-      <SelectTrigger className="w-[140px] h-8 text-xs">
+      <SelectTrigger className="w-[140px] h-9 text-xs">
         <Filter className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
         <SelectValue placeholder="Filter" />
       </SelectTrigger>

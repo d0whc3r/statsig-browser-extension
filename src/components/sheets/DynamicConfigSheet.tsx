@@ -3,6 +3,13 @@ import { useMemo } from 'react'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
+import {
+  EntityDetailsContainer,
+  EntityDetailsDivider,
+  EntityDetailsField,
+  EntityDetailsHeader,
+  EntityDetailsSection,
+} from '@/src/components/sheets/EntityDetails'
 import { Button } from '@/src/components/ui/button'
 import { CopyableText } from '@/src/components/ui/copyable-text'
 import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
@@ -58,35 +65,33 @@ interface ConfigDetailsProps {
 }
 
 const ConfigMetadata = ({ config }: { config: DynamicConfig }) => (
-  <div className="bg-muted/50 rounded-lg p-3 border border-border space-y-3">
-    <div>
-      <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1">
-        Description
-      </h3>
-      <p className="text-xs leading-relaxed">{config.description || 'No description provided.'}</p>
-    </div>
-
-    <div className="grid grid-cols-2 gap-x-4 gap-y-2 pt-2 border-t border-border/50">
-      <div>
-        <span className="text-[10px] font-semibold text-muted-foreground uppercase">Created</span>
-        <div className="text-xs font-medium truncate">
+  <EntityDetailsContainer>
+    <EntityDetailsHeader>
+      <EntityDetailsField label="Created">
+        <div className="flex items-center gap-1">
           {new Date(config.createdTime).toLocaleDateString()}
-          <span className="text-[10px] text-muted-foreground ml-1 font-normal">
+          <span className="text-[10px] text-muted-foreground font-normal">
             ({config.creatorName})
           </span>
         </div>
-      </div>
-      <div>
-        <span className="text-[10px] font-semibold text-muted-foreground uppercase">Updated</span>
-        <div className="text-xs font-medium truncate">
+      </EntityDetailsField>
+
+      <EntityDetailsDivider />
+
+      <EntityDetailsField label="Updated">
+        <div className="flex items-center gap-1">
           {new Date(config.lastModifiedTime).toLocaleDateString()}
-          <span className="text-[10px] text-muted-foreground ml-1 font-normal">
+          <span className="text-[10px] text-muted-foreground font-normal">
             ({config.lastModifierName})
           </span>
         </div>
-      </div>
-    </div>
-  </div>
+      </EntityDetailsField>
+    </EntityDetailsHeader>
+
+    <EntityDetailsSection title="Description">
+      <p>{config.description || 'No description provided.'}</p>
+    </EntityDetailsSection>
+  </EntityDetailsContainer>
 )
 
 const ConfigDefaultValue = ({ defaultValue }: { defaultValue: unknown }) => (

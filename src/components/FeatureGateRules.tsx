@@ -141,12 +141,9 @@ export const FeatureGateRules = memo(({ featureGateId }: Props) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-md font-medium">Rules ({rules.length})</h3>
-      <div className="space-y-3">
-        {rules.map((rule: FeatureGateRule) => (
-          <FeatureGateRuleCard key={rule.id} rule={rule} />
-        ))}
-      </div>
+      {rules.map((rule: FeatureGateRule) => (
+        <FeatureGateRuleCard key={rule.id} rule={rule} />
+      ))}
     </div>
   )
 })
