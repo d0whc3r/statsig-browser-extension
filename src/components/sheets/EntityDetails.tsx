@@ -1,30 +1,40 @@
 import type { ReactNode } from 'react'
 
 import { Badge } from '@/src/components/ui/badge'
+import { cn } from '@/src/lib/utils'
 
 export function EntityDetailsContainer({ children }: { children: ReactNode }) {
   return <div className="space-y-6">{children}</div>
 }
 
-export function EntityDetailsHeader({ children }: { children: ReactNode }) {
+export function EntityDetailsList({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
   return (
-    <div className="flex items-center gap-4 p-3 bg-muted/30 rounded-lg border border-border overflow-x-auto">
+    <dl className={cn('divide-y divide-border rounded-md border text-sm bg-card', className)}>
       {children}
-    </div>
+    </dl>
   )
 }
 
-export function EntityDetailsField({ label, children }: { label: string; children: ReactNode }) {
+export function EntityDetailsField({ label, children }: { label?: string; children: ReactNode }) {
   return (
-    <div className="flex flex-col min-w-max">
-      <span className="text-xs text-muted-foreground mb-1">{label}</span>
-      <div className="text-sm font-medium flex items-center">{children}</div>
+    <div className="flex items-center justify-between py-3 px-4">
+      {label && <dt className="text-muted-foreground font-medium">{label}</dt>}
+      <dd
+        className={cn(
+          'font-medium flex items-center gap-2 text-right justify-end',
+          !label && 'w-full',
+        )}
+      >
+        {children}
+      </dd>
     </div>
   )
-}
-
-export function EntityDetailsDivider() {
-  return <div className="h-8 w-px bg-border shrink-0" />
 }
 
 export function EntityDetailsSection({ title, children }: { title: string; children: ReactNode }) {
@@ -42,14 +52,12 @@ export function EntityDetailsTags({ tags }: { tags?: string[] }) {
   }
 
   return (
-    <EntityDetailsSection title="Tags">
-      <div className="flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <Badge key={tag} variant="secondary">
-            {tag}
-          </Badge>
-        ))}
-      </div>
-    </EntityDetailsSection>
+    <div className="flex flex-wrap gap-1.5 justify-start w-full">
+      {tags.map((tag) => (
+        <Badge key={tag} variant="secondary" className="px-2 py-0.5 text-xs font-normal">
+          {tag}
+        </Badge>
+      ))}
+    </div>
   )
 }

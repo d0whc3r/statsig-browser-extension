@@ -4,6 +4,7 @@ import type { FeatureGate } from '@/src/types/statsig'
 
 import { BaseOverrideContextCard } from '@/src/components/common/BaseOverrideContextCard'
 import { Button } from '@/src/components/ui/button'
+import { Label } from '@/src/components/ui/label'
 
 import type { AddGateOverrideParams } from './types'
 
@@ -51,25 +52,30 @@ const GateOverrideControls = memo(
     }, [detectedUserId, currentEnvValue, idType, onAddOverride])
 
     return (
-      <div className="flex items-center gap-2">
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 flex-1 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
-          onClick={handlePass}
-          disabled={isPending || isCurrentEnvOverridden}
-        >
-          PASS
-        </Button>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 flex-1 border-destructive/20 text-xs hover:bg-destructive/10 hover:text-destructive"
-          onClick={handleFail}
-          disabled={isPending || isCurrentEnvOverridden}
-        >
-          FAIL
-        </Button>
+      <div className="flex flex-col gap-2 mt-2">
+        <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          Override Value
+        </Label>
+        <div className="flex w-full gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 flex-1 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
+            onClick={handlePass}
+            disabled={isPending || isCurrentEnvOverridden}
+          >
+            PASS
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 flex-1 border-destructive/20 text-xs hover:bg-destructive/10 hover:text-destructive"
+            onClick={handleFail}
+            disabled={isPending || isCurrentEnvOverridden}
+          >
+            FAIL
+          </Button>
+        </div>
       </div>
     )
   },

@@ -6,15 +6,10 @@ import { HealthCheckSection } from '@/src/components/HealthCheckSection'
 import { HypothesisSection } from '@/src/components/HypothesisSection'
 import {
   EntityDetailsContainer,
-  EntityDetailsDivider,
-  EntityDetailsField,
-  EntityDetailsHeader,
   EntityDetailsSection,
   EntityDetailsTags,
 } from '@/src/components/sheets/EntityDetails'
-import { Badge } from '@/src/components/ui/badge'
 import { Skeleton } from '@/src/components/ui/skeleton'
-import { TimeAgo } from '@/src/components/ui/time-ago'
 
 interface ExperimentSheetDetailsProps {
   isLoading: boolean
@@ -48,29 +43,12 @@ export const ExperimentSheetDetails = memo(
 
     return (
       <EntityDetailsContainer>
-        {/* Status Section */}
-        <EntityDetailsHeader>
-          <EntityDetailsField label="Status">
-            <Badge
-              variant={experiment.status === 'active' ? 'default' : 'secondary'}
-              className="w-fit"
-            >
-              {experiment.status}
-            </Badge>
-          </EntityDetailsField>
-
-          <EntityDetailsDivider />
-
-          <EntityDetailsField label="Created">
-            <TimeAgo date={experiment.createdTime} />
-          </EntityDetailsField>
-
-          <EntityDetailsDivider />
-
-          <EntityDetailsField label="Updated">
-            <TimeAgo date={experiment.lastModifiedTime} />
-          </EntityDetailsField>
-        </EntityDetailsHeader>
+        {/* Tags Section */}
+        {experiment.tags && experiment.tags.length > 0 && (
+          <EntityDetailsSection title="Tags">
+            <EntityDetailsTags tags={experiment.tags} />
+          </EntityDetailsSection>
+        )}
 
         {/* Description */}
         {experiment.description && (
@@ -78,9 +56,6 @@ export const ExperimentSheetDetails = memo(
             <p>{experiment.description}</p>
           </EntityDetailsSection>
         )}
-
-        {/* Tags */}
-        <EntityDetailsTags tags={experiment.tags} />
 
         {/* Health Checks */}
         {experiment.healthChecks && <HealthCheckSection healthChecks={experiment.healthChecks} />}

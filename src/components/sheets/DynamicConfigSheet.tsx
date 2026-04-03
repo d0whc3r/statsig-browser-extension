@@ -5,15 +5,15 @@ import type { DynamicConfig } from '@/src/types/statsig'
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
 import {
   EntityDetailsContainer,
-  EntityDetailsDivider,
-  EntityDetailsField,
-  EntityDetailsHeader,
   EntityDetailsSection,
+  EntityDetailsTags,
 } from '@/src/components/sheets/EntityDetails'
+import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { CopyableText } from '@/src/components/ui/copyable-text'
 import { SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { Skeleton } from '@/src/components/ui/skeleton'
+import { TimeAgo } from '@/src/components/ui/time-ago'
 import { useDynamicConfig } from '@/src/hooks/use-dynamic-config'
 import { useUIStore } from '@/src/store/use-ui-store'
 
@@ -26,21 +26,43 @@ interface ConfigHeaderProps {
 
 const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => (
   <div className="flex justify-between items-start gap-4">
-    <div className="space-y-1">
-      <SheetTitle className="text-xl font-bold break-all">
-        {isLoading ? (
-          <Skeleton className="h-6 w-32" />
-        ) : (
-          (config?.name ?? config?.id ?? 'Dynamic Config')
+    <div className="space-y-1.5 flex-1 min-w-0">
+      <div className="flex items-center gap-2 flex-wrap">
+        <SheetTitle className="text-xl font-bold break-all">
+          {isLoading ? (
+            <Skeleton className="h-6 w-32" />
+          ) : (
+            (config?.name ?? config?.id ?? 'Dynamic Config')
+          )}
+        </SheetTitle>
+        {!isLoading && config && (
+          <Badge
+            variant={config.isEnabled ? 'default' : 'destructive'}
+            className="h-5 px-1.5 text-[10px] shrink-0"
+          >
+            {config.isEnabled ? 'Enabled' : 'Disabled'}
+          </Badge>
         )}
-      </SheetTitle>
-      {config?.id && (
-        <CopyableText
-          value={config.id}
-          copyLabel="Copy ID"
-          containerClassName="text-xs text-muted-foreground font-mono"
-        />
-      )}
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        {config?.id && (
+          <CopyableText
+            value={config.id}
+            copyLabel="Copy ID"
+            containerClassName="text-xs text-muted-foreground font-mono"
+          />
+        )}
+        {!isLoading && config && (
+          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+            <span className="flex items-center gap-1">
+              Created <TimeAgo date={config.createdTime} />
+            </span>
+            <span className="flex items-center gap-1">
+              Updated <TimeAgo date={config.lastModifiedTime} />
+            </span>
+          </div>
+        )}
+      </div>
     </div>
     <div className="shrink-0">
       {config?.id && (
@@ -64,35 +86,30 @@ interface ConfigDetailsProps {
   config?: DynamicConfig
 }
 
-const ConfigMetadata = ({ config }: { config: DynamicConfig }) => (
-  <EntityDetailsContainer>
-    <EntityDetailsHeader>
-      <EntityDetailsField label="Created">
-        <div className="flex items-center gap-1">
-          {new Date(config.createdTime).toLocaleDateString()}
-          <span className="text-[10px] text-muted-foreground font-normal">
-            ({config.creatorName})
-          </span>
-        </div>
-      </EntityDetailsField>
+const ConfigMetadata = ({ config }: { config: DynamicConfig }) => {
+  const hasTags = config.tags && config.tags.length > 0
+  const hasDescription = Boolean(config.description)
 
-      <EntityDetailsDivider />
+  if (!hasTags && !hasDescription) {
+    return null
+  }
 
-      <EntityDetailsField label="Updated">
-        <div className="flex items-center gap-1">
-          {new Date(config.lastModifiedTime).toLocaleDateString()}
-          <span className="text-[10px] text-muted-foreground font-normal">
-            ({config.lastModifierName})
-          </span>
-        </div>
-      </EntityDetailsField>
-    </EntityDetailsHeader>
+  return (
+    <EntityDetailsContainer>
+      {hasTags && (
+        <EntityDetailsSection title="Tags">
+          <EntityDetailsTags tags={config.tags} />
+        </EntityDetailsSection>
+      )}
 
-    <EntityDetailsSection title="Description">
-      <p>{config.description || 'No description provided.'}</p>
-    </EntityDetailsSection>
-  </EntityDetailsContainer>
-)
+      {hasDescription && (
+        <EntityDetailsSection title="Description">
+          <p>{config.description}</p>
+        </EntityDetailsSection>
+      )}
+    </EntityDetailsContainer>
+  )
+}
 
 const ConfigDefaultValue = ({ defaultValue }: { defaultValue: unknown }) => (
   <div className="space-y-2">

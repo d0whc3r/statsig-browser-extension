@@ -2,6 +2,7 @@ import React, { memo } from 'react'
 
 import type { FeatureGateRule } from '@/src/types/statsig'
 
+import { EntityDetailsList, EntityDetailsField } from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { CopyableText } from '@/src/components/ui/copyable-text'
@@ -44,11 +45,13 @@ const getBadgeVariant = (
 }
 
 const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
-  <Card className="shadow-sm">
-    <CardHeader className="pb-2">
-      <div className="flex w-full justify-between items-start">
-        <div className="flex-1">
-          <CardTitle className="text-sm font-semibold">{rule.name}</CardTitle>
+  <Card className="shadow-sm overflow-hidden">
+    <CardHeader className="py-3 px-4 bg-muted/30 border-b">
+      <div className="flex w-full justify-between items-start gap-4">
+        <div className="flex-1 min-w-0">
+          <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
+            {rule.name}
+          </CardTitle>
           <CopyableText
             value={`rule_id: ${rule.id}`}
             copyValue={rule.id}
@@ -66,55 +69,51 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
             />
           )}
         </div>
-        <div className="flex flex-col items-end space-y-1">
-          <Badge variant={getBadgeVariant(rule.passPercentage)}>{rule.passPercentage}% Pass</Badge>
-        </div>
+        <Badge variant={getBadgeVariant(rule.passPercentage)} className="shrink-0">
+          {rule.passPercentage}% Pass
+        </Badge>
       </div>
     </CardHeader>
-    <CardContent className="pt-0">
-      <div className="space-y-3">
+    <CardContent className="p-0">
+      <EntityDetailsList className="border-0 rounded-none">
         {/* Pass Percentage Progress Bar */}
-        <div>
-          <div className="mb-1 flex justify-between text-xs text-muted-foreground">
-            <span>Pass Rate</span>
-            <span>{rule.passPercentage}%</span>
+        <EntityDetailsField label="Pass Rate">
+          <div className="flex flex-col gap-1.5 w-32 items-end">
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
+              <div
+                className={cn('h-full', getProgressColor(rule.passPercentage))}
+                style={{ width: `${rule.passPercentage}%` }}
+              />
+            </div>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
-            <div
-              className={cn('h-full', getProgressColor(rule.passPercentage))}
-              style={{ width: `${rule.passPercentage}%` }}
-            />
-          </div>
-        </div>
+        </EntityDetailsField>
 
         {/* Environments */}
         {rule.environments && rule.environments.length > 0 && (
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Environments</p>
-            <div className="flex flex-wrap gap-1">
+          <EntityDetailsField label="Environments">
+            <div className="flex flex-wrap gap-1 justify-end">
               {rule.environments.map((env) => (
                 <Badge key={env} variant="outline" className="text-xs">
                   {env}
                 </Badge>
               ))}
             </div>
-          </div>
+          </EntityDetailsField>
         )}
 
         {/* Conditions */}
         {rule.conditions && rule.conditions.length > 0 && (
-          <div>
-            <p className="mb-2 text-xs font-medium text-muted-foreground">Conditions</p>
-            <div className="flex flex-wrap gap-1">
+          <EntityDetailsField label="Conditions">
+            <div className="flex flex-wrap gap-1 justify-end">
               {rule.conditions.map((condition) => (
                 <Badge key={JSON.stringify(condition)} variant="secondary" className="text-xs">
                   {getConditionLabel(condition.type)}
                 </Badge>
               ))}
             </div>
-          </div>
+          </EntityDetailsField>
         )}
-      </div>
+      </EntityDetailsList>
     </CardContent>
   </Card>
 ))

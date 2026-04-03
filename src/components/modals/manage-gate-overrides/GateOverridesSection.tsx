@@ -67,7 +67,7 @@ const GateOverridesManager = ({
   } = useGateOverridesLogic(currentItemId, overrides, featureGate)
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 mt-4">
       <PageContextCard
         detectedUser={detectedUser ?? undefined}
         detectedUserId={detectedUserId ?? ''}

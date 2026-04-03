@@ -70,10 +70,10 @@ export function SharedOverridesTable<T>({
   const hasOverrides = items.length > 0
 
   return (
-    <div className="space-y-2">
-      <div className="rounded-md border">
+    <div className="space-y-3">
+      <div className="rounded-md border bg-card shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>{headers}</TableRow>
           </TableHeader>
           <TableBody>

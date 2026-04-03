@@ -62,29 +62,33 @@ export const BaseOverrideContextCard = memo(
         )}
 
         {isDetectedUserOverridden && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            <span className="text-[10px] text-muted-foreground w-full mb-0.5">
-              Active overrides for this user:
+          <div className="mt-4 flex flex-col gap-2">
+            <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+              Active Overrides
             </span>
-            {detectedUserOverrides.map((override) => (
-              <Badge
-                key={override.environment ?? 'global'}
-                variant="secondary"
-                className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
-              >
-                <CheckCircle2 className="mr-1 h-3 w-3" />
-                {override.environment ?? 'Global'}
-              </Badge>
-            ))}
+            <div className="flex flex-wrap gap-1.5">
+              {detectedUserOverrides.map((override) => (
+                <Badge
+                  key={override.environment ?? 'global'}
+                  variant="secondary"
+                  className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
+                >
+                  <CheckCircle2 className="mr-1 h-3 w-3" />
+                  {override.environment ?? 'Global'}
+                </Badge>
+              ))}
+            </div>
           </div>
         )}
 
         {canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
-          <div className="mt-3 space-y-3">
-            <div className="flex flex-col gap-1.5">
-              <Label className="text-xs text-muted-foreground">Override Environment</Label>
+          <div className="mt-5 space-y-4 border-t pt-4">
+            <div className="flex flex-col gap-2">
+              <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                Environment
+              </Label>
               <Select value={environment} onValueChange={setEnvironment}>
-                <SelectTrigger className="h-8 text-xs w-full">
+                <SelectTrigger className="h-8 text-xs w-full bg-background">
                   <SelectValue placeholder="Select environment" />
                 </SelectTrigger>
                 <SelectContent>

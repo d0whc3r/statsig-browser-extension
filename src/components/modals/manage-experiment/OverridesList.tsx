@@ -53,8 +53,10 @@ const UserOverridesTable = memo(
     )
 
     return (
-      <div className="space-y-2">
-        <h4 className="text-sm font-medium">User Overrides</h4>
+      <div className="space-y-3">
+        <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+          User Overrides
+        </h4>
         <SharedOverridesTable
           items={overrides}
           isCurrentUserPredicate={isCurrentUserPredicate}
@@ -89,11 +91,13 @@ interface GateOverridesTableProps {
 
 const GateOverridesTable = memo(
   ({ canEdit, isPending, overrides, groups, onDelete }: GateOverridesTableProps) => (
-    <div className="space-y-2">
-      <h4 className="text-sm font-medium">Gate/Segment Overrides</h4>
-      <div className="rounded-md border">
+    <div className="space-y-3 mt-8">
+      <h4 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+        Gate/Segment Overrides
+      </h4>
+      <div className="rounded-md border bg-card shadow-sm overflow-hidden">
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead>Type</TableHead>
               <TableHead>Name</TableHead>

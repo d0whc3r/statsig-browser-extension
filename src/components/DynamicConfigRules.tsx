@@ -2,6 +2,11 @@ import React, { memo } from 'react'
 
 import type { DynamicConfigRule } from '@/src/types/statsig'
 
+import {
+  EntityDetailsList,
+  EntityDetailsField,
+  EntityDetailsSection,
+} from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { CopyableText } from '@/src/components/ui/copyable-text'
@@ -20,8 +25,8 @@ interface DynamicConfigRuleCardProps {
 const FULL_PASS_PERCENTAGE = 100
 
 const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
-  <Card className="overflow-hidden">
-    <CardHeader className="py-3 px-4 bg-muted/30">
+  <Card className="overflow-hidden shadow-sm">
+    <CardHeader className="py-3 px-4 bg-muted/30 border-b">
       <div className="flex justify-between items-start gap-4">
         <div className="flex-1 min-w-0">
           <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
@@ -59,43 +64,46 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
         </Badge>
       </div>
     </CardHeader>
-    <CardContent className="p-4 space-y-4">
+    <CardContent className="p-0">
+      <EntityDetailsList className="border-0 rounded-none">
+        {/* Environments */}
+        {rule.environments && rule.environments.length > 0 && (
+          <EntityDetailsField label="Environments">
+            <div className="flex flex-wrap gap-1 justify-end">
+              {rule.environments.map((env) => (
+                <Badge key={env} variant="outline" className="text-xs">
+                  {env}
+                </Badge>
+              ))}
+            </div>
+          </EntityDetailsField>
+        )}
+
+        {/* Conditions */}
+        {rule.conditions && rule.conditions.length > 0 && (
+          <EntityDetailsField label="Conditions">
+            <div className="flex flex-wrap gap-1 justify-end">
+              {rule.conditions.map((condition) => (
+                <Badge key={`${rule.id}-${condition.type}`} variant="secondary" className="text-xs">
+                  {getConditionLabel(condition.type)}
+                </Badge>
+              ))}
+            </div>
+          </EntityDetailsField>
+        )}
+      </EntityDetailsList>
+
       {/* Return Value */}
       {rule.returnValue && (
-        <div className="space-y-1.5">
-          <p className="text-xs font-medium text-muted-foreground">Return Value</p>
-          <div className="rounded-md border bg-muted p-2 overflow-auto max-h-[200px]">
-            <pre className="text-[10px] font-mono whitespace-pre-wrap break-all">
-              {JSON.stringify(rule.returnValue, undefined, 2)}
-            </pre>
-          </div>
-        </div>
-      )}
-
-      {/* Environments */}
-      {rule.environments && rule.environments.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs font-medium text-muted-foreground">Environments</p>
-          <div className="flex flex-wrap gap-1">
-            {rule.environments.map((env) => (
-              <Badge key={env} variant="outline" className="text-xs">
-                {env}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Conditions */}
-      {rule.conditions && rule.conditions.length > 0 && (
-        <div>
-          <p className="mb-2 text-xs font-medium text-muted-foreground">Conditions</p>
-          <div className="flex flex-wrap gap-1">
-            {rule.conditions.map((condition) => (
-              <Badge key={`${rule.id}-${condition.type}`} variant="secondary" className="text-xs">
-                {getConditionLabel(condition.type)}
-              </Badge>
-            ))}
+        <div className="px-4 pb-4">
+          <div className="pt-2">
+            <EntityDetailsSection title="Return Value">
+              <div className="rounded-md border bg-muted p-2 overflow-auto max-h-[200px] mt-1">
+                <pre className="text-[10px] font-mono whitespace-pre-wrap break-all">
+                  {JSON.stringify(rule.returnValue, undefined, 2)}
+                </pre>
+              </div>
+            </EntityDetailsSection>
           </div>
         </div>
       )}

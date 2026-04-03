@@ -4,6 +4,7 @@ import type { Experiment, Group } from '@/src/types/statsig'
 
 import { BaseOverrideContextCard } from '@/src/components/common/BaseOverrideContextCard'
 import { Button } from '@/src/components/ui/button'
+import { Label } from '@/src/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -73,31 +74,36 @@ const ExperimentOverrideControls = memo(
     }, [detectedUserId, selectedGroupId, currentEnvValue, idType, onAddOverride])
 
     return (
-      <div className="flex items-center gap-2">
-        <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
-          <SelectTrigger
-            className="h-8 w-full bg-background"
-            aria-label="Select group for detected user"
+      <div className="flex flex-col gap-2 mt-2">
+        <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+          Override Group
+        </Label>
+        <div className="flex items-center gap-2">
+          <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+            <SelectTrigger
+              className="h-8 w-full bg-background"
+              aria-label="Select group for detected user"
+            >
+              <SelectValue placeholder="Select group" />
+            </SelectTrigger>
+            <SelectContent>
+              {groups.map((group) => (
+                <SelectItem key={group.name} value={group.name}>
+                  {group.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
+            onClick={handleOverride}
+            disabled={isPending || !selectedGroupId || isCurrentEnvOverridden}
           >
-            <SelectValue placeholder="Select group" />
-          </SelectTrigger>
-          <SelectContent>
-            {groups.map((group) => (
-              <SelectItem key={group.name} value={group.name}>
-                {group.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Button
-          size="sm"
-          variant="outline"
-          className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
-          onClick={handleOverride}
-          disabled={isPending || !selectedGroupId || isCurrentEnvOverridden}
-        >
-          {isCurrentEnvOverridden ? 'Overridden' : 'Override'}
-        </Button>
+            {isCurrentEnvOverridden ? 'Overridden' : 'Override'}
+          </Button>
+        </div>
       </div>
     )
   },

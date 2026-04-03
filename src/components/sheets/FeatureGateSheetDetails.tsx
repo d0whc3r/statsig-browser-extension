@@ -5,14 +5,9 @@ import type { FeatureGate } from '@/src/types/statsig'
 
 import {
   EntityDetailsContainer,
-  EntityDetailsDivider,
-  EntityDetailsField,
-  EntityDetailsHeader,
   EntityDetailsSection,
   EntityDetailsTags,
 } from '@/src/components/sheets/EntityDetails'
-import { Badge } from '@/src/components/ui/badge'
-import { TimeAgo } from '@/src/components/ui/time-ago'
 
 interface FeatureGateSheetDetailsProps {
   isLoading: boolean
@@ -38,34 +33,12 @@ export const FeatureGateSheetDetails = memo(
 
     return (
       <EntityDetailsContainer>
-        {/* Status Section */}
-        <EntityDetailsHeader>
-          <EntityDetailsField label="Status">
-            <Badge
-              variant={featureGate?.status === 'In Progress' ? 'secondary' : 'outline'}
-              className="w-fit"
-            >
-              {featureGate?.status}
-            </Badge>
-          </EntityDetailsField>
-
-          <EntityDetailsDivider />
-
-          <EntityDetailsField label="Enabled">
-            <Badge variant={featureGate?.isEnabled ? 'default' : 'destructive'} className="w-fit">
-              {featureGate?.isEnabled ? 'Enabled' : 'Disabled'}
-            </Badge>
-          </EntityDetailsField>
-
-          <EntityDetailsDivider />
-
-          <EntityDetailsField label="Last Updated">
-            <TimeAgo date={featureGate?.lastModifiedTime ?? Date.now()} />
-          </EntityDetailsField>
-        </EntityDetailsHeader>
-
         {/* Tags Section */}
-        <EntityDetailsTags tags={featureGate?.tags} />
+        {featureGate?.tags && featureGate.tags.length > 0 && (
+          <EntityDetailsSection title="Tags">
+            <EntityDetailsTags tags={featureGate.tags} />
+          </EntityDetailsSection>
+        )}
 
         {/* Description */}
         {featureGate?.description && (
