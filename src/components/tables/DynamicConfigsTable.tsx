@@ -1,106 +1,60 @@
-import { useCallback } from 'react'
+import type { DynamicConfig } from '@/src/types/statsig'
 
-import { BottomContent } from '@/src/components/tables/BottomContent'
 import { dynamicConfigColumns } from '@/src/components/tables/data'
 import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
-import { TopContent } from '@/src/components/tables/TopContent'
-import { Button } from '@/src/components/ui/button'
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
-import { useDynamicConfigsTableLogic } from '@/src/hooks/use-dynamic-configs-table-logic'
+import { EntityTable } from '@/src/components/tables/EntityTable'
+import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
+import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
+import {
+  dynamicConfigRowsPerPageStorage,
+  dynamicConfigVisibleColumnsStorage,
+} from '@/src/lib/storage'
 
 export function DynamicConfigsTable() {
   const {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useDynamicConfigs()
+
+  const tableLogic = useEntityTableLogic<DynamicConfig>({
+    columns: dynamicConfigColumns,
+    data,
+    entityType: 'dynamic_config',
     error,
     fetchNextPage,
-    filterValue,
-    handleRefetch,
-    handleStatusFilter,
-    handleVisibleColumns,
+    fusedKeys: ['name', 'id', 'tags'],
     hasNextPage,
-    headerColumns,
     isError,
     isFetchingNextPage,
     isLoading,
-    items,
-    onRowsPerPageChange,
-    onSearchChange,
-    page,
-    pages,
-    rowsPerPage,
-    setCurrentConfig,
-    setFilterValue,
-    setPage,
-    statusFilter,
-    totalConfigs,
-    visibleColumns,
-  } = useDynamicConfigsTableLogic()
-
-  const handleFetchNextPage = useCallback(() => {
-    void fetchNextPage()
-  }, [fetchNextPage])
+    refetch,
+    rowsPerPageStorage: dynamicConfigRowsPerPageStorage,
+    visibleColumnsStorage: dynamicConfigVisibleColumnsStorage,
+  })
 
   return (
-    <div className="flex flex-col h-full">
-      <div className="flex-none p-4 pb-0">
-        <TopContent
-          filterValue={filterValue}
-          onRowsPerPageChange={onRowsPerPageChange}
-          onSearchChange={onSearchChange}
-          rowsPerPage={rowsPerPage}
-          setFilterValue={setFilterValue}
-          setStatusFilter={handleStatusFilter}
-          setVisibleColumns={handleVisibleColumns}
-          statusFilter={statusFilter}
-          total={totalConfigs}
-          type="dynamicConfigs"
-          visibleColumns={new Set(visibleColumns)}
-          columns={dynamicConfigColumns}
-        />
-      </div>
-
-      <div className="flex-1 overflow-auto min-h-0 p-4">
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {headerColumns.map((column) => (
-                  <TableHead
-                    key={column.uid}
-                    className={column.uid === 'actions' ? 'text-right' : ''}
-                  >
-                    {column.name}
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              <DynamicConfigsTableBody
-                error={error}
-                handleRetry={handleRefetch}
-                headerColumns={headerColumns}
-                isError={isError}
-                isLoading={isLoading}
-                items={items}
-                setCurrentConfig={setCurrentConfig}
-              />
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
-      <div className="flex-none p-4 pt-0 flex flex-col gap-4">
-        <BottomContent page={page} setPage={setPage} total={pages} />
-        {hasNextPage && (
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={handleFetchNextPage}
-            disabled={isFetchingNextPage}
-          >
-            {isFetchingNextPage ? 'Loading more...' : 'Load More Dynamic Configs'}
-          </Button>
-        )}
-      </div>
-    </div>
+    <EntityTable
+      {...tableLogic}
+      columns={dynamicConfigColumns}
+      type="dynamicConfigs"
+      totalItems={tableLogic.totalItems}
+      loadMoreText="Load More Dynamic Configs"
+    >
+      <DynamicConfigsTableBody
+        error={tableLogic.error}
+        onRetry={tableLogic.handleRefetch}
+        headerColumns={tableLogic.headerColumns}
+        isError={tableLogic.isError}
+        isLoading={tableLogic.isLoading}
+        items={tableLogic.items}
+        setCurrentConfig={tableLogic.setCurrentEntity}
+      />
+    </EntityTable>
   )
 }

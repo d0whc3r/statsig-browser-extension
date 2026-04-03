@@ -1,11 +1,9 @@
-import { ChevronDown, ChevronUp } from 'lucide-react'
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback } from 'react'
 
 import type { AnyOverride, ExperimentOverride, Group, UserIDOverride } from '@/src/types/statsig'
 
-import { ConfirmDialog } from '@/src/components/common/ConfirmDialog'
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
-import { Button } from '@/src/components/ui/button'
+import { SharedOverridesTable } from '@/src/components/common/SharedOverridesTable'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import {
   Table,
@@ -29,124 +27,50 @@ interface UserOverridesTableProps {
 
 const UserOverridesTable = memo(
   ({ canEdit, isPending, overrides, groups, onDelete }: UserOverridesTableProps) => {
-    const [showOthers, setShowOthers] = useState(false)
-    const [confirmDelete, setConfirmDelete] = useState<AnyOverride | null>(null)
-
-    const toggleOthers = useCallback(() => {
-      setShowOthers((prev) => !prev)
-    }, [])
-
-    const { currentUserOverrides, otherOverrides } = useMemo(() => {
-      const current = overrides.filter((overrideItem) => overrideItem.isCurrentUser)
-      const others = overrides.filter((overrideItem) => !overrideItem.isCurrentUser)
-      return { currentUserOverrides: current, otherOverrides: others }
-    }, [overrides])
-
-    const handleDeleteClick = useCallback(
-      (override: UserIDOverride & { isCurrentUser?: boolean }) => {
-        if (override.isCurrentUser) {
-          onDelete(override)
-        } else {
-          setConfirmDelete(override)
-        }
-      },
-      [onDelete],
+    const isCurrentUserPredicate = useCallback(
+      (item: UserIDOverride & { isCurrentUser?: boolean }) => Boolean(item.isCurrentUser),
+      [],
     )
 
-    const handleConfirmDelete = useCallback(() => {
-      if (confirmDelete) {
-        onDelete(confirmDelete)
-        setConfirmDelete(null)
-      }
-    }, [confirmDelete, onDelete])
-
-    const handleCloseConfirm = useCallback(() => {
-      setConfirmDelete(null)
-    }, [])
+    const renderRow = useCallback(
+      (
+        override: UserIDOverride & { isCurrentUser?: boolean },
+        onDeleteClick: (
+          item: UserIDOverride & { isCurrentUser?: boolean },
+          isCurrentUser: boolean,
+        ) => void,
+      ) => (
+        <OverrideRow
+          key={`${override.groupID}-${override.ids?.join(',')}`}
+          override={override}
+          canEdit={canEdit}
+          isPending={isPending}
+          onDelete={onDeleteClick}
+          groups={groups}
+        />
+      ),
+      [canEdit, isPending, groups],
+    )
 
     return (
       <div className="space-y-2">
         <h4 className="text-sm font-medium">User Overrides</h4>
-        <div className="rounded-md border">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>IDs</TableHead>
-                <TableHead>Environment</TableHead>
-                <TableHead>ID Type</TableHead>
-                <TableHead>Group</TableHead>
-                {canEdit && <TableHead className="w-[50px]" />}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {currentUserOverrides.length > 0 || otherOverrides.length > 0 ? (
-                <>
-                  {currentUserOverrides.map((override) => (
-                    <OverrideRow
-                      key={`${override.groupID}-${override.ids?.join(',')}`}
-                      override={override}
-                      canEdit={canEdit}
-                      isPending={isPending}
-                      onDelete={handleDeleteClick}
-                      groups={groups}
-                    />
-                  ))}
-                  {showOthers &&
-                    otherOverrides.map((override) => (
-                      <OverrideRow
-                        key={`${override.groupID}-${override.ids?.join(',')}`}
-                        override={override}
-                        canEdit={canEdit}
-                        isPending={isPending}
-                        onDelete={handleDeleteClick}
-                        groups={groups}
-                      />
-                    ))}
-                </>
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={canEdit ? 5 : 4} className="h-24 text-center">
-                    <div className="flex justify-center">
-                      <GeneralEmptyState variant="override" entityName="item" />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
-
-        {otherOverrides.length > 0 && (
-          <div className="flex justify-center pt-2">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-xs text-muted-foreground"
-              onClick={toggleOthers}
-            >
-              {showOthers ? (
-                <>
-                  <ChevronUp className="mr-2 h-3 w-3" />
-                  Hide {otherOverrides.length} other overrides
-                </>
-              ) : (
-                <>
-                  <ChevronDown className="mr-2 h-3 w-3" />
-                  Show {otherOverrides.length} other overrides
-                </>
-              )}
-            </Button>
-          </div>
-        )}
-
-        <ConfirmDialog
-          isOpen={Boolean(confirmDelete)}
-          onClose={handleCloseConfirm}
-          onConfirm={handleConfirmDelete}
-          title="Delete Override"
-          description="This override is for another user. Are you sure you want to delete it?"
-          confirmText="Delete"
-          variant="destructive"
+        <SharedOverridesTable
+          items={overrides}
+          isCurrentUserPredicate={isCurrentUserPredicate}
+          onDeleteConfirm={onDelete}
+          colSpan={canEdit ? 5 : 4}
+          emptyEntityName="item"
+          headers={
+            <>
+              <TableHead>IDs</TableHead>
+              <TableHead>Environment</TableHead>
+              <TableHead>ID Type</TableHead>
+              <TableHead>Group</TableHead>
+              {canEdit && <TableHead className="w-[50px]" />}
+            </>
+          }
+          renderRow={renderRow}
         />
       </div>
     )

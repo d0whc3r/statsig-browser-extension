@@ -1,84 +1,17 @@
-import { ExternalLink, Eye, MoreVertical } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import type { FeatureGateColumnKey } from '@/src/components/tables/data'
 import type { FeatureGate } from '@/src/types/statsig'
 
+import { ActionsCell, NameCell, StatusCell, TagsCell } from '@/src/components/tables/CommonCells'
 import { Badge } from '@/src/components/ui/badge'
-import { Button } from '@/src/components/ui/button'
-import { CopyableText } from '@/src/components/ui/copyable-text'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/src/components/ui/dropdown-menu'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface FeatureGateCellProps {
   item: FeatureGate
-  columnKey: FeatureGateColumnKey
+  columnKey: string
   onRowClick: (id: string) => void
   showInlineId: boolean
 }
-
-const FeatureGateActions = ({
-  item,
-  onRowClick,
-}: {
-  item: FeatureGate
-  onRowClick: (id: string) => void
-}) => {
-  const handleRowClick = useCallback(() => {
-    onRowClick(item.id)
-  }, [onRowClick, item.id])
-
-  return (
-    <div className="relative flex justify-end items-center gap-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleRowClick}>
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a
-              href={`https://console.statsig.com/gates/${item.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center"
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Open on Statsig
-            </a>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  )
-}
-
-const FeatureGateStatus = ({ status }: { status: string }) => (
-  <Badge variant={status === 'In Progress' ? 'secondary' : 'outline'} className="capitalize">
-    {status}
-  </Badge>
-)
-
-const FeatureGateTags = ({ tags }: { tags: string[] }) => (
-  <div className="flex flex-wrap gap-1">
-    {tags?.map((tag: string) => (
-      <Badge key={tag} variant="secondary" className="capitalize">
-        {tag}
-      </Badge>
-    ))}
-  </div>
-)
 
 const FeatureGateCellContent = ({
   item,
@@ -88,25 +21,18 @@ const FeatureGateCellContent = ({
 }: FeatureGateCellProps) => {
   switch (columnKey) {
     case 'name': {
-      return (
-        <div className="min-w-0">
-          <div className="cursor-pointer font-medium hover:underline truncate">{item.name}</div>
-          {showInlineId && (
-            <CopyableText
-              value={item.id}
-              copyLabel="Copy ID"
-              containerClassName="text-xs text-muted-foreground font-mono"
-              valueClassName="truncate hover:text-foreground transition-colors"
-            />
-          )}
-        </div>
-      )
+      return <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
     }
     case 'status': {
-      return <FeatureGateStatus status={item.status} />
+      return (
+        <StatusCell
+          status={item.status}
+          variant={item.status === 'In Progress' ? 'secondary' : 'outline'}
+        />
+      )
     }
     case 'tags': {
-      return <FeatureGateTags tags={item.tags} />
+      return <TagsCell tags={item.tags} />
     }
     case 'isEnabled': {
       return (
@@ -116,7 +42,13 @@ const FeatureGateCellContent = ({
       )
     }
     case 'actions': {
-      return <FeatureGateActions item={item} onRowClick={onRowClick} />
+      return (
+        <ActionsCell
+          id={item.id}
+          onRowClick={onRowClick}
+          statsigUrl={`https://console.statsig.com/gates/${item.id}`}
+        />
+      )
     }
     default: {
       return null
@@ -129,7 +61,7 @@ FeatureGateCell.displayName = 'FeatureGateCell'
 
 interface FeatureGateRowProps {
   item: FeatureGate
-  headerColumns: readonly { uid: FeatureGateColumnKey }[]
+  headerColumns: readonly { uid: string }[]
   onRowClick: (id: string) => void
 }
 

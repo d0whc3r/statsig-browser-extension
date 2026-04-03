@@ -13,14 +13,14 @@ interface OverrideRowProps {
   override: UserIDOverride & { isCurrentUser?: boolean }
   canEdit: boolean
   isPending?: boolean
-  onDelete: (override: UserIDOverride & { isCurrentUser?: boolean }) => void
+  onDelete: (override: UserIDOverride & { isCurrentUser?: boolean }, isCurrentUser: boolean) => void
   groups: Group[]
 }
 
 export const OverrideRow = memo(
   ({ override, canEdit, isPending, onDelete, groups }: OverrideRowProps) => {
     const handleDelete = useCallback(() => {
-      onDelete(override)
+      onDelete(override, Boolean(override.isCurrentUser))
     }, [onDelete, override])
 
     const groupName = useMemo(

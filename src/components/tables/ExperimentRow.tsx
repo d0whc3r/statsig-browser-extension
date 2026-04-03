@@ -15,7 +15,7 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface ExperimentCellProps {
   item: Experiment
-  columnKey: ExperimentColumnKey
+  columnKey: string
   onRowClick: (id: string) => void
   showInlineId: boolean
 }
@@ -59,7 +59,7 @@ ExperimentCell.displayName = 'ExperimentCell'
 
 interface ExperimentRowProps {
   item: Experiment
-  headerColumns: readonly { uid: ExperimentColumnKey }[]
+  headerColumns: readonly { uid: string }[]
   onRowClick: (id: string) => void
 }
 

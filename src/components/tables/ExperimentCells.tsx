@@ -1,17 +1,8 @@
-import { ExternalLink, Eye, MoreVertical } from 'lucide-react'
-import { memo, useCallback } from 'react'
+import { memo } from 'react'
 
 import type { Experiment } from '@/src/types/statsig'
 
-import { Badge } from '@/src/components/ui/badge'
-import { Button } from '@/src/components/ui/button'
-import { CopyableText } from '@/src/components/ui/copyable-text'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/src/components/ui/dropdown-menu'
+import { ActionsCell, NameCell, StatusCell, TagsCell } from '@/src/components/tables/CommonCells'
 
 const statusMap: Record<string, string> = {
   abandoned: 'Abandoned',
@@ -42,25 +33,17 @@ interface ExperimentNameCellProps {
 }
 
 export const ExperimentNameCell = memo(({ item, showInlineId }: ExperimentNameCellProps) => (
-  <div className="min-w-0">
-    <div className="cursor-pointer font-medium hover:underline truncate">{item.name}</div>
-    {showInlineId && (
-      <CopyableText
-        value={item.id}
-        copyLabel="Copy ID"
-        containerClassName="text-xs text-muted-foreground font-mono"
-        valueClassName="truncate hover:text-foreground transition-colors"
-      />
-    )}
-  </div>
+  <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
 ))
 
 ExperimentNameCell.displayName = 'ExperimentNameCell'
 
 export const ExperimentStatusCell = memo(({ item }: BaseCellProps) => (
-  <Badge variant={getBadgeVariant(item.status)} className="capitalize">
-    {statusMap[item.status] || item.status}
-  </Badge>
+  <StatusCell
+    status={item.status}
+    variant={getBadgeVariant(item.status)}
+    label={statusMap[item.status] || item.status}
+  />
 ))
 
 ExperimentStatusCell.displayName = 'ExperimentStatusCell'
@@ -71,61 +54,17 @@ export const ExperimentAllocationCell = memo(({ item }: BaseCellProps) => (
 
 ExperimentAllocationCell.displayName = 'ExperimentAllocationCell'
 
-export const ExperimentTagsCell = memo(({ item }: BaseCellProps) => {
-  const { tags } = item
-  return (
-    <div className="flex flex-wrap gap-1">
-      {tags?.map((tag) => (
-        <Badge key={tag} variant="secondary" className="capitalize">
-          {tag}
-        </Badge>
-      ))}
-    </div>
-  )
-})
+export const ExperimentTagsCell = memo(({ item }: BaseCellProps) => <TagsCell tags={item.tags} />)
 
 ExperimentTagsCell.displayName = 'ExperimentTagsCell'
 
-export const ExperimentActionsCell = memo(({ item, onRowClick }: BaseCellProps) => {
-  const handleRowClick = useCallback(() => {
-    onRowClick(item.id)
-  }, [onRowClick, item.id])
-
-  const handleOpenStatsig = useCallback((event: React.MouseEvent) => {
-    event.stopPropagation()
-  }, [])
-
-  return (
-    <div className="relative flex justify-end items-center gap-2">
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-8 w-8 p-0">
-            <span className="sr-only">Open menu</span>
-            <MoreVertical className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleRowClick}>
-            <Eye className="mr-2 h-4 w-4" />
-            View
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
-            <a
-              href={`https://console.statsig.com/experiments/${item.id}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center"
-              onClick={handleOpenStatsig}
-            >
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Open on Statsig
-            </a>
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  )
-})
+export const ExperimentActionsCell = memo(({ item, onRowClick }: BaseCellProps) => (
+  <ActionsCell
+    id={item.id}
+    onRowClick={onRowClick}
+    statsigUrl={`https://console.statsig.com/experiments/${item.id}`}
+  />
+))
 
 ExperimentActionsCell.displayName = 'ExperimentActionsCell'
 

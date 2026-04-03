@@ -1,6 +1,5 @@
 import React from 'react'
 
-import type { DynamicConfigColumnKey } from '@/src/components/tables/data'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRow } from '@/src/components/tables/DynamicConfigRow'
@@ -11,8 +10,8 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface DynamicConfigsTableBodyProps {
   error: unknown
-  handleRetry: () => void
-  headerColumns: readonly { uid: DynamicConfigColumnKey }[]
+  onRetry: () => void
+  headerColumns: readonly { uid: string }[]
   isError: boolean
   isLoading: boolean
   items: DynamicConfig[]
@@ -21,7 +20,7 @@ interface DynamicConfigsTableBodyProps {
 
 export const DynamicConfigsTableBody = ({
   error,
-  handleRetry,
+  onRetry,
   headerColumns,
   isError,
   isLoading,
@@ -41,7 +40,7 @@ export const DynamicConfigsTableBody = ({
             title="Failed to load dynamic configs"
             description={error instanceof Error ? error.message : 'An unknown error occurred'}
           >
-            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2">
+            <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
               Retry
             </Button>
           </GeneralEmptyState>

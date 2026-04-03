@@ -1,6 +1,5 @@
 import React from 'react'
 
-import type { FeatureGateColumnKey } from '@/src/components/tables/data'
 import type { FeatureGate } from '@/src/types/statsig'
 
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
@@ -11,8 +10,8 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface FeatureGatesTableBodyProps {
   error: unknown
-  handleRetry: () => void
-  headerColumns: readonly { uid: FeatureGateColumnKey }[]
+  onRetry: () => void
+  headerColumns: readonly { uid: string }[]
   isError: boolean
   isLoading: boolean
   items: FeatureGate[]
@@ -21,7 +20,7 @@ interface FeatureGatesTableBodyProps {
 
 export const FeatureGatesTableBody = ({
   error,
-  handleRetry,
+  onRetry,
   headerColumns,
   isError,
   isLoading,
@@ -41,7 +40,7 @@ export const FeatureGatesTableBody = ({
             title="Failed to load feature gates"
             description={error instanceof Error ? error.message : 'An unknown error occurred'}
           >
-            <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2">
+            <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
               Retry
             </Button>
           </GeneralEmptyState>

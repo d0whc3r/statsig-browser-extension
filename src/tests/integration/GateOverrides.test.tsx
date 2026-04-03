@@ -159,9 +159,9 @@ describe('Gate Overrides Flow', () => {
     setupMocks()
     const { user } = renderWithProviders(<AppContent />)
 
-    // Switch to Feature Gates tab
-    await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Feature Gates/i }))
+    // Switch to Gates tab
+    await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Gates/i }))
 
     // Wait for gates to load and click one
     expect(await screen.findByText('Test Gate 1')).toBeInTheDocument()
@@ -190,8 +190,8 @@ describe('Gate Overrides Flow', () => {
     const { user } = renderWithProviders(<AppContent />)
 
     // Navigate to overrides
-    await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Feature Gates/i }))
+    await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Gates/i }))
     expect(await screen.findByText('Test Gate 1')).toBeInTheDocument()
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     expect(await screen.findByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
@@ -222,8 +222,8 @@ describe('Gate Overrides Flow', () => {
     const { user } = renderWithProviders(<AppContent />)
 
     // Navigate to overrides
-    await waitFor(() => expect(screen.getByText('Feature Gates')).toBeInTheDocument())
-    await user.click(screen.getByText('Feature Gates'))
+    await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
+    await user.click(screen.getByText('Gates'))
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
     await waitFor(
