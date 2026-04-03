@@ -1,6 +1,6 @@
 {
   "name": "statsig-browser-extension",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "private": true,
   "description": "Manage Statsig feature gates and experiments directly from your browser. View user details, override gates, and debug efficiently.",
   "keywords": [

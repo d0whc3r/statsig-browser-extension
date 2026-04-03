@@ -1,3 +1,18 @@
+# [1.4.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.3.0...v1.4.0) (2026-04-03)
+
+### Bug Fixes
+
+- refactor components ([b76ddfa](https://github.com/d0whc3r/statsig-browser-extension/commit/b76ddfad8c15da985f493d6a692244e392e2fdff))
+- restyle design ([fa3d308](https://github.com/d0whc3r/statsig-browser-extension/commit/fa3d308e7c705ca38a06edeb7d0acd16999d8e96))
+- update detectings ([6cca9b0](https://github.com/d0whc3r/statsig-browser-extension/commit/6cca9b0e4975526dc1b651fae0e60236f93b194c))
+- update tests ([48211d2](https://github.com/d0whc3r/statsig-browser-extension/commit/48211d2645c1a6eb9aa05fc5089980d8cbe92a30))
+- update tests ([c121a03](https://github.com/d0whc3r/statsig-browser-extension/commit/c121a038072a27f782657544329e52427f00fbc3))
+
+### Features
+
+- themes ([89935c0](https://github.com/d0whc3r/statsig-browser-extension/commit/89935c0511ec987d3b4533155e4873e14aaff04e))
+- update components ([25e99b9](https://github.com/d0whc3r/statsig-browser-extension/commit/25e99b99eb6f912144aad617843616e92dde989c))
+
 # [1.3.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.2.2...v1.3.0) (2026-03-31)
 
 ### Bug Fixes
