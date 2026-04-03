@@ -18,8 +18,8 @@ interface TopContentProps {
   total: number
   type: 'experiments' | 'dynamicConfigs' | 'featureGates' | 'auditLogs'
   visibleColumns: Set<string>
-  columns: Column[]
-  statusOptions?: StatusOption[]
+  columns: readonly Column[]
+  statusOptions?: readonly StatusOption[]
 }
 
 export const TopContent = memo(

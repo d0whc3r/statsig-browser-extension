@@ -1,6 +1,6 @@
 import React from 'react'
 
-import type { featureGateColumns } from '@/src/components/tables/data'
+import type { FeatureGateColumnKey } from '@/src/components/tables/data'
 import type { FeatureGate } from '@/src/types/statsig'
 
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
@@ -12,7 +12,7 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 interface FeatureGatesTableBodyProps {
   error: unknown
   handleRetry: () => void
-  headerColumns: typeof featureGateColumns
+  headerColumns: readonly { uid: FeatureGateColumnKey }[]
   isError: boolean
   isLoading: boolean
   items: FeatureGate[]

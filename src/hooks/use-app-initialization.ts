@@ -10,7 +10,7 @@ export function useAppInitialization() {
   const initializeSettings = useSettingsStore((state) => state.initialize)
 
   useEffect(() => {
-    initializeSettings()
+    void initializeSettings()
   }, [initializeSettings])
 
   useEffect(() => {

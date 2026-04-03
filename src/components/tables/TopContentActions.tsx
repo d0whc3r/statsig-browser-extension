@@ -13,10 +13,10 @@ import type { Column, StatusOption } from './table-types'
 
 interface TopContentActionsProps {
   type: string
-  statusOptions?: StatusOption[]
+  statusOptions?: readonly StatusOption[]
   statusFilter: Set<string>
   setStatusFilter: (keys: Set<string>) => void
-  columns: Column[]
+  columns: readonly Column[]
   visibleColumns: Set<string>
   setVisibleColumns: (keys: string[]) => void
 }

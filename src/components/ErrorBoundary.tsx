@@ -14,7 +14,7 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  // eslint-disable-next-line react/state-in-constructor
+  // oxlint-disable-next-line react/state-in-constructor
   public state: State = {
     error: undefined,
     hasError: false,
@@ -29,7 +29,7 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   private readonly handleReload = () => {
-    // eslint-disable-next-line react/no-set-state
+    // oxlint-disable-next-line react/no-set-state
     this.setState({ error: undefined, hasError: false })
     globalThis.location.reload()
   }

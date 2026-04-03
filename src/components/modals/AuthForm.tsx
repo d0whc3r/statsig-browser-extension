@@ -79,6 +79,17 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
     [mutate],
   )
 
+  const handleFormSubmit = useCallback(
+    (
+      event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown
+        ? T
+        : never,
+    ) => {
+      void form.handleSubmit(onSubmit)(event)
+    },
+    [form, onSubmit],
+  )
+
   const renderApiKeyField = useCallback(
     ({ field }: { field: ControllerRenderProps<AuthFormValues, 'apiKey'> }) => (
       <FormItem>
@@ -113,7 +124,7 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
       </DialogHeader>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+        <form onSubmit={handleFormSubmit} className="space-y-4 py-4">
           <FormField control={form.control} name="apiKey" render={renderApiKeyField} />
 
           <DialogFooter>

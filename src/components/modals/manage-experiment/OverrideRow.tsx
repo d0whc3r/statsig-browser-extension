@@ -1,7 +1,7 @@
 import { Trash2 } from 'lucide-react'
 import { memo, useCallback, useMemo } from 'react'
 
-import type { AnyOverride, Group, UserIDOverride } from '@/src/types/statsig'
+import type { Group, UserIDOverride } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
@@ -13,7 +13,7 @@ interface OverrideRowProps {
   override: UserIDOverride & { isCurrentUser?: boolean }
   canEdit: boolean
   isPending?: boolean
-  onDelete: (override: AnyOverride) => void
+  onDelete: (override: UserIDOverride & { isCurrentUser?: boolean }) => void
   groups: Group[]
 }
 

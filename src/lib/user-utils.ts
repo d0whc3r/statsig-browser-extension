@@ -1,29 +1,43 @@
 import type { StatsigUser } from '@/src/types/statsig'
 
+const getStringId = (value: unknown) => {
+  if (typeof value === 'string') {
+    return value
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') {
+    return String(value)
+  }
+}
+
+const getCustomId = (detectedUser: StatsigUser, idType: string) => {
+  const customId = detectedUser.customIDs?.[idType]
+  if (typeof customId === 'string') {
+    return customId
+  }
+
+  const rootId = detectedUser[idType]
+  if (typeof rootId === 'string') {
+    return rootId
+  }
+
+  const nestedCustomId = detectedUser.custom?.[idType]
+  if (typeof nestedCustomId === 'string') {
+    return nestedCustomId
+  }
+}
+
 export const getDetectedUserId = (
   detectedUser?: StatsigUser,
   idType = 'userID',
 ): string | undefined => {
   if (!detectedUser) {
-    return undefined
+    return
   }
+
   if (idType === 'userID') {
-    const id = detectedUser.userID ?? detectedUser.id
-    if (typeof id === 'string') {return id}
-    if (typeof id === 'number' || typeof id === 'boolean') {return String(id)}
-    return undefined
+    return getStringId(detectedUser.userID ?? detectedUser.id)
   }
 
-  const { customIDs, custom } = detectedUser
-
-  const customId = customIDs?.[idType]
-  if (typeof customId === 'string') {return customId}
-
-  const rootId = (detectedUser as Record<string, unknown>)[idType]
-  if (typeof rootId === 'string') {return rootId}
-
-  const cust = custom?.[idType]
-  if (typeof cust === 'string') {return cust}
-
-  return undefined
+  return getCustomId(detectedUser, idType)
 }

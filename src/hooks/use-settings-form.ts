@@ -36,11 +36,20 @@ export const useSettingsForm = () => {
     }
   }, [isSettingsSheetOpen, localStorageValue, storageType, form])
 
-  const handleSave = form.handleSubmit((values: SettingsFormValues) => {
-    setLocalStorageKey(values.localStorageKey)
-    setStorageType(values.storageType)
-    setSettingsSheetOpen(false)
-  })
+  const handleSave = useCallback(
+    (
+      event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown
+        ? T
+        : never,
+    ) => {
+      void form.handleSubmit((values: SettingsFormValues) => {
+        setLocalStorageKey(values.localStorageKey)
+        setStorageType(values.storageType)
+        setSettingsSheetOpen(false)
+      })(event)
+    },
+    [form, setLocalStorageKey, setSettingsSheetOpen, setStorageType],
+  )
 
   const handleClose = useCallback(
     (open: boolean) => {

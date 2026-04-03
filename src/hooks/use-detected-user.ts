@@ -10,6 +10,46 @@ interface DetectedResponse {
   error?: string
 }
 
+interface StatsigDetectionMessage extends DetectedResponse {
+  type: string
+}
+
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const parseDetectedResponse = (value: unknown): DetectedResponse | undefined => {
+  if (!isRecord(value)) {
+    return undefined
+  }
+
+  const response: DetectedResponse = {}
+
+  if (isRecord(value.user)) {
+    response.user = value.user
+  }
+
+  if (isRecord(value.context)) {
+    response.context = value.context
+  }
+
+  if (typeof value.error === 'string') {
+    response.error = value.error
+  }
+
+  return response
+}
+
+const parseDetectionMessage = (value: unknown): StatsigDetectionMessage | undefined => {
+  if (!isRecord(value) || typeof value.type !== 'string') {
+    return undefined
+  }
+
+  return {
+    ...parseDetectedResponse(value),
+    type: value.type,
+  }
+}
+
 export function useDetectedUser() {
   const setDetectedUser = useContextStore((state) => state.setDetectedUser)
   const setDetectedContext = useContextStore((state) => state.setDetectedContext)
@@ -56,11 +96,15 @@ export function useDetectedUser() {
 
       if (activeTabId) {
         try {
-          const response = await browser.tabs.sendMessage(activeTabId, { type: 'GET_STATSIG_USER' })
-          handleResponse(response)
+          const response: unknown = await browser.tabs.sendMessage(activeTabId, {
+            type: 'GET_STATSIG_USER',
+          })
+          handleResponse(parseDetectedResponse(response))
         } catch (error) {
           if (retries > 0) {
-            setTimeout(() => fetchUser(retries - 1, delay * 2), delay)
+            setTimeout(() => {
+              void fetchUser(retries - 1, delay * 2)
+            }, delay)
           } else {
             console.error('Statsig detection error:', error)
             setDetectionError('Connection failed. Please refresh the page.')
@@ -73,23 +117,19 @@ export function useDetectedUser() {
 
   useEffect(() => {
     const handleMessage = (message: unknown) => {
-      if (typeof message === 'object' && message !== null && 'type' in message) {
-        const msg = message as {
-          type: string
-          user?: Record<string, unknown>
-          context?: Record<string, unknown>
-          error?: string
-        }
+      const msg = parseDetectionMessage(message)
+      if (!msg) {
+        return
+      }
 
-        if (msg.type === 'STATSIG_USER_FOUND' && msg.user) {
-          setDetectedUser(msg.user)
-          if (msg.context) {
-            setDetectedContext(msg.context)
-          }
-          setDetectionError(null)
-        } else if (msg.type === 'STATSIG_DETECTED_BUT_ERROR' && msg.error) {
-          setDetectionError(msg.error)
+      if (msg.type === 'STATSIG_USER_FOUND' && msg.user) {
+        setDetectedUser(msg.user)
+        if (msg.context) {
+          setDetectedContext(msg.context)
         }
+        setDetectionError(null)
+      } else if (msg.type === 'STATSIG_DETECTED_BUT_ERROR' && msg.error) {
+        setDetectionError(msg.error)
       }
     }
     browser.runtime.onMessage.addListener(handleMessage)

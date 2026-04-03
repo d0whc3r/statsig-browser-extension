@@ -7,6 +7,26 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { AuditLogFilters } from './audit-logs/AuditLogFilters'
 import { AuditLogList } from './audit-logs/AuditLogList'
 
+const useAuditLogActions = (
+  fetchNextPage: () => Promise<unknown>,
+  refetch: () => Promise<unknown>,
+  setCurrentAuditLogDetail: (auditLogId: string) => void,
+) => {
+  const handleLoadMore = useCallback(() => {
+    void fetchNextPage()
+  }, [fetchNextPage])
+
+  const handleRefresh = useCallback(() => {
+    void refetch()
+  }, [refetch])
+
+  return {
+    handleLoadMore,
+    handleRefresh,
+    setCurrentAuditLogDetail,
+  }
+}
+
 export const AuditLogs = memo(() => {
   const [filterValue, setFilterValue] = useState('')
   const [actionFilter, setActionFilter] = useState('all')
@@ -33,6 +53,11 @@ export const AuditLogs = memo(() => {
   const handleFilterChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterValue(event.target.value)
   }, [])
+  const { handleLoadMore, handleRefresh, setCurrentAuditLogDetail } = useAuditLogActions(
+    fetchNextPage,
+    refetch,
+    setCurrentAuditLog,
+  )
 
   return (
     <div className="w-full overflow-hidden flex flex-col h-full">
@@ -41,7 +66,7 @@ export const AuditLogs = memo(() => {
         onFilterChange={handleFilterChange}
         actionFilter={actionFilter}
         onActionFilterChange={setActionFilter}
-        onRefresh={refetch}
+        onRefresh={handleRefresh}
         isFetching={isFetching}
       />
 
@@ -49,8 +74,8 @@ export const AuditLogs = memo(() => {
         filteredItems={filteredItems}
         filterValue={filterValue}
         actionFilter={actionFilter}
-        onViewDetails={setCurrentAuditLog}
-        onLoadMore={fetchNextPage}
+        onViewDetails={setCurrentAuditLogDetail}
+        onLoadMore={handleLoadMore}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         isLoading={isLoading}

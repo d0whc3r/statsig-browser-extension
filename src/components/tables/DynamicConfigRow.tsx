@@ -1,7 +1,7 @@
 import { ExternalLink, Eye, MoreVertical } from 'lucide-react'
 import React, { memo, useCallback } from 'react'
 
-import type { dynamicConfigColumns } from '@/src/components/tables/data'
+import type { DynamicConfigColumnKey } from '@/src/components/tables/data'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
@@ -17,13 +17,13 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface DynamicConfigRowProps {
   item: DynamicConfig
-  headerColumns: typeof dynamicConfigColumns
+  headerColumns: readonly { uid: DynamicConfigColumnKey }[]
   onRowClick: (id: string) => void
 }
 
 interface DynamicConfigCellProps {
   config: DynamicConfig
-  columnKey: string
+  columnKey: DynamicConfigColumnKey
   onRowClick: (id: string) => void
   onOpenStatsig: (event: React.MouseEvent) => void
   showInlineId: boolean
@@ -78,8 +78,6 @@ DynamicConfigActions.displayName = 'DynamicConfigActions'
 
 const DynamicConfigCell = memo(
   ({ config, columnKey, onRowClick, onOpenStatsig, showInlineId }: DynamicConfigCellProps) => {
-    const cellValue = config[columnKey as keyof DynamicConfig]
-
     switch (columnKey) {
       case 'name': {
         return (
@@ -104,10 +102,9 @@ const DynamicConfigCell = memo(
         )
       }
       case 'tags': {
-        const tags = cellValue as string[]
         return (
           <div className="flex flex-wrap gap-1">
-            {tags?.map((tag: string) => (
+            {config.tags.map((tag) => (
               <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
               </Badge>
@@ -125,10 +122,7 @@ const DynamicConfigCell = memo(
         )
       }
       default: {
-        if (typeof cellValue === 'object' && cellValue !== null) {
-          return <div>{JSON.stringify(cellValue)}</div>
-        }
-        return <div>{String(cellValue)}</div>
+        return null
       }
     }
   },

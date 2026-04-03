@@ -43,11 +43,8 @@ const UserOverridesTable = memo(
     }, [overrides])
 
     const handleDeleteClick = useCallback(
-      (override: AnyOverride) => {
-        // Check if it's a UserIDOverride with isCurrentUser
-        const isCurrentUser =
-          'isCurrentUser' in override && (override as { isCurrentUser?: boolean }).isCurrentUser
-        if (isCurrentUser) {
+      (override: UserIDOverride & { isCurrentUser?: boolean }) => {
+        if (override.isCurrentUser) {
           onDelete(override)
         } else {
           setConfirmDelete(override)
@@ -84,10 +81,9 @@ const UserOverridesTable = memo(
             <TableBody>
               {currentUserOverrides.length > 0 || otherOverrides.length > 0 ? (
                 <>
-                  {currentUserOverrides.map((override, index) => (
+                  {currentUserOverrides.map((override) => (
                     <OverrideRow
-                      // eslint-disable-next-line react/no-array-index-key
-                      key={`${override.groupID}-${override.ids?.join(',') || index}`}
+                      key={`${override.groupID}-${override.ids?.join(',')}`}
                       override={override}
                       canEdit={canEdit}
                       isPending={isPending}
@@ -96,10 +92,9 @@ const UserOverridesTable = memo(
                     />
                   ))}
                   {showOthers &&
-                    otherOverrides.map((override, index) => (
+                    otherOverrides.map((override) => (
                       <OverrideRow
-                        // eslint-disable-next-line react/no-array-index-key
-                        key={`${override.groupID}-${override.ids?.join(',') || index}`}
+                        key={`${override.groupID}-${override.ids?.join(',')}`}
                         override={override}
                         canEdit={canEdit}
                         isPending={isPending}

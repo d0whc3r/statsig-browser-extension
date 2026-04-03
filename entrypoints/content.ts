@@ -15,6 +15,22 @@ let detectedUser: unknown = null
 let detectedContext: unknown = null
 let detectedError: string | null = null
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const parseStatsigUserMessage = (value: unknown): StatsigUserMessage | null => {
+  if (!isRecord(value) || typeof value.type !== 'string') {
+    return null
+  }
+
+  return {
+    context: value.context,
+    error: typeof value.error === 'string' ? value.error : undefined,
+    type: value.type,
+    user: value.user,
+  }
+}
+
 const updateDetectedState = (user: unknown, context: unknown, error: string | null) => {
   detectedUser = user
   detectedContext = context
@@ -57,15 +73,8 @@ const isValidMessage = (event: MessageEvent): StatsigUserMessage | null => {
   if (event.source !== globalThis.window) {
     return null
   }
-  const data = event.data as unknown
-  if (typeof data !== 'object' || data === null || !('type' in data)) {
-    return null
-  }
-  const msg = data as StatsigUserMessage
-  if (!msg.type) {
-    return null
-  }
-  return msg
+
+  return parseStatsigUserMessage(event.data)
 }
 
 const createMessageHandler = (sendResponse: (response: unknown) => void) => {
@@ -136,11 +145,8 @@ const handleRuntimeMessage = (
   _sender: Runtime.MessageSender,
   sendResponse: (response: unknown) => void,
 ) => {
-  if (typeof message !== 'object' || message === null || !('type' in message)) {
-    return true
-  }
-  const msg = message as { type: string }
-  if (!msg.type) {
+  const msg = parseStatsigUserMessage(message)
+  if (!msg) {
     return true
   }
 

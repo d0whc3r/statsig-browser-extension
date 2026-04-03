@@ -1,4 +1,4 @@
-// eslint-disable-next-line import/no-unassigned-import
+// oxlint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
@@ -8,8 +8,7 @@ afterEach(() => {
   cleanup()
 })
 
-// Mock Chrome API
-globalThis.chrome = {
+const chromeMock = {
   runtime: {
     getManifest: () => ({ version: '1.0.0' }),
     id: 'test-id',
@@ -22,7 +21,12 @@ globalThis.chrome = {
     query: vi.fn(),
     sendMessage: vi.fn(),
   },
-} as unknown as typeof chrome
+}
+
+Object.defineProperty(globalThis, 'chrome', {
+  value: chromeMock,
+  writable: true,
+})
 
 // Mock ResizeObserver
 globalThis.ResizeObserver = class ResizeObserver {
@@ -31,18 +35,20 @@ globalThis.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
+const createMatchMediaResult = (query: string): MediaQueryList => ({
+  addEventListener: vi.fn(),
+  addListener: vi.fn(),
+  dispatchEvent: vi.fn(),
+  matches: false,
+  media: query,
+  onchange: null,
+  removeEventListener: vi.fn(),
+  removeListener: vi.fn(),
+})
+
 // Mock matchMedia
 Object.defineProperty(globalThis, 'matchMedia', {
-  value: vi.fn().mockImplementation((query) => ({
-    addEventListener: vi.fn(),
-    addListener: vi.fn(), // Deprecated
-    dispatchEvent: vi.fn(),
-    matches: false,
-    media: query,
-    onchange: null,
-    removeEventListener: vi.fn(),
-    removeListener: vi.fn(), // Deprecated
-  })),
+  value: vi.fn().mockImplementation((query: string) => createMatchMediaResult(query)),
   writable: true,
 })
 

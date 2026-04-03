@@ -13,8 +13,8 @@ export interface OverridesData {
  * Transforms the API response into the application's OverridesData format.
  */
 export const transformOverridesResponse = (
-  response: ExperimentOverridesResponse,
+  response: Partial<ExperimentOverridesResponse> | undefined,
 ): OverridesData => ({
-  overrides: response.overrides || [],
-  userIDOverrides: (response.userIDOverrides || []).filter((override) => override.ids.length > 0),
+  overrides: response?.overrides ?? [],
+  userIDOverrides: (response?.userIDOverrides ?? []).filter((override) => override.ids.length > 0),
 })

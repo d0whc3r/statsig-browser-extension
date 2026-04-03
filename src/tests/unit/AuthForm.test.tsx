@@ -6,6 +6,14 @@ import { initialLogin } from '@/src/handlers/initial-login'
 import { AuthForm } from '../../components/modals/AuthForm'
 import { renderWithProviders } from '../utils/TestUtils'
 
+interface LoginResult {
+  data: { message: string } | undefined
+  error: string | undefined
+  success: boolean
+}
+
+const noopLoginResolver = (_value: LoginResult) => {}
+
 // Mock initialLogin handler
 vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/src/handlers/initial-login')>()
@@ -24,8 +32,8 @@ vi.mock(import('@/src/hooks/use-settings-storage'), async (importOriginal) => {
       apiKey: '',
       isApiKeyLoading: false,
       localStorageValue: 'statsig_user',
-      reset: vi.fn().mockResolvedValue(),
-      setApiKey: vi.fn().mockResolvedValue(),
+      reset: vi.fn().mockImplementation(async () => {}),
+      setApiKey: vi.fn().mockImplementation(async () => {}),
       setLocalStorageKey: vi.fn(),
       setStorageType: vi.fn(),
       setTypeApiKey: vi.fn(),
@@ -116,18 +124,9 @@ describe('AuthForm component', () => {
   })
 
   it('disables input and button when pending', async () => {
-    // To test pending state, we need a promise that doesn't resolve immediately
     const mockLogin = vi.mocked(initialLogin)
-    let resolveLogin: (value: {
-      data: { message: string } | undefined
-      error: string | undefined
-      success: boolean
-    }) => void
-    const loginPromise = new Promise<{
-      data: { message: string } | undefined
-      error: string | undefined
-      success: boolean
-    }>((resolve) => {
+    let resolveLogin: (value: LoginResult) => void = noopLoginResolver
+    const loginPromise = new Promise<LoginResult>((resolve) => {
       resolveLogin = resolve
     })
     mockLogin.mockReturnValue(loginPromise)
@@ -147,7 +146,6 @@ describe('AuthForm component', () => {
     expect(input).toBeDisabled()
     expect(screen.getByRole('button', { name: /Login/i })).toBeDisabled()
 
-    // Clean up
-    resolveLogin!({ data: { message: 'Success' }, error: undefined, success: true })
+    resolveLogin({ data: { message: 'Success' }, error: undefined, success: true })
   })
 })

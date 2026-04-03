@@ -1,6 +1,6 @@
 import React from 'react'
 
-import type { dynamicConfigColumns } from '@/src/components/tables/data'
+import type { DynamicConfigColumnKey } from '@/src/components/tables/data'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRow } from '@/src/components/tables/DynamicConfigRow'
@@ -12,7 +12,7 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 interface DynamicConfigsTableBodyProps {
   error: unknown
   handleRetry: () => void
-  headerColumns: typeof dynamicConfigColumns
+  headerColumns: readonly { uid: DynamicConfigColumnKey }[]
   isError: boolean
   isLoading: boolean
   items: DynamicConfig[]

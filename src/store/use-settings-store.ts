@@ -6,8 +6,7 @@ interface SettingsState {
   apiKey: string
   isApiKeyLoading: boolean
 
-  // Actions
-  initialize: () => void
+  initialize: () => Promise<void>
   setApiKey: (key: string) => Promise<void>
 }
 

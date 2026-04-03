@@ -1,6 +1,6 @@
 import React from 'react'
 
-import type { experimentColumns } from '@/src/components/tables/data'
+import type { ExperimentColumnKey } from '@/src/components/tables/data'
 import type { Experiment } from '@/src/types/statsig'
 
 import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
@@ -9,7 +9,7 @@ import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface ExperimentsTableBodyProps {
-  headerColumns: typeof experimentColumns
+  headerColumns: readonly { uid: ExperimentColumnKey }[]
   isLoading: boolean
   items: Experiment[]
   setCurrentExperiment: (id: string) => void

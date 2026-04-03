@@ -1,5 +1,5 @@
 import { Loader2 } from 'lucide-react'
-import React, { memo, useCallback, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { Card, CardContent } from '@/src/components/ui/card'
@@ -37,7 +37,7 @@ export interface GenericAddOverrideFormProps<TValue> {
   getSubmitButtonText?: (value: TValue) => string
 }
 
-const GenericAddOverrideFormInternal = <TValue extends string>({
+export const GenericAddOverrideForm = <TValue extends string>({
   isPending,
   onAddOverride,
   onCancel,
@@ -141,10 +141,3 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
     </Card>
   )
 }
-
-// Cast to a generic component to export
-export const GenericAddOverrideForm = memo(GenericAddOverrideFormInternal) as <
-  TValue extends string,
->(
-  props: GenericAddOverrideFormProps<TValue>,
-) => React.ReactElement

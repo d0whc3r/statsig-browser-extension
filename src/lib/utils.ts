@@ -18,7 +18,10 @@ const ERROR_MESSAGES: Record<number, string> = {
   [HTTP_NOT_FOUND]: 'The requested resource was not found.',
 }
 
-function getErrorMessageFromResponse(response: { status: number; data?: unknown }): string | undefined {
+function getErrorMessageFromResponse(response: {
+  status: number
+  data?: unknown
+}): string | undefined {
   const { status } = response
 
   if (status in ERROR_MESSAGES) {

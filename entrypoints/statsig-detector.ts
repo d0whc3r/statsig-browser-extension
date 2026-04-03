@@ -1,5 +1,16 @@
 import { getUserDetailsFromPage } from '@/src/lib/get-user-details-injector'
 
+const isRecord = (value: unknown): value is Record<string, unknown> =>
+  typeof value === 'object' && value !== null
+
+const getMessageType = (value: unknown) => {
+  if (!isRecord(value) || typeof value.type !== 'string') {
+    return null
+  }
+
+  return value.type
+}
+
 // oxlint-disable-next-line import/no-default-export
 export default defineContentScript({
   main() {
@@ -35,12 +46,8 @@ export default defineContentScript({
 
     // Listen for retry request
     window.addEventListener('message', (event) => {
-      const data = event.data as unknown
-      if (typeof data !== 'object' || data === null || !('type' in data)) {
-        return
-      }
-      const msg = data as { type: string }
-      if (msg.type === 'RETRY_STATSIG_DETECTION' || msg.type === 'FETCH_STATSIG_DATA_FROM_PAGE') {
+      const type = getMessageType(event.data)
+      if (type === 'RETRY_STATSIG_DETECTION' || type === 'FETCH_STATSIG_DATA_FROM_PAGE') {
         checkStatsig()
       }
     })

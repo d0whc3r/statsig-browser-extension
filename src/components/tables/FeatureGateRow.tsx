@@ -1,7 +1,7 @@
 import { ExternalLink, Eye, MoreVertical } from 'lucide-react'
 import { memo, useCallback } from 'react'
 
-import type { featureGateColumns } from '@/src/components/tables/data'
+import type { FeatureGateColumnKey } from '@/src/components/tables/data'
 import type { FeatureGate } from '@/src/types/statsig'
 
 import { Badge } from '@/src/components/ui/badge'
@@ -17,7 +17,7 @@ import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface FeatureGateCellProps {
   item: FeatureGate
-  columnKey: string
+  columnKey: FeatureGateColumnKey
   onRowClick: (id: string) => void
   showInlineId: boolean
 }
@@ -86,8 +86,6 @@ const FeatureGateCellContent = ({
   onRowClick,
   showInlineId,
 }: FeatureGateCellProps) => {
-  const cellValue = item[columnKey as keyof FeatureGate]
-
   switch (columnKey) {
     case 'name': {
       return (
@@ -108,7 +106,7 @@ const FeatureGateCellContent = ({
       return <FeatureGateStatus status={item.status} />
     }
     case 'tags': {
-      return <FeatureGateTags tags={cellValue as string[]} />
+      return <FeatureGateTags tags={item.tags} />
     }
     case 'isEnabled': {
       return (
@@ -121,10 +119,7 @@ const FeatureGateCellContent = ({
       return <FeatureGateActions item={item} onRowClick={onRowClick} />
     }
     default: {
-      if (typeof cellValue === 'object' && cellValue !== null) {
-        return <div>{JSON.stringify(cellValue)}</div>
-      }
-      return <div>{String(cellValue)}</div>
+      return null
     }
   }
 }
@@ -134,7 +129,7 @@ FeatureGateCell.displayName = 'FeatureGateCell'
 
 interface FeatureGateRowProps {
   item: FeatureGate
-  headerColumns: typeof featureGateColumns
+  headerColumns: readonly { uid: FeatureGateColumnKey }[]
   onRowClick: (id: string) => void
 }
 
