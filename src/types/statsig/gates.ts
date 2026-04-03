@@ -43,6 +43,10 @@ export interface FeatureGateRule {
   passPercentage: number
   conditions: {
     type: string
+    operator?: string
+    targetValue?: unknown
+    field?: string
+    customID?: string
   }[]
   environments: string[]
 }

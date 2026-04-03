@@ -8,8 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { CopyableText } from '@/src/components/ui/copyable-text'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useFeatureGateRules } from '@/src/hooks/use-feature-gate-rules'
-import { getConditionLabel } from '@/src/lib/rules'
-import { cn } from '@/src/lib/utils'
+import { formatConditionDetails } from '@/src/lib/rules'
 
 interface Props {
   featureGateId: string
@@ -21,16 +20,6 @@ interface FeatureGateRuleCardProps {
 
 const MAX_PERCENTAGE = 100
 const MIN_PERCENTAGE = 0
-
-const getProgressColor = (percentage: number) => {
-  if (percentage === MAX_PERCENTAGE) {
-    return 'bg-primary'
-  }
-  if (percentage === MIN_PERCENTAGE) {
-    return 'bg-destructive'
-  }
-  return 'bg-yellow-500'
-}
 
 const getBadgeVariant = (
   percentage: number,
@@ -70,24 +59,12 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
           )}
         </div>
         <Badge variant={getBadgeVariant(rule.passPercentage)} className="shrink-0">
-          {rule.passPercentage}% Pass
+          {rule.passPercentage}%
         </Badge>
       </div>
     </CardHeader>
     <CardContent className="p-0">
       <EntityDetailsList className="border-0 rounded-none">
-        {/* Pass Percentage Progress Bar */}
-        <EntityDetailsField label="Pass Rate">
-          <div className="flex flex-col gap-1.5 w-32 items-end">
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-secondary">
-              <div
-                className={cn('h-full', getProgressColor(rule.passPercentage))}
-                style={{ width: `${rule.passPercentage}%` }}
-              />
-            </div>
-          </div>
-        </EntityDetailsField>
-
         {/* Environments */}
         {rule.environments && rule.environments.length > 0 && (
           <EntityDetailsField label="Environments">
@@ -105,9 +82,14 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
         {rule.conditions && rule.conditions.length > 0 && (
           <EntityDetailsField label="Conditions">
             <div className="flex flex-wrap gap-1 justify-end">
-              {rule.conditions.map((condition) => (
-                <Badge key={JSON.stringify(condition)} variant="secondary" className="text-xs">
-                  {getConditionLabel(condition.type)}
+              {rule.conditions.map((condition, index) => (
+                <Badge
+                  // oxlint-disable-next-line react/no-array-index-key
+                  key={`${rule.id}-${index}`}
+                  variant="secondary"
+                  className="text-xs font-normal"
+                >
+                  {formatConditionDetails(condition)}
                 </Badge>
               ))}
             </div>

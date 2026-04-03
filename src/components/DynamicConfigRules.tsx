@@ -12,7 +12,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/ca
 import { CopyableText } from '@/src/components/ui/copyable-text'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { useDynamicConfigRules } from '@/src/hooks/use-dynamic-config-rules'
-import { getConditionLabel } from '@/src/lib/rules'
+import { formatConditionDetails } from '@/src/lib/rules'
 
 interface Props {
   configId: string
@@ -60,7 +60,7 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
           variant={rule.passPercentage === FULL_PASS_PERCENTAGE ? 'default' : 'secondary'}
           className="shrink-0"
         >
-          {rule.passPercentage}% Pass
+          {rule.passPercentage}%
         </Badge>
       </div>
     </CardHeader>
@@ -83,9 +83,14 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
         {rule.conditions && rule.conditions.length > 0 && (
           <EntityDetailsField label="Conditions">
             <div className="flex flex-wrap gap-1 justify-end">
-              {rule.conditions.map((condition) => (
-                <Badge key={`${rule.id}-${condition.type}`} variant="secondary" className="text-xs">
-                  {getConditionLabel(condition.type)}
+              {rule.conditions.map((condition, index) => (
+                <Badge
+                  // oxlint-disable-next-line react/no-array-index-key
+                  key={`${rule.id}-${index}`}
+                  variant="secondary"
+                  className="text-xs font-normal"
+                >
+                  {formatConditionDetails(condition)}
                 </Badge>
               ))}
             </div>
