@@ -32,6 +32,10 @@ export const currentOverridesStorage = storage.defineItem<{ name: string }[]>(
   },
 )
 
+export const themeStorage = storage.defineItem<'light' | 'dark' | 'system'>('local:theme', {
+  defaultValue: 'system',
+})
+
 // Table State Storage
 export const dynamicConfigRowsPerPageStorage = storage.defineItem<number>(
   'local:dynamic-config-table-rows-per-page',

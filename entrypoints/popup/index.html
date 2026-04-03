@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Statsig Browser Extension</title>
     <meta name="manifest.type" content="browser_action" />
+    <script>
+      ;(async function () {
+        try {
+          const item = await chrome.storage.local.get('local:theme')
+          const theme = item['local:theme'] || 'system'
+          const root = document.documentElement
+          if (theme === 'system') {
+            if (globalThis.matchMedia('(prefers-color-scheme: dark)').matches) {
+              root.classList.add('dark')
+            } else {
+              root.classList.add('light')
+            }
+          } else {
+            root.classList.add(theme)
+          }
+        } catch {}
+      })()
+    </script>
   </head>
   <body>
     <div id="root"></div>

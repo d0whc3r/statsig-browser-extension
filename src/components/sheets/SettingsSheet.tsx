@@ -1,10 +1,12 @@
 import { Save, Settings } from 'lucide-react'
 import React from 'react'
 
+import { AppearanceSettings } from '@/src/components/sheets/settings/AppearanceSettings'
 import { StatsigKeysSettings } from '@/src/components/sheets/settings/StatsigKeysSettings'
 import { StorageSettings } from '@/src/components/sheets/settings/StorageSettings'
 import { Button } from '@/src/components/ui/button'
 import { Form } from '@/src/components/ui/form'
+import { Separator } from '@/src/components/ui/separator'
 import {
   Sheet,
   SheetContent,
@@ -33,8 +35,14 @@ export const SettingsSheet = () => {
               </SheetDescription>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-8">
+            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+              <AppearanceSettings />
+
+              <Separator />
+
               <StatsigKeysSettings control={form.control} />
+
+              <Separator />
 
               <StorageSettings control={form.control} />
             </div>

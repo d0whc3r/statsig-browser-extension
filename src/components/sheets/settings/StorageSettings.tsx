@@ -1,14 +1,19 @@
 import type { Control, ControllerRenderProps } from 'react-hook-form'
 
-import { Cookie, Database, HardDrive } from 'lucide-react'
+import { Database } from 'lucide-react'
 import React, { useCallback } from 'react'
 
 import type { SettingsFormValues } from '@/src/hooks/use-settings-form'
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { FormControl, FormField, FormItem, FormMessage } from '@/src/components/ui/form'
 import { Label } from '@/src/components/ui/label'
-import { RadioGroup, RadioGroupItem } from '@/src/components/ui/radio-group'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/src/components/ui/select'
 
 interface StorageSettingsProps {
   control: Control<SettingsFormValues>
@@ -17,37 +22,19 @@ interface StorageSettingsProps {
 export const StorageSettings = ({ control }: StorageSettingsProps) => {
   const renderStorageTypeField = useCallback(
     ({ field }: { field: ControllerRenderProps<SettingsFormValues, 'storageType'> }) => {
-      const handleStorageTypeChange = field.onChange
-
+      const handleStorageChange = field.onChange
       return (
-        <FormItem className="space-y-0">
+        <FormItem className="space-y-0 w-full sm:w-[150px]">
           <FormControl>
-            <RadioGroup
-              onValueChange={handleStorageTypeChange}
-              defaultValue={field.value}
-              className="grid grid-cols-2 gap-4"
-            >
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="localStorage" id="localStorage" className="peer sr-only" />
-                <Label
-                  htmlFor="localStorage"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer transition-all"
-                >
-                  <HardDrive className="mb-2 h-6 w-6 text-muted-foreground" />
-                  Local Storage
-                </Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="cookie" id="cookie" className="peer sr-only" />
-                <Label
-                  htmlFor="cookie"
-                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary w-full cursor-pointer transition-all"
-                >
-                  <Cookie className="mb-2 h-6 w-6 text-muted-foreground" />
-                  Cookies
-                </Label>
-              </div>
-            </RadioGroup>
+            <Select value={field.value} onValueChange={handleStorageChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select storage" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="localStorage">Local Storage</SelectItem>
+                <SelectItem value="cookie">Cookies</SelectItem>
+              </SelectContent>
+            </Select>
           </FormControl>
           <FormMessage />
         </FormItem>
@@ -57,20 +44,18 @@ export const StorageSettings = ({ control }: StorageSettingsProps) => {
   )
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider flex items-center gap-2">
-        <Database className="h-4 w-4" />
+    <div className="space-y-3">
+      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+        <Database className="h-3.5 w-3.5" />
         Data Storage
       </h3>
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Storage Method</CardTitle>
-          <CardDescription>Where should the extension store its data?</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <FormField control={control} name="storageType" render={renderStorageTypeField} />
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-between">
+        <div className="space-y-0.5">
+          <Label className="text-sm font-medium">Storage Method</Label>
+          <p className="text-xs text-muted-foreground">Where to store extension data.</p>
+        </div>
+        <FormField control={control} name="storageType" render={renderStorageTypeField} />
+      </div>
     </div>
   )
 }

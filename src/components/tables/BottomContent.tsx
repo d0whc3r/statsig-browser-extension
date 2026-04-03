@@ -79,6 +79,10 @@ export const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
     [setPage],
   )
 
+  if (totalPages <= 1) {
+    return null
+  }
+
   return (
     <div className="flex w-full justify-center items-center gap-2">
       <Button variant="ghost" size="icon-sm" onClick={handlePrevious} disabled={page === 1}>

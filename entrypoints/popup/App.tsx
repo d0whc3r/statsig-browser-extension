@@ -6,6 +6,7 @@ import { GlobalModals } from '@/src/components/layout/GlobalModals'
 import { Header } from '@/src/components/layout/Header'
 import { MainTabs } from '@/src/components/layout/MainTabs'
 import { useAppLogic } from '@/src/hooks/use-app-logic'
+import { useTheme } from '@/src/hooks/use-theme'
 import { queryClient } from '@/src/lib/query-client'
 
 // oxlint-disable-next-line import/no-unassigned-import
@@ -13,6 +14,8 @@ import '../../src/styles/globals.css'
 
 export function AppContent() {
   const { activeTab, handleTabChange, handleLogout } = useAppLogic()
+  useTheme()
+
   const handleLogoutClick = useCallback(() => {
     void handleLogout()
   }, [handleLogout])

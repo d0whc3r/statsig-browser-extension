@@ -99,19 +99,21 @@ export function EntityTable({
           </Table>
         </div>
       </div>
-      <div className="flex-none p-4 pt-0 flex flex-col gap-4">
-        <BottomContent page={page} setPage={setPage} total={pages} />
-        {hasNextPage && (
-          <Button
-            variant="secondary"
-            className="w-full"
-            onClick={handleFetchNextPage}
-            disabled={isFetchingNextPage}
-          >
-            {isFetchingNextPage ? 'Loading more...' : loadMoreText}
-          </Button>
-        )}
-      </div>
+      {(pages > 1 || hasNextPage) && (
+        <div className="flex-none p-4 pt-0 flex flex-col gap-4">
+          <BottomContent page={page} setPage={setPage} total={pages} />
+          {hasNextPage && (
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={handleFetchNextPage}
+              disabled={isFetchingNextPage}
+            >
+              {isFetchingNextPage ? 'Loading more...' : loadMoreText}
+            </Button>
+          )}
+        </div>
+      )}
     </div>
   )
 }
