@@ -1,4 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react'
+import wretch from 'wretch'
 
 import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher, poster } from '@/src/lib/fetcher'
@@ -9,7 +10,8 @@ import { renderWithProviders } from '../utils/TestUtils'
 // Mock the api instance methods
 const { mockJson, mockWretch } = vi.hoisted(() => {
   const innerMockJson = vi.fn()
-  const instanceWretch = {
+  const instanceWretch = wretch('https://statsigapi.net/console/v1')
+  Object.assign(instanceWretch, {
     body: vi.fn().mockReturnThis(),
     delete: vi.fn().mockReturnThis(),
     get: vi.fn().mockReturnThis(),
@@ -17,60 +19,54 @@ const { mockJson, mockWretch } = vi.hoisted(() => {
     json: innerMockJson,
     post: vi.fn().mockReturnThis(),
     url: vi.fn().mockReturnThis(),
-  }
+  })
   return { mockJson: innerMockJson, mockWretch: instanceWretch }
 })
 
 vi.mock(import('@/src/lib/fetcher'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
+  const actual = await importOriginal<typeof import('@/src/lib/fetcher')>()
+  const mockFetcher: typeof actual.fetcher = vi.fn()
+  const mockPoster: typeof actual.poster = vi.fn()
   return {
     ...actual,
     api: mockWretch,
-    fetcher: vi.fn(),
-    poster: vi.fn(),
+    fetcher: mockFetcher,
+    poster: mockPoster,
   }
 })
 
 // Mock API key and mock detected user
 vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
+  const actual = await importOriginal<typeof import('@/src/hooks/use-wxt-storage')>()
   return {
     ...actual,
-    useWxtStorage: vi.fn((item) => {
+    useWxtStorage: <T,>(item: { defaultValue: T; key: string }): [T, (val: T) => void, boolean] => {
       if (item.key === 'local:api_key_type') {
-        return ['write-key', vi.fn(), false]
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return ['write-key' as unknown as T, vi.fn(), false]
       }
       if (item.key === 'local:statsig-console-api-key') {
-        return ['test-api-key', vi.fn(), false]
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return ['test-api-key' as unknown as T, vi.fn(), false]
       }
       return [item.defaultValue, vi.fn(), false]
-    }),
-  }
-})
-
-vi.mock(
-  import('@/src/hooks/use-user-details'),
-  () =>
-    ({
-      useUserDetails: vi.fn(() => ({
-        data: { userID: 'user_123' },
-        isLoading: false,
-      })),
-    }) as any,
-)
-
-vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
-  return {
-    ...actual,
-    apiKeyStorage: {
-      ...actual.apiKeyStorage,
-      getValue: vi.fn().mockResolvedValue('test-api-key'),
-      setValue: vi.fn(),
-      watch: vi.fn(),
     },
   }
 })
+
+vi.mock(import('@/src/hooks/use-user-details'), () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion
+  useUserDetails: () => ({ data: { userID: 'user_123' }, isLoading: false }) as any,
+}))
+
+vi.mock(import('@/src/lib/storage'), () => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-type-assertion
+  apiKeyStorage: {
+    getValue: vi.fn().mockResolvedValue('test-api-key'),
+    setValue: vi.fn(),
+    watch: vi.fn(),
+  } as any,
+}))
 
 const mockExperiments = [
   {
@@ -121,7 +117,7 @@ const setupMocks = () => {
   })
 
   // Mock poster - also returns wrapped response
-  vi.mocked(poster).mockResolvedValue({ data: { success: true } } as any)
+  vi.mocked(poster).mockResolvedValue({ data: { success: true } })
 
   // Smart mock for api.json() - used for DELETE and setting body
   mockJson.mockImplementation((body) => {
@@ -212,14 +208,16 @@ describe('Experiment Overrides Flow', () => {
       expect(poster).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-type-assertion
           userIDOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: 'Production',
               groupID: 'Test',
-              ids: expect.arrayContaining(['new_user_456']),
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-type-assertion
+              ids: expect.arrayContaining(['new_user_456']) as unknown as string[],
               unitType: 'userID',
             }),
-          ]),
+          ]) as unknown as unknown[],
         }),
       )
     })
@@ -260,6 +258,7 @@ describe('Experiment Overrides Flow', () => {
       expect(poster).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
           overrides: expect.arrayContaining([
             expect.objectContaining({
               groupID: 'Control',
@@ -334,7 +333,9 @@ describe('Experiment Overrides Flow', () => {
 
     // Verify DELETE API call
     await waitFor(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockWretch.delete).toHaveBeenCalled()
     })
   })

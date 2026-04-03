@@ -86,7 +86,7 @@ export const ExperimentGroups = memo(({ experiment }: ExperimentGroupsProps) => 
         </div>
       </div>
 
-      {(primaryMetrics?.length || secondaryMetrics?.length) && (
+      {(primaryMetrics?.length ?? secondaryMetrics?.length) && (
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
             Metrics

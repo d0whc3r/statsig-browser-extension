@@ -38,7 +38,7 @@ const useExperimentSheetState = () => {
 
   return {
     currentItemId,
-    error: experimentError || overridesError,
+    error: experimentError ?? overridesError,
     experiment,
     handleClose,
     isLoading: isLoadingExperiment || isLoadingOverrides,

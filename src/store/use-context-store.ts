@@ -20,15 +20,24 @@ export const useContextStore = create<ContextState>((set) => ({
   detectedUser: undefined,
   detectionError: undefined,
 
-  reset: () =>
+  reset: () => {
     set(() => ({
       currentLocalStorageValue: undefined,
       detectedContext: undefined,
       detectedUser: undefined,
       detectionError: undefined,
-    })),
-  setCurrentLocalStorageValue: (value) => set(() => ({ currentLocalStorageValue: value })),
-  setDetectedContext: (context) => set(() => ({ detectedContext: context })),
-  setDetectedUser: (user) => set(() => ({ detectedUser: user, detectionError: null })),
-  setDetectionError: (error) => set(() => ({ detectionError: error })),
+    }))
+  },
+  setCurrentLocalStorageValue: (value) => {
+    set(() => ({ currentLocalStorageValue: value }))
+  },
+  setDetectedContext: (context) => {
+    set(() => ({ detectedContext: context }))
+  },
+  setDetectedUser: (user) => {
+    set(() => ({ detectedUser: user, detectionError: null }))
+  },
+  setDetectionError: (error) => {
+    set(() => ({ detectionError: error }))
+  },
 }))

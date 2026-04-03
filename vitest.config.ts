@@ -3,7 +3,7 @@ import { defineConfig } from 'vitest/config'
 import { WxtVitest } from 'wxt/testing/vitest-plugin'
 
 export default defineConfig({
-  // eslint-disable-next-line new-cap
+  // oxlint-disable-next-line new-cap
   plugins: [WxtVitest(), react()],
   test: {
     coverage: {

@@ -65,8 +65,8 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
       }
 
       if (data.success) {
-        setApiKey(variables)
-        queryClient.invalidateQueries()
+        void setApiKey(variables)
+        void queryClient.invalidateQueries()
         onSuccess()
       }
     },

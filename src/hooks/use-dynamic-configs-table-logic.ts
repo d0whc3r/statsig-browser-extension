@@ -23,7 +23,7 @@ export const useDynamicConfigsTableLogic = () => {
   } = useDynamicConfigs()
 
   const dynamicConfigs = useMemo(
-    () => data?.pages.flatMap((page) => page?.data ?? []) || [],
+    () => data?.pages.flatMap((page) => page?.data ?? []) ?? [],
     [data],
   )
 
@@ -70,7 +70,7 @@ export const useDynamicConfigsTableLogic = () => {
     fetchNextPage,
     filterValue,
     handleRefetch: useCallback(() => {
-      refetch()
+      void refetch()
     }, [refetch]),
     handleStatusFilter: handleSetStatusFilter,
     handleVisibleColumns: handleSetVisibleColumns,

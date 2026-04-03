@@ -37,7 +37,9 @@ export const OverridesList = memo(
     const [showOthers, setShowOthers] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState<DeleteGateOverrideParams | null>(null)
 
-    const toggleOthers = useCallback(() => setShowOthers((prev) => !prev), [])
+    const toggleOthers = useCallback(() => {
+      setShowOthers((prev) => !prev)
+    }, [])
 
     const handleDeleteClick = useCallback(
       (params: DeleteGateOverrideParams, isCurrentUser: boolean) => {
@@ -57,7 +59,9 @@ export const OverridesList = memo(
       }
     }, [confirmDelete, onDeleteOverride])
 
-    const handleCloseConfirm = useCallback(() => setConfirmDelete(null), [])
+    const handleCloseConfirm = useCallback(() => {
+      setConfirmDelete(null)
+    }, [])
 
     const { currentUserOverrides, otherOverrides } = useMemo(() => {
       const current = allOverrides.filter((override) => override.isCurrentUser)

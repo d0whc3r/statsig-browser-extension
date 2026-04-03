@@ -28,6 +28,11 @@ export default defineConfig({
     '.specify',
     'specs',
   ],
+  options: {
+    maxWarnings: 1,
+    typeAware: true,
+    typeCheck: true,
+  },
   overrides: [
     {
       env: {
@@ -43,6 +48,7 @@ export default defineConfig({
         'no-magic-numbers': 'off',
         'typescript/consistent-type-imports': 'off',
         'typescript/no-explicit-any': 'off',
+        'typescript/no-unsafe-type-assertion': 'off',
         'vitest/prefer-called-once': 'off',
         'vitest/prefer-strict-boolean-matchers': 'off',
         'vitest/require-mock-type-parameters': 'off',
@@ -151,6 +157,7 @@ export default defineConfig({
     'sort-imports': 'off',
     'typescript/no-explicit-any': 'warn',
     'typescript/no-unused-vars': 'warn',
+    'typescript/strict-boolean-expressions': 'off',
     'unicorn/filename-case': ['warn', { case: 'kebabCase' }],
     'unicorn/no-nested-ternary': 'error',
     'unicorn/no-null': 'off',

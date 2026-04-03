@@ -122,10 +122,10 @@ export function GeneralEmptyState({
   ...props
 }: GeneralEmptyStateProps) {
   const config = EMPTY_STATE_CONFIGS[variant]
-  const Icon = icon || config.icon
+  const Icon = icon ?? config.icon
 
   const finalDescription =
-    description ||
+    description ??
     (entityName
       ? `${config.description.replace(/\.$/, '')} for this ${entityName}.`
       : config.description)
@@ -135,7 +135,7 @@ export function GeneralEmptyState({
       <EmptyMedia>
         <Icon className="text-muted-foreground size-8" />
       </EmptyMedia>
-      <EmptyTitle>{title || config.title}</EmptyTitle>
+      <EmptyTitle>{title ?? config.title}</EmptyTitle>
       <EmptyDescription>{finalDescription}</EmptyDescription>
       {children}
     </Empty>

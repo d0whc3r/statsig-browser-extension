@@ -7,30 +7,33 @@ import { AuthForm } from '../../components/modals/AuthForm'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock initialLogin handler
-vi.mock(import('@/src/handlers/initial-login'), () => ({
-  initialLogin: vi.fn(),
-}))
+vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/handlers/initial-login')>()
+  return {
+    ...actual,
+    initialLogin: vi.fn(),
+  }
+})
 
 // Mock useSettingsStorage
-vi.mock(
-  import('@/src/hooks/use-settings-storage'),
-  async (importOriginal) =>
-    ({
-      ...(await importOriginal()),
-      useSettingsStorage: vi.fn(() => ({
-        apiKey: '',
-        isApiKeyLoading: false,
-        localStorageValue: 'statsig_user',
-        reset: vi.fn(async () => {}),
-        setApiKey: vi.fn(async () => {}),
-        setLocalStorageKey: vi.fn(),
-        setStorageType: vi.fn(),
-        setTypeApiKey: vi.fn(),
-        storageType: 'localStorage',
-        typeApiKey: 'write-key',
-      })),
-    }) as any,
-)
+vi.mock(import('@/src/hooks/use-settings-storage'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/hooks/use-settings-storage')>()
+  return {
+    ...actual,
+    useSettingsStorage: () => ({
+      apiKey: '',
+      isApiKeyLoading: false,
+      localStorageValue: 'statsig_user',
+      reset: vi.fn().mockResolvedValue(),
+      setApiKey: vi.fn().mockResolvedValue(),
+      setLocalStorageKey: vi.fn(),
+      setStorageType: vi.fn(),
+      setTypeApiKey: vi.fn(),
+      storageType: 'localStorage',
+      typeApiKey: 'write-key',
+    }),
+  }
+})
 
 describe('AuthForm component', () => {
   const defaultProps = {
@@ -115,12 +118,19 @@ describe('AuthForm component', () => {
   it('disables input and button when pending', async () => {
     // To test pending state, we need a promise that doesn't resolve immediately
     const mockLogin = vi.mocked(initialLogin)
-    // oxlint-disable-next-line init-declarations
-    let resolveLogin: (value: any) => void
-    const loginPromise = new Promise((resolve) => {
+    let resolveLogin: (value: {
+      data: { message: string } | undefined
+      error: string | undefined
+      success: boolean
+    }) => void
+    const loginPromise = new Promise<{
+      data: { message: string } | undefined
+      error: string | undefined
+      success: boolean
+    }>((resolve) => {
       resolveLogin = resolve
     })
-    mockLogin.mockReturnValue(loginPromise as any)
+    mockLogin.mockReturnValue(loginPromise)
 
     const { user } = renderWithProviders(
       <Dialog open>
@@ -138,6 +148,6 @@ describe('AuthForm component', () => {
     expect(screen.getByRole('button', { name: /Login/i })).toBeDisabled()
 
     // Clean up
-    resolveLogin!({ success: true })
+    resolveLogin!({ data: { message: 'Success' }, error: undefined, success: true })
   })
 })

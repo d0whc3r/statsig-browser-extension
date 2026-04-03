@@ -22,7 +22,7 @@ export const ExperimentSheetHeader = memo(
       <div className="flex justify-between items-center gap-4">
         <div className="flex-1 min-w-0">
           <SheetTitle className="truncate" title={experiment?.name}>
-            {isLoading ? <Skeleton className="h-6 w-32" /> : experiment?.name || 'Experiment'}
+            {isLoading ? <Skeleton className="h-6 w-32" /> : (experiment?.name ?? 'Experiment')}
           </SheetTitle>
           {!isLoading && experiment && (
             <CopyableText

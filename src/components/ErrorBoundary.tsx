@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('Uncaught error:', error, errorInfo)
   }
 
-  private handleReload = () => {
+  private readonly handleReload = () => {
     // eslint-disable-next-line react/no-set-state
     this.setState({ error: undefined, hasError: false })
     globalThis.location.reload()
@@ -40,7 +40,7 @@ export class ErrorBoundary extends Component<Props, State> {
         <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center">
           <h2 className="mb-4 text-2xl font-bold text-destructive">Something went wrong</h2>
           <p className="mb-6 text-muted-foreground">
-            {this.state.error?.message || 'An unexpected error occurred.'}
+            {this.state.error?.message ?? 'An unexpected error occurred.'}
           </p>
           <Button onClick={this.handleReload}>Reload Extension</Button>
         </div>

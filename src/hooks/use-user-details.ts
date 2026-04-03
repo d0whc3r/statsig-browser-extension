@@ -12,7 +12,7 @@ export const useUserDetails = () =>
         throw new Error('No active tab found')
       }
       const details = await getUserDetails(tab.id)
-      return details?.user || {}
+      return details?.user ?? {}
     },
     queryKey: ['user-details'],
     refetchOnWindowFocus: false,

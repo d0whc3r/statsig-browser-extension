@@ -29,10 +29,10 @@ export const OverridesSection = () => {
   const handleAddOverride = useCallback(
     ({ userId, groupId, environment, idType }: AddOverrideParams) => {
       addOverride({
-        environment: environment || undefined,
+        environment: environment ?? undefined,
         groupID: groupId,
         ids: [userId],
-        unitType: idType || undefined,
+        unitType: idType ?? undefined,
       })
     },
     [addOverride],
@@ -41,8 +41,8 @@ export const OverridesSection = () => {
   return (
     <div className="flex flex-col gap-6">
       <PageContextCard
-        detectedUser={detectedUser || undefined}
-        detectedUserId={detectedUserId || ''}
+        detectedUser={detectedUser ?? undefined}
+        detectedUserId={detectedUserId ?? ''}
         isDetectedUserOverridden={isDetectedUserOverridden}
         detectedUserOverrides={detectedUserOverrides}
         canEdit={typeApiKey === 'write-key'}

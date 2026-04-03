@@ -37,7 +37,9 @@ interface DynamicConfigActionsProps {
 
 const DynamicConfigActions = memo(
   ({ config, onRowClick, onOpenStatsig }: DynamicConfigActionsProps) => {
-    const handleView = useCallback(() => onRowClick(config.id), [onRowClick, config.id])
+    const handleView = useCallback(() => {
+      onRowClick(config.id)
+    }, [onRowClick, config.id])
 
     return (
       <div className="relative flex justify-end items-center gap-2">

@@ -4,6 +4,7 @@ import type { StatsigInstance, WindowWithStatsig } from '../types/statsig'
 
 export const getUserDetailsFromPage = () => {
   try {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const win = globalThis as unknown as WindowWithStatsig
 
     // oxlint-disable-next-line unicorn/consistent-function-scoping
@@ -108,7 +109,7 @@ export const getUserDetailsFromPage = () => {
       return
     }
 
-    const user = getUser(instance) || {}
+    const user = getUser(instance) ?? {}
     const stableID = getStableID(instance)
 
     if (stableID) {

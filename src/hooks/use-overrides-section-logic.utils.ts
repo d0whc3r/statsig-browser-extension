@@ -9,14 +9,14 @@ export const getUpdatedUserIDOverrides = (
   newOverride: UserIDOverride,
 ): UserIDOverride[] => {
   const [userId] = newOverride.ids
-  const env = newOverride.environment || null
-  const unitType = newOverride.unitType || 'userID'
+  const env = newOverride.environment ?? null
+  const unitType = newOverride.unitType ?? 'userID'
 
   // 1. Remove this userId from any existing override for the SAME environment & item type
   const filtered = existing
     .map((item) => {
-      const itemEnv = item.environment || null
-      const itemUnitType = item.unitType || 'userID'
+      const itemEnv = item.environment ?? null
+      const itemUnitType = item.unitType ?? 'userID'
       if (itemEnv === env && itemUnitType === unitType) {
         return { ...item, ids: item.ids.filter((id) => id !== userId) }
       }
@@ -26,8 +26,8 @@ export const getUpdatedUserIDOverrides = (
 
   // 2. Add to the correct entry
   const existingEntry = filtered.find((item) => {
-    const itemEnv = item.environment || null
-    const itemUnitType = item.unitType || 'userID'
+    const itemEnv = item.environment ?? null
+    const itemUnitType = item.unitType ?? 'userID'
     return item.groupID === newOverride.groupID && itemEnv === env && itemUnitType === unitType
   })
 
@@ -54,13 +54,13 @@ export const getDeletedOverrides = (
 
   if ('ids' in overrideToDelete) {
     const [userId] = overrideToDelete.ids
-    const env = overrideToDelete.environment || null
-    const unitType = overrideToDelete.unitType || 'userID'
+    const env = overrideToDelete.environment ?? null
+    const unitType = overrideToDelete.unitType ?? 'userID'
 
     updatedUserIDOverrides = updatedUserIDOverrides
       .map((item) => {
-        const itemEnv = item.environment || null
-        const itemUnitType = item.unitType || 'userID'
+        const itemEnv = item.environment ?? null
+        const itemUnitType = item.unitType ?? 'userID'
         if (itemEnv === env && itemUnitType === unitType) {
           return { ...item, ids: item.ids.filter((id) => id !== userId) }
         }

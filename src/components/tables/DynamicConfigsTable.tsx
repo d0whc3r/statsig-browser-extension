@@ -36,7 +36,7 @@ export function DynamicConfigsTable() {
   } = useDynamicConfigsTableLogic()
 
   const handleFetchNextPage = useCallback(() => {
-    fetchNextPage()
+    void fetchNextPage()
   }, [fetchNextPage])
 
   return (

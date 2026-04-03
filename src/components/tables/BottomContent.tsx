@@ -25,7 +25,9 @@ const PageButton = memo(
     currentPage: number
     onClick: (page: number) => void
   }) => {
-    const handleClick = useCallback(() => onClick(pageNumber), [onClick, pageNumber])
+    const handleClick = useCallback(() => {
+      onClick(pageNumber)
+    }, [onClick, pageNumber])
 
     return (
       <Button

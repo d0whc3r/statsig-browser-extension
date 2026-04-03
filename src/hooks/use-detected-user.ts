@@ -94,7 +94,7 @@ export function useDetectedUser() {
     }
     browser.runtime.onMessage.addListener(handleMessage)
 
-    fetchUser()
+    void fetchUser()
 
     return () => {
       browser.runtime.onMessage.removeListener(handleMessage)

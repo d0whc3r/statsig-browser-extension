@@ -1,7 +1,5 @@
 import { useCallback } from 'react'
 
-import type { StatsigUser } from '@/src/types/statsig'
-
 import { UserDetailsContent } from '@/src/components/sheets/user-details/UserDetailsContent'
 import { UserDetailsHeader } from '@/src/components/sheets/user-details/UserDetailsHeader'
 import { UserDetailsSkeleton } from '@/src/components/sheets/user-details/UserDetailsSkeleton'
@@ -18,11 +16,11 @@ export const UserDetailsSheet = () => {
   const { retryDetection } = useDetectedUser()
   const detectionError = useContextStore((state) => state.detectionError)
 
-  const userDetails = userDetailsData as StatsigUser | undefined
+  const userDetails = userDetailsData
 
   const handleRefetch = useCallback(() => {
-    refetch()
-    retryDetection()
+    void refetch()
+    void retryDetection()
   }, [refetch, retryDetection])
 
   return (

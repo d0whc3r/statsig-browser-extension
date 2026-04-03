@@ -56,7 +56,7 @@ export const FeatureGateSheetDetails = memo(
             <div className="flex flex-col">
               <span className="text-xs text-muted-foreground mb-1">Last Updated</span>
               <span className="text-sm font-medium">
-                <TimeAgo date={featureGate?.lastModifiedTime || Date.now()} />
+                <TimeAgo date={featureGate?.lastModifiedTime ?? Date.now()} />
               </span>
             </div>
           </div>

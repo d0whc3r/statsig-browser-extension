@@ -50,7 +50,7 @@ export const BaseOverrideContextCard = memo(
       return ALL_ENVIRONMENTS // Fallback to the first one even if overridden
     }, [detectedUserOverrides])
 
-    const [environment, setEnvironment] = useState<string>(initialEnv)
+    const [environment, setEnvironment] = useState(initialEnv)
     const currentEnvValue = environment === ALL_ENVIRONMENTS ? null : environment
 
     return (
@@ -68,12 +68,12 @@ export const BaseOverrideContextCard = memo(
             </span>
             {detectedUserOverrides.map((override) => (
               <Badge
-                key={override.environment || 'global'}
+                key={override.environment ?? 'global'}
                 variant="secondary"
                 className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
               >
                 <CheckCircle2 className="mr-1 h-3 w-3" />
-                {override.environment || 'Global'}
+                {override.environment ?? 'Global'}
               </Badge>
             ))}
           </div>

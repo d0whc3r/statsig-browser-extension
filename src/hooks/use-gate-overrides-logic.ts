@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-import type { FeatureGate, GateOverride, StatsigUser } from '@/src/types/statsig'
+import type { FeatureGate, GateOverride } from '@/src/types/statsig'
 
 import { useGateOverrideHandlers } from '@/src/hooks/use-gate-override-handlers'
 import { useUserDetails } from '@/src/hooks/use-user-details'
@@ -36,13 +36,10 @@ export const useGateOverridesLogic = (
       isCurrentUser: boolean
     }[] = []
 
-    const currentIdType = featureGate?.idType || 'userID'
+    const currentIdType = featureGate?.idType ?? 'userID'
 
     const checkIsCurrentUser = (id: string, idType: string | null) => {
-      const detectedId = getDetectedUserId(
-        detectedUser as StatsigUser | undefined,
-        idType || 'userID',
-      )
+      const detectedId = getDetectedUserId(detectedUser, idType ?? 'userID')
       return id === detectedId
     }
 
@@ -94,7 +91,7 @@ export const useGateOverridesLogic = (
   const canEdit = typeApiKey === 'write-key'
 
   const detectedUserId = useMemo(
-    () => getDetectedUserId(detectedUser as StatsigUser | undefined, featureGate?.idType),
+    () => getDetectedUserId(detectedUser, featureGate?.idType),
     [detectedUser, featureGate],
   )
 
@@ -103,7 +100,7 @@ export const useGateOverridesLogic = (
       return []
     }
 
-    const currentIdType = featureGate?.idType || 'userID'
+    const currentIdType = featureGate?.idType ?? 'userID'
 
     return allOverrides.filter(
       (override) => override.id === detectedUserId && override.idType === currentIdType,

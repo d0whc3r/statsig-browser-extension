@@ -18,8 +18,7 @@ const ERROR_MESSAGES: Record<number, string> = {
   [HTTP_NOT_FOUND]: 'The requested resource was not found.',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function getErrorMessageFromResponse(response: any): string | undefined {
+function getErrorMessageFromResponse(response: { status: number; data?: unknown }): string | undefined {
   const { status } = response
 
   if (status in ERROR_MESSAGES) {
@@ -30,8 +29,11 @@ function getErrorMessageFromResponse(response: any): string | undefined {
     return 'Server error. Please try again later.'
   }
 
-  const data = response.data as { message?: string; error?: string } | undefined
-  return data?.message || data?.error
+  if (response.data && typeof response.data === 'object') {
+    const data = response.data as { message?: string; error?: string }
+    return data.message ?? data.error
+  }
+  return undefined
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

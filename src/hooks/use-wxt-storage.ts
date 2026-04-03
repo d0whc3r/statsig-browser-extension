@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 export function useWxtStorage<T>(
   item: WxtStorageItem<T, Record<string, unknown>>,
 ): [T, (value: T) => void, boolean] {
-  const [value, setValue] = useState<T>(item.defaultValue as T)
+  const [value, setValue] = useState(item.fallback)
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
@@ -28,7 +28,7 @@ export function useWxtStorage<T>(
       }
     }
 
-    init()
+    void init()
 
     const unwatch = item.watch((val: T) => {
       if (mounted) {

@@ -22,7 +22,7 @@ export const useExperimentMutations = ({
     mutationFn: updateExperimentOverrides,
     onSuccess: () => {
       if (currentItemId) {
-        queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
+        void queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
       }
       onAddSuccess?.()
     },
@@ -32,7 +32,7 @@ export const useExperimentMutations = ({
     mutationFn: deleteExperimentOverrides,
     onSuccess: () => {
       if (currentItemId) {
-        queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
+        void queryClient.invalidateQueries({ queryKey: ['overrides', currentItemId] })
       }
       onDeleteSuccess?.()
     },

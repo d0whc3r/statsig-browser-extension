@@ -34,7 +34,7 @@ export function ExperimentsTable() {
   } = useExperimentsTableLogic()
 
   const handleFetchNextPage = useCallback(() => {
-    fetchNextPage()
+    void fetchNextPage()
   }, [fetchNextPage])
 
   return (

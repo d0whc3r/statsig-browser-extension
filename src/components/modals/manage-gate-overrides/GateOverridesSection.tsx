@@ -69,8 +69,8 @@ const GateOverridesManager = ({
   return (
     <div className="flex flex-col gap-6">
       <PageContextCard
-        detectedUser={detectedUser || undefined}
-        detectedUserId={detectedUserId || ''}
+        detectedUser={detectedUser ?? undefined}
+        detectedUserId={detectedUserId ?? ''}
         isDetectedUserOverridden={isDetectedUserOverridden}
         detectedUserOverrides={detectedUserOverrides}
         canEdit={canEdit}

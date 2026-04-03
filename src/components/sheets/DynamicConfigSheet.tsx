@@ -24,7 +24,7 @@ const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => (
         {isLoading ? (
           <Skeleton className="h-6 w-32" />
         ) : (
-          config?.name || config?.id || 'Dynamic Config'
+          (config?.name ?? config?.id ?? 'Dynamic Config')
         )}
       </SheetTitle>
       {config?.id && (

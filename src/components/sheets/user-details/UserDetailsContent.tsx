@@ -18,20 +18,28 @@ interface UserDetailsContentProps {
   error?: string | null
 }
 
+const toDisplayValue = (value: unknown): string => {
+  if (typeof value === 'string') {
+    return value
+  }
+  const serialized = JSON.stringify(value)
+  return serialized ?? ''
+}
+
 const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
   <div className="flex flex-col gap-4">
     <div className="flex items-start gap-4">
       <div className="flex-1 min-w-0 space-y-1">
         <div className="flex items-center justify-between gap-2">
           <h4 className="text-xl font-bold truncate tracking-tight">
-            {userDetails.name || 'Anonymous User'}
+            {userDetails.name ?? 'Anonymous User'}
           </h4>
           {userDetails.statsigEnvironment && (
             <Badge
               variant="outline"
               className="capitalize px-2 py-0.5 text-xs font-medium shrink-0"
             >
-              {userDetails.statsigEnvironment.tier || 'unknown'}
+              {userDetails.statsigEnvironment.tier ?? 'unknown'}
             </Badge>
           )}
         </div>
@@ -111,10 +119,10 @@ const InfoItem = ({
 
 const UserOverview = memo(({ userDetails }: { userDetails: StatsigUser }) => {
   const hasContent =
-    userDetails.email ||
-    userDetails.country ||
-    userDetails.locale ||
-    userDetails.ip ||
+    userDetails.email ??
+    userDetails.country ??
+    userDetails.locale ??
+    userDetails.ip ??
     userDetails.userAgent
 
   if (!hasContent) {
@@ -168,7 +176,7 @@ const PropertySection = ({
             <div key={key} className="p-3 flex flex-col gap-1 hover:bg-muted/50 transition-colors">
               <span className="text-xs font-medium text-muted-foreground">{key}</span>
               <CopyableText
-                value={typeof value === 'object' ? JSON.stringify(value) : String(value)}
+                value={toDisplayValue(value)}
                 copyLabel="Copy"
                 containerClassName="w-full gap-2"
                 valueClassName="text-sm font-mono break-all text-foreground"
@@ -219,8 +227,8 @@ export const UserDetailsContent = memo(
         <div className="space-y-6">
           <UserOverview userDetails={userDetails} />
 
-          {(userDetails.custom ||
-            userDetails.privateAttributes ||
+          {(userDetails.custom ??
+            userDetails.privateAttributes ??
             Object.keys(userDetails).length > 10) && <Separator />}
 
           <PropertySection title="Custom Properties" icon={Database} data={userDetails.custom} />

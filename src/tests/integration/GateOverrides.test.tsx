@@ -1,4 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react'
+import wretch from 'wretch'
 
 import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher, poster } from '@/src/lib/fetcher'
@@ -9,7 +10,8 @@ import { renderWithProviders } from '../utils/TestUtils'
 // Mock the api instance methods
 const { mockJson, mockWretch } = vi.hoisted(() => {
   const innerMockJson = vi.fn()
-  const instanceWretch = {
+  const instanceWretch = wretch('https://statsigapi.net/console/v1')
+  Object.assign(instanceWretch, {
     body: vi.fn().mockReturnThis(),
     delete: vi.fn().mockReturnThis(),
     get: vi.fn().mockReturnThis(),
@@ -17,58 +19,60 @@ const { mockJson, mockWretch } = vi.hoisted(() => {
     json: innerMockJson,
     post: vi.fn().mockReturnThis(),
     url: vi.fn().mockReturnThis(),
-  }
+  })
   return { mockJson: innerMockJson, mockWretch: instanceWretch }
 })
 
 vi.mock(import('@/src/lib/fetcher'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
+  const actual = await importOriginal<typeof import('@/src/lib/fetcher')>()
+  const mockFetcher: typeof actual.fetcher = vi.fn()
+  const mockPoster: typeof actual.poster = vi.fn()
   return {
     ...actual,
     api: mockWretch,
-    fetcher: vi.fn(),
-    poster: vi.fn(),
+    fetcher: mockFetcher,
+    poster: mockPoster,
   }
 })
 
 // Mock API key and mock detected user
 vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
+  const actual = await importOriginal<typeof import('@/src/hooks/use-wxt-storage')>()
   return {
     ...actual,
-    useWxtStorage: vi.fn((item) => {
+    useWxtStorage: <T,>(item: { defaultValue: T; key: string }): [T, (val: T) => void, boolean] => {
       if (item.key === 'local:api_key_type') {
-        return ['write-key', vi.fn(), false]
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return ['write-key' as unknown as T, vi.fn(), false]
       }
       if (item.key === 'local:statsig-console-api-key') {
-        return ['test-api-key', vi.fn(), false]
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return ['test-api-key' as unknown as T, vi.fn(), false]
       }
       return [item.defaultValue, vi.fn(), false]
-    }),
+    },
   }
 })
 
-vi.mock(
-  import('@/src/hooks/use-user-details'),
-  () =>
-    ({
-      useUserDetails: vi.fn(() => ({
-        data: { userID: 'user_pass' },
-        isLoading: false,
-      })),
-    }) as any,
-)
-
-vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
-  const actual = await importOriginal<any>()
+vi.mock(import('@/src/hooks/use-user-details'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/hooks/use-user-details')>()
   return {
     ...actual,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-type-assertion
+    useUserDetails: () => ({ data: { userID: 'user_pass' }, isLoading: false }) as any,
+  }
+})
+
+vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/lib/storage')>()
+  return {
+    ...actual,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-type-assertion
     apiKeyStorage: {
-      ...actual.apiKeyStorage,
       getValue: vi.fn().mockResolvedValue('test-api-key'),
       setValue: vi.fn(),
       watch: vi.fn(),
-    },
+    } as any,
   }
 })
 
@@ -121,14 +125,14 @@ const setupMocks = () => {
     }
     if (urlString.includes('/gates/')) {
       const id = urlString.split('/').pop()
-      const gate = mockGates.find((gt) => gt.id === id) || mockGates[0]
+      const gate = mockGates.find((gt) => gt.id === id) ?? mockGates[0]
       return Promise.resolve({ data: gate })
     }
     return Promise.resolve({ data: {} })
   })
 
   // Mock poster - returns wrapped response
-  vi.mocked(poster).mockResolvedValue({ data: { success: true } } as any)
+  vi.mocked(poster).mockResolvedValue({ data: { success: true } })
 
   // Smart mock for api.json()
   mockJson.mockImplementation((body) => {
@@ -198,12 +202,15 @@ describe('Gate Overrides Flow', () => {
     expect(userElements.length).toBeGreaterThanOrEqual(1)
     const row = userElements.find((el) => el.closest('tr'))?.closest('tr')
     expect(row).toBeDefined()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
     const deleteBtn = within(row as HTMLElement).getByRole('button')
     await user.click(deleteBtn)
 
-    // Verify API call
+    // Verify DELETE API call
     await waitFor(() => {
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
+      // eslint-disable-next-line @typescript-eslint/unbound-method
       expect(mockWretch.delete).toHaveBeenCalled()
       expect(mockJson).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -255,13 +262,14 @@ describe('Gate Overrides Flow', () => {
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_1/overrides',
         expect.objectContaining({
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-type-assertion
           environmentOverrides: expect.arrayContaining([
             expect.objectContaining({
               environment: 'Staging',
               passingIDs: ['new_stable_1'],
               unitID: 'stableID',
             }),
-          ]),
+          ]) as unknown as unknown[],
         }),
       )
     })

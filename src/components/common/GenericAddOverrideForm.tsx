@@ -50,8 +50,8 @@ const GenericAddOverrideFormInternal = <TValue extends string>({
   getSubmitButtonText,
 }: GenericAddOverrideFormProps<TValue>) => {
   const [id, setId] = useState('')
-  const [environment, setEnvironment] = useState<string>('Production')
-  const [idType, setIdType] = useState<string>(defaultIdType)
+  const [environment, setEnvironment] = useState('Production')
+  const [idType, setIdType] = useState(defaultIdType)
 
   const { data: availableIdTypes = ['userID', 'stableID'] } = useUnitIDTypes()
 

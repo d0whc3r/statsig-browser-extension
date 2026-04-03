@@ -21,7 +21,7 @@ export const useSettingsForm = () => {
   const form = useForm<SettingsFormValues>({
     defaultValues: {
       localStorageKey: localStorageValue || 'statsig_user',
-      storageType: (storageType as 'localStorage' | 'cookie') || 'localStorage',
+      storageType: storageType || 'localStorage',
     },
     resolver: zodResolver(settingsSchema),
   })
@@ -31,7 +31,7 @@ export const useSettingsForm = () => {
     if (isSettingsSheetOpen) {
       form.reset({
         localStorageKey: localStorageValue || 'statsig_user',
-        storageType: (storageType as 'localStorage' | 'cookie') || 'localStorage',
+        storageType: storageType || 'localStorage',
       })
     }
   }, [isSettingsSheetOpen, localStorageValue, storageType, form])

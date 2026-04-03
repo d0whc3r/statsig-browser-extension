@@ -35,7 +35,9 @@ export const AddOverrideForm = memo(
       [onAddOverride],
     )
 
-    const handleValueChange = useCallback((val: OverrideType) => setOverrideType(val), [])
+    const handleValueChange = useCallback((val: OverrideType) => {
+      setOverrideType(val)
+    }, [])
 
     const getSubmitButtonClassName = useCallback(
       (val: OverrideType) => (val === 'pass' ? 'bg-primary' : 'bg-destructive'),
@@ -57,7 +59,7 @@ export const AddOverrideForm = memo(
         values={OVERRIDE_TYPE_VALUES}
         selectedValue={overrideType}
         onValueChange={handleValueChange}
-        defaultIdType={featureGate?.idType || 'userID'}
+        defaultIdType={featureGate?.idType ?? 'userID'}
         getSubmitButtonClassName={getSubmitButtonClassName}
         getSubmitButtonText={getSubmitButtonText}
       />

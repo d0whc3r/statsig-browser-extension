@@ -25,7 +25,7 @@ export function FeatureGateSheet() {
   )
 
   const isLoading = isLoadingGate || isLoadingOverrides
-  const error = gateError || overridesError
+  const error = gateError ?? overridesError
 
   const detailsContent = useMemo(
     () => <FeatureGateSheetDetails isLoading={isLoading} error={error} featureGate={featureGate} />,

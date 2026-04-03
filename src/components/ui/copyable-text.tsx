@@ -35,9 +35,11 @@ export const CopyableText = memo(
     const handleCopy = useCallback(
       (event: React.MouseEvent<HTMLButtonElement>) => {
         event.stopPropagation()
-        void navigator.clipboard.writeText(copyValue || value)
+        void navigator.clipboard.writeText(copyValue ?? value)
         setCopied(true)
-        setTimeout(() => setCopied(false), COPY_TIMEOUT)
+        setTimeout(() => {
+          setCopied(false)
+        }, COPY_TIMEOUT)
       },
       [copyValue, value],
     )

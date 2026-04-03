@@ -119,7 +119,7 @@ export const PageContextCard = memo(
   }: ExperimentPageContextCardProps) => {
     const [selectedGroupId, setSelectedGroupId] = useState('')
 
-    const idType = experiment?.idType || 'userID'
+    const idType = experiment?.idType ?? 'userID'
 
     return (
       <BaseOverrideContextCard

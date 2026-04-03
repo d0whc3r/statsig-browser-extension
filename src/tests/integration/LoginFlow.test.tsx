@@ -8,24 +8,28 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the initialLogin handler
-vi.mock(import('@/src/handlers/initial-login'), () => ({
-  initialLogin: vi.fn(),
-}))
+vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/handlers/initial-login')>()
+  return {
+    ...actual,
+    initialLogin: vi.fn(),
+  }
+})
 
 // Mock useWxtStorage
-vi.mock(
-  import('@/src/hooks/use-wxt-storage'),
-  async (importOriginal) =>
-    ({
-      ...(await importOriginal()),
-      useWxtStorage: vi.fn((item) => {
-        if (item.key === 'local:statsig-console-api-key') {
-          return ['', vi.fn(), false] as any
-        }
-        return [item.defaultValue, vi.fn(), false] as any
-      }),
-    }) as any,
-)
+vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/hooks/use-wxt-storage')>()
+  return {
+    ...actual,
+    useWxtStorage: <T,>(item: { defaultValue: T; key: string }): [T, (val: T) => void, boolean] => {
+      if (item.key === 'local:statsig-console-api-key') {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+        return ['' as unknown as T, vi.fn(), false]
+      }
+      return [item.defaultValue, vi.fn(), false]
+    },
+  }
+})
 
 describe('Login Flow', () => {
   beforeEach(() => {

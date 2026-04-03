@@ -6,20 +6,22 @@ interface TableLoadingStateProps {
   rowCount?: number
 }
 
-export function TableLoadingState({ columnCount, rowCount = 5 }: TableLoadingStateProps) {
+export function TableLoadingState({ columnCount, rowCount = 5 }: Readonly<TableLoadingStateProps>) {
   return (
     <>
-      {Array.from({ length: rowCount }).map((_row, rowIndex) => (
-        // eslint-disable-next-line react/no-array-index-key
-        <TableRow key={rowIndex}>
-          {Array.from({ length: columnCount }).map((_col, colIndex) => (
-            // eslint-disable-next-line react/no-array-index-key
-            <TableCell key={colIndex}>
-              <Skeleton className="h-6 w-full" />
-            </TableCell>
-          ))}
-        </TableRow>
-      ))}
+      {Array.from({ length: rowCount })
+        .map((_row, rowIndex) => rowIndex)
+        .map((row) => (
+          <TableRow key={row}>
+            {Array.from({ length: columnCount })
+              .map((_col, colIndex) => colIndex)
+              .map((col) => (
+                <TableCell key={col}>
+                  <Skeleton className="h-6 w-full" />
+                </TableCell>
+              ))}
+          </TableRow>
+        ))}
     </>
   )
 }

@@ -36,7 +36,7 @@ export function FeatureGatesTable() {
   } = useFeatureGatesTableLogic()
 
   const handleFetchNextPage = useCallback(() => {
-    fetchNextPage()
+    void fetchNextPage()
   }, [fetchNextPage])
 
   return (

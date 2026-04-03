@@ -88,7 +88,7 @@ export const PageContextCard = memo(
     onAddOverride,
     featureGate,
   }: PageContextCardProps) => {
-    const idType = featureGate?.idType || 'userID'
+    const idType = featureGate?.idType ?? 'userID'
 
     return (
       <BaseOverrideContextCard

@@ -17,7 +17,7 @@ export const AuditLogs = memo(() => {
     (state) => state,
   )
 
-  const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
+  const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])
 
   const setCurrentAuditLog = useCallback(
     (auditLogId: string) => {

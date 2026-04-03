@@ -10,7 +10,7 @@ import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
 interface DynamicConfigsTableBodyProps {
-  error: Error | unknown
+  error: unknown
   handleRetry: () => void
   headerColumns: typeof dynamicConfigColumns
   isError: boolean

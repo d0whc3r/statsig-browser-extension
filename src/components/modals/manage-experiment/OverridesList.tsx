@@ -32,7 +32,9 @@ const UserOverridesTable = memo(
     const [showOthers, setShowOthers] = useState(false)
     const [confirmDelete, setConfirmDelete] = useState<AnyOverride | null>(null)
 
-    const toggleOthers = useCallback(() => setShowOthers((prev) => !prev), [])
+    const toggleOthers = useCallback(() => {
+      setShowOthers((prev) => !prev)
+    }, [])
 
     const { currentUserOverrides, otherOverrides } = useMemo(() => {
       const current = overrides.filter((overrideItem) => overrideItem.isCurrentUser)
@@ -61,7 +63,9 @@ const UserOverridesTable = memo(
       }
     }, [confirmDelete, onDelete])
 
-    const handleCloseConfirm = useCallback(() => setConfirmDelete(null), [])
+    const handleCloseConfirm = useCallback(() => {
+      setConfirmDelete(null)
+    }, [])
 
     return (
       <div className="space-y-2">

@@ -72,7 +72,7 @@ export const ExperimentAllocationCell = memo(({ item }: BaseCellProps) => (
 ExperimentAllocationCell.displayName = 'ExperimentAllocationCell'
 
 export const ExperimentTagsCell = memo(({ item }: BaseCellProps) => {
-  const tags = item.tags as string[]
+  const { tags } = item
   return (
     <div className="flex flex-wrap gap-1">
       {tags?.map((tag) => (

@@ -28,16 +28,15 @@ const GateSegmentOverrideForm = memo(
   ({ groups, onAddOverride, onCancel, isPending }: GateSegmentOverrideFormProps) => {
     const [overrideType, setOverrideType] = useState<'gate' | 'segment'>('gate')
     const [gateName, setGateName] = useState('')
-    const [targetGroup, setTargetGroup] = useState<string>(groups[0]?.name || '')
+    const [targetGroup, setTargetGroup] = useState(groups[0]?.name || '')
 
     const handleGateNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
       setGateName(event.target.value)
     }, [])
 
-    const handleOverrideTypeChange = useCallback(
-      (val: 'gate' | 'segment') => setOverrideType(val),
-      [],
-    )
+    const handleOverrideTypeChange = useCallback((val: 'gate' | 'segment') => {
+      setOverrideType(val)
+    }, [])
 
     const handleAddGateOverride = useCallback(() => {
       onAddOverride({
@@ -118,7 +117,7 @@ interface CreateOverrideFormProps {
 
 export const AddOverrideForm = memo(
   ({ groups, onAddOverride, onCancel, isPending, experiment }: CreateOverrideFormProps) => {
-    const [selectedGroup, setSelectedGroup] = useState<string>(groups[0]?.name || '')
+    const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name || '')
 
     const groupValues = useMemo(
       () => groups.map((group) => ({ label: group.name, value: group.name })),
@@ -128,10 +127,10 @@ export const AddOverrideForm = memo(
     const handleAddUserOverride = useCallback(
       ({ id, value: groupID, environment, idType }: AddOverrideParams<string>) => {
         onAddOverride({
-          environment: environment || undefined,
+          environment: environment ?? undefined,
           groupID,
           ids: [id],
-          unitType: idType || undefined,
+          unitType: idType ?? undefined,
         })
       },
       [onAddOverride],
@@ -156,7 +155,7 @@ export const AddOverrideForm = memo(
             values={groupValues}
             selectedValue={selectedGroup}
             onValueChange={setSelectedGroup}
-            defaultIdType={experiment?.idType || 'userID'}
+            defaultIdType={experiment?.idType ?? 'userID'}
             getSubmitButtonClassName={getSubmitButtonClassName}
             getSubmitButtonText={getSubmitButtonText}
           />

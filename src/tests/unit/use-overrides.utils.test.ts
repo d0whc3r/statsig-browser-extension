@@ -4,6 +4,7 @@ import { transformOverridesResponse } from '../../hooks/use-overrides.utils'
 
 describe('transformOverridesResponse logic', () => {
   it('should return empty arrays if response fields are missing', () => {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
     const mockResponse: any = {}
     const transformed = transformOverridesResponse(mockResponse)
 

@@ -22,7 +22,7 @@ export const useFeatureGatesTableLogic = () => {
     isFetchingNextPage,
   } = useFeatureGates()
 
-  const featureGates = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
+  const featureGates = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])
 
   const {
     filterValue,
@@ -69,7 +69,7 @@ export const useFeatureGatesTableLogic = () => {
     fetchNextPage,
     filterValue,
     handleRetry: useCallback(() => {
-      refetch()
+      void refetch()
     }, [refetch]),
     handleSetFilterValue,
     handleSetStatusFilter,

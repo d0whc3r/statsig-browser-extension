@@ -145,7 +145,7 @@ export const useGateOverrideHandlers = (
   const { mutate: updateMutate, isPending: isUpdatePending } = useMutation({
     mutationFn: updateGateOverrides,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
+      void queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
       setView('table')
     },
   })
@@ -153,7 +153,7 @@ export const useGateOverrideHandlers = (
   const { mutate: deleteMutate, isPending: isDeletePending } = useMutation({
     mutationFn: deleteGateOverrides,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
+      void queryClient.invalidateQueries({ queryKey: ['gate-overrides', currentItemId] })
     },
   })
 
@@ -170,7 +170,7 @@ export const useGateOverrideHandlers = (
 
       // Clone current overrides or start fresh
       const payload: GateOverride = currentOverrides
-        ? (structuredClone(currentOverrides) as GateOverride)
+        ? structuredClone(currentOverrides)
         : {
             environmentOverrides: [],
             failingUserIDs: [],

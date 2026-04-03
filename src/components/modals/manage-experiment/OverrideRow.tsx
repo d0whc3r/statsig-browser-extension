@@ -24,7 +24,7 @@ export const OverrideRow = memo(
     }, [onDelete, override])
 
     const groupName = useMemo(
-      () => groups.find((group) => group.id === override.groupID)?.name || override.groupID,
+      () => groups.find((group) => group.id === override.groupID)?.name ?? override.groupID,
       [groups, override.groupID],
     )
 
@@ -40,8 +40,8 @@ export const OverrideRow = memo(
             )}
           </div>
         </TableCell>
-        <TableCell>{override.environment || 'All'}</TableCell>
-        <TableCell>{override.unitType || 'userID'}</TableCell>
+        <TableCell>{override.environment ?? 'All'}</TableCell>
+        <TableCell>{override.unitType ?? 'userID'}</TableCell>
         <TableCell>
           <div className="min-w-0">
             <div className="truncate">{groupName}</div>

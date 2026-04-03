@@ -3,14 +3,27 @@ import { defineBackground } from 'wxt/utils/define-background'
 
 import { apiKeyStorage } from '@/src/lib/storage'
 
+interface ApiRequestMessage {
+  type: string
+  config?: {
+    url: string
+    method?: string
+    body?: string
+    headers?: Record<string, string>
+  }
+}
+
+const isApiRequestMessage = (msg: unknown): msg is ApiRequestMessage =>
+  typeof msg === 'object' && msg !== null && 'type' in msg
+
 export default defineBackground(() => {
   // Listen for API requests from the popup/options pages
   browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-    if (message.type === 'API_REQUEST' && message.config) {
+    if (isApiRequestMessage(message) && message.type === 'API_REQUEST' && message.config) {
       const { url, method, body, headers } = message.config
 
       // Perform the fetch request
-      apiKeyStorage.getValue().then((apiKey: string | null) => {
+      void apiKeyStorage.getValue().then((apiKey: string | null) => {
         const finalHeaders = { ...headers }
         if (apiKey && !finalHeaders['STATSIG-API-KEY']) {
           // Remove quotes if present (legacy support)

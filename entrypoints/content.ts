@@ -57,11 +57,15 @@ const isValidMessage = (event: MessageEvent): StatsigUserMessage | null => {
   if (event.source !== globalThis.window) {
     return null
   }
-  const data = event.data as StatsigUserMessage | undefined
-  if (!data?.type) {
+  const data = event.data as unknown
+  if (typeof data !== 'object' || data === null || !('type' in data)) {
     return null
   }
-  return data
+  const msg = data as StatsigUserMessage
+  if (!msg.type) {
+    return null
+  }
+  return msg
 }
 
 const createMessageHandler = (sendResponse: (response: unknown) => void) => {
@@ -132,8 +136,11 @@ const handleRuntimeMessage = (
   _sender: Runtime.MessageSender,
   sendResponse: (response: unknown) => void,
 ) => {
-  const msg = message as { type: string } | undefined
-  if (!msg?.type) {
+  if (typeof message !== 'object' || message === null || !('type' in message)) {
+    return true
+  }
+  const msg = message as { type: string }
+  if (!msg.type) {
     return true
   }
 

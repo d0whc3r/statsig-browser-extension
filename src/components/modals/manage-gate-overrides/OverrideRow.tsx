@@ -46,9 +46,9 @@ export const OverrideRow = memo(
             )}
           </div>
         </TableCell>
-        <TableCell className="text-xs text-muted-foreground">{item.idType || 'userID'}</TableCell>
+        <TableCell className="text-xs text-muted-foreground">{item.idType ?? 'userID'}</TableCell>
         <TableCell className="text-xs text-muted-foreground">
-          {item.environment || 'All Environments'}
+          {item.environment ?? 'All Environments'}
         </TableCell>
         <TableCell>
           <Badge variant={item.type === 'pass' ? 'default' : 'destructive'}>

@@ -20,9 +20,9 @@ export const FeatureGateSheetHeader = memo(
         <div className="flex-1 min-w-0 mr-4">
           <SheetTitle
             className="text-lg font-bold truncate cursor-pointer hover:underline"
-            title={featureGate?.name || currentItemId}
+            title={featureGate?.name ?? currentItemId}
           >
-            {isLoading ? <Skeleton className="h-6 w-32" /> : featureGate?.name || currentItemId}
+            {isLoading ? <Skeleton className="h-6 w-32" /> : (featureGate?.name ?? currentItemId)}
           </SheetTitle>
           {!isLoading && currentItemId && (
             <CopyableText

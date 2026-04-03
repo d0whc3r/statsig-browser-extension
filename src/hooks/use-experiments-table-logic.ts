@@ -10,9 +10,9 @@ import { useUIStore } from '@/src/store/use-ui-store'
 export const useExperimentsTableLogic = () => {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
 
-  const experiments = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) || [], [data])
+  const experiments = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])
 
-  const totalServerItems = useMemo(() => data?.pages[0]?.pagination?.totalItems || 0, [data])
+  const totalServerItems = useMemo(() => data?.pages[0]?.pagination?.totalItems ?? 0, [data])
 
   const {
     filterValue,

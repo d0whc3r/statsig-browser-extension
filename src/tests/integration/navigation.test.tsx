@@ -15,29 +15,28 @@ vi.mock(import('@/src/components/tables/ExperimentsTable'), () => ({
 vi.mock(import('@/src/components/tables/DynamicConfigsTable'), () => ({
   DynamicConfigsTable: () => <div data-testid="dynamic-configs-table">Dynamic Configs Table</div>,
 }))
-vi.mock(
-  import('@/src/components/AuditLogs'),
-  async (importOriginal) =>
-    ({
-      ...(await importOriginal()),
-      AuditLogs: () => <div data-testid="audit-logs">Audit Logs Component</div>,
-    }) as any,
-)
+vi.mock(import('@/src/components/AuditLogs'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/components/AuditLogs')>()
+  return {
+    ...actual,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    AuditLogs: (() => <div data-testid="audit-logs">Audit Logs Component</div>) as any,
+  }
+})
 
 // Mock API key to bypass login modal
-vi.mock(
-  import('@/src/hooks/use-wxt-storage'),
-  async (importOriginal) =>
-    ({
-      ...(await importOriginal()),
-      useWxtStorage: vi.fn((item) => {
-        if (item.key === 'local:statsig-console-api-key') {
-          return ['test-api-key', vi.fn(), false]
-        }
-        return [item.defaultValue, vi.fn(), false]
-      }),
-    }) as any,
-)
+vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/hooks/use-wxt-storage')>()
+  return {
+    ...actual,
+    useWxtStorage: <T,>(item: { defaultValue: T; key: string }): [T, (val: T) => void, boolean] => {
+      if (item.key === 'local:statsig-console-api-key') {
+        return ['test-api-key' as unknown as T, vi.fn(), false]
+      }
+      return [item.defaultValue, vi.fn(), false]
+    },
+  }
+})
 
 describe('Navigation Flow', () => {
   beforeEach(() => {

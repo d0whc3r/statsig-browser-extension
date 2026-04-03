@@ -36,7 +36,7 @@ const AuditLogHeader = ({
           {isLoading && !auditLog ? (
             <Skeleton className="h-6 w-32" />
           ) : (
-            auditLog?.name || 'Audit Log Detail'
+            (auditLog?.name ?? 'Audit Log Detail')
           )}
         </SheetTitle>
         {!isLoading && auditLog && currentAuditLogId && (

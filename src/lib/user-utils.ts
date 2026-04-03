@@ -8,14 +8,22 @@ export const getDetectedUserId = (
     return undefined
   }
   if (idType === 'userID') {
-    return (detectedUser.userID || detectedUser.id) as string | undefined
+    const id = detectedUser.userID ?? detectedUser.id
+    if (typeof id === 'string') {return id}
+    if (typeof id === 'number' || typeof id === 'boolean') {return String(id)}
+    return undefined
   }
 
   const { customIDs, custom } = detectedUser
 
-  return (
-    (typeof customIDs?.[idType] === 'string' ? customIDs[idType] : undefined) ??
-    (typeof detectedUser[idType] === 'string' ? detectedUser[idType] : undefined) ??
-    (typeof custom?.[idType] === 'string' ? custom[idType] : undefined)
-  )
+  const customId = customIDs?.[idType]
+  if (typeof customId === 'string') {return customId}
+
+  const rootId = (detectedUser as Record<string, unknown>)[idType]
+  if (typeof rootId === 'string') {return rootId}
+
+  const cust = custom?.[idType]
+  if (typeof cust === 'string') {return cust}
+
+  return undefined
 }
