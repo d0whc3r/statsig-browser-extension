@@ -1,10 +1,9 @@
-// oxlint-disable no-inner-declarations
-// oxlint-disable max-statements
+// oxlint-disable no-inner-declarations, max-statements
 import type { StatsigInstance, WindowWithStatsig } from '../types/statsig'
 
 export const getUserDetailsFromPage = () => {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const win = globalThis as unknown as WindowWithStatsig
 
     // oxlint-disable-next-line unicorn/consistent-function-scoping

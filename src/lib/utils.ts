@@ -39,7 +39,6 @@ function getErrorMessageFromResponse(response: {
   return undefined
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function isWretchError(
   error: unknown,
 ): error is { response: Response & { _data?: unknown }; status: number; message: string } {

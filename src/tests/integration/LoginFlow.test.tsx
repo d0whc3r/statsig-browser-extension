@@ -23,7 +23,6 @@ vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
     ...actual,
     useWxtStorage: <T,>(item: { defaultValue: T; key: string }): [T, (val: T) => void, boolean] => {
       if (item.key === 'local:statsig-console-api-key') {
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-type-assertion
         return ['' as unknown as T, vi.fn(), false]
       }
       return [item.defaultValue, vi.fn(), false]

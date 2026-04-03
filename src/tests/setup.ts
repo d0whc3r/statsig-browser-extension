@@ -23,10 +23,15 @@ const chromeMock = {
   },
 }
 
-Object.defineProperty(globalThis, 'chrome', {
-  value: chromeMock,
-  writable: true,
-})
+if (typeof globalThis.chrome === 'object' && globalThis.chrome !== null) {
+  Object.assign(globalThis.chrome, chromeMock)
+} else {
+  Object.defineProperty(globalThis, 'chrome', {
+    configurable: true,
+    value: chromeMock,
+    writable: true,
+  })
+}
 
 // Mock ResizeObserver
 globalThis.ResizeObserver = class ResizeObserver {
@@ -48,6 +53,7 @@ const createMatchMediaResult = (query: string): MediaQueryList => ({
 
 // Mock matchMedia
 Object.defineProperty(globalThis, 'matchMedia', {
+  configurable: true,
   value: vi.fn().mockImplementation((query: string) => createMatchMediaResult(query)),
   writable: true,
 })
