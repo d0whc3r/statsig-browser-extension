@@ -4,6 +4,17 @@ on:
     tags:
       - "v*"
   workflow_dispatch:
+    inputs:
+      publish_chrome:
+        description: "Publish to Chrome Web Store"
+        required: true
+        type: boolean
+        default: true
+      publish_firefox:
+        description: "Publish to Firefox Add-ons"
+        required: true
+        type: boolean
+        default: true
 
 env:
   NODE_OPTIONS: "--max-old-space-size=4096 --trace-warnings"
@@ -26,10 +37,50 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build and zip extension artifact
-        run: pnpm run zip:chrome && pnpm run zip:firefox
+      - name: Build and zip Chrome extension
+        if: ${{ github.event_name == 'push' || github.event.inputs.publish_chrome == 'true' }}
+        run: pnpm run zip:chrome
+
+      - name: Build and zip Firefox extension
+        if: ${{ github.event_name == 'push' || github.event.inputs.publish_firefox == 'true' }}
+        run: pnpm run zip:firefox
+
+      - name: Filter Submit Keys and Inject Zip Paths
+        id: filter_keys
+        env:
+          SUBMIT_KEYS: ${{ secrets.SUBMIT_KEYS }}
+        run: |
+          KEYS="$SUBMIT_KEYS"
+
+          # Remove platforms based on manual inputs
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            if [ "${{ github.event.inputs.publish_chrome }}" == "false" ]; then
+              KEYS=$(echo "$KEYS" | jq 'del(.chrome)')
+            fi
+            if [ "${{ github.event.inputs.publish_firefox }}" == "false" ]; then
+              KEYS=$(echo "$KEYS" | jq 'del(.firefox)')
+            fi
+          fi
+
+          # Automatically inject exact zip paths into the config so bpp doesn't fail finding them
+          CHROME_ZIP=$(ls .output/*-chrome.zip 2>/dev/null | head -n 1 || true)
+          FIREFOX_ZIP=$(ls .output/*-firefox.zip 2>/dev/null | head -n 1 || true)
+
+          if [ -n "$CHROME_ZIP" ] && echo "$KEYS" | jq -e 'has("chrome")' > /dev/null; then
+            KEYS=$(echo "$KEYS" | jq --arg zip "$CHROME_ZIP" '.chrome.zip = $zip')
+          fi
+
+          if [ -n "$FIREFOX_ZIP" ] && echo "$KEYS" | jq -e 'has("firefox")' > /dev/null; then
+            KEYS=$(echo "$KEYS" | jq --arg zip "$FIREFOX_ZIP" '.firefox.zip = $zip')
+          fi
+
+          # Write the JSON securely to GITHUB_OUTPUT
+          EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+          echo "filtered_keys<<$EOF" >> $GITHUB_OUTPUT
+          echo "$KEYS" >> $GITHUB_OUTPUT
+          echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Browser Platform Publish
         uses: PlasmoHQ/bpp@v3
         with:
-          keys: ${{ secrets.SUBMIT_KEYS }}
+          keys: ${{ steps.filter_keys.outputs.filtered_keys }}
