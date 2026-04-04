@@ -87,7 +87,7 @@
     "@testing-library/user-event": "14.6.1",
     "@total-typescript/ts-reset": "0.6.1",
     "@types/chrome": "0.1.39",
-    "@types/node": "^24",
+    "@types/node": "^24.12.2",
     "@types/react": "19.2.14",
     "@types/react-dom": "19.2.3",
     "@types/webextension-polyfill": "0.12.5",
