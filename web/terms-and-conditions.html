@@ -18,61 +18,82 @@
         </a>
         <nav class="topbar-nav" aria-label="Top navigation">
           <a class="pill" href="./index.html">Home</a>
+          <a class="pill" href="./terms-and-conditions.html">Terms</a>
           <a class="pill" href="./privacy-policy.html">Privacy</a>
         </nav>
       </header>
 
-      <section class="card">
+      <div class="doc-page">
         <div class="doc-header">
           <h1>Terms & Conditions</h1>
           <span class="doc-date">Last updated: March 31, 2026</span>
         </div>
-        <p class="doc-intro">
-          These Terms & Conditions govern your use of the Statsig Browser Extension. By using the
-          extension, you agree to these terms.
-        </p>
-        <div class="hero-image-wrap">
-          <img class="hero-image" src="./statsig_full.png" alt="Statsig Browser Extension" />
+
+        <div class="doc-content">
+          <p>
+            By installing and using the Statsig Browser Extension, you agree to these Terms &
+            Conditions. Please read them carefully.
+          </p>
+
+          <h2>Use of the extension</h2>
+          <ul>
+            <li>
+              The extension is provided as open-source software under the terms of its
+              <a
+                href="https://github.com/d0whc3r/statsig-browser-extension"
+                target="_blank"
+                rel="noopener noreferrer"
+                >source code license</a
+              >.
+            </li>
+            <li>
+              You are responsible for ensuring you have appropriate access and authorization to use
+              the Statsig Console API and to apply overrides within your organization's Statsig
+              projects.
+            </li>
+            <li>
+              The extension does not modify the Statsig platform itself — it interacts with the
+              Statsig API using credentials you provide.
+            </li>
+          </ul>
+
+          <h2>Service availability</h2>
+          <p>
+            The extension is provided "as is" without any warranty. We do not guarantee
+            uninterrupted or error-free operation. The extension depends on the Statsig API being
+            available and accessible, which is outside of our control.
+          </p>
+
+          <h2>Limitation of liability</h2>
+          <p>
+            The extension authors and contributors shall not be liable for any damages arising from
+            the use or inability to use the extension, including but not limited to:
+          </p>
+          <ul>
+            <li>Unauthorized overrides applied using your API credentials.</li>
+            <li>Data loss or misconfiguration caused by incorrect usage.</li>
+            <li>Any impact to your Statsig projects, experiments, or feature gate evaluations.</li>
+          </ul>
+
+          <h2>Changes to these terms</h2>
+          <p>
+            We may update these Terms & Conditions from time to time. Changes will be reflected in
+            this page with an updated "Last updated" date. Continued use of the extension after
+            changes constitutes acceptance of the revised terms.
+          </p>
+
+          <h2>Governing law</h2>
+          <p>
+            These terms are governed by the laws of the jurisdiction in which the primary maintainer
+            resides. Any disputes shall be resolved in the appropriate courts of that jurisdiction.
+          </p>
         </div>
-      </section>
 
-      <section class="card">
-        <h2>Use of the extension</h2>
-        <ul>
-          <li>You must use the extension in compliance with applicable laws and platform rules.</li>
-          <li>You are responsible for actions performed using your credentials and API keys.</li>
-          <li>You should verify override changes before using them in production environments.</li>
-        </ul>
-      </section>
-
-      <section class="card">
-        <h2>Service availability</h2>
-        <p>
-          The extension is provided on an “as is” basis. Features may evolve, be updated, or be
-          discontinued at any time.
-        </p>
-      </section>
-
-      <section class="card">
-        <h2>Limitation of liability</h2>
-        <p>
-          To the maximum extent permitted by law, the extension maintainers are not liable for
-          indirect, incidental, or consequential damages arising from use of the extension.
-        </p>
-      </section>
-
-      <section class="card">
-        <h2>Changes to these terms</h2>
-        <p>
-          We may update these terms from time to time. Continued use after updates constitutes
-          acceptance of the revised terms.
-        </p>
-      </section>
-
-      <nav class="nav" aria-label="Document links">
-        <a class="btn subtle" href="./index.html">Home</a>
-        <a class="btn primary" href="./privacy-policy.html">Privacy Policy</a>
-      </nav>
+        <nav class="doc-nav" aria-label="Document navigation">
+          <a class="btn btn-outline" href="./index.html">← Home</a>
+          <a class="btn btn-outline" href="./privacy-policy.html">Privacy Policy →</a>
+        </nav>
+      </div>
     </main>
   </body>
 </html>
