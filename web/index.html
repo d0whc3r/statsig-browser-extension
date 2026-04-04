@@ -20,26 +20,30 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="container">
-      <!-- Topbar -->
-      <header class="topbar">
+    <header class="topbar">
+      <div class="topbar-inner">
         <a class="brand" href="./index.html">
           <img class="brand-logo" src="./favicon-32.png" alt="Statsig logo" />
           <span class="brand-name">Statsig Browser Extension</span>
         </a>
         <nav class="topbar-nav" aria-label="Top navigation">
-          <a class="pill" href="#features">Features</a>
-          <a class="pill" href="./privacy-policy.html">Privacy</a>
+          <a class="nav-link active" href="./index.html">Home</a>
+          <a class="nav-link" href="#features">Features</a>
+          <div class="nav-divider" aria-hidden="true"></div>
+          <a class="nav-link" href="./privacy-policy.html">Privacy</a>
+          <a class="nav-link" href="./terms-and-conditions.html">Terms</a>
+          <div class="nav-divider" aria-hidden="true"></div>
           <a
-            class="pill accent"
+            class="nav-cta"
             href="https://chromewebstore.google.com/detail/statsig-browser-extension/dcoabmhfndkoogomhielncgjbaomfkmh"
             target="_blank"
             rel="noopener noreferrer"
             >Install</a
           >
         </nav>
-      </header>
-
+      </div>
+    </header>
+    <main class="container">
       <!-- Hero -->
       <section class="hero-section">
         <div class="hero-grid">
@@ -104,7 +108,7 @@
         </div>
 
         <div class="feature-grid">
-          <div class="feature-card span-2">
+          <div class="feature-card">
             <div class="feature-icon">🔀</div>
             <h3>Feature Gates</h3>
             <p>
@@ -193,22 +197,19 @@
 
         <div class="showcase">
           <div class="showcase-item">
-            <img
-              src="../images/image-start-resize.jpg"
-              alt="Setup screen — API key configuration"
-            />
+            <img src="./image-start-resize.jpg" alt="Setup screen — API key configuration" />
             <div class="showcase-caption">Setup — Enter your Console API Key</div>
           </div>
           <div class="showcase-item">
-            <img src="../images/image1-resize.jpg" alt="Main Dashboard" />
+            <img src="./image1-resize.jpg" alt="Main Dashboard" />
             <div class="showcase-caption">Main Dashboard — Gates, Experiments, Configs</div>
           </div>
           <div class="showcase-item">
-            <img src="../images/image-detail-resize.jpg" alt="Entity detail side sheet" />
+            <img src="./image-detail-resize.jpg" alt="Entity detail side sheet" />
             <div class="showcase-caption">Entity Details — Rules, values, overrides</div>
           </div>
           <div class="showcase-item">
-            <img src="../images/image-audit-resize.jpg" alt="Audit log" />
+            <img src="./image-audit-resize.jpg" alt="Audit log" />
             <div class="showcase-caption">Audit Log — Activity trail with filters</div>
           </div>
         </div>

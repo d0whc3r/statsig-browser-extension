@@ -3,6 +3,8 @@
    Design tokens aligned to app OKLCH system
    ============================================ */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
 :root {
   color-scheme: light;
 
@@ -66,8 +68,19 @@ body::before {
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(circle at 20% 0%, oklch(0.93 0.02 265) 0%, transparent 50%),
-    radial-gradient(circle at 80% 0%, oklch(0.92 0.02 258) 0%, transparent 40%);
+    radial-gradient(ellipse at 15% -10%, oklch(0.91 0.04 265) 0%, transparent 45%),
+    radial-gradient(ellipse at 85% -5%, oklch(0.9 0.04 258) 0%, transparent 40%),
+    radial-gradient(ellipse at 50% 100%, oklch(0.93 0.02 270) 0%, transparent 60%);
+}
+
+code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--primary-soft);
+  color: var(--primary);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--primary-soft-border);
 }
 
 a {
@@ -95,17 +108,24 @@ img {
    ============================================ */
 
 .topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: oklch(0.96 0.01 271.34 / 0.85);
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+.topbar-inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 24px;
+  height: 58px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 16px 0;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  background: oklch(0.96 0.01 271.34 / 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
 }
 
 .brand {
@@ -128,35 +148,87 @@ img {
 
 .topbar-nav {
   display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
+  gap: 2px;
   align-items: center;
 }
 
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
+}
+
+.nav-link:hover {
+  color: var(--text);
+  background: var(--accent);
+}
+
+.nav-link.active {
+  color: var(--text);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--border);
+}
+
+.nav-divider {
+  width: 1px;
+  height: 18px;
+  background: var(--border);
+  margin: 0 6px;
+}
+
+.nav-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--primary);
+  color: oklch(1 0 0);
+  padding: 7px 14px;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 6px;
+  transition:
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.nav-cta:hover {
+  background: var(--primary-hover);
+  box-shadow: var(--shadow-md);
+}
+
+/* Keep .pill for any legacy usage */
 .pill {
   display: inline-flex;
   align-items: center;
-  border: 1px solid var(--border);
-  background: var(--surface-elevated);
   color: var(--text-muted);
-  border-radius: 999px;
   padding: 6px 12px;
-  font-size: 0.82rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
   font-weight: 500;
-  transition: all 150ms ease;
+  transition:
+    color 150ms ease,
+    background 150ms ease;
 }
 
 .pill:hover {
   color: var(--text);
-  border-color: var(--primary-soft-border);
   background: var(--accent);
 }
 
 .pill.accent {
   background: var(--primary);
   color: oklch(1 0 0);
-  border-color: transparent;
   font-weight: 600;
+  margin-left: 6px;
 }
 
 .pill.accent:hover {
@@ -200,6 +272,19 @@ img {
   height: 6px;
   background: var(--primary);
   border-radius: 50%;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.3);
+  }
 }
 
 .hero-title {
@@ -293,9 +378,22 @@ img {
   background: var(--surface-elevated);
   padding: 12px;
   box-shadow: var(--shadow-lg), var(--shadow-glow);
+  position: relative;
+}
+
+.hero-visual::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: var(--radius-2xl);
+  background: linear-gradient(135deg, oklch(0.48 0.2 260.47 / 0.15), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 .hero-visual img {
+  position: relative;
+  z-index: 1;
   border-radius: var(--radius-xl);
   width: 100%;
   display: block;
@@ -364,10 +462,6 @@ img {
   border-color: var(--primary-soft-border);
   box-shadow: var(--shadow-sm);
   transform: translateY(-2px);
-}
-
-.feature-card.span-2 {
-  grid-column: span 2;
 }
 
 .feature-icon {
@@ -445,6 +539,9 @@ img {
   width: 100%;
   display: block;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--primary-soft);
 }
 
 .showcase-caption {
@@ -497,11 +594,35 @@ img {
 
 .cta-section {
   text-align: center;
-  padding: 48px 32px;
-  background: var(--surface);
-  border: 1px solid var(--border);
+  padding: 56px 32px;
+  background: linear-gradient(135deg, var(--surface) 0%, oklch(0.96 0.03 262) 100%);
+  border: 1px solid var(--primary-soft-border);
   border-radius: var(--radius-2xl);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-lg), var(--shadow-glow);
+  position: relative;
+  overflow: hidden;
+}
+
+.cta-section::before {
+  content: '';
+  position: absolute;
+  top: -60px;
+  right: -60px;
+  width: 240px;
+  height: 240px;
+  background: radial-gradient(circle, oklch(0.48 0.2 260.47 / 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cta-section::after {
+  content: '';
+  position: absolute;
+  bottom: -60px;
+  left: -60px;
+  width: 200px;
+  height: 200px;
+  background: radial-gradient(circle, oklch(0.48 0.2 260.47 / 0.06) 0%, transparent 70%);
+  pointer-events: none;
 }
 
 .cta-section h2 {
@@ -605,6 +726,17 @@ img {
   margin-top: 6px;
 }
 
+.doc-content a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 150ms ease;
+}
+
+.doc-content a:hover {
+  opacity: 0.8;
+}
+
 .doc-nav {
   margin-top: 40px;
   padding-top: 20px;
@@ -631,12 +763,8 @@ img {
     grid-template-columns: 1fr 1fr;
   }
 
-  .feature-card.span-2 {
-    grid-column: span 1;
-  }
-
   .audience-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -645,10 +773,22 @@ img {
     padding: 0 16px 48px;
   }
 
-  .topbar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+  .topbar-inner {
+    padding: 0 16px;
+    gap: 10px;
+  }
+
+  .topbar .brand-name {
+    display: none;
+  }
+
+  .nav-link {
+    padding: 6px 8px;
+    font-size: 0.82rem;
+  }
+
+  .nav-divider {
+    display: none;
   }
 
   .hero-section {
@@ -657,6 +797,10 @@ img {
   }
 
   .feature-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .audience-grid {
     grid-template-columns: 1fr;
   }
 
@@ -671,5 +815,46 @@ img {
   .footer {
     flex-direction: column;
     text-align: center;
+  }
+}
+
+/* ============================================
+   Dark mode
+   ============================================ */
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: oklch(0.14 0.02 263);
+    --surface: oklch(0.17 0.02 263);
+    --surface-elevated: oklch(0.2 0.02 263);
+    --text: oklch(0.94 0.01 263);
+    --text-muted: oklch(0.65 0.02 263);
+    --primary: oklch(0.62 0.2 260.47);
+    --primary-hover: oklch(0.68 0.2 260.47);
+    --primary-soft: oklch(0.22 0.04 260);
+    --primary-soft-border: oklch(0.3 0.05 260);
+    --border: oklch(0.28 0.02 263);
+    --border-soft: oklch(0.24 0.02 263);
+    --accent: oklch(0.22 0.03 260);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.2);
+    --shadow-md: 0 2px 6px 0 rgb(0 0 0 / 0.4), 0 1px 3px 0 rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 4px 12px 0 rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-glow: 0 0 40px -8px oklch(0.62 0.2 260.47 / 0.25);
+  }
+
+  body::before {
+    background:
+      radial-gradient(ellipse at 15% -10%, oklch(0.22 0.05 265 / 0.6) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% -5%, oklch(0.2 0.05 258 / 0.5) 0%, transparent 40%),
+      radial-gradient(ellipse at 50% 100%, oklch(0.18 0.03 270 / 0.4) 0%, transparent 60%);
+  }
+
+  .topbar {
+    background: oklch(0.14 0.02 263 / 0.9);
+  }
+
+  .cta-section {
+    background: linear-gradient(135deg, var(--surface) 0%, oklch(0.2 0.04 262) 100%);
   }
 }
