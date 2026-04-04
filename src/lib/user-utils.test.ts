@@ -64,4 +64,19 @@ describe('getDetectedUserId utility', () => {
     }
     expect(getDetectedUserId(user as unknown as StatsigUser, 'missingID')).toBe(undefined)
   })
+
+  it('handles empty string userID', () => {
+    const user = { userID: '' }
+    expect(getDetectedUserId(user)).toBe('')
+  })
+
+  it('handles null userID', () => {
+    const user = { userID: null }
+    expect(getDetectedUserId(user as unknown as StatsigUser)).toBeUndefined()
+  })
+
+  it('prioritizes userID over id when both exist', () => {
+    const user = { id: 'id-123', userID: 'user-456' }
+    expect(getDetectedUserId(user)).toBe('user-456')
+  })
 })

@@ -4,12 +4,13 @@ const { queryMock } = vi.hoisted(() => ({
   queryMock: vi.fn(),
 }))
 
-vi.mock('wxt/browser', () => ({
+vi.mock(import('wxt/browser'), async (importOriginal) => ({
+  ...(await importOriginal()),
   browser: {
     tabs: {
       query: queryMock,
     },
-  },
+  } as any,
 }))
 
 describe('active tab lookup', () => {
@@ -51,5 +52,22 @@ describe('active tab lookup', () => {
 
     await expect(getActiveTab()).resolves.toBeUndefined()
     expect(errorSpy).toHaveBeenCalledWith('[Statsig Extension] Failed to get active tab:', error)
+  })
+
+  it('handles multiple tabs in query result and returns first', async () => {
+    const tabs = [
+      { id: 1, url: 'https://first.com' },
+      { id: 2, url: 'https://second.com' },
+    ]
+    queryMock.mockResolvedValueOnce(tabs)
+
+    await expect(getActiveTab()).resolves.toEqual({ id: 1, url: 'https://first.com' })
+  })
+
+  it('handles tab with undefined URL', async () => {
+    const tab = { id: 1 }
+    queryMock.mockResolvedValueOnce([tab])
+
+    await expect(getActiveTab()).resolves.toEqual({ id: 1 })
   })
 })

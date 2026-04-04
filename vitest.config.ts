@@ -6,17 +6,29 @@ export default defineConfig({
   // oxlint-disable-next-line new-cap
   plugins: [WxtVitest(), react()],
   test: {
+    clearMocks: true,
     coverage: {
       enabled: true,
-      exclude: ['src/tests/**/*'],
+      exclude: [
+        'src/tests/**/*',
+        '**/*.d.ts',
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        'src/components/ui/**/*',
+      ],
       include: ['{src,entrypoints}/**/*.{ts,tsx}'],
+      reporter: ['text', 'json', 'html'],
     },
     environment: 'happy-dom',
     globals: true,
+    mockReset: false,
+    restoreMocks: true,
     setupFiles: ['./src/tests/setup.ts'],
     typecheck: {
       tsconfig: './tsconfig.test.json',
     },
+    unstubEnvs: true,
+    unstubGlobals: true,
     watch: false,
   },
 })

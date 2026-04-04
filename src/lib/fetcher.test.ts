@@ -4,12 +4,13 @@ const { sendMessageMock } = vi.hoisted(() => ({
   sendMessageMock: vi.fn(),
 }))
 
-vi.mock('wxt/browser', () => ({
+vi.mock(import('wxt/browser'), async (importOriginal) => ({
+  ...(await importOriginal()),
   browser: {
     runtime: {
       sendMessage: sendMessageMock,
     },
-  },
+  } as any,
 }))
 
 describe('custom fetch bridge', () => {
@@ -30,6 +31,7 @@ describe('custom fetch bridge', () => {
 
     await expect(fetcher<{ ok: boolean }>('/feature-gates')).resolves.toEqual({ ok: true })
 
+    expect(sendMessageMock).toHaveBeenCalledTimes(1)
     expect(sendMessageMock).toHaveBeenCalledWith({
       config: {
         body: undefined,
@@ -57,15 +59,16 @@ describe('custom fetch bridge', () => {
     })
 
     expect(sendMessageMock).toHaveBeenCalledTimes(1)
-    expect(sendMessageMock).toHaveBeenCalledWith(
-      expect.objectContaining({
-        config: expect.objectContaining({
-          method: 'POST',
-          url: `${API_BASE_URL}/overrides`,
-        }),
-        type: 'API_REQUEST',
-      }),
-    )
+    const [[callArg]] = sendMessageMock.mock.calls
+    expect(callArg).toMatchObject({
+      config: {
+        method: 'POST',
+        url: `${API_BASE_URL}/overrides`,
+      },
+      type: 'API_REQUEST',
+    })
+    // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
+    expect(JSON.parse(callArg.config.body)).toEqual({ id: 'gate_1' })
   })
 
   it('parses string response payloads from the background script', async () => {
@@ -95,5 +98,49 @@ describe('custom fetch bridge', () => {
     })
 
     await expect(fetcher('/forbidden')).rejects.toThrow('Forbidden')
+  })
+
+  it('handles non-JSON content types correctly', async () => {
+    // The fetcher returns the data as-is when it's already an object
+    sendMessageMock.mockResolvedValue({
+      response: {
+        data: { message: 'plain text response' },
+        headers: { 'content-type': 'text/plain' },
+        status: 200,
+        statusText: 'OK',
+      },
+      success: true,
+    })
+
+    // The fetcher will return the parsed data object
+    await expect(fetcher('/plain')).resolves.toEqual({ message: 'plain text response' })
+  })
+
+  it('handles empty data field', async () => {
+    sendMessageMock.mockResolvedValue({
+      response: {
+        data: null,
+        headers: { 'content-type': 'application/json' },
+        status: 204,
+        statusText: 'No Content',
+      },
+      success: true,
+    })
+
+    await expect(fetcher('/no-content')).resolves.toBeNull()
+  })
+
+  it('handles array response payloads', async () => {
+    sendMessageMock.mockResolvedValue({
+      response: {
+        data: [{ id: 1 }, { id: 2 }],
+        headers: { 'content-type': 'application/json' },
+        status: 200,
+        statusText: 'OK',
+      },
+      success: true,
+    })
+
+    await expect(fetcher<{ id: number }[]>('/list')).resolves.toEqual([{ id: 1 }, { id: 2 }])
   })
 })
