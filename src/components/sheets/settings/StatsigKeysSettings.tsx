@@ -16,7 +16,7 @@ interface StatsigKeysSettingsProps {
 export const StatsigKeysSettings = ({ control }: StatsigKeysSettingsProps) => {
   const renderLocalStorageKeyField = useCallback(
     ({ field }: { field: ControllerRenderProps<SettingsFormValues, 'localStorageKey'> }) => (
-      <FormItem className="space-y-0 w-full sm:w-[200px]">
+      <FormItem className="w-full space-y-0 sm:w-[200px]">
         <FormLabel className="sr-only">Local Storage Key</FormLabel>
         <FormControl>
           <Input placeholder="e.g. statsig_user" className="w-full" {...field} />
@@ -29,11 +29,11 @@ export const StatsigKeysSettings = ({ control }: StatsigKeysSettingsProps) => {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+      <h3 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
         <Key className="h-3.5 w-3.5" />
         Statsig Keys
       </h3>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div className="space-y-0.5">
           <Label className="text-sm font-medium">Local Storage Key</Label>
           <p className="text-xs text-muted-foreground">

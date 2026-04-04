@@ -17,64 +17,62 @@ interface OverrideRowProps {
   groups: Group[]
 }
 
-export const OverrideRow = memo(
-  ({ override, canEdit, isPending, onDelete, groups }: OverrideRowProps) => {
-    const handleDelete = useCallback(() => {
-      onDelete(override, Boolean(override.isCurrentUser))
-    }, [onDelete, override])
+export const OverrideRow = memo(({ override, canEdit, isPending, onDelete, groups }: OverrideRowProps) => {
+  const handleDelete = useCallback(() => {
+    onDelete(override, Boolean(override.isCurrentUser))
+  }, [onDelete, override])
 
-    const groupName = useMemo(
-      () => groups.find((group) => group.id === override.groupID)?.name ?? override.groupID,
-      [groups, override.groupID],
-    )
+  const groupName = useMemo(
+    () => groups.find((group) => group.id === override.groupID)?.name ?? override.groupID,
+    [groups, override.groupID],
+  )
 
-    return (
-      <TableRow className={override.isCurrentUser ? 'bg-muted/30' : undefined}>
-        <TableCell className="font-medium">
-          <div className="flex items-center gap-2">
-            {override.ids.join(', ')}
-            {override.isCurrentUser && (
-              <Badge variant="secondary" className="h-4 px-1 text-[10px] uppercase">
-                You
-              </Badge>
-            )}
-          </div>
-        </TableCell>
-        <TableCell>{override.environment ?? 'All'}</TableCell>
-        <TableCell>{override.unitType ?? 'userID'}</TableCell>
+  return (
+    <TableRow className={override.isCurrentUser ? 'bg-muted/30' : undefined}>
+      <TableCell className="font-medium">
+        <div className="flex items-center gap-2">
+          {override.ids.join(', ')}
+          {override.isCurrentUser && (
+            <Badge variant="secondary" className="h-4 px-1 text-[10px] uppercase">
+              You
+            </Badge>
+          )}
+        </div>
+      </TableCell>
+      <TableCell>{override.environment ?? 'All'}</TableCell>
+      <TableCell>{override.unitType ?? 'userID'}</TableCell>
+      <TableCell>
+        <div className="min-w-0">
+          <div className="truncate">{groupName}</div>
+          <CopyableText
+            value={override.groupID}
+            copyLabel="Copy Group ID"
+            containerClassName="text-[11px] font-mono text-muted-foreground"
+            valueClassName="truncate hover:text-foreground transition-colors"
+          />
+        </div>
+      </TableCell>
+      {canEdit && (
         <TableCell>
-          <div className="min-w-0">
-            <div className="truncate">{groupName}</div>
-            <CopyableText
-              value={override.groupID}
-              copyLabel="Copy Group ID"
-              containerClassName="text-[11px] font-mono text-muted-foreground"
-              valueClassName="truncate hover:text-foreground transition-colors"
-            />
-          </div>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={handleDelete}
+                disabled={isPending}
+              >
+                <Trash2 className="h-4 w-4" />
+                <span className="sr-only">Delete override</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>Delete override</TooltipContent>
+          </Tooltip>
         </TableCell>
-        {canEdit && (
-          <TableCell>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                  onClick={handleDelete}
-                  disabled={isPending}
-                >
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Delete override</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Delete override</TooltipContent>
-            </Tooltip>
-          </TableCell>
-        )}
-      </TableRow>
-    )
-  },
-)
+      )}
+    </TableRow>
+  )
+})
 
 OverrideRow.displayName = 'OverrideRow'

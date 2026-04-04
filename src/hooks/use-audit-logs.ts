@@ -27,9 +27,7 @@ export interface PaginatedResponse<ItemType> {
  */
 const fetchAuditLogsPage = async (page: number): Promise<PaginatedResponse<AuditLog>> => {
   try {
-    return await fetcher<PaginatedResponse<AuditLog>>(
-      `/audit_logs?limit=${PAGE_LIMIT}&page=${page}`,
-    )
+    return await fetcher<PaginatedResponse<AuditLog>>(`/audit_logs?limit=${PAGE_LIMIT}&page=${page}`)
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

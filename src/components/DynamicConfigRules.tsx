@@ -2,11 +2,7 @@ import React, { memo } from 'react'
 
 import type { DynamicConfigRule } from '@/src/types/statsig'
 
-import {
-  EntityDetailsList,
-  EntityDetailsField,
-  EntityDetailsSection,
-} from '@/src/components/sheets/EntityDetails'
+import { EntityDetailsList, EntityDetailsField, EntityDetailsSection } from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/src/components/ui/card'
 import { CopyableText } from '@/src/components/ui/copyable-text'
@@ -26,10 +22,10 @@ const FULL_PASS_PERCENTAGE = 100
 
 const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
   <Card className="overflow-hidden shadow-sm">
-    <CardHeader className="py-3 px-4 bg-muted/30 border-b">
-      <div className="flex justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
+    <CardHeader className="border-b bg-muted/30 px-4 py-3">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <CardTitle className="truncate text-sm font-semibold" title={rule.name}>
             {rule.name}
           </CardTitle>
           <CopyableText
@@ -49,27 +45,24 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
             />
           )}
           {rule.groupName && (
-            <div className="flex items-center gap-2 mt-1">
-              <Badge variant="outline" className="text-[10px] h-4 px-1.5">
+            <div className="mt-1 flex items-center gap-2">
+              <Badge variant="outline" className="h-4 px-1.5 text-[10px]">
                 {rule.groupName}
               </Badge>
             </div>
           )}
         </div>
-        <Badge
-          variant={rule.passPercentage === FULL_PASS_PERCENTAGE ? 'default' : 'secondary'}
-          className="shrink-0"
-        >
+        <Badge variant={rule.passPercentage === FULL_PASS_PERCENTAGE ? 'default' : 'secondary'} className="shrink-0">
           {rule.passPercentage}%
         </Badge>
       </div>
     </CardHeader>
     <CardContent className="p-0">
-      <EntityDetailsList className="border-0 rounded-none">
+      <EntityDetailsList className="rounded-none border-0">
         {/* Environments */}
         {rule.environments && rule.environments.length > 0 && (
           <EntityDetailsField label="Environments">
-            <div className="flex flex-wrap gap-1 justify-end">
+            <div className="flex flex-wrap justify-end gap-1">
               {rule.environments.map((env) => (
                 <Badge key={env} variant="outline" className="text-xs">
                   {env}
@@ -82,7 +75,7 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
         {/* Conditions */}
         {rule.conditions && rule.conditions.length > 0 && (
           <EntityDetailsField label="Conditions">
-            <div className="flex flex-wrap gap-1 justify-end">
+            <div className="flex flex-wrap justify-end gap-1">
               {rule.conditions.map((condition, index) => (
                 <Badge
                   // oxlint-disable-next-line react/no-array-index-key
@@ -103,8 +96,8 @@ const DynamicConfigRuleCard = memo(({ rule }: DynamicConfigRuleCardProps) => (
         <div className="px-4 pb-4">
           <div className="pt-2">
             <EntityDetailsSection title="Return Value">
-              <div className="rounded-md border bg-muted p-2 overflow-auto max-h-[200px] mt-1">
-                <pre className="text-[10px] font-mono whitespace-pre-wrap break-all">
+              <div className="mt-1 max-h-[200px] overflow-auto rounded-md border bg-muted p-2">
+                <pre className="font-mono text-[10px] break-all whitespace-pre-wrap">
                   {JSON.stringify(rule.returnValue, undefined, 2)}
                 </pre>
               </div>
@@ -129,7 +122,7 @@ export const DynamicConfigRules = memo(({ configId }: Props) => {
   }
 
   if (error) {
-    return <div className="text-center text-sm text-destructive py-4">Failed to load rules</div>
+    return <div className="py-4 text-center text-sm text-destructive">Failed to load rules</div>
   }
 
   if (!rules || rules.length === 0) {

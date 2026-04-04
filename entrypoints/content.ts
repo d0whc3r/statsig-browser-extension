@@ -15,8 +15,7 @@ let detectedUser: unknown = null
 let detectedContext: unknown = null
 let detectedError: string | null = null
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
 const parseStatsigUserMessage = (value: unknown): StatsigUserMessage | null => {
   if (!isRecord(value) || typeof value.type !== 'string') {

@@ -2,13 +2,7 @@ import { Monitor } from 'lucide-react'
 import React, { useCallback } from 'react'
 
 import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { useTheme } from '@/src/hooks/use-theme'
 
 export const AppearanceSettings = () => {
@@ -25,7 +19,7 @@ export const AppearanceSettings = () => {
 
   return (
     <div className="space-y-3">
-      <h3 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+      <h3 className="flex items-center gap-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase">
         <Monitor className="h-3.5 w-3.5" />
         Appearance
       </h3>

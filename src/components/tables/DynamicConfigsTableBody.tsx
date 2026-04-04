@@ -62,12 +62,7 @@ export const DynamicConfigsTableBody = ({
   return (
     <>
       {items.map((item) => (
-        <DynamicConfigRow
-          key={item.id}
-          item={item}
-          headerColumns={headerColumns}
-          onRowClick={setCurrentConfig}
-        />
+        <DynamicConfigRow key={item.id} item={item} headerColumns={headerColumns} onRowClick={setCurrentConfig} />
       ))}
     </>
   )

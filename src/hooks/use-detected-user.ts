@@ -14,8 +14,7 @@ interface StatsigDetectionMessage extends DetectedResponse {
   type: string
 }
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
 const parseDetectedResponse = (value: unknown): DetectedResponse | undefined => {
   if (!isRecord(value)) {

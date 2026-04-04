@@ -5,13 +5,7 @@ import { Button } from '@/src/components/ui/button'
 import { Card, CardContent } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { useUnitIDTypes } from '@/src/hooks/use-unit-id-types'
 
 export interface AddOverrideParams<TValue> {
@@ -128,11 +122,7 @@ export const GenericAddOverrideForm = <TValue extends string>({
           <Button variant="outline" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            disabled={isPending || !id}
-            onClick={handleAdd}
-            className={getSubmitButtonClassName?.(selectedValue)}
-          >
+          <Button disabled={isPending || !id} onClick={handleAdd} className={getSubmitButtonClassName?.(selectedValue)}>
             {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : undefined}
             {getSubmitButtonText?.(selectedValue) ?? 'Add Override'}
           </Button>

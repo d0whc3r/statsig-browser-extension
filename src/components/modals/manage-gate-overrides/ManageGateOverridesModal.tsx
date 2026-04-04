@@ -6,12 +6,9 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { GateOverridesSection } from './GateOverridesSection'
 
 export function ManageGateOverridesModal() {
-  const {
-    currentItemId,
-    isManageGateOverridesModalOpen,
-    setItemSheetOpen,
-    setGateOverridesModalOpen,
-  } = useUIStore((state) => state)
+  const { currentItemId, isManageGateOverridesModalOpen, setItemSheetOpen, setGateOverridesModalOpen } = useUIStore(
+    (state) => state,
+  )
 
   const handleCloseModal = useCallback(
     (open: boolean) => {

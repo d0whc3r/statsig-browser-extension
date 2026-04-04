@@ -33,13 +33,7 @@ export const GateOverridesSection = ({ featureGate }: { featureGate?: FeatureGat
     )
   }
 
-  return (
-    <GateOverridesManager
-      currentItemId={currentItemId}
-      overrides={overrides}
-      featureGate={featureGate}
-    />
-  )
+  return <GateOverridesManager currentItemId={currentItemId} overrides={overrides} featureGate={featureGate} />
 }
 
 const GateOverridesManager = ({
@@ -67,7 +61,7 @@ const GateOverridesManager = ({
   } = useGateOverridesLogic(currentItemId, overrides, featureGate)
 
   return (
-    <div className="flex flex-col gap-6 mt-4">
+    <div className="mt-4 flex flex-col gap-6">
       <PageContextCard
         detectedUser={detectedUser ?? undefined}
         detectedUserId={detectedUserId ?? ''}

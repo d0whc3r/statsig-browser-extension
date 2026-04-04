@@ -13,9 +13,7 @@ import { ExperimentSheetDetails } from './ExperimentSheetDetails'
 import { ExperimentSheetHeader } from './ExperimentSheetHeader'
 
 const useExperimentSheetState = () => {
-  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore(
-    (state) => state,
-  )
+  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const [typeApiKey] = useWxtStorage<'write-key' | 'read-key'>(apiKeyTypeStorage)
 
@@ -50,18 +48,14 @@ const useExperimentSheetState = () => {
 const noOp = () => {}
 
 export const ExperimentSheet = () => {
-  const { currentItemId, error, experiment, handleClose, isLoading, typeApiKey } =
-    useExperimentSheetState()
+  const { currentItemId, error, experiment, handleClose, isLoading, typeApiKey } = useExperimentSheetState()
 
   const detailsContent = useMemo(
     () => <ExperimentSheetDetails isLoading={isLoading} error={error} experiment={experiment} />,
     [isLoading, error, experiment],
   )
 
-  const groupsContent = useMemo(
-    () => (experiment ? <ExperimentGroups experiment={experiment} /> : null),
-    [experiment],
-  )
+  const groupsContent = useMemo(() => (experiment ? <ExperimentGroups experiment={experiment} /> : null), [experiment])
 
   const overridesContent = useMemo(() => <OverridesSection />, [])
 

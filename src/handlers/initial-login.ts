@@ -15,11 +15,7 @@ interface InitialLoginResponse {
  */
 export const initialLogin = async (apiKey: string): Promise<InitialLoginResponse> => {
   try {
-    const data = await api
-      .headers({ 'STATSIG-API-KEY': apiKey })
-      .url('/gates?limit=1')
-      .get()
-      .json<{ data: unknown }>()
+    const data = await api.headers({ 'STATSIG-API-KEY': apiKey }).url('/gates?limit=1').get().json<{ data: unknown }>()
 
     return {
       data: data?.data,

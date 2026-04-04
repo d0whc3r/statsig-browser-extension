@@ -16,17 +16,12 @@
   "singleQuote": true,
   "jsxSingleQuote": false,
   "semi": false,
-  "tabWidth": 2,
-  "insertFinalNewline": true,
-  "useTabs": false,
   "trailingComma": "all",
-  "printWidth": 100,
   "bracketSpacing": true,
   "bracketSameLine": false,
   "arrowParens": "always",
   "quoteProps": "as-needed",
-  "endOfLine": "lf",
-  "experimentalSortImports": {
+  "sortImports": {
     "groups": [
       "type-import",
       ["value-builtin", "value-external"],
@@ -42,6 +37,12 @@
     "ignoreCase": true,
     "sortSideEffects": false
   },
-  "experimentalSortPackageJson": true,
-  "experimentalTailwindcss": null
+  "sortPackageJson": true,
+  "sortTailwindcss": {
+    "functions": ["apply", "css", "tw-merge", "cva", "cn"],
+    "preserveDuplicates": false,
+    "stylesheet": "./src/styles/globals.css",
+    "attributes": ["class", "className"]
+  },
+  "embeddedLanguageFormatting": "auto"
 }

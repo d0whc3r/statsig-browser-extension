@@ -7,14 +7,7 @@ import { StorageSettings } from '@/src/components/sheets/settings/StorageSetting
 import { Button } from '@/src/components/ui/button'
 import { Form } from '@/src/components/ui/form'
 import { Separator } from '@/src/components/ui/separator'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-} from '@/src/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { useSettingsForm } from '@/src/hooks/use-settings-form'
 
 export const SettingsSheet = () => {
@@ -22,20 +15,18 @@ export const SettingsSheet = () => {
 
   return (
     <Sheet open={isSettingsSheetOpen} onOpenChange={handleClose}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col gap-0">
+      <SheetContent className="flex w-[400px] flex-col gap-0 sm:w-[540px]">
         <Form {...form}>
-          <form onSubmit={handleSave} className="flex flex-col h-full">
-            <SheetHeader className="px-6 py-4 border-b shrink-0">
+          <form onSubmit={handleSave} className="flex h-full flex-col">
+            <SheetHeader className="shrink-0 border-b px-6 py-4">
               <div className="flex items-center gap-2">
                 <Settings className="h-5 w-5 text-primary" />
                 <SheetTitle>Extension Settings</SheetTitle>
               </div>
-              <SheetDescription>
-                Configure how the extension interacts with Statsig.
-              </SheetDescription>
+              <SheetDescription>Configure how the extension interacts with Statsig.</SheetDescription>
             </SheetHeader>
 
-            <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+            <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6">
               <AppearanceSettings />
 
               <Separator />
@@ -47,8 +38,8 @@ export const SettingsSheet = () => {
               <StorageSettings control={form.control} />
             </div>
 
-            <SheetFooter className="px-6 py-4 border-t bg-muted/50">
-              <Button type="submit" className="w-full sm:w-auto gap-2">
+            <SheetFooter className="border-t bg-muted/50 px-6 py-4">
+              <Button type="submit" className="w-full gap-2 sm:w-auto">
                 <Save className="h-4 w-4" />
                 Save Settings
               </Button>

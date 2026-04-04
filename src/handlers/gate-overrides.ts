@@ -18,10 +18,7 @@ interface ApiResponse<DataType> {
   message?: string
 }
 
-export const updateGateOverrides = async ({
-  gateId,
-  overrides,
-}: UpdateGateOverridesArgs): Promise<GateOverride> => {
+export const updateGateOverrides = async ({ gateId, overrides }: UpdateGateOverridesArgs): Promise<GateOverride> => {
   try {
     const result = await poster<ApiResponse<GateOverride>>(`/gates/${gateId}/overrides`, overrides)
     return result.data
@@ -30,10 +27,7 @@ export const updateGateOverrides = async ({
   }
 }
 
-export const deleteGateOverrides = async ({
-  gateId,
-  overrides,
-}: DeleteGateOverridesArgs): Promise<GateOverride> => {
+export const deleteGateOverrides = async ({ gateId, overrides }: DeleteGateOverridesArgs): Promise<GateOverride> => {
   try {
     const result = await api
       .url(`/gates/${gateId}/overrides`)

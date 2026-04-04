@@ -1,9 +1,4 @@
-import {
-  getActionTypeColor,
-  getActionTypeLabel,
-  getDateFromAuditLog,
-  getTagColor,
-} from './audit-log-utils'
+import { getActionTypeColor, getActionTypeLabel, getDateFromAuditLog, getTagColor } from './audit-log-utils'
 
 describe('audit-log-utils', () => {
   beforeEach(() => {

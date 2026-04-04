@@ -8,29 +8,14 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 
 import { Button } from '@/src/components/ui/button'
-import {
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/src/components/ui/dialog'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/src/components/ui/form'
+import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/src/components/ui/dialog'
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/components/ui/form'
 import { Input } from '@/src/components/ui/input'
 import { initialLogin } from '@/src/handlers/initial-login'
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 
 const authSchema = z.object({
-  apiKey: z
-    .string()
-    .min(1, 'Please enter an API key')
-    .startsWith('console-', 'API key should start with "console-"'),
+  apiKey: z.string().min(1, 'Please enter an API key').startsWith('console-', 'API key should start with "console-"'),
 })
 
 type AuthFormValues = z.infer<typeof authSchema>
@@ -80,11 +65,7 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
   )
 
   const handleFormSubmit = useCallback(
-    (
-      event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown
-        ? T
-        : never,
-    ) => {
+    (event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown ? T : never) => {
       void form.handleSubmit(onSubmit)(event)
     },
     [form, onSubmit],
@@ -108,14 +89,13 @@ export const AuthForm = ({ onSuccess }: AuthFormProps) => {
       <DialogHeader>
         <DialogTitle>Login to Statsig</DialogTitle>
         <DialogDescription className="pt-2 text-justify">
-          Before you can use this extension, you need to login to your Statsig account. This can be
-          done with a <b>Read Only Statsig Console API Key</b>. This key can be created in the{' '}
-          <b>Project Settings</b> under the{' '}
+          Before you can use this extension, you need to login to your Statsig account. This can be done with a{' '}
+          <b>Read Only Statsig Console API Key</b>. This key can be created in the <b>Project Settings</b> under the{' '}
           <a
             href="https://console.statsig.com/api_keys"
             target="_blank"
             rel="noreferrer"
-            className="font-medium text-primary hover:underline inline-flex items-center"
+            className="inline-flex items-center font-medium text-primary hover:underline"
           >
             Keys & Environments <ExternalLink className="ml-0.5 h-3 w-3" />
           </a>{' '}

@@ -3,11 +3,7 @@ import { useMemo } from 'react'
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { DynamicConfigRules } from '@/src/components/DynamicConfigRules'
-import {
-  EntityDetailsContainer,
-  EntityDetailsSection,
-  EntityDetailsTags,
-} from '@/src/components/sheets/EntityDetails'
+import { EntityDetailsContainer, EntityDetailsSection, EntityDetailsTags } from '@/src/components/sheets/EntityDetails'
 import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { CopyableText } from '@/src/components/ui/copyable-text'
@@ -25,21 +21,14 @@ interface ConfigHeaderProps {
 }
 
 const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => (
-  <div className="flex justify-between items-start gap-4">
-    <div className="space-y-1.5 flex-1 min-w-0">
-      <div className="flex items-center gap-2 flex-wrap">
+  <div className="flex items-start justify-between gap-4">
+    <div className="min-w-0 flex-1 space-y-1.5">
+      <div className="flex flex-wrap items-center gap-2">
         <SheetTitle className="text-xl font-bold break-all">
-          {isLoading ? (
-            <Skeleton className="h-6 w-32" />
-          ) : (
-            (config?.name ?? config?.id ?? 'Dynamic Config')
-          )}
+          {isLoading ? <Skeleton className="h-6 w-32" /> : (config?.name ?? config?.id ?? 'Dynamic Config')}
         </SheetTitle>
         {!isLoading && config && (
-          <Badge
-            variant={config.isEnabled ? 'default' : 'destructive'}
-            className="h-5 px-1.5 text-[10px] shrink-0"
-          >
+          <Badge variant={config.isEnabled ? 'default' : 'destructive'} className="h-5 shrink-0 px-1.5 text-[10px]">
             {config.isEnabled ? 'Enabled' : 'Disabled'}
           </Badge>
         )}
@@ -114,8 +103,8 @@ const ConfigMetadata = ({ config }: { config: DynamicConfig }) => {
 const ConfigDefaultValue = ({ defaultValue }: { defaultValue: unknown }) => (
   <div className="space-y-2">
     <h3 className="text-lg font-semibold">Default Value</h3>
-    <div className="rounded-md border bg-muted p-4 overflow-auto max-h-[400px]">
-      <pre className="text-xs font-mono whitespace-pre-wrap break-all">
+    <div className="max-h-[400px] overflow-auto rounded-md border bg-muted p-4">
+      <pre className="font-mono text-xs break-all whitespace-pre-wrap">
         {JSON.stringify(defaultValue, undefined, 2)}
       </pre>
     </div>
@@ -134,7 +123,7 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
 
   if (error) {
     return (
-      <div className="text-center text-sm text-destructive py-4">
+      <div className="py-4 text-center text-sm text-destructive">
         Failed to load config details: {error instanceof Error ? error.message : 'Unknown error'}
       </div>
     )
@@ -164,18 +153,13 @@ export const DynamicConfigSheet = () => {
     [isLoading, error, config],
   )
 
-  const rulesContent = useMemo(
-    () => (config ? <DynamicConfigRules configId={config.id} /> : null),
-    [config],
-  )
+  const rulesContent = useMemo(() => (config ? <DynamicConfigRules configId={config.id} /> : null), [config])
 
   return (
     <CommonSheet type="dynamic_config">
-      <SheetHeader className="px-6 py-4 border-b pr-12">
+      <SheetHeader className="border-b px-6 py-4 pr-12">
         <ConfigHeader isLoading={isLoading} config={config} />
-        <SheetDescription className="sr-only">
-          Details for dynamic config {config?.name}
-        </SheetDescription>
+        <SheetDescription className="sr-only">Details for dynamic config {config?.name}</SheetDescription>
       </SheetHeader>
       <SheetTabs detailsContent={detailsContent} rulesContent={rulesContent} />
     </CommonSheet>

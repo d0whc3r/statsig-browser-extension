@@ -25,9 +25,7 @@ describe('experiment-overrides handler', () => {
     it('should successfully update experiment overrides', async () => {
       const mockOverrides: ExperimentOverridesResponse = {
         overrides: [{ groupID: 'Control', name: 'gate_1', type: 'gate' }],
-        userIDOverrides: [
-          { environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' },
-        ],
+        userIDOverrides: [{ environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' }],
       }
       posterMock.mockResolvedValue({
         data: mockOverrides,

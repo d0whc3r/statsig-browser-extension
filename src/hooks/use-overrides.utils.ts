@@ -1,8 +1,4 @@
-import type {
-  ExperimentOverridesResponse,
-  UserIDOverride,
-  ExperimentOverride,
-} from '@/src/types/statsig'
+import type { ExperimentOverridesResponse, UserIDOverride, ExperimentOverride } from '@/src/types/statsig'
 
 export interface OverridesData {
   userIDOverrides: UserIDOverride[]

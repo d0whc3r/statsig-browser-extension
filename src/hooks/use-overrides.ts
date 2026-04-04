@@ -17,9 +17,7 @@ interface ApiResponse<DataType> {
 
 const fetchOverrides = async (experimentId: string): Promise<OverridesData> => {
   try {
-    const result = await fetcher<ApiResponse<ExperimentOverridesResponse>>(
-      `/experiments/${experimentId}/overrides`,
-    )
+    const result = await fetcher<ApiResponse<ExperimentOverridesResponse>>(`/experiments/${experimentId}/overrides`)
     return transformOverridesResponse(result.data)
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })

@@ -35,11 +35,6 @@ export function ExperimentsTableBody({
   }
 
   return items.map((item) => (
-    <ExperimentRow
-      key={item.id}
-      item={item}
-      headerColumns={headerColumns}
-      onRowClick={setCurrentExperiment}
-    />
+    <ExperimentRow key={item.id} item={item} headerColumns={headerColumns} onRowClick={setCurrentExperiment} />
   ))
 }

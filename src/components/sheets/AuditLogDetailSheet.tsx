@@ -9,13 +9,7 @@ import { Badge } from '@/src/components/ui/badge'
 import { Button } from '@/src/components/ui/button'
 import { CopyableText } from '@/src/components/ui/copyable-text'
 import { ScrollArea } from '@/src/components/ui/scroll-area'
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-} from '@/src/components/ui/sheet'
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { Skeleton } from '@/src/components/ui/skeleton'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -30,21 +24,17 @@ const AuditLogHeader = ({
   isLoading: boolean
   currentAuditLogId?: string
 }) => (
-  <SheetHeader className="px-6 py-4 border-b pr-12 shrink-0">
-    <div className="flex justify-between items-start gap-4">
-      <div className="flex-1 min-w-0 space-y-1.5">
-        <div className="flex items-center gap-2 flex-wrap">
+  <SheetHeader className="shrink-0 border-b px-6 py-4 pr-12">
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           <SheetTitle className="truncate" title={auditLog?.name}>
-            {isLoading && !auditLog ? (
-              <Skeleton className="h-6 w-32" />
-            ) : (
-              (auditLog?.name ?? 'Audit Log Detail')
-            )}
+            {isLoading && !auditLog ? <Skeleton className="h-6 w-32" /> : (auditLog?.name ?? 'Audit Log Detail')}
           </SheetTitle>
           {!isLoading && auditLog && (
             <Badge
               variant={getActionTypeColor(auditLog.actionType)}
-              className="h-5 px-1.5 text-[10px] rounded-sm shrink-0"
+              className="h-5 shrink-0 rounded-sm px-1.5 text-[10px]"
             >
               {auditLog.actionType}
             </Badge>
@@ -90,7 +80,7 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
   if (isLoading && !auditLog) {
     return (
       <ScrollArea className="flex-1">
-        <div className="p-6 space-y-6">
+        <div className="space-y-6 p-6">
           <div className="space-y-4">
             <Skeleton className="h-20 w-full" />
             <Skeleton className="h-40 w-full" />
@@ -103,36 +93,32 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
   if (!auditLog) {
     return (
       <ScrollArea className="flex-1">
-        <div className="p-6 space-y-6">
-          <div className="text-center text-sm text-muted-foreground py-10">
-            Audit log details not found.
-          </div>
+        <div className="space-y-6 p-6">
+          <div className="py-10 text-center text-sm text-muted-foreground">Audit log details not found.</div>
         </div>
       </ScrollArea>
     )
   }
 
   return (
-    <ScrollArea className="flex-1 min-h-0">
-      <div className="p-4 space-y-4">
+    <ScrollArea className="min-h-0 flex-1">
+      <div className="space-y-4 p-4">
         <EntityDetailsContainer>
           <EntityDetailsSection title="User">
-            <div className="flex items-center gap-2.5 justify-start w-full">
-              <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center text-[10px] font-bold text-primary ring-1 ring-primary/20 shrink-0">
+            <div className="flex w-full items-center justify-start gap-2.5">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary/10 text-[10px] font-bold text-primary ring-1 ring-primary/20">
                 {auditLog.updatedBy.charAt(0).toUpperCase()}
               </div>
-              <div className="flex flex-col min-w-0 text-left">
-                <span className="text-xs font-medium truncate">{auditLog.updatedBy}</span>
-                <span className="text-[10px] text-muted-foreground truncate">
-                  {auditLog.modifierEmail}
-                </span>
+              <div className="flex min-w-0 flex-col text-left">
+                <span className="truncate text-xs font-medium">{auditLog.updatedBy}</span>
+                <span className="truncate text-[10px] text-muted-foreground">{auditLog.modifierEmail}</span>
               </div>
             </div>
           </EntityDetailsSection>
 
           <EntityDetailsSection title="Details">
-            <div className="bg-muted/50 rounded-md p-3 border border-border/50 overflow-x-auto mt-2">
-              <pre className="text-[10px] font-mono whitespace-pre-wrap break-all leading-relaxed">
+            <div className="mt-2 overflow-x-auto rounded-md border border-border/50 bg-muted/50 p-3">
+              <pre className="font-mono text-[10px] leading-relaxed break-all whitespace-pre-wrap">
                 {JSON.stringify(
                   {
                     changeLog: auditLog.changeLog,
@@ -153,9 +139,7 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoadi
 }
 
 export const AuditLogDetailSheet = () => {
-  const { currentAuditLogId, isAuditLogDetailSheetOpen, setAuditLogDetailSheetOpen } = useUIStore(
-    (state) => state,
-  )
+  const { currentAuditLogId, isAuditLogDetailSheetOpen, setAuditLogDetailSheetOpen } = useUIStore((state) => state)
 
   const { data, isLoading } = useAuditLogs()
 
@@ -176,12 +160,8 @@ export const AuditLogDetailSheet = () => {
 
   return (
     <Sheet open={isAuditLogDetailSheetOpen} onOpenChange={handleClose}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0 gap-0">
-        <AuditLogHeader
-          auditLog={auditLog}
-          isLoading={isLoading}
-          currentAuditLogId={currentAuditLogId}
-        />
+      <SheetContent className="flex h-full w-[400px] flex-col gap-0 overflow-hidden p-0 sm:w-[540px]">
+        <AuditLogHeader auditLog={auditLog} isLoading={isLoading} currentAuditLogId={currentAuditLogId} />
         <AuditLogContent auditLog={auditLog} isLoading={isLoading} />
       </SheetContent>
     </Sheet>

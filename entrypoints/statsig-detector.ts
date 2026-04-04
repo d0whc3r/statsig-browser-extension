@@ -1,7 +1,6 @@
 import { getUserDetailsFromPage } from '@/src/lib/get-user-details-injector'
 
-const isRecord = (value: unknown): value is Record<string, unknown> =>
-  typeof value === 'object' && value !== null
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null
 
 const getMessageType = (value: unknown) => {
   if (!isRecord(value) || typeof value.type !== 'string') {
@@ -20,10 +19,7 @@ export default defineContentScript({
       const result = getUserDetailsFromPage()
 
       if (result) {
-        window.postMessage(
-          { context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user },
-          '*',
-        )
+        window.postMessage({ context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user }, '*')
         return true
       }
       return false

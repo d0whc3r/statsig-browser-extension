@@ -24,10 +24,7 @@ interface OverridesListProps {
 
 export const OverridesList = memo(
   ({ allOverrides, canEdit, isPending, onDeleteOverride, onSwitchToForm }: OverridesListProps) => {
-    const isCurrentUserPredicate = useCallback(
-      (item: OverridesListProps['allOverrides'][0]) => item.isCurrentUser,
-      [],
-    )
+    const isCurrentUserPredicate = useCallback((item: OverridesListProps['allOverrides'][0]) => item.isCurrentUser, [])
 
     const handleDeleteConfirm = useCallback(
       (item: OverridesListProps['allOverrides'][0]) => {
@@ -44,10 +41,7 @@ export const OverridesList = memo(
     const renderRow = useCallback(
       (
         item: OverridesListProps['allOverrides'][0],
-        onDeleteClick: (
-          item: OverridesListProps['allOverrides'][0],
-          isCurrentUser: boolean,
-        ) => void,
+        onDeleteClick: (item: OverridesListProps['allOverrides'][0], isCurrentUser: boolean) => void,
       ) => (
         <OverrideRow
           key={`${item.type}-${item.id}-${item.idType}-${item.environment}`}

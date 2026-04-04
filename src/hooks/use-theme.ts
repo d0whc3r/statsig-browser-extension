@@ -17,9 +17,7 @@ export function useTheme() {
       root.classList.remove('light', 'dark')
 
       if (currentTheme === 'system') {
-        const systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light'
+        const systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
         root.classList.add(systemTheme)
       } else {
         root.classList.add(currentTheme)

@@ -15,8 +15,7 @@ export type SettingsFormValues = z.infer<typeof settingsSchema>
 
 export const useSettingsForm = () => {
   const { isSettingsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
-  const { localStorageValue, setLocalStorageKey, setStorageType, storageType } =
-    useSettingsStorage()
+  const { localStorageValue, setLocalStorageKey, setStorageType, storageType } = useSettingsStorage()
 
   const form = useForm<SettingsFormValues>({
     defaultValues: {
@@ -37,11 +36,7 @@ export const useSettingsForm = () => {
   }, [isSettingsSheetOpen, localStorageValue, storageType, form])
 
   const handleSave = useCallback(
-    (
-      event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown
-        ? T
-        : never,
-    ) => {
+    (event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown ? T : never) => {
       void form.handleSubmit((values: SettingsFormValues) => {
         setLocalStorageKey(values.localStorageKey)
         setStorageType(values.storageType)

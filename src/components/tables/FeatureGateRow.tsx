@@ -13,23 +13,13 @@ interface FeatureGateCellProps {
   showInlineId: boolean
 }
 
-const FeatureGateCellContent = ({
-  item,
-  columnKey,
-  onRowClick,
-  showInlineId,
-}: FeatureGateCellProps) => {
+const FeatureGateCellContent = ({ item, columnKey, onRowClick, showInlineId }: FeatureGateCellProps) => {
   switch (columnKey) {
     case 'name': {
       return <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
     }
     case 'status': {
-      return (
-        <StatusCell
-          status={item.status}
-          variant={item.status === 'In Progress' ? 'secondary' : 'outline'}
-        />
-      )
+      return <StatusCell status={item.status} variant={item.status === 'In Progress' ? 'secondary' : 'outline'} />
     }
     case 'tags': {
       return <TagsCell tags={item.tags} />
@@ -43,11 +33,7 @@ const FeatureGateCellContent = ({
     }
     case 'actions': {
       return (
-        <ActionsCell
-          id={item.id}
-          onRowClick={onRowClick}
-          statsigUrl={`https://console.statsig.com/gates/${item.id}`}
-        />
+        <ActionsCell id={item.id} onRowClick={onRowClick} statsigUrl={`https://console.statsig.com/gates/${item.id}`} />
       )
     }
     default: {
@@ -74,12 +60,7 @@ export const FeatureGateRow = memo(({ item, headerColumns, onRowClick }: Feature
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
         <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
-          <FeatureGateCell
-            item={item}
-            columnKey={column.uid}
-            onRowClick={onRowClick}
-            showInlineId
-          />
+          <FeatureGateCell item={item} columnKey={column.uid} onRowClick={onRowClick} showInlineId />
         </TableCell>
       ))}
     </TableRow>

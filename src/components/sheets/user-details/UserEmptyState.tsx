@@ -14,7 +14,7 @@ export const UserEmptyState = memo(({ onRefetch, error }: UserEmptyStateProps) =
     className="py-12"
     description={error ? 'We encountered an issue detecting the Statsig user.' : undefined}
   >
-    {error && <div className="text-sm text-destructive max-w-xs text-center mb-4">{error}</div>}
+    {error && <div className="mb-4 max-w-xs text-center text-sm text-destructive">{error}</div>}
     <Button onClick={onRefetch} variant="outline" size="sm" className="mt-4">
       {error ? 'Retry Detection' : 'Try Again'}
     </Button>

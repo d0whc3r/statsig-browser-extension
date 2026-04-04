@@ -25,9 +25,9 @@ export const TopContentSearch = memo(
 
     return (
       <div className="relative w-full sm:max-w-[44%]">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          className="pl-9 pr-9"
+          className="pr-9 pl-9"
           placeholder={`Search ${typeLabel} by name...`}
           value={filterValue}
           onChange={handleSearchChange}
@@ -36,7 +36,7 @@ export const TopContentSearch = memo(
           <button
             type="button"
             onClick={handleClearSearch}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
           >
             <X className="size-4" />
           </button>

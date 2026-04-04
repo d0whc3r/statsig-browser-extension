@@ -8,13 +8,7 @@ import { Button } from '@/src/components/ui/button'
 import { Card, CardContent } from '@/src/components/ui/card'
 import { Input } from '@/src/components/ui/input'
 import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/src/components/ui/tabs'
 
 interface GateSegmentOverrideFormProps {
@@ -24,86 +18,81 @@ interface GateSegmentOverrideFormProps {
   isPending: boolean
 }
 
-const GateSegmentOverrideForm = memo(
-  ({ groups, onAddOverride, onCancel, isPending }: GateSegmentOverrideFormProps) => {
-    const [overrideType, setOverrideType] = useState<'gate' | 'segment'>('gate')
-    const [gateName, setGateName] = useState('')
-    const [targetGroup, setTargetGroup] = useState(groups[0]?.name || '')
+const GateSegmentOverrideForm = memo(({ groups, onAddOverride, onCancel, isPending }: GateSegmentOverrideFormProps) => {
+  const [overrideType, setOverrideType] = useState<'gate' | 'segment'>('gate')
+  const [gateName, setGateName] = useState('')
+  const [targetGroup, setTargetGroup] = useState(groups[0]?.name || '')
 
-    const handleGateNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-      setGateName(event.target.value)
-    }, [])
+  const handleGateNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    setGateName(event.target.value)
+  }, [])
 
-    const handleOverrideTypeChange = useCallback((val: 'gate' | 'segment') => {
-      setOverrideType(val)
-    }, [])
+  const handleOverrideTypeChange = useCallback((val: 'gate' | 'segment') => {
+    setOverrideType(val)
+  }, [])
 
-    const handleAddGateOverride = useCallback(() => {
-      onAddOverride({
-        groupID: targetGroup,
-        name: gateName,
-        type: overrideType,
-      })
-    }, [onAddOverride, targetGroup, gateName, overrideType])
+  const handleAddGateOverride = useCallback(() => {
+    onAddOverride({
+      groupID: targetGroup,
+      name: gateName,
+      type: overrideType,
+    })
+  }, [onAddOverride, targetGroup, gateName, overrideType])
 
-    return (
-      <Card>
-        <CardContent className="space-y-4 pt-4">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="override-type">Override Type</Label>
-            <Select value={overrideType} onValueChange={handleOverrideTypeChange}>
-              <SelectTrigger id="override-type">
-                <SelectValue placeholder="Select type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="gate">Gate</SelectItem>
-                <SelectItem value="segment">Segment</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+  return (
+    <Card>
+      <CardContent className="space-y-4 pt-4">
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="override-type">Override Type</Label>
+          <Select value={overrideType} onValueChange={handleOverrideTypeChange}>
+            <SelectTrigger id="override-type">
+              <SelectValue placeholder="Select type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="gate">Gate</SelectItem>
+              <SelectItem value="segment">Segment</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="gate-name">Name</Label>
-            <Input
-              id="gate-name"
-              placeholder={`Enter ${overrideType} name`}
-              value={gateName}
-              onChange={handleGateNameChange}
-            />
-          </div>
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="gate-name">Name</Label>
+          <Input
+            id="gate-name"
+            placeholder={`Enter ${overrideType} name`}
+            value={gateName}
+            onChange={handleGateNameChange}
+          />
+        </div>
 
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="target-group">Target Group</Label>
-            <Select value={targetGroup} onValueChange={setTargetGroup}>
-              <SelectTrigger id="target-group">
-                <SelectValue placeholder="Select group" />
-              </SelectTrigger>
-              <SelectContent>
-                {groups.map((group) => (
-                  <SelectItem key={group.name} value={group.name}>
-                    {group.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <div className="grid w-full items-center gap-1.5">
+          <Label htmlFor="target-group">Target Group</Label>
+          <Select value={targetGroup} onValueChange={setTargetGroup}>
+            <SelectTrigger id="target-group">
+              <SelectValue placeholder="Select group" />
+            </SelectTrigger>
+            <SelectContent>
+              {groups.map((group) => (
+                <SelectItem key={group.name} value={group.name}>
+                  {group.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
 
-          <div className="mt-4 flex justify-end gap-2">
-            <Button variant="outline" onClick={onCancel}>
-              Cancel
-            </Button>
-            <Button
-              disabled={isPending || !gateName || !targetGroup}
-              onClick={handleAddGateOverride}
-            >
-              Add Override
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    )
-  },
-)
+        <div className="mt-4 flex justify-end gap-2">
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button disabled={isPending || !gateName || !targetGroup} onClick={handleAddGateOverride}>
+            Add Override
+          </Button>
+        </div>
+      </CardContent>
+    </Card>
+  )
+})
 
 GateSegmentOverrideForm.displayName = 'GateSegmentOverrideForm'
 
@@ -119,10 +108,7 @@ export const AddOverrideForm = memo(
   ({ groups, onAddOverride, onCancel, isPending, experiment }: CreateOverrideFormProps) => {
     const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name || '')
 
-    const groupValues = useMemo(
-      () => groups.map((group) => ({ label: group.name, value: group.name })),
-      [groups],
-    )
+    const groupValues = useMemo(() => groups.map((group) => ({ label: group.name, value: group.name })), [groups])
 
     const handleAddUserOverride = useCallback(
       ({ id, value: groupID, environment, idType }: AddOverrideParams<string>) => {

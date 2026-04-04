@@ -18,12 +18,7 @@ interface CreatePayloadParams {
   idType: string | null
 }
 
-const createPayload = ({
-  targetId,
-  targetType,
-  environment,
-  idType,
-}: CreatePayloadParams): Partial<GateOverride> => {
+const createPayload = ({ targetId, targetType, environment, idType }: CreatePayloadParams): Partial<GateOverride> => {
   const payload: Partial<GateOverride> = {}
 
   // Determine if we are targeting root fields or environmentOverrides
@@ -57,11 +52,7 @@ interface UpdatePayloadParams {
   idType: string | null
 }
 
-const updateRootOverride = (
-  payload: GateOverride,
-  targetUserId: string,
-  targetType: OverrideType,
-) => {
+const updateRootOverride = (payload: GateOverride, targetUserId: string, targetType: OverrideType) => {
   if (targetType === 'pass') {
     if (!payload.passingUserIDs.includes(targetUserId)) {
       payload.passingUserIDs.push(targetUserId)
@@ -112,13 +103,7 @@ const updateEnvironmentOverride = ({
   }
 }
 
-const updatePayload = ({
-  payload,
-  targetUserId,
-  targetType,
-  environment,
-  idType,
-}: UpdatePayloadParams) => {
+const updatePayload = ({ payload, targetUserId, targetType, environment, idType }: UpdatePayloadParams) => {
   // Root overrides only support userID
   const isRoot = !environment && (!idType || idType === 'userID')
 
@@ -158,12 +143,7 @@ export const useGateOverrideHandlers = (
   })
 
   const handleAddOverride = useCallback(
-    ({
-      userId: targetUserId,
-      type: targetType,
-      environment = null,
-      idType = 'userID',
-    }: AddGateOverrideParams) => {
+    ({ userId: targetUserId, type: targetType, environment = null, idType = 'userID' }: AddGateOverrideParams) => {
       if (!currentItemId) {
         return
       }
@@ -199,12 +179,7 @@ export const useGateOverrideHandlers = (
   )
 
   const handleDeleteOverride = useCallback(
-    ({
-      userId: idToRemove,
-      type,
-      environment = null,
-      idType = 'userID',
-    }: DeleteGateOverrideParams) => {
+    ({ userId: idToRemove, type, environment = null, idType = 'userID' }: DeleteGateOverrideParams) => {
       if (!currentItemId) {
         return
       }

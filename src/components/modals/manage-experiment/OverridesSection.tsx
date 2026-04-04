@@ -39,7 +39,7 @@ export const OverridesSection = () => {
   )
 
   return (
-    <div className="flex flex-col gap-6 mt-4">
+    <div className="mt-4 flex flex-col gap-6">
       <PageContextCard
         detectedUser={detectedUser ?? undefined}
         detectedUserId={detectedUserId ?? ''}

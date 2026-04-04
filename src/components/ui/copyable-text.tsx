@@ -45,7 +45,7 @@ export const CopyableText = memo(
     )
 
     return (
-      <div className={cn('flex items-center gap-1 min-w-0 group', containerClassName)}>
+      <div className={cn('group flex min-w-0 items-center gap-1', containerClassName)}>
         <button type="button" className={cn('text-left', valueClassName)} onClick={handleCopy}>
           {value}
         </button>
@@ -57,17 +57,13 @@ export const CopyableText = memo(
                 variant="ghost"
                 size="icon"
                 className={cn(
-                  'h-4 w-4 p-0 shrink-0',
-                  hideButtonUntilHover && 'opacity-0 group-hover:opacity-100 transition-opacity',
+                  'h-4 w-4 shrink-0 p-0',
+                  hideButtonUntilHover && 'opacity-0 transition-opacity group-hover:opacity-100',
                   buttonClassName,
                 )}
                 onClick={handleCopy}
               >
-                {copied ? (
-                  <Check className="h-3 w-3 text-green-500" />
-                ) : (
-                  <Copy className="h-3 w-3" />
-                )}
+                {copied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3" />}
               </Button>
             </TooltipTrigger>
             <TooltipContent>{copied ? copiedLabel : copyLabel}</TooltipContent>

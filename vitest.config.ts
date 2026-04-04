@@ -9,13 +9,7 @@ export default defineConfig({
     clearMocks: true,
     coverage: {
       enabled: true,
-      exclude: [
-        'src/tests/**/*',
-        '**/*.d.ts',
-        '**/*.test.ts',
-        '**/*.test.tsx',
-        'src/components/ui/**/*',
-      ],
+      exclude: ['src/tests/**/*', '**/*.d.ts', '**/*.test.ts', '**/*.test.tsx', 'src/components/ui/**/*'],
       include: ['{src,entrypoints}/**/*.{ts,tsx}'],
       reporter: ['text', 'json', 'html'],
     },

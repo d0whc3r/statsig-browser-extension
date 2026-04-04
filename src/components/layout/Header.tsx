@@ -30,10 +30,10 @@ export const Header = memo(({ onLogout }: HeaderProps) => {
   }, [setSettingsSheetOpen])
 
   return (
-    <header className="flex items-center justify-between px-4 py-2 border-b bg-card">
+    <header className="flex items-center justify-between border-b bg-card px-4 py-2">
       <div className="flex items-center gap-2">
         <img src={statsigLogo} alt="Statsig" className="h-6" />
-        <span className="text-[10px] text-muted-foreground font-mono bg-muted px-1.5 py-0.5 rounded-md leading-none">
+        <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-[10px] leading-none text-muted-foreground">
           v{packageJson.version}
         </span>
       </div>
@@ -47,10 +47,8 @@ export const Header = memo(({ onLogout }: HeaderProps) => {
           <DropdownMenuContent align="end">
             <DropdownMenuLabel className="font-normal">
               <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">Account Settings</p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  Manage your preferences
-                </p>
+                <p className="text-sm leading-none font-medium">Account Settings</p>
+                <p className="text-xs leading-none text-muted-foreground">Manage your preferences</p>
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
@@ -63,10 +61,7 @@ export const Header = memo(({ onLogout }: HeaderProps) => {
               <span>Settings</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={onLogout}
-              className="text-destructive focus:text-destructive cursor-pointer"
-            >
+            <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive focus:text-destructive">
               <LogOut className="mr-2 h-4 w-4" />
               <span>Logout</span>
             </DropdownMenuItem>

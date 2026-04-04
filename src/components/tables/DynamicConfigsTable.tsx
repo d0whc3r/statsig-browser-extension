@@ -5,22 +5,11 @@ import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsT
 import { EntityTable } from '@/src/components/tables/EntityTable'
 import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
-import {
-  dynamicConfigRowsPerPageStorage,
-  dynamicConfigVisibleColumnsStorage,
-} from '@/src/lib/storage'
+import { dynamicConfigRowsPerPageStorage, dynamicConfigVisibleColumnsStorage } from '@/src/lib/storage'
 
 export function DynamicConfigsTable() {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useDynamicConfigs()
+  const { data, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useDynamicConfigs()
 
   const tableLogic = useEntityTableLogic<DynamicConfig>({
     columns: dynamicConfigColumns,

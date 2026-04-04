@@ -3,13 +3,7 @@ import { memo } from 'react'
 
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { cn } from '@/src/lib/utils'
 
 export const actionFilterOptions = [
@@ -29,21 +23,9 @@ interface AuditLogFiltersProps {
   isFetching: boolean
 }
 
-const HeaderControls = ({
-  onRefresh,
-  isFetching,
-}: {
-  onRefresh: () => void
-  isFetching: boolean
-}) => (
-  <div className="flex justify-between items-center">
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={onRefresh}
-      disabled={isFetching}
-      className="h-8 gap-2"
-    >
+const HeaderControls = ({ onRefresh, isFetching }: { onRefresh: () => void; isFetching: boolean }) => (
+  <div className="flex items-center justify-between">
+    <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isFetching} className="h-8 gap-2">
       <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
       Refresh
     </Button>
@@ -67,20 +49,20 @@ const SearchControls = ({
   actionFilter: string
   onActionFilterChange: (value: string) => void
 }) => (
-  <div className="flex gap-2 items-center">
+  <div className="flex items-center gap-2">
     <div className="relative flex-1">
-      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-3.5 h-3.5" />
+      <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 transform text-muted-foreground" />
       <Input
         type="search"
-        className="w-full pl-9 h-9 text-xs"
+        className="h-9 w-full pl-9 text-xs"
         placeholder="Search audit logs..."
         value={filterValue}
         onChange={onFilterChange}
       />
     </div>
     <Select value={actionFilter} onValueChange={onActionFilterChange}>
-      <SelectTrigger className="w-[140px] h-9 text-xs">
-        <Filter className="w-3.5 h-3.5 mr-2 text-muted-foreground" />
+      <SelectTrigger className="h-9 w-[140px] text-xs">
+        <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
         <SelectValue placeholder="Filter" />
       </SelectTrigger>
       <SelectContent>
@@ -103,7 +85,7 @@ export const AuditLogFilters = memo(
     onRefresh,
     isFetching,
   }: AuditLogFiltersProps) => (
-    <div className="flex flex-col gap-3 p-3 border-b">
+    <div className="flex flex-col gap-3 border-b p-3">
       <HeaderControls onRefresh={onRefresh} isFetching={isFetching} />
       <SearchControls
         filterValue={filterValue}

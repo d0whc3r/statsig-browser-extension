@@ -226,10 +226,7 @@ describe('Gate Overrides Flow', () => {
     await user.click(screen.getByText('Gates'))
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
-    await waitFor(
-      () => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument(),
-      { timeout: 3000 },
-    )
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument(), { timeout: 3000 })
     await user.click(screen.getByRole('tab', { name: /Overrides/i }))
 
     // Click Add Manual

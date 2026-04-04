@@ -14,15 +14,15 @@ export const TopContentPagination = memo(
     }
 
     return (
-      <div className="flex justify-between items-center">
-        <span className="text-muted-foreground text-sm">
+      <div className="flex items-center justify-between">
+        <span className="text-sm text-muted-foreground">
           Total {total} {typeLabelPlural}
         </span>
         {total > 5 && (
-          <label className="flex items-center text-muted-foreground text-sm gap-2">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             Rows per page:
             <select
-              className="bg-transparent outline-none text-muted-foreground text-sm border border-input rounded-md px-2 py-1"
+              className="rounded-md border border-input bg-transparent px-2 py-1 text-sm text-muted-foreground outline-none"
               onChange={onRowsPerPageChange}
               value={rowsPerPage}
             >

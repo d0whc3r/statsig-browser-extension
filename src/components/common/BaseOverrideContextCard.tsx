@@ -4,13 +4,7 @@ import { memo, useMemo, useState } from 'react'
 import { SharedPageContextCard } from '@/src/components/common/SharedPageContextCard'
 import { Badge } from '@/src/components/ui/badge'
 import { Label } from '@/src/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/src/components/ui/select'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 
 export interface BaseOverrideContextCardProps {
   detectedUser: Record<string, unknown> | undefined
@@ -54,9 +48,7 @@ export const BaseOverrideContextCard = memo(
     const initialEnv = useMemo(() => {
       // 1. If we detected an environment, try to pre-select it if it's not already overridden
       if (currentTier) {
-        const isCurrentTierOverridden = detectedUserOverrides.some(
-          (override) => override.environment === currentTier,
-        )
+        const isCurrentTierOverridden = detectedUserOverrides.some((override) => override.environment === currentTier)
         if (!isCurrentTierOverridden) {
           return currentTier
         }
@@ -88,7 +80,7 @@ export const BaseOverrideContextCard = memo(
 
     return (
       <SharedPageContextCard detectedUser={detectedUser} detectedUserId={detectedUserId}>
-        <div className="space-y-5 mt-1">
+        <div className="mt-1 space-y-5">
           {idType !== 'userID' && (
             <div className="text-[11px] text-muted-foreground">
               Using ID Type: <span className="font-medium text-foreground">{idType}</span>
@@ -97,7 +89,7 @@ export const BaseOverrideContextCard = memo(
 
           {isDetectedUserOverridden && (
             <div className="flex flex-col gap-2">
-              <span className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+              <span className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                 Active Overrides
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -105,7 +97,7 @@ export const BaseOverrideContextCard = memo(
                   <Badge
                     key={override.environment ?? 'global'}
                     variant="secondary"
-                    className="h-5 px-1.5 text-[10px] bg-green-500/10 text-green-600 border-green-500/20"
+                    className="h-5 border-green-500/20 bg-green-500/10 px-1.5 text-[10px] text-green-600"
                   >
                     <CheckCircle2 className="mr-1 h-3 w-3" />
                     {override.environment ?? 'Global'}
@@ -118,32 +110,26 @@ export const BaseOverrideContextCard = memo(
           {canEdit && detectedUserId && detectedUserId !== 'Unknown ID' && (
             <div className="space-y-4 border-t pt-4">
               <div className="flex flex-col gap-2">
-                <Label className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">
+                <Label className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
                   Environment
                 </Label>
                 <Select value={environment} onValueChange={setEnvironment}>
-                  <SelectTrigger className="h-8 text-xs w-full bg-background">
+                  <SelectTrigger className="h-8 w-full bg-background text-xs">
                     <SelectValue placeholder="Select environment" />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem
                       value={ALL_ENVIRONMENTS}
-                      disabled={detectedUserOverrides.some(
-                        (override) => override.environment === null,
-                      )}
+                      disabled={detectedUserOverrides.some((override) => override.environment === null)}
                     >
                       All Environments{' '}
-                      {detectedUserOverrides.some((override) => override.environment === null) &&
-                        '(Already Set)'}
+                      {detectedUserOverrides.some((override) => override.environment === null) && '(Already Set)'}
                     </SelectItem>
                     {availableEnvironments.map((env) => {
-                      const isOverridden = detectedUserOverrides.some(
-                        (override) => override.environment === env,
-                      )
+                      const isOverridden = detectedUserOverrides.some((override) => override.environment === env)
                       return (
                         <SelectItem key={env} value={env} disabled={isOverridden}>
-                          {env} {env === currentTier && '(Current)'}{' '}
-                          {isOverridden && '(Already Set)'}
+                          {env} {env === currentTier && '(Current)'} {isOverridden && '(Already Set)'}
                         </SelectItem>
                       )
                     })}

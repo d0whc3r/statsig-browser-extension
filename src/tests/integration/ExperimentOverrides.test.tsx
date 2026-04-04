@@ -90,9 +90,7 @@ const mockOverrides = {
     { groupID: 'Control', name: 'gate_1', type: 'gate' },
     { groupID: 'Test', name: 'segment_1', type: 'segment' },
   ],
-  userIDOverrides: [
-    { environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' },
-  ],
+  userIDOverrides: [{ environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' }],
 }
 
 const setupMocks = () => {

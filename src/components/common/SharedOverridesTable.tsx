@@ -71,7 +71,7 @@ export function SharedOverridesTable<T>({
 
   return (
     <div className="space-y-3">
-      <div className="rounded-md border bg-card shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-md border bg-card shadow-sm">
         <Table>
           <TableHeader className="bg-muted/30">
             <TableRow>{headers}</TableRow>
@@ -97,12 +97,7 @@ export function SharedOverridesTable<T>({
 
       {otherOverrides.length > 0 && (
         <div className="flex justify-center pt-2">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-xs text-muted-foreground"
-            onClick={toggleOthers}
-          >
+          <Button variant="ghost" size="sm" className="text-xs text-muted-foreground" onClick={toggleOthers}>
             {showOthers ? (
               <>
                 <ChevronUp className="mr-2 h-3 w-3" />

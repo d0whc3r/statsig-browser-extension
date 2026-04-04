@@ -19,52 +19,47 @@ const OVERRIDE_TYPE_VALUES: { label: string; value: OverrideType }[] = [
   { label: 'FAIL', value: 'fail' },
 ]
 
-export const AddOverrideForm = memo(
-  ({ isPending, onAddOverride, onCancel, featureGate }: AddOverrideFormProps) => {
-    const [overrideType, setOverrideType] = useState<OverrideType>('pass')
+export const AddOverrideForm = memo(({ isPending, onAddOverride, onCancel, featureGate }: AddOverrideFormProps) => {
+  const [overrideType, setOverrideType] = useState<OverrideType>('pass')
 
-    const handleAddOverride = useCallback(
-      ({ id, value, environment, idType }: AddOverrideParams<OverrideType>) => {
-        onAddOverride({
-          environment,
-          idType,
-          type: value,
-          userId: id,
-        })
-      },
-      [onAddOverride],
-    )
+  const handleAddOverride = useCallback(
+    ({ id, value, environment, idType }: AddOverrideParams<OverrideType>) => {
+      onAddOverride({
+        environment,
+        idType,
+        type: value,
+        userId: id,
+      })
+    },
+    [onAddOverride],
+  )
 
-    const handleValueChange = useCallback((val: OverrideType) => {
-      setOverrideType(val)
-    }, [])
+  const handleValueChange = useCallback((val: OverrideType) => {
+    setOverrideType(val)
+  }, [])
 
-    const getSubmitButtonClassName = useCallback(
-      (val: OverrideType) => (val === 'pass' ? 'bg-primary' : 'bg-destructive'),
-      [],
-    )
+  const getSubmitButtonClassName = useCallback(
+    (val: OverrideType) => (val === 'pass' ? 'bg-primary' : 'bg-destructive'),
+    [],
+  )
 
-    const getSubmitButtonText = useCallback(
-      (val: OverrideType) => `Add ${val.toUpperCase()} Override`,
-      [],
-    )
+  const getSubmitButtonText = useCallback((val: OverrideType) => `Add ${val.toUpperCase()} Override`, [])
 
-    return (
-      <GenericAddOverrideForm
-        key={featureGate?.id}
-        isPending={isPending}
-        onAddOverride={handleAddOverride}
-        onCancel={onCancel}
-        valueLabel="Override Type"
-        values={OVERRIDE_TYPE_VALUES}
-        selectedValue={overrideType}
-        onValueChange={handleValueChange}
-        defaultIdType={featureGate?.idType ?? 'userID'}
-        getSubmitButtonClassName={getSubmitButtonClassName}
-        getSubmitButtonText={getSubmitButtonText}
-      />
-    )
-  },
-)
+  return (
+    <GenericAddOverrideForm
+      key={featureGate?.id}
+      isPending={isPending}
+      onAddOverride={handleAddOverride}
+      onCancel={onCancel}
+      valueLabel="Override Type"
+      values={OVERRIDE_TYPE_VALUES}
+      selectedValue={overrideType}
+      onValueChange={handleValueChange}
+      defaultIdType={featureGate?.idType ?? 'userID'}
+      getSubmitButtonClassName={getSubmitButtonClassName}
+      getSubmitButtonText={getSubmitButtonText}
+    />
+  )
+})
 
 AddOverrideForm.displayName = 'AddOverrideForm'

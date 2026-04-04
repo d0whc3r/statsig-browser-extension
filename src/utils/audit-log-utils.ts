@@ -1,6 +1,4 @@
-export const getActionTypeColor = (
-  actionType: string,
-): 'default' | 'secondary' | 'destructive' | 'outline' => {
+export const getActionTypeColor = (actionType: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
   const action = actionType.toLowerCase()
 
   const mappings: {
@@ -21,8 +19,7 @@ export const getActionTypeColor = (
   return 'outline'
 }
 
-export const getActionTypeLabel = (actionType: string) =>
-  actionType.charAt(0).toUpperCase() + actionType.slice(1)
+export const getActionTypeLabel = (actionType: string) => actionType.charAt(0).toUpperCase() + actionType.slice(1)
 
 export const getTagColor = (tag: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
   const tagLower = tag.toLowerCase()
@@ -47,11 +44,11 @@ export const getTagColor = (tag: string): 'default' | 'secondary' | 'destructive
 export const getDateFromAuditLog = (date: string, time: string) => {
   try {
     const dateTime = new Date(`${date} ${time}`)
-    if (!isNaN(dateTime.getTime())) {
+    if (!Number.isNaN(dateTime.getTime())) {
       return dateTime
     }
     const isoDateTime = new Date(`${date}T${time}`)
-    if (!isNaN(isoDateTime.getTime())) {
+    if (!Number.isNaN(isoDateTime.getTime())) {
       return isoDateTime
     }
     return new Date()

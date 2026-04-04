@@ -25,19 +25,15 @@ export const UserDetailsSheet = () => {
 
   return (
     <Sheet open={isUserDetailsSheetOpen} onOpenChange={setUserDetailsSheetOpen}>
-      <SheetContent className="w-[400px] sm:w-[540px] flex flex-col h-full overflow-hidden p-0 gap-0">
+      <SheetContent className="flex h-full w-[400px] flex-col gap-0 overflow-hidden p-0 sm:w-[540px]">
         <UserDetailsHeader isLoading={isLoading} onRefetch={handleRefetch} />
 
-        <ScrollArea className="flex-1 min-h-0">
-          <div className="p-6 space-y-6">
+        <ScrollArea className="min-h-0 flex-1">
+          <div className="space-y-6 p-6">
             {isLoading ? (
               <UserDetailsSkeleton />
             ) : (
-              <UserDetailsContent
-                userDetails={userDetails}
-                onRefetch={handleRefetch}
-                error={detectionError}
-              />
+              <UserDetailsContent userDetails={userDetails} onRefetch={handleRefetch} error={detectionError} />
             )}
           </div>
         </ScrollArea>

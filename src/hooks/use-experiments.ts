@@ -26,9 +26,7 @@ export interface PaginatedResponse<ItemType> {
  */
 const fetchExperimentsPage = async (page: number): Promise<PaginatedResponse<Experiment>> => {
   try {
-    return await fetcher<PaginatedResponse<Experiment>>(
-      `/experiments?limit=${PAGE_LIMIT}&page=${page}`,
-    )
+    return await fetcher<PaginatedResponse<Experiment>>(`/experiments?limit=${PAGE_LIMIT}&page=${page}`)
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

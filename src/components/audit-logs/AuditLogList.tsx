@@ -19,13 +19,7 @@ interface AuditLogListProps {
   isLoading: boolean
 }
 
-const EmptyState = ({
-  filterValue,
-  actionFilter,
-}: {
-  filterValue: string
-  actionFilter: string
-}) => {
+const EmptyState = ({ filterValue, actionFilter }: { filterValue: string; actionFilter: string }) => {
   const isFiltered = filterValue || actionFilter !== 'all'
 
   return <GeneralEmptyState variant={isFiltered ? 'search' : 'audit_log'} />
@@ -64,23 +58,13 @@ const Footer = ({
   if (hasNextPage) {
     return (
       <div ref={loadMoreRef} className="w-full">
-        <Button
-          variant="secondary"
-          onClick={onLoadMore}
-          disabled={isFetchingNextPage}
-          size="sm"
-          className="h-8 w-full"
-        >
+        <Button variant="secondary" onClick={onLoadMore} disabled={isFetchingNextPage} size="sm" className="h-8 w-full">
           {isFetchingNextPage ? 'Loading...' : 'Load More'}
         </Button>
       </div>
     )
   }
-  return (
-    <div className="text-center text-muted-foreground text-[10px] font-medium">
-      No more audit logs
-    </div>
-  )
+  return <div className="text-center text-[10px] font-medium text-muted-foreground">No more audit logs</div>
 }
 
 const SKELETON_IDS = Array.from({ length: 10 }, (_unused, index) => `skeleton-${index}`)
@@ -98,16 +82,16 @@ export const AuditLogList = memo(
   }: AuditLogListProps) => {
     if (isLoading) {
       return (
-        <div className="flex-1 overflow-auto min-h-0 divide-y">
+        <div className="min-h-0 flex-1 divide-y overflow-auto">
           {SKELETON_IDS.map((key) => (
             <div key={key} className="px-4 py-3">
               <div className="flex items-start justify-between gap-3">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1.5">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-1.5 flex items-center gap-2">
                     <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 flex-1 max-w-[200px]" />
+                    <Skeleton className="h-5 max-w-[200px] flex-1" />
                   </div>
-                  <Skeleton className="h-4 w-3/4 mb-1.5" />
+                  <Skeleton className="mb-1.5 h-4 w-3/4" />
                   <div className="flex items-center gap-1.5">
                     <Skeleton className="h-3 w-24" />
                     <Skeleton className="h-3 w-32" />
@@ -121,7 +105,7 @@ export const AuditLogList = memo(
     }
 
     return (
-      <div className="flex-1 overflow-auto min-h-0">
+      <div className="min-h-0 flex-1 overflow-auto">
         {filteredItems.length === 0 ? (
           <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
         ) : (
@@ -133,12 +117,8 @@ export const AuditLogList = memo(
         )}
 
         {filteredItems.length > 0 && (
-          <div className="flex-none p-3 border-t bg-background">
-            <Footer
-              hasNextPage={hasNextPage}
-              isFetchingNextPage={isFetchingNextPage}
-              onLoadMore={onLoadMore}
-            />
+          <div className="flex-none border-t bg-background p-3">
+            <Footer hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} onLoadMore={onLoadMore} />
           </div>
         )}
       </div>

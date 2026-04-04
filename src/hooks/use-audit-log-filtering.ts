@@ -3,11 +3,7 @@ import { useMemo } from 'react'
 
 import type { AuditLog } from '@/src/types/statsig'
 
-export const useAuditLogFiltering = (
-  auditLogs: AuditLog[],
-  filterValue: string,
-  actionFilter: string,
-) =>
+export const useAuditLogFiltering = (auditLogs: AuditLog[], filterValue: string, actionFilter: string) =>
   useMemo(() => {
     let filtered = auditLogs
 
@@ -19,14 +15,10 @@ export const useAuditLogFiltering = (
           return action.includes('create') || action.includes('start')
         }
         if (actionFilter === 'update') {
-          return (
-            action.includes('update') || action.includes('edit') || action.includes('condition')
-          )
+          return action.includes('update') || action.includes('edit') || action.includes('condition')
         }
         if (actionFilter === 'delete') {
-          return (
-            action.includes('delete') || action.includes('archive') || action.includes('toggle')
-          )
+          return action.includes('delete') || action.includes('archive') || action.includes('toggle')
         }
         if (actionFilter === 'override') {
           return action.includes('override') || action.includes('environment')

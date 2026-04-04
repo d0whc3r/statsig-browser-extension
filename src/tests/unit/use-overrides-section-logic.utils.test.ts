@@ -1,9 +1,6 @@
 import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
-import {
-  getDeletedOverrides,
-  getUpdatedUserIDOverrides,
-} from '../../hooks/use-overrides-section-logic.utils'
+import { getDeletedOverrides, getUpdatedUserIDOverrides } from '../../hooks/use-overrides-section-logic.utils'
 
 describe('getUpdatedUserIDOverrides logic', () => {
   const mockExisting: UserIDOverride[] = [
@@ -37,8 +34,7 @@ describe('getUpdatedUserIDOverrides logic', () => {
 
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
     const productionGroupA = updated.find(
-      (override: UserIDOverride) =>
-        override.groupID === 'group_a' && override.environment === 'production',
+      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'production',
     )
     expect(productionGroupA?.ids).toContain('user_5')
     expect(productionGroupA?.ids).toHaveLength(3)
@@ -55,12 +51,10 @@ describe('getUpdatedUserIDOverrides logic', () => {
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
 
     const productionGroupA = updated.find(
-      (override: UserIDOverride) =>
-        override.groupID === 'group_a' && override.environment === 'production',
+      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'production',
     )
     const productionGroupB = updated.find(
-      (override: UserIDOverride) =>
-        override.groupID === 'group_b' && override.environment === 'production',
+      (override: UserIDOverride) => override.groupID === 'group_b' && override.environment === 'production',
     )
 
     expect(productionGroupA?.ids).not.toContain('user_1')
@@ -115,8 +109,7 @@ describe('getUpdatedUserIDOverrides logic', () => {
 
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
     const stagingGroupA = updated.find(
-      (override: UserIDOverride) =>
-        override.groupID === 'group_a' && override.environment === 'staging',
+      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'staging',
     )
     expect(stagingGroupA?.ids).toContain('user_4')
   })

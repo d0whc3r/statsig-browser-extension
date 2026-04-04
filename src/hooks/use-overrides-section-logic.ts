@@ -115,10 +115,7 @@ const useOverrideData = (currentItemId: string | undefined) => {
   const groups = useMemo(() => experiment?.groups ?? [], [experiment?.groups])
 
   const { data: featureGatesData } = useFeatureGates()
-  const featureGates = useMemo(
-    () => featureGatesData?.pages.flatMap((page) => page.data) ?? [],
-    [featureGatesData],
-  )
+  const featureGates = useMemo(() => featureGatesData?.pages.flatMap((page) => page.data) ?? [], [featureGatesData])
 
   const { data: detectedUser } = useUserDetails()
 

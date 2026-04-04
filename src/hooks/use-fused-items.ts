@@ -10,12 +10,7 @@ interface UseFusedItemsOptions<Type> {
   options?: IFuseOptions<Type>
 }
 
-export const useFusedItems = <Type>({
-  filterValue,
-  items,
-  keys,
-  options,
-}: UseFusedItemsOptions<Type>) => {
+export const useFusedItems = <Type>({ filterValue, items, keys, options }: UseFusedItemsOptions<Type>) => {
   const hasSearchFilter = Boolean(filterValue)
 
   return useMemo(() => {

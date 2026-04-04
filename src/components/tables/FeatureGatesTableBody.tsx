@@ -62,12 +62,7 @@ export const FeatureGatesTableBody = ({
   return (
     <>
       {items.map((item) => (
-        <FeatureGateRow
-          key={item.id}
-          item={item}
-          headerColumns={headerColumns}
-          onRowClick={setCurrentFeatureGate}
-        />
+        <FeatureGateRow key={item.id} item={item} headerColumns={headerColumns} onRowClick={setCurrentFeatureGate} />
       ))}
     </>
   )

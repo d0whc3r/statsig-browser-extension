@@ -48,9 +48,7 @@ export const ExperimentStatusCell = memo(({ item }: BaseCellProps) => (
 
 ExperimentStatusCell.displayName = 'ExperimentStatusCell'
 
-export const ExperimentAllocationCell = memo(({ item }: BaseCellProps) => (
-  <div>{item.allocation}%</div>
-))
+export const ExperimentAllocationCell = memo(({ item }: BaseCellProps) => <div>{item.allocation}%</div>)
 
 ExperimentAllocationCell.displayName = 'ExperimentAllocationCell'
 
@@ -59,17 +57,11 @@ export const ExperimentTagsCell = memo(({ item }: BaseCellProps) => <TagsCell ta
 ExperimentTagsCell.displayName = 'ExperimentTagsCell'
 
 export const ExperimentActionsCell = memo(({ item, onRowClick }: BaseCellProps) => (
-  <ActionsCell
-    id={item.id}
-    onRowClick={onRowClick}
-    statsigUrl={`https://console.statsig.com/experiments/${item.id}`}
-  />
+  <ActionsCell id={item.id} onRowClick={onRowClick} statsigUrl={`https://console.statsig.com/experiments/${item.id}`} />
 ))
 
 ExperimentActionsCell.displayName = 'ExperimentActionsCell'
 
-export const ExperimentDefaultCell = memo(({ value }: { value: unknown }) => (
-  <div>{String(value)}</div>
-))
+export const ExperimentDefaultCell = memo(({ value }: { value: unknown }) => <div>{String(value)}</div>)
 
 ExperimentDefaultCell.displayName = 'ExperimentDefaultCell'

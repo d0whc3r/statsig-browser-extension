@@ -16,11 +16,10 @@ export const useTableState = ({
   rowsPerPageStorage,
   initialStatusFilter,
 }: UseTableStateOptions) => {
-  const { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns } =
-    usePersistentTableState({
-      rowsPerPageStorage,
-      visibleColumnsStorage,
-    })
+  const { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns } = usePersistentTableState({
+    rowsPerPageStorage,
+    visibleColumnsStorage,
+  })
 
   const { filterValue, page, setFilterValue, setPage, setStatusFilter, statusFilter } =
     useTransientTableState(initialStatusFilter)

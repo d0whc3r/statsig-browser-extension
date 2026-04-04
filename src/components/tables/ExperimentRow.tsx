@@ -20,41 +20,35 @@ interface ExperimentCellProps {
   showInlineId: boolean
 }
 
-type DefaultExperimentColumnKey = Exclude<
-  ExperimentColumnKey,
-  'actions' | 'allocation' | 'name' | 'status' | 'tags'
->
+type DefaultExperimentColumnKey = Exclude<ExperimentColumnKey, 'actions' | 'allocation' | 'name' | 'status' | 'tags'>
 
-const getExperimentDefaultValue = (item: Experiment, columnKey: DefaultExperimentColumnKey) =>
-  item[columnKey]
+const getExperimentDefaultValue = (item: Experiment, columnKey: DefaultExperimentColumnKey) => item[columnKey]
 
-const ExperimentCell = memo(
-  ({ item, columnKey, onRowClick, showInlineId }: ExperimentCellProps) => {
-    switch (columnKey) {
-      case 'name': {
-        return <ExperimentNameCell item={item} showInlineId={showInlineId} />
-      }
-      case 'status': {
-        return <ExperimentStatusCell item={item} onRowClick={onRowClick} />
-      }
-      case 'allocation': {
-        return <ExperimentAllocationCell item={item} onRowClick={onRowClick} />
-      }
-      case 'hypothesis': {
-        return <ExperimentDefaultCell value={getExperimentDefaultValue(item, columnKey)} />
-      }
-      case 'tags': {
-        return <ExperimentTagsCell item={item} onRowClick={onRowClick} />
-      }
-      case 'actions': {
-        return <ExperimentActionsCell item={item} onRowClick={onRowClick} />
-      }
-      default: {
-        return null
-      }
+const ExperimentCell = memo(({ item, columnKey, onRowClick, showInlineId }: ExperimentCellProps) => {
+  switch (columnKey) {
+    case 'name': {
+      return <ExperimentNameCell item={item} showInlineId={showInlineId} />
     }
-  },
-)
+    case 'status': {
+      return <ExperimentStatusCell item={item} onRowClick={onRowClick} />
+    }
+    case 'allocation': {
+      return <ExperimentAllocationCell item={item} onRowClick={onRowClick} />
+    }
+    case 'hypothesis': {
+      return <ExperimentDefaultCell value={getExperimentDefaultValue(item, columnKey)} />
+    }
+    case 'tags': {
+      return <ExperimentTagsCell item={item} onRowClick={onRowClick} />
+    }
+    case 'actions': {
+      return <ExperimentActionsCell item={item} onRowClick={onRowClick} />
+    }
+    default: {
+      return null
+    }
+  }
+})
 ExperimentCell.displayName = 'ExperimentCell'
 
 interface ExperimentRowProps {

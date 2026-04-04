@@ -6,12 +6,9 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { OverridesSection } from './OverridesSection'
 
 export function ManageExperimentModal() {
-  const {
-    currentItemId,
-    isManageExperimentModalOpen,
-    setItemSheetOpen,
-    setManageExperimentModalOpen,
-  } = useUIStore((state) => state)
+  const { currentItemId, isManageExperimentModalOpen, setItemSheetOpen, setManageExperimentModalOpen } = useUIStore(
+    (state) => state,
+  )
 
   const handleCloseModal = useCallback(
     (open: boolean) => {

@@ -26,9 +26,7 @@ export interface PaginatedResponse<ItemType> {
  */
 const fetchDynamicConfigsPage = async (page: number): Promise<PaginatedResponse<DynamicConfig>> => {
   try {
-    return await fetcher<PaginatedResponse<DynamicConfig>>(
-      `/dynamic_configs?limit=${PAGE_LIMIT}&page=${page}`,
-    )
+    return await fetcher<PaginatedResponse<DynamicConfig>>(`/dynamic_configs?limit=${PAGE_LIMIT}&page=${page}`)
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

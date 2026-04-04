@@ -19,13 +19,8 @@ export const useGateOverridesLogic = (
   const [view, setView] = useState<View>('table')
   const { data: detectedUser } = useUserDetails()
 
-  const {
-    handleAddOverride,
-    handleDeleteOverride,
-    handleSwitchToForm,
-    handleSwitchToTable,
-    isPending,
-  } = useGateOverrideHandlers(currentItemId, setView, overrides)
+  const { handleAddOverride, handleDeleteOverride, handleSwitchToForm, handleSwitchToTable, isPending } =
+    useGateOverrideHandlers(currentItemId, setView, overrides)
 
   const allOverrides = useMemo(() => {
     const result: {
@@ -102,9 +97,7 @@ export const useGateOverridesLogic = (
 
     const currentIdType = featureGate?.idType ?? 'userID'
 
-    return allOverrides.filter(
-      (override) => override.id === detectedUserId && override.idType === currentIdType,
-    )
+    return allOverrides.filter((override) => override.id === detectedUserId && override.idType === currentIdType)
   }, [detectedUserId, allOverrides, featureGate])
 
   const isDetectedUserOverridden = detectedUserOverrides.length > 0

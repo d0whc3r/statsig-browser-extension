@@ -5,22 +5,10 @@ import { EntityTable } from '@/src/components/tables/EntityTable'
 import { FeatureGatesTableBody } from '@/src/components/tables/FeatureGatesTableBody'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
-import {
-  featureGatesRowsPerPageStorage,
-  featureGatesVisibleColumnsStorage,
-} from '@/src/lib/storage'
+import { featureGatesRowsPerPageStorage, featureGatesVisibleColumnsStorage } from '@/src/lib/storage'
 
 export function FeatureGatesTable() {
-  const {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useFeatureGates()
+  const { data, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useFeatureGates()
 
   const tableLogic = useEntityTableLogic<FeatureGate>({
     columns: featureGateColumns,

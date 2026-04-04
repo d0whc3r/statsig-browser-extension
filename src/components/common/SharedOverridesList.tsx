@@ -10,11 +10,7 @@ interface SharedOverridesListProps {
   children: ReactNode
 }
 
-export const SharedOverridesList = ({
-  onAddManual,
-  canEdit,
-  children,
-}: SharedOverridesListProps) => (
+export const SharedOverridesList = ({ onAddManual, canEdit, children }: SharedOverridesListProps) => (
   <div className="space-y-4">
     <div className="flex items-center justify-between">
       <h3 className="text-sm font-medium">Active Overrides</h3>

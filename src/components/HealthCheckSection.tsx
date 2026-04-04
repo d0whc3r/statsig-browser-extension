@@ -32,13 +32,13 @@ export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthChec
           <div className="flex items-center gap-2" key={healthCheck.name}>
             <div
               className={cn(
-                'h-2.5 w-2.5 rounded-full shrink-0',
+                'h-2.5 w-2.5 shrink-0 rounded-full',
                 healthCheck.status === 'PASSED' ? 'bg-green-500' : 'bg-muted-foreground/30',
               )}
             />
             <Tooltip>
               <TooltipTrigger asChild>
-                <span className="text-sm cursor-help underline decoration-dotted decoration-muted-foreground/50 underline-offset-4">
+                <span className="cursor-help text-sm underline decoration-muted-foreground/50 decoration-dotted underline-offset-4">
                   {healthCheck.name}
                 </span>
               </TooltipTrigger>

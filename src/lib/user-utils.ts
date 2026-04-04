@@ -27,10 +27,7 @@ const getCustomId = (detectedUser: StatsigUser, idType: string) => {
   }
 }
 
-export const getDetectedUserId = (
-  detectedUser?: StatsigUser,
-  idType = 'userID',
-): string | undefined => {
+export const getDetectedUserId = (detectedUser?: StatsigUser, idType = 'userID'): string | undefined => {
   if (!detectedUser) {
     return
   }

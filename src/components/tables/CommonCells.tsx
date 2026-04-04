@@ -19,7 +19,7 @@ interface NameCellProps {
 
 export const NameCell = memo(({ id, name, showInlineId }: NameCellProps) => (
   <div className="min-w-0">
-    <div className="cursor-pointer font-medium hover:underline truncate">{name}</div>
+    <div className="cursor-pointer truncate font-medium hover:underline">{name}</div>
     {showInlineId && (
       <CopyableText
         value={id}
@@ -44,7 +44,7 @@ export const TagsCell = memo(({ tags }: TagsCellProps) => {
   return (
     <div className="flex flex-wrap gap-1">
       {tags.map((tag) => (
-        <Badge key={tag} variant="secondary" className="capitalize text-xs">
+        <Badge key={tag} variant="secondary" className="text-xs capitalize">
           {tag}
         </Badge>
       ))}
@@ -82,7 +82,7 @@ export const ActionsCell = memo(({ id, onRowClick, statsigUrl }: ActionsCellProp
   }, [])
 
   return (
-    <div className="relative flex justify-end items-center gap-2">
+    <div className="relative flex items-center justify-end gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" className="h-8 w-8 p-0">

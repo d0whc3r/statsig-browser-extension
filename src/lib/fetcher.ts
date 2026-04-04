@@ -77,8 +77,7 @@ const customFetch = async (url: RequestInfo | URL, init?: RequestInit): Promise<
 
 export const api = wretch(API_BASE_URL).fetchPolyfill(customFetch)
 
-export const fetcher = <ResponseData>(url: string): Promise<ResponseData> =>
-  api.url(url).get().json<ResponseData>()
+export const fetcher = <ResponseData>(url: string): Promise<ResponseData> => api.url(url).get().json<ResponseData>()
 
 export const poster = <ResponseData>(url: string, body: unknown): Promise<ResponseData> =>
   api.url(url).post(body).json<ResponseData>()

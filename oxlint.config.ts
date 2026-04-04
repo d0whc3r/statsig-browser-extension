@@ -81,12 +81,7 @@ export default defineConfig({
       },
     },
     {
-      files: [
-        '**/*.config.{js,ts,mjs,cjs}',
-        'entrypoints/background.ts',
-        'entrypoints/content.ts',
-        'scripts/**/*',
-      ],
+      files: ['**/*.config.{js,ts,mjs,cjs}', 'entrypoints/background.ts', 'entrypoints/content.ts', 'scripts/**/*'],
       rules: {
         'import/no-default-export': 'off',
         'import/no-nodejs-modules': 'off',
@@ -111,11 +106,7 @@ export default defineConfig({
   plugins: ['typescript', 'unicorn', 'oxc', 'import'],
   rules: {
     'eslint/no-unused-vars': 'error',
-    'func-style': [
-      'warn',
-      'declaration',
-      { allowArrowFunctions: true, overrides: { namedExports: 'ignore' } },
-    ],
+    'func-style': ['warn', 'declaration', { allowArrowFunctions: true, overrides: { namedExports: 'ignore' } }],
     'group-exports': 'off',
     'id-length': [
       'warn',

@@ -21,9 +21,7 @@ interface FeatureGateRuleCardProps {
 const MAX_PERCENTAGE = 100
 const MIN_PERCENTAGE = 0
 
-const getBadgeVariant = (
-  percentage: number,
-): 'default' | 'secondary' | 'destructive' | 'outline' => {
+const getBadgeVariant = (percentage: number): 'default' | 'secondary' | 'destructive' | 'outline' => {
   if (percentage === MIN_PERCENTAGE) {
     return 'destructive'
   }
@@ -34,11 +32,11 @@ const getBadgeVariant = (
 }
 
 const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
-  <Card className="shadow-sm overflow-hidden">
-    <CardHeader className="py-3 px-4 bg-muted/30 border-b">
-      <div className="flex w-full justify-between items-start gap-4">
-        <div className="flex-1 min-w-0">
-          <CardTitle className="text-sm font-semibold truncate" title={rule.name}>
+  <Card className="overflow-hidden shadow-sm">
+    <CardHeader className="border-b bg-muted/30 px-4 py-3">
+      <div className="flex w-full items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <CardTitle className="truncate text-sm font-semibold" title={rule.name}>
             {rule.name}
           </CardTitle>
           <CopyableText
@@ -64,11 +62,11 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
       </div>
     </CardHeader>
     <CardContent className="p-0">
-      <EntityDetailsList className="border-0 rounded-none">
+      <EntityDetailsList className="rounded-none border-0">
         {/* Environments */}
         {rule.environments && rule.environments.length > 0 && (
           <EntityDetailsField label="Environments">
-            <div className="flex flex-wrap gap-1 justify-end">
+            <div className="flex flex-wrap justify-end gap-1">
               {rule.environments.map((env) => (
                 <Badge key={env} variant="outline" className="text-xs">
                   {env}
@@ -81,7 +79,7 @@ const FeatureGateRuleCard = memo(({ rule }: FeatureGateRuleCardProps) => (
         {/* Conditions */}
         {rule.conditions && rule.conditions.length > 0 && (
           <EntityDetailsField label="Conditions">
-            <div className="flex flex-wrap gap-1 justify-end">
+            <div className="flex flex-wrap justify-end gap-1">
               {rule.conditions.map((condition, index) => (
                 <Badge
                   // oxlint-disable-next-line react/no-array-index-key
@@ -113,7 +111,7 @@ export const FeatureGateRules = memo(({ featureGateId }: Props) => {
   }
 
   if (error) {
-    return <div className="text-center text-sm text-destructive py-4">Failed to load rules</div>
+    return <div className="py-4 text-center text-sm text-destructive">Failed to load rules</div>
   }
 
   if (!rules || rules.length === 0) {

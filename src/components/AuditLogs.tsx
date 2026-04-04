@@ -34,8 +34,7 @@ const useAuditLogState = () => {
   const [filterValue, setFilterValue] = useState('')
   const debouncedFilterValue = useDebounce(filterValue, FILTER_DEBOUNCE_MS)
   const [actionFilter, setActionFilter] = useState('all')
-  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } =
-    useAuditLogs()
+  const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } = useAuditLogs()
 
   const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])
   const filteredItems = useAuditLogFiltering(auditLogs, debouncedFilterValue, actionFilter)
@@ -71,9 +70,7 @@ export const AuditLogs = memo(() => {
     setFilterValue,
   } = useAuditLogState()
 
-  const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useUIStore(
-    (state) => state,
-  )
+  const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useUIStore((state) => state)
 
   const setCurrentAuditLog = useCallback(
     (auditLogId: string) => {
@@ -98,7 +95,7 @@ export const AuditLogs = memo(() => {
   )
 
   return (
-    <div className="w-full overflow-hidden flex flex-col h-full">
+    <div className="flex h-full w-full flex-col overflow-hidden">
       <AuditLogFilters
         filterValue={filterValue}
         onFilterChange={handleFilterChange}

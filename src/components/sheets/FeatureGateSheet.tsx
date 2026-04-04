@@ -20,9 +20,7 @@ export function FeatureGateSheet() {
     error: gateError,
     isLoading: isLoadingGate,
   } = useFeatureGate(isOpen ? currentItemId : undefined)
-  const { error: overridesError, isLoading: isLoadingOverrides } = useGateOverrides(
-    isOpen ? currentItemId : undefined,
-  )
+  const { error: overridesError, isLoading: isLoadingOverrides } = useGateOverrides(isOpen ? currentItemId : undefined)
 
   const isLoading = isLoadingGate || isLoadingOverrides
   const error = gateError ?? overridesError
@@ -37,23 +35,12 @@ export function FeatureGateSheet() {
     [currentItemId],
   )
 
-  const overridesContent = useMemo(
-    () => <GateOverridesSection featureGate={featureGate} />,
-    [featureGate],
-  )
+  const overridesContent = useMemo(() => <GateOverridesSection featureGate={featureGate} />, [featureGate])
 
   return (
     <CommonSheet type="feature_gate">
-      <FeatureGateSheetHeader
-        isLoading={isLoading}
-        featureGate={featureGate}
-        currentItemId={currentItemId}
-      />
-      <SheetTabs
-        detailsContent={detailsContent}
-        rulesContent={rulesContent}
-        overridesContent={overridesContent}
-      />
+      <FeatureGateSheetHeader isLoading={isLoading} featureGate={featureGate} currentItemId={currentItemId} />
+      <SheetTabs detailsContent={detailsContent} rulesContent={rulesContent} overridesContent={overridesContent} />
     </CommonSheet>
   )
 }

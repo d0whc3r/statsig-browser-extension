@@ -38,9 +38,7 @@ const generalEmptyStateVariants = cva('border-0 p-0', {
   },
 })
 
-export type GeneralEmptyStateVariant = NonNullable<
-  VariantProps<typeof generalEmptyStateVariants>['variant']
->
+export type GeneralEmptyStateVariant = NonNullable<VariantProps<typeof generalEmptyStateVariants>['variant']>
 
 interface EmptyStateConfig {
   icon: React.ElementType
@@ -126,14 +124,12 @@ export function GeneralEmptyState({
 
   const finalDescription =
     description ??
-    (entityName
-      ? `${config.description.replace(/\.$/, '')} for this ${entityName}.`
-      : config.description)
+    (entityName ? `${config.description.replace(/\.$/, '')} for this ${entityName}.` : config.description)
 
   return (
     <Empty className={cn(generalEmptyStateVariants({ className, variant }))} {...props}>
       <EmptyMedia>
-        <Icon className="text-muted-foreground size-8" />
+        <Icon className="size-8 text-muted-foreground" />
       </EmptyMedia>
       <EmptyTitle>{title ?? config.title}</EmptyTitle>
       <EmptyDescription>{finalDescription}</EmptyDescription>

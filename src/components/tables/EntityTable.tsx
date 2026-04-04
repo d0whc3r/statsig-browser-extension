@@ -61,7 +61,7 @@ export function EntityTable({
   }, [fetchNextPage])
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex h-full flex-col">
       <div className="flex-none p-4 pb-0">
         <TopContent
           filterValue={filterValue}
@@ -80,16 +80,13 @@ export function EntityTable({
         />
       </div>
 
-      <div className="flex-1 overflow-auto min-h-0 p-4">
+      <div className="min-h-0 flex-1 overflow-auto p-4">
         <div className="rounded-md border">
           <Table>
             <TableHeader>
               <TableRow>
                 {headerColumns.map((column) => (
-                  <TableHead
-                    key={column.uid}
-                    className={column.uid === 'actions' ? 'text-right' : ''}
-                  >
+                  <TableHead key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
                     {column.name}
                   </TableHead>
                 ))}
@@ -100,15 +97,10 @@ export function EntityTable({
         </div>
       </div>
       {(pages > 1 || hasNextPage) && (
-        <div className="flex-none p-4 pt-0 flex flex-col gap-4">
+        <div className="flex flex-none flex-col gap-4 p-4 pt-0">
           <BottomContent page={page} setPage={setPage} total={pages} />
           {hasNextPage && (
-            <Button
-              variant="secondary"
-              className="w-full"
-              onClick={handleFetchNextPage}
-              disabled={isFetchingNextPage}
-            >
+            <Button variant="secondary" className="w-full" onClick={handleFetchNextPage} disabled={isFetchingNextPage}>
               {isFetchingNextPage ? 'Loading more...' : loadMoreText}
             </Button>
           )}

@@ -23,10 +23,7 @@ export const getUserDetails = async (tabId: number): Promise<UserDetails | undef
     }
   } catch (error) {
     // Ignore error when accessing restricted URLs like about:blank
-    if (
-      error instanceof Error &&
-      error.message.includes('Cannot access contents of url "about:blank"')
-    ) {
+    if (error instanceof Error && error.message.includes('Cannot access contents of url "about:blank"')) {
       return undefined
     }
     console.error('Failed to get user details from page', handleApiError(error))

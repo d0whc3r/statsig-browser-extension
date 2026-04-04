@@ -7,30 +7,15 @@ export function EntityDetailsContainer({ children }: { children: ReactNode }) {
   return <div className="space-y-6">{children}</div>
 }
 
-export function EntityDetailsList({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) {
-  return (
-    <dl className={cn('divide-y divide-border rounded-md border text-sm bg-card', className)}>
-      {children}
-    </dl>
-  )
+export function EntityDetailsList({ children, className }: { children: ReactNode; className?: string }) {
+  return <dl className={cn('divide-y divide-border rounded-md border bg-card text-sm', className)}>{children}</dl>
 }
 
 export function EntityDetailsField({ label, children }: { label?: string; children: ReactNode }) {
   return (
-    <div className="flex items-center justify-between py-3 px-4">
-      {label && <dt className="text-muted-foreground font-medium">{label}</dt>}
-      <dd
-        className={cn(
-          'font-medium flex items-center gap-2 text-right justify-end',
-          !label && 'w-full',
-        )}
-      >
+    <div className="flex items-center justify-between px-4 py-3">
+      {label && <dt className="font-medium text-muted-foreground">{label}</dt>}
+      <dd className={cn('flex items-center justify-end gap-2 text-right font-medium', !label && 'w-full')}>
         {children}
       </dd>
     </div>
@@ -40,7 +25,7 @@ export function EntityDetailsField({ label, children }: { label?: string; childr
 export function EntityDetailsSection({ title, children }: { title: string; children: ReactNode }) {
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">{title}</h3>
+      <h3 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">{title}</h3>
       <div className="text-sm leading-relaxed text-foreground/90">{children}</div>
     </div>
   )
@@ -52,7 +37,7 @@ export function EntityDetailsTags({ tags }: { tags?: string[] }) {
   }
 
   return (
-    <div className="flex flex-wrap gap-1.5 justify-start w-full">
+    <div className="flex w-full flex-wrap justify-start gap-1.5">
       {tags.map((tag) => (
         <Badge key={tag} variant="secondary" className="px-2 py-0.5 text-xs font-normal">
           {tag}
