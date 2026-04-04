@@ -1,3 +1,9 @@
+## [1.4.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.1...v1.4.2) (2026-04-04)
+
+### Bug Fixes
+
+- update formatting ([78b181e](https://github.com/d0whc3r/statsig-browser-extension/commit/78b181ee78a8240c0f5291142c17e51e75f92c0d))
+
 ## [1.4.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.0...v1.4.1) (2026-04-04)
 
 ### Bug Fixes
