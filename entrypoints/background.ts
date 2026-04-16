@@ -69,8 +69,6 @@ export default defineBackground(() => {
             })
           })
       })
-
-      return true // Indicates we will respond asynchronously
     }
   })
 })

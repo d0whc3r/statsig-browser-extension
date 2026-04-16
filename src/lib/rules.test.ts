@@ -1,3 +1,5 @@
+import { expect, describe, it } from 'vitest'
+
 import { formatConditionDetails, getConditionLabel } from './rules'
 
 describe('rules utility', () => {

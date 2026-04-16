@@ -1,3 +1,5 @@
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import { useContextStore } from './use-context-store'
 
 describe(useContextStore, () => {

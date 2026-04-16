@@ -46,12 +46,14 @@ export const useAuditLogs = () => {
     enabled: Boolean(apiKey),
     getNextPageParam: (lastPage: PaginatedResponse<AuditLog>) => {
       if (!lastPage?.pagination) {
-        return
+        return null
       }
       const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
       if (currentTotal < lastPage.pagination.totalItems) {
         return lastPage.pagination.page + 1
       }
+
+      return null
     },
     initialPageParam: 1,
     queryFn: ({ pageParam }) => fetchAuditLogsPage(pageParam),

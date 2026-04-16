@@ -1,3 +1,5 @@
+import { expect, describe, it } from 'vitest'
+
 import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
 import { getDeletedOverrides, getUpdatedUserIDOverrides } from '../../hooks/use-overrides-section-logic.utils'

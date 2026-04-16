@@ -32,7 +32,7 @@ export const ExperimentSheetDetails = memo(({ isLoading, error, experiment }: Ex
   }
 
   if (!experiment) {
-    return
+    return null
   }
 
   return (

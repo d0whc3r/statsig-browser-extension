@@ -22,4 +22,5 @@ export async function getActiveTab() {
   } catch (error) {
     console.error('[Statsig Extension] Failed to get active tab:', error)
   }
+  return null
 }

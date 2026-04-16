@@ -21,7 +21,7 @@ export function ManageExperimentModal() {
   )
 
   if (!currentItemId) {
-    return
+    return null
   }
 
   return (

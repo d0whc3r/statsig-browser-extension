@@ -130,7 +130,7 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
   }
 
   if (!config) {
-    return
+    return null
   }
 
   return (

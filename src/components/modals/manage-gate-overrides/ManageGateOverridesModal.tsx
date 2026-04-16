@@ -21,7 +21,7 @@ export function ManageGateOverridesModal() {
   )
 
   if (!currentItemId) {
-    return
+    return null
   }
 
   return (

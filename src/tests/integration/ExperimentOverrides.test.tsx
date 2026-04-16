@@ -1,4 +1,5 @@
 import { screen, waitFor, within } from '@testing-library/react'
+import { beforeEach, vi, describe, expect, it } from 'vitest'
 
 import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher, poster } from '@/src/lib/fetcher'
@@ -96,7 +97,7 @@ const mockOverrides = {
 const setupMocks = () => {
   // Mock fetcher for hooks - ALL Statig API responses are wrapped in { data: ... }
   vi.mocked(fetcher).mockImplementation((url: string) => {
-    const urlString = url.toString()
+    const urlString = url
     if (urlString.includes('/overrides')) {
       return Promise.resolve({ data: mockOverrides })
     }

@@ -6,7 +6,7 @@ import { cn } from '@/src/lib/utils'
 
 export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthCheck[] }) => {
   if (!healthChecks || healthChecks.length === 0) {
-    return
+    return null
   }
 
   const progress = healthChecks.reduce((acc, healthCheck) => {

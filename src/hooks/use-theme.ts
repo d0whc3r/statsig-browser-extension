@@ -35,6 +35,7 @@ export function useTheme() {
     }
 
     mediaQuery.addEventListener('change', handleChange)
+    // oxlint-disable-next-line typescript/consistent-return
     return () => {
       mediaQuery.removeEventListener('change', handleChange)
     }

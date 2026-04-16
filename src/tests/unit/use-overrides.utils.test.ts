@@ -1,3 +1,5 @@
+import { expect, describe, it } from 'vitest'
+
 import type { ExperimentOverridesResponse } from '@/src/types/statsig'
 
 import { transformOverridesResponse } from '../../hooks/use-overrides.utils'

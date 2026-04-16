@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { beforeEach, vi, describe, expect, it } from 'vitest'
 
 import { Dialog, DialogContent } from '@/src/components/ui/dialog'
 import { initialLogin } from '@/src/handlers/initial-login'

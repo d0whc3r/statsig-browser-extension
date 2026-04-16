@@ -105,7 +105,7 @@ export const getUserDetailsFromPage = () => {
 
     const instance = getStatsigInstance()
     if (!instance) {
-      return
+      return null
     }
 
     const user = getUser(instance) ?? {}
@@ -124,4 +124,6 @@ export const getUserDetailsFromPage = () => {
   } catch {
     // Ignore errors to prevent crashing the extension
   }
+
+  return null
 }

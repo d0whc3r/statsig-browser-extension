@@ -20,7 +20,7 @@ const AuditLogHeader = ({
   isLoading,
   currentAuditLogId,
 }: {
-  auditLog?: AuditLog
+  auditLog?: AuditLog | null
   isLoading: boolean
   currentAuditLogId?: string
 }) => (
@@ -76,7 +76,7 @@ const AuditLogHeader = ({
   </SheetHeader>
 )
 
-const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog; isLoading: boolean }) => {
+const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog | null; isLoading: boolean }) => {
   if (isLoading && !auditLog) {
     return (
       <ScrollArea className="flex-1">
@@ -145,7 +145,7 @@ export const AuditLogDetailSheet = () => {
 
   const auditLog = useMemo(() => {
     if (!data || !currentAuditLogId) {
-      return
+      return null
     }
     const allLogs = data.pages.flatMap((page: PaginatedResponse<AuditLog>) => page.data)
     return allLogs.find((log) => log.id === currentAuditLogId)

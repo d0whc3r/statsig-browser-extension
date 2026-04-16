@@ -23,6 +23,7 @@ export function TestProviders({
   children: ReactNode
   queryClient?: QueryClient
 }) {
+  // oxlint-disable-next-line react/hook-use-state
   const [queryClient] = React.useState(() => externalQueryClient ?? createTestQueryClient())
 
   return (

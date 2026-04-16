@@ -1,3 +1,5 @@
+import { beforeEach, vi, describe, expect, it } from 'vitest'
+
 import { getUserDetails } from './get-user-details'
 
 const { executeScriptMock } = vi.hoisted(() => ({

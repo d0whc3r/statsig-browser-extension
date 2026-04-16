@@ -1,4 +1,5 @@
 import { screen, waitFor } from '@testing-library/react'
+import { beforeEach, vi, describe, expect, it } from 'vitest'
 
 import { AuthModal } from '@/src/components/modals/AuthModal'
 import { initialLogin } from '@/src/handlers/initial-login'

@@ -1,3 +1,5 @@
+import { describe, expect, it } from 'vitest'
+
 import { cn, handleApiError } from './utils'
 
 describe('shared library helpers', () => {

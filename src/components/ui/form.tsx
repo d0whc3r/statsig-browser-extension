@@ -116,10 +116,10 @@ function FormControl({ ...props }: React.ComponentProps<typeof Slot.Root>) {
 
 function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? '') : props.children
+  const body = error ? (error?.message ?? '') : props.children
 
   if (!body) {
-    return
+    return null
   }
 
   return (

@@ -1,24 +1,25 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import type { ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
 
-type ThemeProviderProps = {
+interface ThemeProviderProps {
   children: ReactNode
   defaultTheme?: Theme
   storageKey?: string
 }
 
-type ThemeProviderState = {
+interface ThemeProviderState {
   theme: Theme
   setTheme: (theme: Theme) => void
 }
 
 const initialState: ThemeProviderState = {
-  theme: 'system',
   setTheme: () => null,
+  theme: 'system',
 }
 
-const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
+const ThemeProviderContext = createContext(initialState)
 
 export function ThemeProvider({
   children,
@@ -32,19 +33,19 @@ export function ThemeProvider({
       return (localStorage.getItem(storageKey) as Theme) ||
              (sessionStorage.getItem(storageKey) as Theme) ||
              defaultTheme
-    } catch (e) {
+    } catch  {
       // Storage unavailable (incognito/privacy mode) - use default
       return defaultTheme
     }
   })
 
   useEffect(() => {
-    const root = window.document.documentElement
+    const root = globalThis.document.documentElement
 
     root.classList.remove('light', 'dark')
 
     if (theme === 'system') {
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)')
+      const systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)')
         .matches
         ? 'dark'
         : 'light'
@@ -57,7 +58,6 @@ export function ThemeProvider({
   }, [theme])
 
   const value = {
-    theme,
     setTheme: (theme: Theme) => {
       // Try to persist to localStorage, fall back to sessionStorage
       try {
@@ -73,6 +73,7 @@ export function ThemeProvider({
       }
       setTheme(theme)
     },
+    theme,
   }
 
   return (
@@ -86,7 +87,7 @@ export const useTheme = () => {
   const context = useContext(ThemeProviderContext)
 
   if (context === undefined)
-    throw new Error('useTheme must be used within a ThemeProvider')
+    {throw new Error('useTheme must be used within a ThemeProvider')}
 
   return context
 }

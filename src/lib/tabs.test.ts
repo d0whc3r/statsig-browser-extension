@@ -1,3 +1,5 @@
+import { beforeEach, vi, describe, expect, it } from 'vitest'
+
 import { getActiveTab } from './tabs'
 
 const { queryMock } = vi.hoisted(() => ({
