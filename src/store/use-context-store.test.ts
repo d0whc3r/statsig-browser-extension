@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { useContextStore } from './use-context-store'
 
-describe(useContextStore, () => {
+describe('useContextStore', () => {
   beforeEach(() => {
     useContextStore.getState().reset()
   })
@@ -21,7 +21,7 @@ describe(useContextStore, () => {
     useContextStore.getState().setDetectedUser(mockUser)
 
     const state = useContextStore.getState()
-    expect(state.detectedUser).toEqual(mockUser)
+    expect(state.detectedUser).toStrictEqual(mockUser)
     expect(state.detectionError).toBeNull()
   })
 
@@ -29,7 +29,7 @@ describe(useContextStore, () => {
     const mockContext = { app: 'dashboard', page: 'home' }
     useContextStore.getState().setDetectedContext(mockContext)
 
-    expect(useContextStore.getState().detectedContext).toEqual(mockContext)
+    expect(useContextStore.getState().detectedContext).toStrictEqual(mockContext)
   })
 
   it('should set current local storage value', () => {

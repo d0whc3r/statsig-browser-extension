@@ -23,7 +23,7 @@ describe('gate-overrides handler', () => {
     vi.clearAllMocks()
   })
 
-  describe(updateGateOverrides, () => {
+  describe('updateGateOverrides', () => {
     it('should successfully update gate overrides', async () => {
       const mockOverride: GateOverride = {
         environmentOverrides: [],
@@ -40,7 +40,7 @@ describe('gate-overrides handler', () => {
         overrides: mockOverride,
       })
 
-      expect(result).toEqual(mockOverride)
+      expect(result).toStrictEqual(mockOverride)
       expect(posterMock).toHaveBeenCalledWith('/gates/gate_123/overrides', mockOverride)
     })
 
@@ -59,21 +59,19 @@ describe('gate-overrides handler', () => {
       const originalError = new Error('Network Error')
       posterMock.mockRejectedValue(originalError)
 
-      try {
-        await updateGateOverrides({
+      await expect(
+        updateGateOverrides({
           gateId: 'gate_123',
           overrides: {} as GateOverride,
-        })
-        expect.fail('Expected error to be thrown')
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Network Error')
-        expect((error as Error).cause).toBe(originalError)
-      }
+        }),
+      ).rejects.toMatchObject({
+        cause: originalError,
+        message: 'Network Error',
+      })
     })
   })
 
-  describe(deleteGateOverrides, () => {
+  describe('deleteGateOverrides', () => {
     it('should successfully delete gate overrides', async () => {
       const mockOverride: GateOverride = {
         environmentOverrides: [],
@@ -102,7 +100,7 @@ describe('gate-overrides handler', () => {
         overrides: overrideToDelete,
       })
 
-      expect(result).toEqual(mockOverride)
+      expect(result).toStrictEqual(mockOverride)
       expect(mockUrl).toHaveBeenCalledWith('/gates/gate_123/overrides')
     })
 
@@ -135,17 +133,15 @@ describe('gate-overrides handler', () => {
       apiMock.json = mockJsonBeforeDelete
       apiMock.delete = mockDelete
 
-      try {
-        await deleteGateOverrides({
+      await expect(
+        deleteGateOverrides({
           gateId: 'gate_123',
           overrides: {},
-        })
-        expect.fail('Expected error to be thrown')
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Server Error')
-        expect((error as Error).cause).toBe(originalError)
-      }
+        }),
+      ).rejects.toMatchObject({
+        cause: originalError,
+        message: 'Server Error',
+      })
     })
   })
 })

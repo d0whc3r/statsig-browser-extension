@@ -19,7 +19,7 @@ describe('unit ID types handler', () => {
       message: 'ok',
     })
 
-    await expect(getUnitIDTypes()).resolves.toEqual(['accountID', 'deviceID', 'userID', 'stableID'])
+    await expect(getUnitIDTypes()).resolves.toStrictEqual(['accountID', 'deviceID', 'userID', 'stableID'])
   })
 
   it('normalizes object payloads to their names', async () => {
@@ -31,7 +31,7 @@ describe('unit ID types handler', () => {
       message: 'ok',
     })
 
-    await expect(getUnitIDTypes()).resolves.toEqual(['accountID', 'deviceID', 'userID', 'stableID'])
+    await expect(getUnitIDTypes()).resolves.toStrictEqual(['accountID', 'deviceID', 'userID', 'stableID'])
   })
 
   it('falls back to defaults when the payload shape is unexpected', async () => {
@@ -40,7 +40,7 @@ describe('unit ID types handler', () => {
       message: 'ok',
     })
 
-    await expect(getUnitIDTypes()).resolves.toEqual(['userID', 'stableID'])
+    await expect(getUnitIDTypes()).resolves.toStrictEqual(['userID', 'stableID'])
   })
 
   it('logs and returns defaults when the request fails', async () => {
@@ -48,7 +48,7 @@ describe('unit ID types handler', () => {
 
     vi.mocked(fetcher).mockRejectedValue(new Error('Network failed'))
 
-    await expect(getUnitIDTypes()).resolves.toEqual(['userID', 'stableID'])
+    await expect(getUnitIDTypes()).resolves.toStrictEqual(['userID', 'stableID'])
     expect(errorSpy).toHaveBeenCalledWith('Failed to fetch unit ID types:', expect.any(Error))
   })
 })

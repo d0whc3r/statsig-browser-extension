@@ -91,8 +91,8 @@ const updateEnvironmentOverride = ({
     payload.environmentOverrides.push(envGroup)
   }
 
-  envGroup.passingIDs = envGroup.passingIDs || []
-  envGroup.failingIDs = envGroup.failingIDs || []
+  envGroup.passingIDs ||= []
+  envGroup.failingIDs ||= []
 
   if (targetType === 'pass') {
     if (!envGroup.passingIDs.includes(targetUserId)) {
@@ -158,9 +158,9 @@ export const useGateOverrideHandlers = (
           }
 
       // Ensure arrays exist
-      payload.passingUserIDs = payload.passingUserIDs || []
-      payload.failingUserIDs = payload.failingUserIDs || []
-      payload.environmentOverrides = payload.environmentOverrides || []
+      payload.passingUserIDs ||= []
+      payload.failingUserIDs ||= []
+      payload.environmentOverrides ||= []
 
       updatePayload({
         environment,

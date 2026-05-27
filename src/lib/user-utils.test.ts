@@ -64,7 +64,7 @@ describe('getDetectedUserId utility', () => {
       },
       userID: 'user-123',
     }
-    expect(getDetectedUserId(user as unknown as StatsigUser, 'missingID')).toBe(undefined)
+    expect(getDetectedUserId(user as unknown as StatsigUser, 'missingID')).toBeUndefined()
   })
 
   it('handles empty string userID', () => {

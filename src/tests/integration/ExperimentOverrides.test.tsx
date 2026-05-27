@@ -94,6 +94,42 @@ const mockOverrides = {
   userIDOverrides: [{ environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' }],
 }
 
+const setupMocksWithOtherUser = () => {
+  vi.mocked(fetcher).mockImplementation((url: string) => {
+    if (url.includes('/overrides')) {
+      return Promise.resolve({
+        data: {
+          ...mockOverrides,
+          userIDOverrides: [
+            {
+              environment: 'Production',
+              groupID: 'Test',
+              ids: ['other_user'],
+              unitType: 'userID',
+            },
+          ],
+        },
+      })
+    }
+    if (url.includes('/experiments/exp_1')) {
+      return Promise.resolve({ data: mockExperiments[0] })
+    }
+    if (url.includes('/experiments?')) {
+      return Promise.resolve({
+        data: mockExperiments,
+        pagination: { limit: 100, page: 1, totalItems: 1 },
+      })
+    }
+    if (url.includes('/gates?')) {
+      return Promise.resolve({
+        data: [],
+        pagination: { limit: 100, page: 1, totalItems: 0 },
+      })
+    }
+    return Promise.resolve({ data: {} })
+  })
+}
+
 const setupMocks = () => {
   // Mock fetcher for hooks - ALL Statig API responses are wrapped in { data: ... }
   vi.mocked(fetcher).mockImplementation((url: string) => {
@@ -131,7 +167,7 @@ const setupMocks = () => {
   })
 }
 
-describe('Experiment Overrides Flow', () => {
+describe('experiment Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useUIStore.setState({
@@ -158,9 +194,9 @@ describe('Experiment Overrides Flow', () => {
 
     // Wait for sheet to open and switch to Overrides tab
     await waitFor(() => {
-      expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
+      expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument()
     })
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Check for User ID override (isCurrentUser: true since we mocked user_123)
     // Use findAllByText because user_123 appears in context card AND list
@@ -183,18 +219,18 @@ describe('Experiment Overrides Flow', () => {
     // Open experiment details and go to Overrides
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Click Add Manual
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Add Manual/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Add Manual/iu })).toBeInTheDocument()
     })
-    const addBtn = screen.getByRole('button', { name: /Add Manual/i })
+    const addBtn = screen.getByRole('button', { name: /Add Manual/iu })
     await user.click(addBtn)
 
     // Fill form
-    const idInput = screen.getByLabelText(/ID Value/i)
+    const idInput = screen.getByLabelText(/ID Value/iu)
     await user.type(idInput, 'new_user_456')
 
     const groupSelect = screen.getByLabelText('Group')
@@ -203,7 +239,7 @@ describe('Experiment Overrides Flow', () => {
     await user.click(option)
 
     // Submit
-    const saveBtn = screen.getByRole('button', { name: /Add Override to Test/i })
+    const saveBtn = screen.getByRole('button', { name: /Add Override to Test/iu })
     await user.click(saveBtn)
 
     // Verify API call
@@ -231,17 +267,17 @@ describe('Experiment Overrides Flow', () => {
     // Open experiment details and go to Overrides
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Click Add Manual
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Add Manual/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Add Manual/iu })).toBeInTheDocument()
     })
-    await user.click(screen.getByRole('button', { name: /Add Manual/i }))
+    await user.click(screen.getByRole('button', { name: /Add Manual/iu }))
 
     // Switch to Gate/Segment tab
-    await user.click(screen.getByRole('tab', { name: /Gate\/Segment Override/i }))
+    await user.click(screen.getByRole('tab', { name: /Gate\/Segment Override/iu }))
 
     // Fill form
     await user.type(screen.getByLabelText('Name'), 'my_new_gate')
@@ -252,7 +288,7 @@ describe('Experiment Overrides Flow', () => {
     await user.click(option)
 
     // Submit
-    await user.click(screen.getByRole('button', { name: /Add Override/i }))
+    await user.click(screen.getByRole('button', { name: /Add Override/iu }))
 
     // Verify API call
     await waitFor(() => {
@@ -272,69 +308,36 @@ describe('Experiment Overrides Flow', () => {
   })
 
   it('should allow deleting an override with confirmation', async () => {
-    // Mock a non-current user to trigger confirmation
-    vi.mocked(fetcher).mockImplementation((url: string) => {
-      if (url.includes('/overrides')) {
-        return Promise.resolve({
-          data: {
-            ...mockOverrides,
-            userIDOverrides: [
-              {
-                environment: 'Production',
-                groupID: 'Test',
-                ids: ['other_user'],
-                unitType: 'userID',
-              },
-            ],
-          },
-        })
-      }
-      if (url.includes('/experiments/exp_1')) {
-        return Promise.resolve({ data: mockExperiments[0] })
-      }
-      if (url.includes('/experiments?')) {
-        return Promise.resolve({
-          data: mockExperiments,
-          pagination: { limit: 100, page: 1, totalItems: 1 },
-        })
-      }
-      if (url.includes('/gates?')) {
-        return Promise.resolve({
-          data: [],
-          pagination: { limit: 100, page: 1, totalItems: 0 },
-        })
-      }
-      return Promise.resolve({ data: {} })
-    })
+    setupMocksWithOtherUser()
 
     const { user } = renderWithProviders(<AppContent />)
 
     // Navigate to overrides
     await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Click "Show others" button since other_user is not current user
     await waitFor(() => {
-      expect(screen.getByText(/Show 1 other overrides/i)).toBeInTheDocument()
+      expect(screen.getByText(/Show 1 other overrides/iu)).toBeInTheDocument()
     })
-    const showOthersBtn = await screen.findByText(/Show 1 other overrides/i)
+    const showOthersBtn = await screen.findByText(/Show 1 other overrides/iu)
     await user.click(showOthersBtn)
 
     // Click delete
     const row = screen.getByText('other_user').closest('tr')!
-    const deleteBtn = within(row).getByRole('button', { name: /Delete override/i })
+    const deleteBtn = within(row).getByRole('button', { name: /Delete override/iu })
     await user.click(deleteBtn)
 
     // Confirm in dialog
-    const confirmBtn = await screen.findByRole('button', { name: /^Delete$/i })
+    const confirmBtn = await screen.findByRole('button', { name: /^Delete$/iu })
     await user.click(confirmBtn)
 
     // Verify DELETE API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/experiments/exp_1/overrides')
-      expect(mockWretch.delete).toHaveBeenCalled()
+      expect(mockWretch.delete).toHaveBeenCalledWith()
     })
   })
 })

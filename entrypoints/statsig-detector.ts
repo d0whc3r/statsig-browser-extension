@@ -10,20 +10,20 @@ const getMessageType = (value: unknown) => {
   return value.type
 }
 
+function checkStatsig() {
+  const result = getUserDetailsFromPage()
+
+  if (result) {
+    window.postMessage({ context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user }, '*')
+    return true
+  }
+  return false
+}
+
 // oxlint-disable-next-line import/no-default-export
 export default defineContentScript({
   main() {
     const MAX_ATTEMPTS = 20
-
-    function checkStatsig() {
-      const result = getUserDetailsFromPage()
-
-      if (result) {
-        window.postMessage({ context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user }, '*')
-        return true
-      }
-      return false
-    }
 
     // Check immediately
     if (checkStatsig()) {

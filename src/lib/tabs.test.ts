@@ -24,7 +24,7 @@ describe('active tab lookup', () => {
     const tab = { id: 1, url: 'https://example.com' }
     queryMock.mockResolvedValueOnce([tab])
 
-    await expect(getActiveTab()).resolves.toEqual(tab)
+    await expect(getActiveTab()).resolves.toStrictEqual(tab)
     expect(queryMock).toHaveBeenCalledTimes(1)
     expect(queryMock).toHaveBeenCalledWith({ active: true, currentWindow: true })
   })
@@ -34,7 +34,7 @@ describe('active tab lookup', () => {
     queryMock.mockResolvedValueOnce([])
     queryMock.mockResolvedValueOnce([fallbackTab])
 
-    await expect(getActiveTab()).resolves.toEqual(fallbackTab)
+    await expect(getActiveTab()).resolves.toStrictEqual(fallbackTab)
     expect(queryMock).toHaveBeenNthCalledWith(1, { active: true, currentWindow: true })
     expect(queryMock).toHaveBeenNthCalledWith(2, { active: true })
   })
@@ -63,13 +63,13 @@ describe('active tab lookup', () => {
     ]
     queryMock.mockResolvedValueOnce(tabs)
 
-    await expect(getActiveTab()).resolves.toEqual({ id: 1, url: 'https://first.com' })
+    await expect(getActiveTab()).resolves.toStrictEqual({ id: 1, url: 'https://first.com' })
   })
 
   it('handles tab with undefined URL', async () => {
     const tab = { id: 1 }
     queryMock.mockResolvedValueOnce([tab])
 
-    await expect(getActiveTab()).resolves.toEqual({ id: 1 })
+    await expect(getActiveTab()).resolves.toStrictEqual({ id: 1 })
   })
 })

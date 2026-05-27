@@ -1,12 +1,9 @@
+allowBuilds:
+  esbuild: false
+  spawn-sync: false
+
 hoist: true
 
 hoistWorkspacePackages: true
-
-onlyBuiltDependencies:
-  - core-js
-  - dtrace-provider
-  - esbuild
-  - fsevents
-  - spawn-sync
 
 shamefullyHoist: true

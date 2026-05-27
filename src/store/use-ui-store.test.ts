@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 
 import { useUIStore } from './use-ui-store'
 
-describe(useUIStore, () => {
+describe('useUIStore', () => {
   beforeEach(() => {
     useUIStore.setState({
       currentAuditLogId: undefined,
@@ -22,17 +22,19 @@ describe(useUIStore, () => {
   it('should have correct initial state', () => {
     const state = useUIStore.getState()
 
-    expect(state.currentItemId).toBeUndefined()
-    expect(state.currentItemType).toBeUndefined()
-    expect(state.currentAuditLogId).toBeUndefined()
-    expect(state.isAuthModalOpen).toBeFalsy()
-    expect(state.isItemSheetOpen).toBeFalsy()
-    expect(state.isManageExperimentModalOpen).toBeFalsy()
-    expect(state.isManageGateOverridesModalOpen).toBeFalsy()
-    expect(state.isSettingsSheetOpen).toBeFalsy()
-    expect(state.isUserDetailsSheetOpen).toBeFalsy()
-    expect(state.isAuditLogSheetOpen).toBeFalsy()
-    expect(state.isAuditLogDetailSheetOpen).toBeFalsy()
+    expect(state).toMatchObject({
+      currentAuditLogId: undefined,
+      currentItemId: undefined,
+      currentItemType: undefined,
+      isAuditLogDetailSheetOpen: false,
+      isAuditLogSheetOpen: false,
+      isAuthModalOpen: false,
+      isItemSheetOpen: false,
+      isManageExperimentModalOpen: false,
+      isManageGateOverridesModalOpen: false,
+      isSettingsSheetOpen: false,
+      isUserDetailsSheetOpen: false,
+    })
   })
 
   it('should set auth modal open state', () => {
@@ -104,13 +106,15 @@ describe(useUIStore, () => {
     useUIStore.getState().reset()
 
     const state = useUIStore.getState()
-    expect(state.currentItemId).toBeUndefined()
-    expect(state.currentItemType).toBeUndefined()
-    expect(state.currentAuditLogId).toBeUndefined()
-    expect(state.isAuthModalOpen).toBeFalsy()
-    expect(state.isItemSheetOpen).toBeFalsy()
-    expect(state.isAuditLogSheetOpen).toBeFalsy()
-    expect(state.isAuditLogDetailSheetOpen).toBeFalsy()
+    expect(state).toMatchObject({
+      currentAuditLogId: undefined,
+      currentItemId: undefined,
+      currentItemType: undefined,
+      isAuditLogDetailSheetOpen: false,
+      isAuditLogSheetOpen: false,
+      isAuthModalOpen: false,
+      isItemSheetOpen: false,
+    })
   })
 
   it('should allow setting different item types', () => {

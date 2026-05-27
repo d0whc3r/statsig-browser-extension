@@ -44,7 +44,7 @@ vi.mock(import('@/src/hooks/use-settings-storage'), async (importOriginal) => {
   }
 })
 
-describe('AuthForm component', () => {
+describe('authForm component', () => {
   const defaultProps = {
     onSuccess: vi.fn(),
   }
@@ -63,8 +63,8 @@ describe('AuthForm component', () => {
     )
 
     expect(screen.getByText('Login to Statsig')).toBeInTheDocument()
-    expect(screen.getByLabelText(/Statsig Console API Key/i)).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /Login/i })).toBeInTheDocument()
+    expect(screen.getByLabelText(/Statsig Console API Key/iu)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Login/iu })).toBeInTheDocument()
   })
 
   it('shows validation error for empty API key', async () => {
@@ -76,7 +76,7 @@ describe('AuthForm component', () => {
       </Dialog>,
     )
 
-    await user.click(screen.getByRole('button', { name: /Login/i }))
+    await user.click(screen.getByRole('button', { name: /Login/iu }))
 
     await waitFor(() => {
       expect(screen.getByText('Please enter an API key')).toBeInTheDocument()
@@ -95,7 +95,7 @@ describe('AuthForm component', () => {
 
     const input = screen.getByPlaceholderText('console-...')
     await user.type(input, 'wrong-prefix-key')
-    await user.click(screen.getByRole('button', { name: /Login/i }))
+    await user.click(screen.getByRole('button', { name: /Login/iu }))
 
     await waitFor(() => {
       expect(screen.getByText('API key should start with "console-"')).toBeInTheDocument()
@@ -117,7 +117,7 @@ describe('AuthForm component', () => {
 
     const input = screen.getByPlaceholderText('console-...')
     await user.type(input, 'console-valid-key')
-    await user.click(screen.getByRole('button', { name: /Login/i }))
+    await user.click(screen.getByRole('button', { name: /Login/iu }))
 
     await waitFor(() => {
       expect(mockLogin).toHaveBeenCalledWith('console-valid-key', expect.anything())
@@ -142,10 +142,10 @@ describe('AuthForm component', () => {
 
     const input = screen.getByPlaceholderText('console-...')
     await user.type(input, 'console-valid-key')
-    await user.click(screen.getByRole('button', { name: /Login/i }))
+    await user.click(screen.getByRole('button', { name: /Login/iu }))
 
     expect(input).toBeDisabled()
-    expect(screen.getByRole('button', { name: /Login/i })).toBeDisabled()
+    expect(screen.getByRole('button', { name: /Login/iu })).toBeDisabled()
 
     resolveLogin({ data: { message: 'Success' }, error: undefined, success: true })
   })

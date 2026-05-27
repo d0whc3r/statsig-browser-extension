@@ -60,8 +60,12 @@ export default defineConfig({
         'typescript/no-unsafe-return': 'off',
         'typescript/no-unsafe-type-assertion': 'off',
         'typescript/unbound-method': 'off',
+        'vitest/max-expects': ['warn', { max: 8 }],
+        'vitest/no-hooks': 'off',
         'vitest/no-importing-vitest-globals': 'off',
         'vitest/prefer-called-once': 'off',
+        'vitest/prefer-describe-function-title': 'off',
+        'vitest/prefer-expect-assertions': 'off',
         'vitest/prefer-import-in-mock': 'off',
         'vitest/prefer-strict-boolean-matchers': 'off',
         'vitest/require-mock-type-parameters': 'off',
@@ -111,6 +115,12 @@ export default defineConfig({
   ],
   plugins: ['typescript', 'unicorn', 'oxc', 'import'],
   rules: {
+    'eslint/no-underscore-dangle': [
+      'warn',
+      {
+        allow: ['_data', '_stableID', '_user', '__STATSIG__', '__STATSIG_JS_SDK__'],
+      },
+    ],
     'eslint/no-unused-vars': 'error',
     'func-style': ['warn', 'declaration', { allowArrowFunctions: true, overrides: { namedExports: 'ignore' } }],
     'group-exports': 'off',

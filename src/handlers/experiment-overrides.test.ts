@@ -23,7 +23,7 @@ describe('experiment-overrides handler', () => {
     vi.clearAllMocks()
   })
 
-  describe(updateExperimentOverrides, () => {
+  describe('updateExperimentOverrides', () => {
     it('should successfully update experiment overrides', async () => {
       const mockOverrides: ExperimentOverridesResponse = {
         overrides: [{ groupID: 'Control', name: 'gate_1', type: 'gate' }],
@@ -39,7 +39,7 @@ describe('experiment-overrides handler', () => {
         overrides: mockOverrides,
       })
 
-      expect(result).toEqual(mockOverrides)
+      expect(result).toStrictEqual(mockOverrides)
       expect(posterMock).toHaveBeenCalledWith('/experiments/exp_123/overrides', mockOverrides)
     })
 
@@ -58,21 +58,19 @@ describe('experiment-overrides handler', () => {
       const originalError = new Error('Network Error')
       posterMock.mockRejectedValue(originalError)
 
-      try {
-        await updateExperimentOverrides({
+      await expect(
+        updateExperimentOverrides({
           experimentId: 'exp_123',
           overrides: {} as ExperimentOverridesResponse,
-        })
-        expect.fail('Expected error to be thrown')
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Network Error')
-        expect((error as Error).cause).toBe(originalError)
-      }
+        }),
+      ).rejects.toMatchObject({
+        cause: originalError,
+        message: 'Network Error',
+      })
     })
   })
 
-  describe(deleteExperimentOverrides, () => {
+  describe('deleteExperimentOverrides', () => {
     it('should successfully delete experiment overrides', async () => {
       const mockOverrides: ExperimentOverridesResponse = {
         overrides: [],
@@ -96,7 +94,7 @@ describe('experiment-overrides handler', () => {
         overrides: { userIDOverrides: [] },
       })
 
-      expect(result).toEqual(mockOverrides)
+      expect(result).toStrictEqual(mockOverrides)
       expect(mockUrl).toHaveBeenCalledWith('/experiments/exp_123/overrides')
     })
 
@@ -129,17 +127,15 @@ describe('experiment-overrides handler', () => {
       apiMock.json = mockJsonBeforeDelete
       apiMock.delete = mockDelete
 
-      try {
-        await deleteExperimentOverrides({
+      await expect(
+        deleteExperimentOverrides({
           experimentId: 'exp_123',
           overrides: {},
-        })
-        expect.fail('Expected error to be thrown')
-      } catch (error) {
-        expect(error).toBeInstanceOf(Error)
-        expect((error as Error).message).toBe('Server Error')
-        expect((error as Error).cause).toBe(originalError)
-      }
+        }),
+      ).rejects.toMatchObject({
+        cause: originalError,
+        message: 'Server Error',
+      })
     })
   })
 })

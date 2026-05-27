@@ -3,7 +3,7 @@ import { expect, describe, it } from 'vitest'
 import { formatConditionDetails, getConditionLabel } from './rules'
 
 describe('rules utility', () => {
-  describe(getConditionLabel, () => {
+  describe('getConditionLabel', () => {
     it('should return mapped label for known condition types', () => {
       expect(getConditionLabel('country')).toBe('Country')
       expect(getConditionLabel('user_id')).toBe('User ID')
@@ -23,7 +23,7 @@ describe('rules utility', () => {
     })
   })
 
-  describe(formatConditionDetails, () => {
+  describe('formatConditionDetails', () => {
     it('should format basic condition with type label', () => {
       const result = formatConditionDetails({
         operator: 'equals',

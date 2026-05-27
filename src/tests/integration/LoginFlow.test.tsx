@@ -31,7 +31,7 @@ vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
   }
 })
 
-describe('Login Flow', () => {
+describe('login Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     // Reset store
@@ -43,13 +43,13 @@ describe('Login Flow', () => {
     renderWithProviders(<AuthModal />)
 
     expect(screen.getByText('Login to Statsig')).toBeInTheDocument()
-    expect(screen.getByLabelText(/Statsig Console API Key/i)).toBeInTheDocument()
+    expect(screen.getByLabelText(/Statsig Console API Key/iu)).toBeInTheDocument()
   })
 
   it('should show error when submitting empty key', async () => {
     const { user } = renderWithProviders(<AuthModal />)
 
-    const loginButton = screen.getByRole('button', { name: /Login/i })
+    const loginButton = screen.getByRole('button', { name: /Login/iu })
     await user.click(loginButton)
 
     await waitFor(() => {
@@ -63,10 +63,10 @@ describe('Login Flow', () => {
 
     const { user } = renderWithProviders(<AuthModal />)
 
-    const input = screen.getByLabelText(/Statsig Console API Key/i)
+    const input = screen.getByLabelText(/Statsig Console API Key/iu)
     await user.type(input, 'console-test-key')
 
-    const loginButton = screen.getByRole('button', { name: /Login/i })
+    const loginButton = screen.getByRole('button', { name: /Login/iu })
     await user.click(loginButton)
 
     await waitFor(() => {
@@ -86,11 +86,11 @@ describe('Login Flow', () => {
 
     const { user } = renderWithProviders(<AuthModal />)
 
-    const input = screen.getByLabelText(/Statsig Console API Key/i)
+    const input = screen.getByLabelText(/Statsig Console API Key/iu)
     // Add "console-" to satisfy Zod validation
     await user.type(input, 'console-invalid-key')
 
-    const loginButton = screen.getByRole('button', { name: /Login/i })
+    const loginButton = screen.getByRole('button', { name: /Login/iu })
     await user.click(loginButton)
 
     await waitFor(() => {

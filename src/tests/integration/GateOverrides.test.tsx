@@ -144,7 +144,7 @@ const setupMocks = () => {
   })
 }
 
-describe('Gate Overrides Flow', () => {
+describe('gate Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useUIStore.setState({
@@ -162,15 +162,15 @@ describe('Gate Overrides Flow', () => {
 
     // Switch to Gates tab
     await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Gates/i }))
+    await user.click(screen.getByRole('tab', { name: /Gates/iu }))
 
     // Wait for gates to load and click one
-    expect(await screen.findByText('Test Gate 1')).toBeInTheDocument()
+    await expect(screen.findByText('Test Gate 1')).resolves.toBeInTheDocument()
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
 
     // Wait for sheet and go to Overrides
-    expect(await screen.findByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await expect(screen.findByRole('tab', { name: /Overrides/iu })).resolves.toBeInTheDocument()
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Wait for data to load and user_pass to be rendered
     // Use findAllByText because user_pass appears in context card AND list
@@ -178,7 +178,7 @@ describe('Gate Overrides Flow', () => {
     expect(userElements.length).toBeGreaterThanOrEqual(1)
 
     // Show others to see user_fail and environment overrides
-    const showOthersBtn = await screen.findByText(/Show 3 other overrides/i)
+    const showOthersBtn = await screen.findByText(/Show 3 other overrides/iu)
     await user.click(showOthersBtn)
 
     expect(screen.getByText('user_fail')).toBeInTheDocument()
@@ -192,11 +192,11 @@ describe('Gate Overrides Flow', () => {
 
     // Navigate to overrides
     await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Gates/i }))
-    expect(await screen.findByText('Test Gate 1')).toBeInTheDocument()
+    await user.click(screen.getByRole('tab', { name: /Gates/iu }))
+    await expect(screen.findByText('Test Gate 1')).resolves.toBeInTheDocument()
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
-    expect(await screen.findByRole('tab', { name: /Overrides/i })).toBeInTheDocument()
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await expect(screen.findByRole('tab', { name: /Overrides/iu })).resolves.toBeInTheDocument()
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Delete user_pass (current user, no confirmation)
     const userElements = await screen.findAllByText('user_pass')
@@ -209,7 +209,7 @@ describe('Gate Overrides Flow', () => {
     // Verify DELETE API call
     await waitFor(() => {
       expect(mockWretch.url).toHaveBeenCalledWith('/gates/gate_1/overrides')
-      expect(mockWretch.delete).toHaveBeenCalled()
+      expect(mockWretch.delete).toHaveBeenCalledWith()
       expect(mockJson).toHaveBeenCalledWith(
         expect.objectContaining({
           passingUserIDs: ['user_pass'],
@@ -227,30 +227,30 @@ describe('Gate Overrides Flow', () => {
     await user.click(screen.getByText('Gates'))
     await waitFor(() => expect(screen.getByText('Test Gate 1')).toBeInTheDocument())
     await user.click(screen.getByText('Test Gate 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/i })).toBeInTheDocument(), { timeout: 3000 })
-    await user.click(screen.getByRole('tab', { name: /Overrides/i }))
+    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument(), { timeout: 3000 })
+    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
 
     // Click Add Manual
     await waitFor(() => {
-      expect(screen.getByRole('button', { name: /Add Manual/i })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /Add Manual/iu })).toBeInTheDocument()
     })
-    await user.click(screen.getByRole('button', { name: /Add Manual/i }))
+    await user.click(screen.getByRole('button', { name: /Add Manual/iu }))
 
     // Fill form
-    await user.type(screen.getByLabelText(/ID Value/i), 'new_stable_1')
+    await user.type(screen.getByLabelText(/ID Value/iu), 'new_stable_1')
 
-    const envSelect = screen.getByLabelText(/Environment/i)
+    const envSelect = screen.getByLabelText(/Environment/iu)
     await user.click(envSelect)
     const stagingOption = await screen.findByRole('option', { name: 'Staging' })
     await user.click(stagingOption)
 
-    const idTypeSelect = screen.getByLabelText(/ID Type/i)
+    const idTypeSelect = screen.getByLabelText(/ID Type/iu)
     await user.click(idTypeSelect)
     const stableIdOption = await screen.findByRole('option', { name: 'stableID' })
     await user.click(stableIdOption)
 
     // Submit
-    await user.click(screen.getByRole('button', { name: /Add Pass Override/i }))
+    await user.click(screen.getByRole('button', { name: /Add Pass Override/iu }))
 
     // Verify API call
     await waitFor(() => {

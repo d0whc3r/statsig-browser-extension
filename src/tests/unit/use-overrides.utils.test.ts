@@ -9,8 +9,8 @@ describe('transformOverridesResponse logic', () => {
     const mockResponse = {}
     const transformed = transformOverridesResponse(mockResponse)
 
-    expect(transformed.overrides).toEqual([])
-    expect(transformed.userIDOverrides).toEqual([])
+    expect(transformed.overrides).toStrictEqual([])
+    expect(transformed.userIDOverrides).toStrictEqual([])
   })
 
   it('should filter out userIDOverrides with empty ids list', () => {
@@ -34,7 +34,7 @@ describe('transformOverridesResponse logic', () => {
 
     const transformed = transformOverridesResponse(mockResponse)
     expect(transformed.userIDOverrides).toHaveLength(1)
-    expect(transformed.userIDOverrides[0].ids).toEqual(['user_1'])
+    expect(transformed.userIDOverrides[0].ids).toStrictEqual(['user_1'])
   })
 
   it('should preserve overrides list', () => {

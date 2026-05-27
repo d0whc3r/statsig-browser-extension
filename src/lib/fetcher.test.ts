@@ -31,7 +31,7 @@ describe('custom fetch bridge', () => {
       success: true,
     })
 
-    await expect(fetcher<{ ok: boolean }>('/feature-gates')).resolves.toEqual({ ok: true })
+    await expect(fetcher<{ ok: boolean }>('/feature-gates')).resolves.toStrictEqual({ ok: true })
 
     expect(sendMessageMock).toHaveBeenCalledTimes(1)
     expect(sendMessageMock).toHaveBeenCalledWith({
@@ -56,7 +56,7 @@ describe('custom fetch bridge', () => {
       success: true,
     })
 
-    await expect(poster<{ created: boolean }>('/overrides', { id: 'gate_1' })).resolves.toEqual({
+    await expect(poster<{ created: boolean }>('/overrides', { id: 'gate_1' })).resolves.toStrictEqual({
       created: true,
     })
 
@@ -70,7 +70,7 @@ describe('custom fetch bridge', () => {
       type: 'API_REQUEST',
     })
     // oxlint-disable-next-line typescript/no-unsafe-argument, typescript/no-unsafe-member-access
-    expect(JSON.parse(callArg.config.body)).toEqual({ id: 'gate_1' })
+    expect(JSON.parse(callArg.config.body)).toStrictEqual({ id: 'gate_1' })
   })
 
   it('parses string response payloads from the background script', async () => {
@@ -84,7 +84,7 @@ describe('custom fetch bridge', () => {
       success: true,
     })
 
-    await expect(fetcher<{ ok: boolean }>('/health')).resolves.toEqual({ ok: true })
+    await expect(fetcher<{ ok: boolean }>('/health')).resolves.toStrictEqual({ ok: true })
   })
 
   it('throws when the background response shape is invalid', async () => {
@@ -115,7 +115,7 @@ describe('custom fetch bridge', () => {
     })
 
     // The fetcher will return the parsed data object
-    await expect(fetcher('/plain')).resolves.toEqual({ message: 'plain text response' })
+    await expect(fetcher('/plain')).resolves.toStrictEqual({ message: 'plain text response' })
   })
 
   it('handles empty data field', async () => {
@@ -143,6 +143,6 @@ describe('custom fetch bridge', () => {
       success: true,
     })
 
-    await expect(fetcher<{ id: number }[]>('/list')).resolves.toEqual([{ id: 1 }, { id: 2 }])
+    await expect(fetcher<{ id: number }[]>('/list')).resolves.toStrictEqual([{ id: 1 }, { id: 2 }])
   })
 })

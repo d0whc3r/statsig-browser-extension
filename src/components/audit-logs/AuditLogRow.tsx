@@ -49,6 +49,7 @@ export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) 
 
   return (
     <div
+      tabIndex={0}
       // oxlint-disable-next-line jsx_a11y/prefer-tag-over-role
       role="button"
       className="block w-full cursor-pointer border-0 bg-transparent px-4 py-3 text-left transition-colors hover:bg-muted/50 focus:bg-muted/50 focus:outline-none"

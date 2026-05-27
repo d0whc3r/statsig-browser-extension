@@ -13,7 +13,7 @@ vi.mock(import('@/src/lib/storage'), async (importOriginal) => ({
   } as any,
 }))
 
-describe(useSettingsStore, () => {
+describe('useSettingsStore', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     useSettingsStore.setState({
@@ -31,12 +31,9 @@ describe(useSettingsStore, () => {
 
   it('should initialize with API key from storage', async () => {
     vi.mocked(apiKeyStorage.getValue).mockResolvedValue('console-test-key-123')
-    vi.mocked(apiKeyStorage.watch).mockImplementation(
-      () =>
-        ({
-          unsubscribe: vi.fn(),
-        }) as never,
-    )
+    vi.mocked(apiKeyStorage.watch).mockReturnValue({
+      unsubscribe: vi.fn(),
+    } as never)
 
     await useSettingsStore.getState().initialize()
 
@@ -49,12 +46,9 @@ describe(useSettingsStore, () => {
 
   it('should set empty string when storage returns null/undefined', async () => {
     vi.mocked(apiKeyStorage.getValue).mockResolvedValue(null as unknown as string)
-    vi.mocked(apiKeyStorage.watch).mockImplementation(
-      () =>
-        ({
-          unsubscribe: vi.fn(),
-        }) as never,
-    )
+    vi.mocked(apiKeyStorage.watch).mockReturnValue({
+      unsubscribe: vi.fn(),
+    } as never)
 
     await useSettingsStore.getState().initialize()
 

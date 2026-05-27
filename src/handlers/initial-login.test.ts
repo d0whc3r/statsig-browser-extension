@@ -32,7 +32,7 @@ describe('initialLogin handler', () => {
 
     expect(result.success).toBeTruthy()
     expect(result.error).toBeUndefined()
-    expect(result.data).toEqual([{ id: 'gate_1', name: 'Test Gate' }])
+    expect(result.data).toStrictEqual([{ id: 'gate_1', name: 'Test Gate' }])
     expect(apiMock.headers).toHaveBeenCalledWith({ 'STATSIG-API-KEY': 'console-valid-key' })
     expect(apiMock.url).toHaveBeenCalledWith('/gates?limit=1')
   })
@@ -74,7 +74,7 @@ describe('initialLogin handler', () => {
 
     const result = await initialLogin('console-test-key')
 
-    expect(result.data).toEqual({ items: [], pagination: { total: 100 } })
+    expect(result.data).toStrictEqual({ items: [], pagination: { total: 100 } })
   })
 
   it('should handle undefined response data', async () => {

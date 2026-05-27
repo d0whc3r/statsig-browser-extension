@@ -4,6 +4,16 @@ import type { ExperimentOverride, UserIDOverride } from '@/src/types/statsig'
 
 import { getDeletedOverrides, getUpdatedUserIDOverrides } from '../../hooks/use-overrides-section-logic.utils'
 
+function findByGroupAndEnv(
+  overrides: UserIDOverride[],
+  groupID: string,
+  environment: string,
+): UserIDOverride | undefined {
+  return overrides.find(
+    (override: UserIDOverride) => override.groupID === groupID && override.environment === environment,
+  )
+}
+
 describe('getUpdatedUserIDOverrides logic', () => {
   const mockExisting: UserIDOverride[] = [
     {
@@ -35,9 +45,7 @@ describe('getUpdatedUserIDOverrides logic', () => {
     }
 
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
-    const productionGroupA = updated.find(
-      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'production',
-    )
+    const productionGroupA = findByGroupAndEnv(updated, 'group_a', 'production')
     expect(productionGroupA?.ids).toContain('user_5')
     expect(productionGroupA?.ids).toHaveLength(3)
   })
@@ -52,12 +60,8 @@ describe('getUpdatedUserIDOverrides logic', () => {
 
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
 
-    const productionGroupA = updated.find(
-      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'production',
-    )
-    const productionGroupB = updated.find(
-      (override: UserIDOverride) => override.groupID === 'group_b' && override.environment === 'production',
-    )
+    const productionGroupA = findByGroupAndEnv(updated, 'group_a', 'production')
+    const productionGroupB = findByGroupAndEnv(updated, 'group_b', 'production')
 
     expect(productionGroupA?.ids).not.toContain('user_1')
     expect(productionGroupA?.ids).toHaveLength(1)
@@ -98,7 +102,7 @@ describe('getUpdatedUserIDOverrides logic', () => {
     const updated = getUpdatedUserIDOverrides(existingWithNull, newOverride)
     expect(updated).toHaveLength(1)
     expect(updated[0].groupID).toBe('group_b')
-    expect(updated[0].ids).toEqual(['user_1'])
+    expect(updated[0].ids).toStrictEqual(['user_1'])
   })
 
   it('should not affect other environments', () => {
@@ -110,9 +114,7 @@ describe('getUpdatedUserIDOverrides logic', () => {
     }
 
     const updated = getUpdatedUserIDOverrides(mockExisting, newOverride)
-    const stagingGroupA = updated.find(
-      (override: UserIDOverride) => override.groupID === 'group_a' && override.environment === 'staging',
-    )
+    const stagingGroupA = findByGroupAndEnv(updated, 'group_a', 'staging')
     expect(stagingGroupA?.ids).toContain('user_4')
   })
 })
@@ -139,7 +141,7 @@ describe('getDeletedOverrides logic', () => {
     const overrideToDelete = { ...mockUserIDOverrides[0], ids: ['user_1'] }
     const result = getDeletedOverrides(mockUserIDOverrides, mockOverrides, overrideToDelete)
 
-    expect(result.userIDOverrides[0].ids).toEqual(['user_2'])
+    expect(result.userIDOverrides[0].ids).toStrictEqual(['user_2'])
     expect(result.overrides).toHaveLength(1)
   })
 
@@ -154,7 +156,7 @@ describe('getDeletedOverrides logic', () => {
     // Actually, if we want to remove the whole thing, we'd need to call it twice or change logic.
     // But currently the UI probably passes the specific user ID being clicked.
 
-    expect(result.userIDOverrides[0].ids).toEqual(['user_2'])
+    expect(result.userIDOverrides[0].ids).toStrictEqual(['user_2'])
   })
 
   it('should remove a gate/segment override', () => {

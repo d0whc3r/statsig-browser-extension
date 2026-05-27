@@ -3,7 +3,7 @@ import { vi, describe, expect, it } from 'vitest'
 
 import { ConfirmDialog } from '../../components/common/ConfirmDialog'
 
-describe('ConfirmDialog component', () => {
+describe('confirmDialog component', () => {
   const defaultProps = {
     description: 'Test Description',
     isOpen: true,
@@ -30,14 +30,14 @@ describe('ConfirmDialog component', () => {
     render(<ConfirmDialog {...defaultProps} />)
 
     fireEvent.click(screen.getByText('Confirm'))
-    expect(defaultProps.onConfirm).toHaveBeenCalled()
+    expect(defaultProps.onConfirm).toHaveBeenCalledWith(expect.any(Object))
   })
 
   it('calls onClose when cancel button is clicked', () => {
     render(<ConfirmDialog {...defaultProps} />)
 
     fireEvent.click(screen.getByText('Cancel'))
-    expect(defaultProps.onClose).toHaveBeenCalled()
+    expect(defaultProps.onClose).toHaveBeenCalledWith(expect.any(Object))
   })
 
   it('uses custom button text', () => {

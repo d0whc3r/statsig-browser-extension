@@ -20,13 +20,14 @@ export interface BaseOverrideContextCardProps {
 
 const ALL_ENVIRONMENTS = 'All Environments'
 const DEFAULT_ENVIRONMENTS = ['development', 'staging', 'production']
+const EMPTY_OVERRIDES: BaseOverrideContextCardProps['detectedUserOverrides'] = []
 
 export const BaseOverrideContextCard = memo(
   ({
     detectedUser,
     detectedUserId,
     isDetectedUserOverridden,
-    detectedUserOverrides = [],
+    detectedUserOverrides = EMPTY_OVERRIDES,
     canEdit,
     idType = 'userID',
     children,

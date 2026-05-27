@@ -28,7 +28,7 @@ describe('user details handler', () => {
 
     executeScriptMock.mockResolvedValue([{ result: payload }])
 
-    await expect(getUserDetails(42)).resolves.toEqual(payload)
+    await expect(getUserDetails(42)).resolves.toStrictEqual(payload)
 
     expect(executeScriptMock).toHaveBeenCalledWith({
       func: expect.any(Function),
