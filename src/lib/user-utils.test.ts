@@ -5,8 +5,8 @@ import type { StatsigUser } from '@/src/types/statsig'
 import { getDetectedUserId } from './user-utils'
 
 describe('getDetectedUserId utility', () => {
-  it('returns undefined if no user is provided', () => {
-    expect(getDetectedUserId()).toBeUndefined()
+  it('returns null if no user is provided', () => {
+    expect(getDetectedUserId()).toBeNull()
   })
 
   it('returns userID by default', () => {
@@ -57,14 +57,14 @@ describe('getDetectedUserId utility', () => {
     expect(getDetectedUserId(user as unknown as StatsigUser, 'orgID')).toBe('org-id-1')
   })
 
-  it('returns undefined if idType is not found anywhere', () => {
+  it('returns null if idType is not found anywhere', () => {
     const user = {
       custom: {
         something: 'else',
       },
       userID: 'user-123',
     }
-    expect(getDetectedUserId(user as unknown as StatsigUser, 'missingID')).toBeUndefined()
+    expect(getDetectedUserId(user as unknown as StatsigUser, 'missingID')).toBeNull()
   })
 
   it('handles empty string userID', () => {
@@ -74,7 +74,7 @@ describe('getDetectedUserId utility', () => {
 
   it('handles null userID', () => {
     const user = { userID: null }
-    expect(getDetectedUserId(user as unknown as StatsigUser)).toBeUndefined()
+    expect(getDetectedUserId(user as unknown as StatsigUser)).toBeNull()
   })
 
   it('prioritizes userID over id when both exist', () => {

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["node", "chrome"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": ["e2e/**/*", "playwright.config.ts"]
+}

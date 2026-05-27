@@ -5,6 +5,14 @@ import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher, poster } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'
 
+import {
+  makeExperiment,
+  makeExperimentOverride,
+  makeExperimentOverridesResponse,
+  makeUserIDOverride,
+  paginated,
+  single,
+} from '../fixtures/statsig'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
@@ -74,57 +82,42 @@ vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
 })
 
 const mockExperiments = [
-  {
+  makeExperiment({
     groups: [
-      { id: 'group_1', name: 'Control', size: 50 },
-      { id: 'group_2', name: 'Test', size: 50 },
+      { id: 'group_1', name: 'Control', parameterValues: {}, size: 50 },
+      { id: 'group_2', name: 'Test', parameterValues: {}, size: 50 },
     ],
     id: 'exp_1',
-    lastModifiedTime: Date.now(),
     name: 'Test Experiment 1',
-    status: 'active',
-  },
+  }),
 ]
 
-const mockOverrides = {
+const mockOverrides = makeExperimentOverridesResponse({
   overrides: [
-    { groupID: 'Control', name: 'gate_1', type: 'gate' },
-    { groupID: 'Test', name: 'segment_1', type: 'segment' },
+    makeExperimentOverride({ groupID: 'Control', name: 'gate_1', type: 'gate' }),
+    makeExperimentOverride({ groupID: 'Test', name: 'segment_1', type: 'segment' }),
   ],
-  userIDOverrides: [{ environment: 'Production', groupID: 'Test', ids: ['user_123'], unitType: 'userID' }],
-}
+  userIDOverrides: [makeUserIDOverride({ groupID: 'Test', ids: ['user_123'] })],
+})
 
 const setupMocksWithOtherUser = () => {
   vi.mocked(fetcher).mockImplementation((url: string) => {
     if (url.includes('/overrides')) {
-      return Promise.resolve({
-        data: {
+      return Promise.resolve(
+        single({
           ...mockOverrides,
-          userIDOverrides: [
-            {
-              environment: 'Production',
-              groupID: 'Test',
-              ids: ['other_user'],
-              unitType: 'userID',
-            },
-          ],
-        },
-      })
+          userIDOverrides: [makeUserIDOverride({ groupID: 'Test', ids: ['other_user'] })],
+        }),
+      )
     }
     if (url.includes('/experiments/exp_1')) {
-      return Promise.resolve({ data: mockExperiments[0] })
+      return Promise.resolve(single(mockExperiments[0]))
     }
     if (url.includes('/experiments?')) {
-      return Promise.resolve({
-        data: mockExperiments,
-        pagination: { limit: 100, page: 1, totalItems: 1 },
-      })
+      return Promise.resolve(paginated(mockExperiments))
     }
     if (url.includes('/gates?')) {
-      return Promise.resolve({
-        data: [],
-        pagination: { limit: 100, page: 1, totalItems: 0 },
-      })
+      return Promise.resolve(paginated([]))
     }
     return Promise.resolve({ data: {} })
   })
@@ -135,22 +128,16 @@ const setupMocks = () => {
   vi.mocked(fetcher).mockImplementation((url: string) => {
     const urlString = url
     if (urlString.includes('/overrides')) {
-      return Promise.resolve({ data: mockOverrides })
+      return Promise.resolve(single(mockOverrides))
     }
     if (urlString.includes('/experiments/exp_1')) {
-      return Promise.resolve({ data: mockExperiments[0] })
+      return Promise.resolve(single(mockExperiments[0]))
     }
     if (urlString.includes('/experiments?')) {
-      return Promise.resolve({
-        data: mockExperiments,
-        pagination: { limit: 100, page: 1, totalItems: mockExperiments.length },
-      })
+      return Promise.resolve(paginated(mockExperiments))
     }
     if (urlString.includes('/gates?')) {
-      return Promise.resolve({
-        data: [],
-        pagination: { limit: 100, page: 1, totalItems: 0 },
-      })
+      return Promise.resolve(paginated([]))
     }
     return Promise.resolve({ data: {} })
   })

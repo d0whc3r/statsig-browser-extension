@@ -64,11 +64,23 @@ export default defineConfig({
         'vitest/no-hooks': 'off',
         'vitest/no-importing-vitest-globals': 'off',
         'vitest/prefer-called-once': 'off',
+        'vitest/prefer-called-with': 'off',
         'vitest/prefer-describe-function-title': 'off',
         'vitest/prefer-expect-assertions': 'off',
         'vitest/prefer-import-in-mock': 'off',
         'vitest/prefer-strict-boolean-matchers': 'off',
         'vitest/require-mock-type-parameters': 'off',
+      },
+    },
+    {
+      files: ['e2e/**/*.{ts,tsx}'],
+      rules: {
+        'import/no-nodejs-modules': 'off',
+        'max-lines-per-function': 'off',
+        'max-statements': 'off',
+        'require-await': 'off',
+        'typescript/no-unsafe-type-assertion': 'off',
+        'typescript/require-await': 'off',
       },
     },
     {
@@ -88,6 +100,12 @@ export default defineConfig({
         'jsx-props-no-spreading': 'off',
         'react-in-jsx-scope': 'off',
         'unicorn/filename-case': ['warn', { case: 'pascalCase' }],
+      },
+    },
+    {
+      files: ['**/*.{test,spec}.{ts,tsx,js,jsx}', '**/__tests__/**'],
+      rules: {
+        'unicorn/filename-case': ['warn', { cases: { kebabCase: true, pascalCase: true } }],
       },
     },
     {

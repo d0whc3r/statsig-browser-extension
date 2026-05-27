@@ -17,10 +17,10 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
 
-      - name: Use Node.js 24.x
+      - name: Use Node.js
         uses: actions/setup-node@v6
         with:
-          node-version: 24
+          node-version-file: ".nvmrc"
           cache: "pnpm"
 
       - name: Install dependencies
@@ -46,3 +46,39 @@ jobs:
           name: ${{ github.sha }}-prod-build
           path: .output/*-chrome.zip
           retention-days: 30
+
+  e2e:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+
+      - name: Use Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: ".nvmrc"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Build extension for e2e
+        run: pnpm build:chrome
+
+      - name: Run e2e tests
+        run: pnpm exec xvfb-run --auto-servernum -- playwright test
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ github.sha }}-playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 14

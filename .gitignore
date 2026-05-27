@@ -38,3 +38,9 @@ secret.json
 *.tsbuildinfo
 coverage
 .pnpm-store/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

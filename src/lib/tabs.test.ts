@@ -39,20 +39,20 @@ describe('active tab lookup', () => {
     expect(queryMock).toHaveBeenNthCalledWith(2, { active: true })
   })
 
-  it('returns undefined when no active tabs are found', async () => {
+  it('returns null when no active tabs are found', async () => {
     queryMock.mockResolvedValueOnce([])
     queryMock.mockResolvedValueOnce([])
 
-    await expect(getActiveTab()).resolves.toBeUndefined()
+    await expect(getActiveTab()).resolves.toBeNull()
   })
 
-  it('logs and returns undefined when querying tabs fails', async () => {
+  it('logs and returns null when querying tabs fails', async () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
     const error = new Error('tabs.query failed')
 
     queryMock.mockRejectedValue(error)
 
-    await expect(getActiveTab()).resolves.toBeUndefined()
+    await expect(getActiveTab()).resolves.toBeNull()
     expect(errorSpy).toHaveBeenCalledWith('[Statsig Extension] Failed to get active tab:', error)
   })
 

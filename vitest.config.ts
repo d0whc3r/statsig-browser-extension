@@ -14,6 +14,7 @@ export default defineConfig({
       reporter: ['text', 'json', 'html'],
     },
     environment: 'happy-dom',
+    exclude: ['**/node_modules/**', '**/dist/**', '**/.output/**', 'e2e/**'],
     globals: true,
     mockReset: false,
     restoreMocks: true,

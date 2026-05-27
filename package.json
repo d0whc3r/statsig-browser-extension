@@ -41,8 +41,10 @@
     "format:fix": "pnpm lint:fix --fix-suggestions --fix-dangerously && pnpm format",
     "format": "oxfmt --no-error-on-unmatched-pattern --write",
     "format:check": "oxfmt --no-error-on-unmatched-pattern --check",
-    "type-check": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.test.json",
+    "type-check": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.test.json && tsc --noEmit -p tsconfig.e2e.json",
     "test": "vitest",
+    "test:e2e": "pnpm build:chrome && playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "pre-push": "pnpm test",
     "pre-commit": "lint-staged"
   },
@@ -76,6 +78,7 @@
     "zustand": "5.0.13"
   },
   "devDependencies": {
+    "@playwright/test": "^1.60.0",
     "@semantic-release/changelog": "6.0.3",
     "@semantic-release/exec": "7.1.0",
     "@semantic-release/git": "10.0.1",

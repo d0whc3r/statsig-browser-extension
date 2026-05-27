@@ -5,6 +5,7 @@ import { AppContent } from '@/entrypoints/popup/App'
 import { fetcher, poster } from '@/src/lib/fetcher'
 import { useUIStore } from '@/src/store/use-ui-store'
 
+import { makeFeatureGate, makeGateOverride, paginated, single } from '../fixtures/statsig'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
@@ -78,21 +79,17 @@ vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
 })
 
 const mockGates = [
-  {
-    createdTime: Date.now(),
+  makeFeatureGate({
     creatorID: 'creator_1',
     creatorName: 'Creator',
     description: 'Test gate',
     id: 'gate_1',
-    idType: 'userID',
-    isEnabled: true,
-    lastModifiedTime: Date.now(),
     name: 'Test Gate 1',
     status: 'active',
-  },
+  }),
 ]
 
-const mockOverrides = {
+const mockOverrides = makeGateOverride({
   environmentOverrides: [
     {
       environment: 'Development',
@@ -103,31 +100,25 @@ const mockOverrides = {
   ],
   failingUserIDs: ['user_fail'],
   passingUserIDs: ['user_pass'],
-}
+})
 
 const setupMocks = () => {
   // Mock fetcher for hooks - adjust responses to match expected shapes
   vi.mocked(fetcher).mockImplementation((url: string) => {
     const urlString = url
     if (urlString.includes('/overrides')) {
-      return Promise.resolve({ data: mockOverrides })
+      return Promise.resolve(single(mockOverrides))
     }
     if (urlString.includes('/gates?')) {
-      return Promise.resolve({
-        data: mockGates,
-        pagination: { limit: 100, page: 1, totalItems: mockGates.length },
-      })
+      return Promise.resolve(paginated(mockGates))
     }
     if (urlString.includes('/experiments?')) {
-      return Promise.resolve({
-        data: [],
-        pagination: { limit: 100, page: 1, totalItems: 0 },
-      })
+      return Promise.resolve(paginated([]))
     }
     if (urlString.includes('/gates/')) {
       const id = urlString.split('/').pop()
       const gate = mockGates.find((gt) => gt.id === id) ?? mockGates[0]
-      return Promise.resolve({ data: gate })
+      return Promise.resolve(single(gate))
     }
     return Promise.resolve({ data: {} })
   })
