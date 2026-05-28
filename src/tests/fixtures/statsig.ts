@@ -64,7 +64,7 @@ export const makeExperiment = (overrides: Partial<Experiment> = {}): Experiment 
   ...overrides,
 })
 
-export const makeDynamicConfig = (overrides: Partial<DynamicConfig> = {}): DynamicConfig => ({
+const makeDynamicConfig = (overrides: Partial<DynamicConfig> = {}): DynamicConfig => ({
   createdTime: NOW,
   creatorName: 'Creator One',
   defaultValue: {},
@@ -78,7 +78,7 @@ export const makeDynamicConfig = (overrides: Partial<DynamicConfig> = {}): Dynam
   ...overrides,
 })
 
-export const makeAuditLog = (overrides: Partial<AuditLog> = {}): AuditLog => ({
+const makeAuditLog = (overrides: Partial<AuditLog> = {}): AuditLog => ({
   actionType: 'gate::created',
   changeLog: '',
   date: '2024-01-15',

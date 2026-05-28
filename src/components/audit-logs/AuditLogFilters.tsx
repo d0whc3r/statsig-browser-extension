@@ -6,7 +6,7 @@ import { Input } from '@/src/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { cn } from '@/src/lib/utils'
 
-export const actionFilterOptions = [
+const actionFilterOptions = [
   { label: 'All Actions', value: 'all' },
   { label: 'Create / Start', value: 'create' },
   { label: 'Update / Edit', value: 'update' },

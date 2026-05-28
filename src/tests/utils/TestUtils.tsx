@@ -7,7 +7,7 @@ import { render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
-export const createTestQueryClient = () =>
+const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
       queries: {
@@ -16,7 +16,7 @@ export const createTestQueryClient = () =>
     },
   })
 
-export function TestProviders({
+function TestProviders({
   children,
   queryClient: externalQueryClient,
 }: {
