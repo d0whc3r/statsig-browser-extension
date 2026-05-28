@@ -44,7 +44,7 @@ The `mask` option overlays a solid box over specified locators before capturing.
 
 ```typescript
 test('analytics panel with masked dynamic elements', async ({ page }) => {
-  await page.goto('/analytics');
+  await page.goto('/analytics')
 
   await expect(page).toHaveScreenshot('analytics.png', {
     mask: [
@@ -54,32 +54,32 @@ test('analytics panel with masked dynamic elements', async ({ page }) => {
       page.locator('.promo-banner'),
     ],
     maskColor: '#FF00FF',
-  });
-});
+  })
+})
 
 test('activity stream with relative times', async ({ page }) => {
-  await page.goto('/activity');
+  await page.goto('/activity')
 
   await expect(page).toHaveScreenshot('activity.png', {
     mask: [page.locator('time[datetime]')],
-  });
-});
+  })
+})
 ```
 
 **Alternative: freeze content with JavaScript** when masking affects layout:
 
 ```typescript
 test('freeze timestamps before capture', async ({ page }) => {
-  await page.goto('/analytics');
+  await page.goto('/analytics')
 
   await page.evaluate(() => {
     document.querySelectorAll('[data-testid="time-display"]').forEach((el) => {
-      el.textContent = 'Jan 1, 2025 12:00 PM';
-    });
-  });
+      el.textContent = 'Jan 1, 2025 12:00 PM'
+    })
+  })
 
-  await expect(page).toHaveScreenshot('analytics-frozen.png');
-});
+  await expect(page).toHaveScreenshot('analytics-frozen.png')
+})
 ```
 
 ### Disabling Animations
@@ -88,12 +88,12 @@ test('freeze timestamps before capture', async ({ page }) => {
 
 ```typescript
 test('renders without animation interference', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/')
 
   await expect(page).toHaveScreenshot('home.png', {
     animations: 'disabled',
-  });
-});
+  })
+})
 ```
 
 **Set globally** in config:
@@ -106,7 +106,7 @@ export default defineConfig({
       animations: 'disabled',
     },
   },
-});
+})
 ```
 
 When `animations: 'disabled'` is set, Playwright injects CSS forcing animation/transition duration to 0s, waits for running animations to finish, then captures.
@@ -115,56 +115,56 @@ For JavaScript-driven animations (GSAP, Framer Motion), wait for stability:
 
 ```typescript
 test('page with JS animations', async ({ page }) => {
-  await page.goto('/animated-hero');
+  await page.goto('/animated-hero')
 
-  const heroBanner = page.getByTestId('hero-banner');
-  await heroBanner.waitFor({ state: 'visible' });
-  
+  const heroBanner = page.getByTestId('hero-banner')
+  await heroBanner.waitFor({ state: 'visible' })
+
   // Wait for animation to complete by checking for stable state
-  await expect(heroBanner).not.toHaveClass(/animating/);
+  await expect(heroBanner).not.toHaveClass(/animating/)
 
   await expect(page).toHaveScreenshot('hero.png', {
     animations: 'disabled',
-  });
-});
+  })
+})
 ```
 
 ### Configuring Thresholds
 
 **Use when**: Minor rendering differences from anti-aliasing, font hinting, or sub-pixel rendering cause false failures.
 
-| Option | Controls | Typical Value |
-|---|---|---|
-| `maxDiffPixels` | Absolute pixel count that can differ | `100` for pages, `10` for components |
-| `maxDiffPixelRatio` | Fraction of total pixels (0-1) | `0.01` (1%) for pages |
-| `threshold` | Per-pixel color tolerance (0-1) | `0.2` for most UIs, `0.1` for design systems |
+| Option              | Controls                             | Typical Value                                |
+| ------------------- | ------------------------------------ | -------------------------------------------- |
+| `maxDiffPixels`     | Absolute pixel count that can differ | `100` for pages, `10` for components         |
+| `maxDiffPixelRatio` | Fraction of total pixels (0-1)       | `0.01` (1%) for pages                        |
+| `threshold`         | Per-pixel color tolerance (0-1)      | `0.2` for most UIs, `0.1` for design systems |
 
 ```typescript
 test('control panel allows minor variance', async ({ page }) => {
-  await page.goto('/control-panel');
+  await page.goto('/control-panel')
 
   await expect(page).toHaveScreenshot('control-panel.png', {
     maxDiffPixelRatio: 0.01,
-  });
-});
+  })
+})
 
 test('brand logo renders pixel-perfect', async ({ page }) => {
-  await page.goto('/brand');
+  await page.goto('/brand')
 
   await expect(page.getByTestId('brand-logo')).toHaveScreenshot('brand-logo.png', {
     maxDiffPixels: 0,
     threshold: 0,
-  });
-});
+  })
+})
 
 test('graph allows anti-aliasing differences', async ({ page }) => {
-  await page.goto('/reports');
+  await page.goto('/reports')
 
   await expect(page.getByTestId('sales-graph')).toHaveScreenshot('sales-graph.png', {
     threshold: 0.3,
     maxDiffPixels: 200,
-  });
-});
+  })
+})
 ```
 
 **Global thresholds** in config:
@@ -179,7 +179,7 @@ export default defineConfig({
       animations: 'disabled',
     },
   },
-});
+})
 ```
 
 ### CI Configuration
@@ -203,7 +203,7 @@ jobs:
     container:
       image: mcr.microsoft.com/playwright:v1.48.0-noble
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: actions/setup-node@v4
         with:
@@ -257,7 +257,7 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
   ],
-});
+})
 ```
 
 ### Full Page vs Element Screenshots
@@ -266,23 +266,23 @@ export default defineConfig({
 
 ```typescript
 test('full page captures layout shifts', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/')
 
   // Visible viewport
-  await expect(page).toHaveScreenshot('home-viewport.png');
+  await expect(page).toHaveScreenshot('home-viewport.png')
 
   // Entire scrollable page
   await expect(page).toHaveScreenshot('home-full.png', {
     fullPage: true,
-  });
-});
+  })
+})
 
 test('element screenshot isolates component', async ({ page }) => {
-  await page.goto('/catalog');
+  await page.goto('/catalog')
 
-  await expect(page.getByRole('table')).toHaveScreenshot('catalog-table.png');
-  await expect(page.getByTestId('featured-item')).toHaveScreenshot('featured-item.png');
-});
+  await expect(page.getByRole('table')).toHaveScreenshot('catalog-table.png')
+  await expect(page.getByTestId('featured-item')).toHaveScreenshot('featured-item.png')
+})
 ```
 
 **Rule of thumb**: Element screenshots for independently changing components. Full page screenshots for key layouts where spacing matters.
@@ -296,18 +296,18 @@ const breakpoints = [
   { name: 'phone', width: 375, height: 812 },
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
-];
+]
 
 for (const bp of breakpoints) {
   test(`landing at ${bp.name} (${bp.width}x${bp.height})`, async ({ page }) => {
-    await page.setViewportSize({ width: bp.width, height: bp.height });
-    await page.goto('/');
+    await page.setViewportSize({ width: bp.width, height: bp.height })
+    await page.goto('/')
 
     await expect(page).toHaveScreenshot(`landing-${bp.name}.png`, {
       animations: 'disabled',
       fullPage: true,
-    });
-  });
+    })
+  })
 }
 ```
 
@@ -336,7 +336,7 @@ export default defineConfig({
       use: { ...devices['iPhone 14'] },
     },
   ],
-});
+})
 ```
 
 ### Component Visual Testing
@@ -346,32 +346,32 @@ export default defineConfig({
 ```typescript
 test.describe('Button visual states', () => {
   test('primary button', async ({ page }) => {
-    await page.goto('/storybook/iframe.html?id=button--primary');
-    const btn = page.getByRole('button');
+    await page.goto('/storybook/iframe.html?id=button--primary')
+    const btn = page.getByRole('button')
     await expect(btn).toHaveScreenshot('btn-primary.png', {
       animations: 'disabled',
-    });
-  });
+    })
+  })
 
   test('primary button hover', async ({ page }) => {
-    await page.goto('/storybook/iframe.html?id=button--primary');
-    const btn = page.getByRole('button');
-    await btn.hover();
+    await page.goto('/storybook/iframe.html?id=button--primary')
+    const btn = page.getByRole('button')
+    await btn.hover()
     await expect(btn).toHaveScreenshot('btn-primary-hover.png', {
       animations: 'disabled',
-    });
-  });
+    })
+  })
 
   test('button sizes', async ({ page }) => {
     for (const size of ['small', 'medium', 'large']) {
-      await page.goto(`/storybook/iframe.html?id=button--${size}`);
-      const btn = page.getByRole('button');
+      await page.goto(`/storybook/iframe.html?id=button--${size}`)
+      const btn = page.getByRole('button')
       await expect(btn).toHaveScreenshot(`btn-${size}.png`, {
         animations: 'disabled',
-      });
+      })
     }
-  });
-});
+  })
+})
 ```
 
 **Using a dedicated test harness** instead of Storybook:
@@ -379,22 +379,22 @@ test.describe('Button visual states', () => {
 ```typescript
 test.describe('Card component', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/test-harness/card');
-  });
+    await page.goto('/test-harness/card')
+  })
 
   test('default state', async ({ page }) => {
     await expect(page.getByTestId('card')).toHaveScreenshot('card-default.png', {
       animations: 'disabled',
-    });
-  });
+    })
+  })
 
   test('truncates long content', async ({ page }) => {
-    await page.goto('/test-harness/card?content=long');
+    await page.goto('/test-harness/card?content=long')
     await expect(page.getByTestId('card')).toHaveScreenshot('card-long.png', {
       animations: 'disabled',
-    });
-  });
-});
+    })
+  })
+})
 ```
 
 ### Updating Snapshots
@@ -415,13 +415,16 @@ npx playwright test --project=chromium --update-snapshots
 **Workflow for reviewing changes:**
 
 1. Run tests and view failures in HTML report:
+
    ```bash
    npx playwright test
    npx playwright show-report
    ```
+
    The report shows expected, actual, and diff images side-by-side.
 
 2. If changes are intentional, update:
+
    ```bash
    npx playwright test --update-snapshots
    ```
@@ -435,11 +438,11 @@ npx playwright test --project=chromium --update-snapshots
 
 ```typescript
 test('landing visual @visual', async ({ page }) => {
-  await page.goto('/');
+  await page.goto('/')
   await expect(page).toHaveScreenshot('landing.png', {
     animations: 'disabled',
-  });
-});
+  })
+})
 ```
 
 ```bash
@@ -475,7 +478,7 @@ export default defineConfig({
       use: { ...devices['Desktop Safari'] },
     },
   ],
-});
+})
 ```
 
 **Strategy**: Run visual tests in a single browser (Chromium on Linux in CI) to minimize snapshot count. Add other browsers only when you have actual cross-browser rendering bugs:
@@ -500,38 +503,38 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox'] },
     },
   ],
-});
+})
 ```
 
 ## Decision Guide
 
-| Scenario | Approach | Rationale |
-|---|---|---|
-| Key landing/marketing pages | Full page, `fullPage: true` | Catches layout shifts, spacing, overall harmony |
-| Individual components | Element screenshot | Isolated, fast, immune to unrelated changes |
-| Page with dynamic content | Full page + `mask` | Covers layout while ignoring volatile content |
-| Design system library | Element per variant, zero threshold | Pixel-perfect enforcement |
-| Responsive verification | Screenshot per viewport | Catches breakpoint bugs |
-| Cross-browser consistency | Separate snapshots per browser | Browsers render differently |
-| CI pipeline | Docker container, Linux-only snapshots | Consistent rendering |
-| Threshold: design system | `threshold: 0`, `maxDiffPixels: 0` | Zero tolerance |
-| Threshold: content pages | `maxDiffPixelRatio: 0.01`, `threshold: 0.2` | Minor anti-aliasing variance |
-| Threshold: charts/graphs | `maxDiffPixels: 200`, `threshold: 0.3` | Anti-aliasing on curves varies |
+| Scenario                    | Approach                                    | Rationale                                       |
+| --------------------------- | ------------------------------------------- | ----------------------------------------------- |
+| Key landing/marketing pages | Full page, `fullPage: true`                 | Catches layout shifts, spacing, overall harmony |
+| Individual components       | Element screenshot                          | Isolated, fast, immune to unrelated changes     |
+| Page with dynamic content   | Full page + `mask`                          | Covers layout while ignoring volatile content   |
+| Design system library       | Element per variant, zero threshold         | Pixel-perfect enforcement                       |
+| Responsive verification     | Screenshot per viewport                     | Catches breakpoint bugs                         |
+| Cross-browser consistency   | Separate snapshots per browser              | Browsers render differently                     |
+| CI pipeline                 | Docker container, Linux-only snapshots      | Consistent rendering                            |
+| Threshold: design system    | `threshold: 0`, `maxDiffPixels: 0`          | Zero tolerance                                  |
+| Threshold: content pages    | `maxDiffPixelRatio: 0.01`, `threshold: 0.2` | Minor anti-aliasing variance                    |
+| Threshold: charts/graphs    | `maxDiffPixels: 200`, `threshold: 0.3`      | Anti-aliasing on curves varies                  |
 
 ## Anti-Patterns
 
-| Don't | Problem | Do Instead |
-|---|---|---|
-| Visual test every page | Massive maintenance, constant false failures | Pick 5-10 key pages and critical components |
-| Skip masking dynamic content | Screenshots differ every run, permanently flaky | Use `mask` for all volatile elements |
-| Run across macOS, Linux, Windows | Font rendering differs, snapshots never match | Standardize on Linux via Docker |
-| Skip Docker in CI | OS updates shift rendering silently | Pin specific Playwright Docker image |
-| Blindly run `--update-snapshots` | Accepts unintentional regressions | Always review diff in HTML report first |
-| Skip `animations: 'disabled'` | CSS transitions create random diffs | Set globally in config |
-| Replace functional assertions with visual tests | Diffs don't tell you *what* broke | Visual tests complement, never replace |
-| Commit snapshots from different platforms | Tests fail for everyone | All team members use same Docker container |
-| Set threshold too high (`0.1`) | 10% pixel change passes, defeats purpose | Start with `0.01`, adjust per-test |
-| Full page on infinite scroll pages | Page height nondeterministic | Element screenshots on above-the-fold content |
+| Don't                                           | Problem                                         | Do Instead                                    |
+| ----------------------------------------------- | ----------------------------------------------- | --------------------------------------------- |
+| Visual test every page                          | Massive maintenance, constant false failures    | Pick 5-10 key pages and critical components   |
+| Skip masking dynamic content                    | Screenshots differ every run, permanently flaky | Use `mask` for all volatile elements          |
+| Run across macOS, Linux, Windows                | Font rendering differs, snapshots never match   | Standardize on Linux via Docker               |
+| Skip Docker in CI                               | OS updates shift rendering silently             | Pin specific Playwright Docker image          |
+| Blindly run `--update-snapshots`                | Accepts unintentional regressions               | Always review diff in HTML report first       |
+| Skip `animations: 'disabled'`                   | CSS transitions create random diffs             | Set globally in config                        |
+| Replace functional assertions with visual tests | Diffs don't tell you _what_ broke               | Visual tests complement, never replace        |
+| Commit snapshots from different platforms       | Tests fail for everyone                         | All team members use same Docker container    |
+| Set threshold too high (`0.1`)                  | 10% pixel change passes, defeats purpose        | Start with `0.01`, adjust per-test            |
+| Full page on infinite scroll pages              | Page height nondeterministic                    | Element screenshots on above-the-fold content |
 
 ## Troubleshooting
 
@@ -559,7 +562,7 @@ Commit Linux-generated snapshots.
 await expect(page).toHaveScreenshot('page.png', {
   maxDiffPixelRatio: 0.01,
   threshold: 0.2,
-});
+})
 ```
 
 Check HTML report diff image to determine if it's regression or noise.
@@ -597,7 +600,7 @@ export default defineConfig({
       animations: 'disabled',
     },
   },
-});
+})
 ```
 
 For JS animations, wait for stable state before capture.
@@ -609,8 +612,8 @@ For JS animations, wait for stable state before capture.
 **Fix**: Use explicit unique names:
 
 ```typescript
-await expect(page).toHaveScreenshot('auth-home.png');
-await expect(page).toHaveScreenshot('public-home.png');
+await expect(page).toHaveScreenshot('auth-home.png')
+await expect(page).toHaveScreenshot('public-home.png')
 ```
 
 Or customize snapshot path template:
@@ -618,7 +621,7 @@ Or customize snapshot path template:
 ```typescript
 export default defineConfig({
   snapshotPathTemplate: '{testDir}/{testFileDir}/{testFileName}-snapshots/{arg}{-projectName}{ext}',
-});
+})
 ```
 
 ### Too many snapshot files to maintain
@@ -626,6 +629,7 @@ export default defineConfig({
 **Cause**: Visual tests for every page, browser, viewport.
 
 **Fix**: Be selective. Visual test only high-risk pages:
+
 - Landing and marketing pages
 - Design system components
 - Complex layouts (dashboards, data tables)
