@@ -1,0 +1,56 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema-jsonc.json",
+
+  // WXT, Vitest, Playwright, PostCSS, Tailwind, semantic-release, husky,
+  // lint-staged and oxlint plugins auto-activate from their config files.
+  // Only override what they can't infer.
+
+  "project": ["src/**/*.{ts,tsx}", "entrypoints/**/*.{ts,tsx}", "types/**/*.{ts,tsx,d.ts}", "e2e/**/*.ts"],
+
+  // Ambient type declarations consumed by tsc via tsconfig "include" —
+  // not statically importable, so anchor them as entries.
+  "entry": ["types/**/*.d.ts"],
+
+  "ignore": [
+    // shadcn/ui vendored primitives — re-export many symbols intentionally
+    "src/components/ui/**",
+  ],
+
+  "ignoreDependencies": [
+    // CSS-only imports (knip doesn't parse CSS @import without a compiler)
+    "tw-animate-css",
+    "tailwindcss",
+  ],
+
+  // Vitest plugin already picks up vitest.config.ts; declare the setup file
+  // and in-tree colocated tests explicitly.
+  "vitest": {
+    "config": ["vitest.config.ts"],
+    "entry": [
+      "src/tests/setup.ts",
+      "src/tests/**/*.{test,spec}.{ts,tsx}",
+      "src/**/*.{test,spec}.{ts,tsx}",
+      "entrypoints/**/*.{test,spec}.{ts,tsx}",
+    ],
+  },
+
+  // Playwright plugin reads playwright.config.ts; declare shared fixtures
+  // and mock helpers so they aren't reported as unused.
+  "playwright": {
+    "config": ["playwright.config.ts"],
+    "entry": ["e2e/**/*.e2e.ts", "e2e/fixtures.ts", "e2e/mocks.ts", "e2e/mock-data.ts"],
+  },
+
+  // WXT plugin discovers entrypoints; pin the explicit list to keep the
+  // detector script (injected via chrome.scripting) from being flagged.
+  "wxt": {
+    "config": ["wxt.config.ts"],
+    "entry": [
+      "entrypoints/background.ts",
+      "entrypoints/content.ts",
+      "entrypoints/statsig-detector.ts",
+      "entrypoints/popup/index.html",
+      "entrypoints/popup/main.tsx",
+    ],
+  },
+}
