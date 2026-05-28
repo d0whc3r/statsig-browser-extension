@@ -2,7 +2,8 @@ import type { Experiment } from '@/src/types/statsig'
 
 import { experimentColumns, experimentStatusOptions } from '@/src/components/tables/data'
 import { EntityTable } from '@/src/components/tables/EntityTable'
-import { ExperimentsTableBody } from '@/src/components/tables/ExperimentsTableBody'
+import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
+import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { useExperiments } from '@/src/hooks/use-experiments'
 import { experimentsRowsPerPageStorage, experimentsVisibleColumnsStorage } from '@/src/lib/storage'
@@ -33,11 +34,13 @@ export function ExperimentsTable() {
       totalItems={tableLogic.totalItems}
       loadMoreText="Load More Experiments"
     >
-      <ExperimentsTableBody
+      <EntityTableBody<Experiment>
         headerColumns={tableLogic.headerColumns}
         isLoading={tableLogic.isLoading}
         items={tableLogic.items}
-        setCurrentExperiment={tableLogic.setCurrentEntity}
+        onRowClick={tableLogic.setCurrentEntity}
+        emptyVariant="experiment"
+        RowComponent={ExperimentRow}
       />
     </EntityTable>
   )

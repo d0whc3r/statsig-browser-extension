@@ -1,8 +1,9 @@
 import type { DynamicConfig } from '@/src/types/statsig'
 
 import { dynamicConfigColumns } from '@/src/components/tables/data'
-import { DynamicConfigsTableBody } from '@/src/components/tables/DynamicConfigsTableBody'
+import { DynamicConfigRow } from '@/src/components/tables/DynamicConfigRow'
 import { EntityTable } from '@/src/components/tables/EntityTable'
+import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { dynamicConfigRowsPerPageStorage, dynamicConfigVisibleColumnsStorage } from '@/src/lib/storage'
@@ -35,14 +36,18 @@ export function DynamicConfigsTable() {
       totalItems={tableLogic.totalItems}
       loadMoreText="Load More Dynamic Configs"
     >
-      <DynamicConfigsTableBody
+      <EntityTableBody<DynamicConfig>
         error={tableLogic.error}
         onRetry={tableLogic.handleRefetch}
         headerColumns={tableLogic.headerColumns}
         isError={tableLogic.isError}
         isLoading={tableLogic.isLoading}
         items={tableLogic.items}
-        setCurrentConfig={tableLogic.setCurrentEntity}
+        // oxlint-disable-next-line react/jsx-handler-names
+        onRowClick={tableLogic.setCurrentEntity}
+        emptyVariant="dynamic_config"
+        errorTitle="Failed to load dynamic configs"
+        RowComponent={DynamicConfigRow}
       />
     </EntityTable>
   )

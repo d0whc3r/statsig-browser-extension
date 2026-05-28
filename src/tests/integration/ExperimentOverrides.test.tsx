@@ -13,6 +13,7 @@ import {
   paginated,
   single,
 } from '../fixtures/statsig'
+import { resetUIStoreState } from '../utils/integration-mocks'
 import { renderWithProviders } from '../utils/TestUtils'
 
 // Mock the api instance methods
@@ -157,13 +158,7 @@ const setupMocks = () => {
 describe('experiment Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    useUIStore.setState({
-      currentItemId: undefined,
-      isAuthModalOpen: false,
-      isItemSheetOpen: false,
-      isSettingsSheetOpen: false,
-      isUserDetailsSheetOpen: false,
-    })
+    useUIStore.setState(resetUIStoreState)
   })
 
   it('should list all overrides in the manage modal', async () => {

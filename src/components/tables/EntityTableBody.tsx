@@ -1,48 +1,61 @@
 import React from 'react'
 
-import type { FeatureGate } from '@/src/types/statsig'
+import type { GeneralEmptyStateVariant } from '@/src/components/ui/general-empty-state'
 
-import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
 import { TableLoadingState } from '@/src/components/tables/TableLoadingState'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { TableCell, TableRow } from '@/src/components/ui/table'
 
-interface FeatureGatesTableBodyProps {
-  error: unknown
-  onRetry: () => void
+interface EntityRowProps<T> {
+  item: T
   headerColumns: readonly { uid: string }[]
-  isError: boolean
-  isLoading: boolean
-  items: FeatureGate[]
-  setCurrentFeatureGate: (id: string) => void
+  onRowClick: (id: string) => void
 }
 
-export const FeatureGatesTableBody = ({
-  error,
-  onRetry,
+interface EntityTableBodyProps<T extends { id: string }> {
+  headerColumns: readonly { uid: string }[]
+  isLoading: boolean
+  items: T[]
+  onRowClick: (id: string) => void
+  emptyVariant: GeneralEmptyStateVariant
+  RowComponent: React.ComponentType<EntityRowProps<T>>
+  isError?: boolean
+  error?: unknown
+  onRetry?: () => void
+  errorTitle?: string
+}
+
+export function EntityTableBody<T extends { id: string }>({
   headerColumns,
-  isError,
   isLoading,
   items,
-  setCurrentFeatureGate,
-}: FeatureGatesTableBodyProps) => {
+  onRowClick,
+  emptyVariant,
+  RowComponent,
+  isError,
+  error,
+  onRetry,
+  errorTitle,
+}: EntityTableBodyProps<T>) {
   if (isLoading) {
     return <TableLoadingState columnCount={headerColumns.length} />
   }
 
-  if (isError) {
+  if (isError && errorTitle) {
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} className="h-24 text-center">
           <GeneralEmptyState
             variant="error"
-            title="Failed to load feature gates"
+            title={errorTitle}
             description={error instanceof Error ? error.message : 'An unknown error occurred'}
           >
-            <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
-              Retry
-            </Button>
+            {onRetry && (
+              <Button variant="outline" size="sm" onClick={onRetry} className="mt-2">
+                Retry
+              </Button>
+            )}
           </GeneralEmptyState>
         </TableCell>
       </TableRow>
@@ -53,7 +66,7 @@ export const FeatureGatesTableBody = ({
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          <GeneralEmptyState variant="feature_gate" />
+          <GeneralEmptyState variant={emptyVariant} />
         </TableCell>
       </TableRow>
     )
@@ -62,7 +75,7 @@ export const FeatureGatesTableBody = ({
   return (
     <>
       {items.map((item) => (
-        <FeatureGateRow key={item.id} item={item} headerColumns={headerColumns} onRowClick={setCurrentFeatureGate} />
+        <RowComponent key={item.id} item={item} headerColumns={headerColumns} onRowClick={onRowClick} />
       ))}
     </>
   )

@@ -1,17 +1,8 @@
 import type { Page } from '@playwright/test'
 
-import type { MockRoute } from './mocks'
-
 import { expect, test } from './fixtures'
-import { mockAuditLogs, mockDynamicConfigs, mockExperiments, mockFeatureGates, paginated } from './mock-data'
+import { defaultRoutes } from './mock-data'
 import { mockApi, seedApiKey } from './mocks'
-
-const defaultRoutes = (): MockRoute[] => [
-  { data: paginated(mockFeatureGates), urlPattern: String.raw`/gates(\?|$)` },
-  { data: paginated(mockExperiments), urlPattern: String.raw`/experiments(\?|$)` },
-  { data: paginated(mockDynamicConfigs), urlPattern: String.raw`/dynamic_configs(\?|$)` },
-  { data: paginated(mockAuditLogs), urlPattern: String.raw`/audit_logs(\?|$)` },
-]
 
 const openOnGatesTab = async (page: Page, extensionId: string): Promise<void> => {
   await mockApi(page, defaultRoutes())

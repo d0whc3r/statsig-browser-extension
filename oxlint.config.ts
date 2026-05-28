@@ -99,6 +99,7 @@ export default defineConfig({
         'jsx-no-new-object-as-prop': 'off',
         'jsx-props-no-spreading': 'off',
         'react-in-jsx-scope': 'off',
+        'react/jsx-handler-names': 'off',
         'unicorn/filename-case': ['warn', { case: 'pascalCase' }],
       },
     },
