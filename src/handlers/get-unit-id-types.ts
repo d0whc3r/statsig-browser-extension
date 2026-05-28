@@ -1,12 +1,12 @@
 import { fetcher } from '@/src/lib/fetcher'
 
-export interface UnitIDType {
+interface UnitIDType {
   name: string
   displayName?: string
   description?: string
 }
 
-export interface UnitIDTypesResponse {
+interface UnitIDTypesResponse {
   data: string[] | UnitIDType[]
   message: string
 }

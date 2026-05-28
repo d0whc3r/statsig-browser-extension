@@ -15,7 +15,6 @@ import { useUIStore } from '@/src/store/use-ui-store'
 import { getUpdatedUserIDOverrides } from './use-overrides-section-logic.utils'
 
 type View = 'form' | 'table'
-export type OverrideType = 'user' | 'gate' | 'segment'
 
 interface OverridesData {
   userIDOverrides: UserIDOverride[]

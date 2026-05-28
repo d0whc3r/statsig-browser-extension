@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 
-import type { ExperimentOverridesResponse, UserIDOverride } from '@/src/types/statsig'
+import type { ExperimentOverridesResponse } from '@/src/types/statsig'
 
 import { fetcher } from '@/src/lib/fetcher'
 import { handleApiError } from '@/src/lib/utils'
@@ -8,8 +8,6 @@ import { handleApiError } from '@/src/lib/utils'
 import type { OverridesData } from './use-overrides.utils'
 
 import { transformOverridesResponse } from './use-overrides.utils'
-
-export type Override = UserIDOverride
 
 interface ApiResponse<DataType> {
   data: DataType
