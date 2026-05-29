@@ -1,7 +1,12 @@
 // oxlint-disable-next-line import/no-unassigned-import
 import '@testing-library/jest-dom/vitest'
-import { cleanup } from '@testing-library/react'
+import { cleanup, configure } from '@testing-library/react'
 import { afterEach, vi } from 'vitest'
+
+// Lazy-loaded sheets/modals (see GlobalModals) resolve their chunk asynchronously.
+// Under full-suite parallel load the default 1000ms async timeout is not enough for
+// The chunk to import and render, causing flaky "Unable to find" failures. Raise it.
+configure({ asyncUtilTimeout: 5000 })
 
 // Runs a cleanup after each test case (e.g. clearing jsdom)
 afterEach(() => {
