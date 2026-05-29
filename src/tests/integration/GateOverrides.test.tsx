@@ -222,8 +222,8 @@ describe('gate Overrides Flow', () => {
     })
     await user.click(screen.getByRole('button', { name: /Add Manual/iu }))
 
-    // Fill form
-    await user.type(screen.getByLabelText(/ID Value/iu), 'new_stable_1')
+    // Fill form (modal is lazy-loaded; await it so the Suspense resolution stays inside act)
+    await user.type(await screen.findByLabelText(/ID Value/iu), 'new_stable_1')
 
     const envSelect = screen.getByLabelText(/Environment/iu)
     await user.click(envSelect)

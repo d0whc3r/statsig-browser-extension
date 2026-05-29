@@ -211,8 +211,8 @@ describe('experiment Overrides Flow', () => {
     const addBtn = screen.getByRole('button', { name: /Add Manual/iu })
     await user.click(addBtn)
 
-    // Fill form
-    const idInput = screen.getByLabelText(/ID Value/iu)
+    // Fill form (modal is lazy-loaded; await it so the Suspense resolution stays inside act)
+    const idInput = await screen.findByLabelText(/ID Value/iu)
     await user.type(idInput, 'new_user_456')
 
     const groupSelect = screen.getByLabelText('Group')
@@ -258,8 +258,8 @@ describe('experiment Overrides Flow', () => {
     })
     await user.click(screen.getByRole('button', { name: /Add Manual/iu }))
 
-    // Switch to Gate/Segment tab
-    await user.click(screen.getByRole('tab', { name: /Gate\/Segment Override/iu }))
+    // Switch to Gate/Segment tab (modal is lazy-loaded; await it so the Suspense resolution stays inside act)
+    await user.click(await screen.findByRole('tab', { name: /Gate\/Segment Override/iu }))
 
     // Fill form
     await user.type(screen.getByLabelText('Name'), 'my_new_gate')

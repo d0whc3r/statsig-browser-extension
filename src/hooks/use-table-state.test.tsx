@@ -36,6 +36,10 @@ const setup = () => {
   return { rowsPerPageStorage, visibleColumnsStorage }
 }
 
+// Flush the async storage-init effect (getValue resolves in a microtask and
+// Updates state) so the deferred state update happens inside act(...).
+const flushEffects = () => act(async () => {})
+
 describe('useTableState', () => {
   it('exposes initial values from storage and transient state', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
@@ -53,16 +57,18 @@ describe('useTableState', () => {
     expect(result.current.statusFilter).toStrictEqual(new Set(['active']))
   })
 
-  it('defaults statusFilter to "all" when no initial filter is provided', () => {
+  it('defaults statusFilter to "all" when no initial filter is provided', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    await flushEffects()
 
     expect(result.current.statusFilter).toStrictEqual(new Set(['all']))
   })
 
-  it('resets the page when changing rows per page', () => {
+  it('resets the page when changing rows per page', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    await flushEffects()
 
     act(() => {
       result.current.setPage(5)
@@ -79,9 +85,10 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(1)
   })
 
-  it('resets the page to 1 when a non-empty search value is set', () => {
+  it('resets the page to 1 when a non-empty search value is set', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    await flushEffects()
 
     act(() => {
       result.current.setPage(3)
@@ -95,9 +102,10 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(1)
   })
 
-  it('clears filterValue without resetting page when search is emptied', () => {
+  it('clears filterValue without resetting page when search is emptied', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    await flushEffects()
 
     act(() => {
       result.current.onSearchChange('foo')
@@ -113,9 +121,10 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(7)
   })
 
-  it('exposes setters for filter, status filter, and visible columns', () => {
+  it('exposes setters for filter, status filter, and visible columns', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    await flushEffects()
 
     act(() => {
       result.current.handleSetFilterValue('xx')
