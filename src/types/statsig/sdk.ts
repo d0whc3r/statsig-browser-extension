@@ -10,7 +10,7 @@ export interface StatsigInstance {
   getCurrentUser?: () => Record<string, unknown>
 }
 
-export interface StatsigGlobal {
+interface StatsigGlobal {
   instance?: StatsigInstance
   instances?: Record<string, StatsigInstance>
 }

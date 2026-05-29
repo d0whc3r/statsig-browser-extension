@@ -16,15 +16,6 @@ export interface StatsigUser {
   [key: string]: unknown
 }
 
-export interface PaginatedResponse<ItemType> {
-  data: ItemType[]
-  pagination: {
-    totalItems: number
-    page: number
-    limit: number
-  }
-}
-
 export interface Metric {
   name: string
   type: string
@@ -37,7 +28,7 @@ export interface HealthCheck {
   status: 'PASSED' | 'WAITING'
 }
 
-export type ParameterValue = Record<string, boolean | number | string>
+type ParameterValue = Record<string, boolean | number | string>
 
 export interface Group {
   id: string

@@ -42,9 +42,3 @@ export interface DynamicConfigRule {
   completedAutomatedRollouts?: unknown[]
   pendingAutomatedRollouts?: unknown[]
 }
-
-export interface DynamicConfigOverride {
-  returnValue: Record<string, unknown>
-  ids: string[]
-  environment?: string
-}
