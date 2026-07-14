@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.2...v1.4.3) (2026-07-14)
+
+### Bug Fixes
+
+- deps update ([b14cc48](https://github.com/d0whc3r/statsig-browser-extension/commit/b14cc485b99c7a194bd2e3862ae49f2d545d226c))
+- update lint ([0ec0f6a](https://github.com/d0whc3r/statsig-browser-extension/commit/0ec0f6ac56a261a51e3a2ae1e697d073ed810c34))
+
 ## [1.4.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.1...v1.4.2) (2026-04-04)
 
 ### Bug Fixes
