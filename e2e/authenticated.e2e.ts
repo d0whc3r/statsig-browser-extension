@@ -73,9 +73,9 @@ test.describe('authenticated popup', () => {
     await page.getByRole('tab', { name: /Gates/iu }).click()
 
     await expect(page.getByRole('row', { name: /new_checkout_flow/u })).toHaveCount(0)
-    await expect(page.getByText(/no .*(gates|results)/iu).first()).toBeVisible()
+    await expect(page.getByText(/no .*(?:gates|results)/iu).first()).toBeVisible()
 
-    const gateCalls = await mock.callsFor(/\/gates(\?|$)/u)
+    const gateCalls = await mock.callsFor(/\/gates(?:\?|$)/u)
     expect(gateCalls.length).toBeGreaterThan(0)
     expect(gateCalls.every((call) => call.matched)).toBe(true)
   })

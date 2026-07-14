@@ -45,16 +45,15 @@ globalThis.ResizeObserver = class ResizeObserver {
   disconnect() {}
 }
 
-const createMatchMediaResult = (query: string): MediaQueryList => ({
-  addEventListener: vi.fn(),
-  addListener: vi.fn(),
-  dispatchEvent: vi.fn(),
-  matches: false,
-  media: query,
-  onchange: null,
-  removeEventListener: vi.fn(),
-  removeListener: vi.fn(),
-})
+const createMatchMediaResult = (query: string) =>
+  ({
+    addEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+    matches: false,
+    media: query,
+    onchange: null,
+    removeEventListener: vi.fn(),
+  }) satisfies Partial<MediaQueryList>
 
 // Mock matchMedia
 Object.defineProperty(globalThis, 'matchMedia', {

@@ -2,8 +2,6 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it, vi } from 'vitest'
 
-import type { StatsigUser } from '@/src/types/statsig'
-
 import { UserDetailsContent } from './UserDetailsContent'
 
 describe('userDetailsContent', () => {
@@ -22,7 +20,7 @@ describe('userDetailsContent', () => {
     const onRefetch = vi.fn()
     render(
       <UserDetailsContent
-        userDetails={{ userID: 'should-not-render' } as StatsigUser}
+        userDetails={{ userID: 'should-not-render' }}
         onRefetch={onRefetch}
         error="connection failed"
       />,

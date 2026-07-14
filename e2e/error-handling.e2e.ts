@@ -44,14 +44,14 @@ test.describe('error handling', () => {
     await page.getByRole('tab', { name: /Gates/iu }).click()
     await expect(page.getByText(/Failed to load feature gates/iu)).toBeVisible()
 
-    const beforeCalls = await mock.callsFor(/\/gates(\?|$)/u)
+    const beforeCalls = await mock.callsFor(/\/gates(?:\?|$)/u)
     const beforeCount = beforeCalls.length
     await page.getByRole('button', { name: /Retry/iu }).click()
 
     // Allow the refetch to settle before counting.
     await expect
       .poll(async () => {
-        const calls = await mock.callsFor(/\/gates(\?|$)/u)
+        const calls = await mock.callsFor(/\/gates(?:\?|$)/u)
         return calls.length
       })
       .toBeGreaterThan(beforeCount)
@@ -104,7 +104,7 @@ test.describe('error handling', () => {
 
     await page.getByRole('tab', { name: /Experiments/iu }).click()
 
-    const experimentCalls = await mock.callsFor(/\/experiments(\?|$)/u)
+    const experimentCalls = await mock.callsFor(/\/experiments(?:\?|$)/u)
     expect(experimentCalls.length).toBeGreaterThan(0)
     expect(experimentCalls.every((call) => !call.matched)).toBe(true)
   })

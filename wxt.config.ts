@@ -1,5 +1,3 @@
-import type { UserManifest } from 'wxt'
-
 import { defineConfig } from 'wxt'
 
 // See https://wxt.dev/api/config.html
@@ -34,6 +32,6 @@ export default defineConfig({
     },
     name: 'Statsig Browser Extension',
     permissions: ['storage', 'scripting', 'activeTab'],
-  } as UserManifest,
+  },
   modules: ['@wxt-dev/module-react'],
 })

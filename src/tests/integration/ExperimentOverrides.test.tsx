@@ -226,17 +226,16 @@ describe('experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
+      const overrideMatcher = expect.objectContaining({
+        environment: 'Production',
+        groupID: 'Test',
+        ids: expect.arrayContaining(['new_user_456']) as unknown as string[],
+        unitType: 'userID',
+      })
       expect(poster).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
-          userIDOverrides: expect.arrayContaining([
-            expect.objectContaining({
-              environment: 'Production',
-              groupID: 'Test',
-              ids: expect.arrayContaining(['new_user_456']) as unknown as string[],
-              unitType: 'userID',
-            }),
-          ]) as unknown as unknown[],
+          userIDOverrides: expect.arrayContaining([overrideMatcher]) as unknown as unknown[],
         }),
       )
     })
@@ -274,16 +273,15 @@ describe('experiment Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
+      const overrideMatcher = expect.objectContaining({
+        groupID: 'Control',
+        name: 'my_new_gate',
+        type: 'gate',
+      })
       expect(poster).toHaveBeenCalledWith(
         '/experiments/exp_1/overrides',
         expect.objectContaining({
-          overrides: expect.arrayContaining([
-            expect.objectContaining({
-              groupID: 'Control',
-              name: 'my_new_gate',
-              type: 'gate',
-            }),
-          ]),
+          overrides: expect.arrayContaining([overrideMatcher]),
         }),
       )
     })

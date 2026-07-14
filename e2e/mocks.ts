@@ -151,7 +151,7 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
         }
         const original = namespace.runtime.sendMessage as ((...args: unknown[]) => Promise<unknown>) | undefined
         const bound = original?.bind(namespace.runtime)
-        ;(namespace.runtime as { sendMessage: unknown }).sendMessage = buildHandler(bound)
+        namespace.runtime.sendMessage = buildHandler(bound)
       }
 
       patchRuntime((root as { chrome?: { runtime?: { sendMessage: unknown } } }).chrome)

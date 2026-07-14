@@ -240,16 +240,15 @@ describe('gate Overrides Flow', () => {
 
     // Verify API call
     await waitFor(() => {
+      const overrideMatcher = expect.objectContaining({
+        environment: 'Staging',
+        passingIDs: ['new_stable_1'],
+        unitID: 'stableID',
+      })
       expect(poster).toHaveBeenCalledWith(
         '/gates/gate_1/overrides',
         expect.objectContaining({
-          environmentOverrides: expect.arrayContaining([
-            expect.objectContaining({
-              environment: 'Staging',
-              passingIDs: ['new_stable_1'],
-              unitID: 'stableID',
-            }),
-          ]) as unknown as unknown[],
+          environmentOverrides: expect.arrayContaining([overrideMatcher]) as unknown as unknown[],
         }),
       )
     })
