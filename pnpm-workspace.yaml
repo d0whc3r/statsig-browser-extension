@@ -7,3 +7,6 @@ hoist: true
 hoistWorkspacePackages: true
 
 shamefullyHoist: true
+
+minimumReleaseAge: 0
+minimumReleaseAgeStrict: false

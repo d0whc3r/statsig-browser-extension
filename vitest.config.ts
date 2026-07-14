@@ -17,6 +17,7 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/.output/**', 'e2e/**'],
     globals: true,
     mockReset: false,
+    reporters: ['dot'],
     restoreMocks: true,
     setupFiles: ['./src/tests/setup.ts'],
     typecheck: {
