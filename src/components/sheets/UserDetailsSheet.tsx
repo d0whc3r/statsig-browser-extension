@@ -10,7 +10,7 @@ import { useUserDetails } from '@/src/hooks/use-user-details'
 import { useContextStore } from '@/src/store/use-context-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
-export const UserDetailsSheet = () => {
+export function UserDetailsSheet() {
   const { isUserDetailsSheetOpen, setUserDetailsSheetOpen } = useUIStore((state) => state)
   const { data: userDetailsData, isLoading, refetch } = useUserDetails()
   const { retryDetection } = useDetectedUser()

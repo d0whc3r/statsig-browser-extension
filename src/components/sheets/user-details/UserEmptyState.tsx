@@ -8,17 +8,19 @@ interface UserEmptyStateProps {
   error?: string | null
 }
 
-export const UserEmptyState = memo(({ onRefetch, error }: UserEmptyStateProps) => (
-  <GeneralEmptyState
-    variant="user"
-    className="py-12"
-    description={error ? 'We encountered an issue detecting the Statsig user.' : undefined}
-  >
-    {error && <div className="mb-4 max-w-xs text-center text-sm text-destructive">{error}</div>}
-    <Button onClick={onRefetch} variant="outline" size="sm" className="mt-4">
-      {error ? 'Retry Detection' : 'Try Again'}
-    </Button>
-  </GeneralEmptyState>
-))
+export const UserEmptyState = memo(function UserEmptyState({ onRefetch, error }: UserEmptyStateProps) {
+  return (
+    <GeneralEmptyState
+      variant="user"
+      className="py-12"
+      description={error ? 'We encountered an issue detecting the Statsig user.' : undefined}
+    >
+      {error && <div className="mb-4 max-w-xs text-center text-sm text-destructive">{error}</div>}
+      <Button onClick={onRefetch} variant="outline" size="sm" className="mt-4">
+        {error ? 'Retry Detection' : 'Try Again'}
+      </Button>
+    </GeneralEmptyState>
+  )
+})
 
 UserEmptyState.displayName = 'UserEmptyState'

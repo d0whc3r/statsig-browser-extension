@@ -20,7 +20,7 @@ interface OverrideRowProps {
   onDeleteOverride: (item: OverrideRowProps['item'], isCurrentUser: boolean) => void
 }
 
-export const OverrideRow = memo(({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) => {
+export const OverrideRow = memo(function OverrideRow({ item, canEdit, isPending, onDeleteOverride }: OverrideRowProps) {
   const handleDelete = useCallback(() => {
     onDeleteOverride(item, item.isCurrentUser)
   }, [item, onDeleteOverride])

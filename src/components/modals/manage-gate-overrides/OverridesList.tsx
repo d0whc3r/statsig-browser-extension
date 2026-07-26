@@ -22,60 +22,64 @@ interface OverridesListProps {
   onSwitchToForm: () => void
 }
 
-export const OverridesList = memo(
-  ({ allOverrides, canEdit, isPending, onDeleteOverride, onSwitchToForm }: OverridesListProps) => {
-    const isCurrentUserPredicate = useCallback((item: OverridesListProps['allOverrides'][0]) => item.isCurrentUser, [])
+export const OverridesList = memo(function OverridesList({
+  allOverrides,
+  canEdit,
+  isPending,
+  onDeleteOverride,
+  onSwitchToForm,
+}: OverridesListProps) {
+  const isCurrentUserPredicate = useCallback((item: OverridesListProps['allOverrides'][0]) => item.isCurrentUser, [])
 
-    const handleDeleteConfirm = useCallback(
-      (item: OverridesListProps['allOverrides'][0]) => {
-        onDeleteOverride({
-          environment: item.environment,
-          idType: item.idType,
-          type: item.type,
-          userId: item.id,
-        })
-      },
-      [onDeleteOverride],
-    )
+  const handleDeleteConfirm = useCallback(
+    (item: OverridesListProps['allOverrides'][0]) => {
+      onDeleteOverride({
+        environment: item.environment,
+        idType: item.idType,
+        type: item.type,
+        userId: item.id,
+      })
+    },
+    [onDeleteOverride],
+  )
 
-    const renderRow = useCallback(
-      (
-        item: OverridesListProps['allOverrides'][0],
-        onDeleteClick: (item: OverridesListProps['allOverrides'][0], isCurrentUser: boolean) => void,
-      ) => (
-        <OverrideRow
-          key={`${item.type}-${item.id}-${item.idType}-${item.environment}`}
-          item={item}
-          canEdit={canEdit}
-          isPending={isPending}
-          onDeleteOverride={onDeleteClick}
-        />
-      ),
-      [canEdit, isPending],
-    )
+  const renderRow = useCallback(
+    (
+      item: OverridesListProps['allOverrides'][0],
+      onDeleteClick: (item: OverridesListProps['allOverrides'][0], isCurrentUser: boolean) => void,
+    ) => (
+      <OverrideRow
+        key={`${item.type}-${item.id}-${item.idType}-${item.environment}`}
+        item={item}
+        canEdit={canEdit}
+        isPending={isPending}
+        onDeleteOverride={onDeleteClick}
+      />
+    ),
+    [canEdit, isPending],
+  )
 
-    return (
-      <SharedOverridesList onAddManual={onSwitchToForm} canEdit={canEdit}>
-        <SharedOverridesTable
-          items={allOverrides}
-          isCurrentUserPredicate={isCurrentUserPredicate}
-          onDeleteConfirm={handleDeleteConfirm}
-          colSpan={canEdit ? 5 : 4}
-          emptyEntityName="gate"
-          headers={
-            <>
-              <TableHead>ID</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Environment</TableHead>
-              <TableHead>Result</TableHead>
-              {canEdit && <TableHead className="w-[50px]" />}
-            </>
-          }
-          renderRow={renderRow}
-        />
-      </SharedOverridesList>
-    )
-  },
-)
+  return (
+    <SharedOverridesList onAddManual={onSwitchToForm} canEdit={canEdit}>
+      <SharedOverridesTable
+        items={allOverrides}
+        isCurrentUserPredicate={isCurrentUserPredicate}
+        onDeleteConfirm={handleDeleteConfirm}
+        colSpan={canEdit ? 5 : 4}
+        emptyEntityName="gate"
+        headers={
+          <>
+            <TableHead>ID</TableHead>
+            <TableHead>Type</TableHead>
+            <TableHead>Environment</TableHead>
+            <TableHead>Result</TableHead>
+            {canEdit && <TableHead className="w-[50px]" />}
+          </>
+        }
+        renderRow={renderRow}
+      />
+    </SharedOverridesList>
+  )
+})
 
 OverridesList.displayName = 'OverridesList'

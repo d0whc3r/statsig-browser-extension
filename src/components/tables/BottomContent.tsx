@@ -15,36 +15,34 @@ interface PageNumbersProps {
   onPageClick: (page: number) => void
 }
 
-const PageButton = memo(
-  ({
-    pageNumber,
-    currentPage,
-    onClick,
-  }: {
-    pageNumber: number
-    currentPage: number
-    onClick: (page: number) => void
-  }) => {
-    const handleClick = useCallback(() => {
-      onClick(pageNumber)
-    }, [onClick, pageNumber])
+const PageButton = memo(function PageButton({
+  pageNumber,
+  currentPage,
+  onClick,
+}: {
+  pageNumber: number
+  currentPage: number
+  onClick: (page: number) => void
+}) {
+  const handleClick = useCallback(() => {
+    onClick(pageNumber)
+  }, [onClick, pageNumber])
 
-    return (
-      <Button
-        variant={pageNumber === currentPage ? 'default' : 'ghost'}
-        size="icon-sm"
-        onClick={handleClick}
-        className={pageNumber === currentPage ? 'bg-foreground text-background' : ''}
-      >
-        {pageNumber}
-      </Button>
-    )
-  },
-)
+  return (
+    <Button
+      variant={pageNumber === currentPage ? 'default' : 'ghost'}
+      size="icon-sm"
+      onClick={handleClick}
+      className={pageNumber === currentPage ? 'bg-foreground text-background' : ''}
+    >
+      {pageNumber}
+    </Button>
+  )
+})
 
 PageButton.displayName = 'PageButton'
 
-const PageNumbers = ({ page, totalPages, onPageClick }: PageNumbersProps) => {
+function PageNumbers({ page, totalPages, onPageClick }: PageNumbersProps) {
   const pages = []
   const maxVisiblePages = 5
   let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2))
@@ -61,7 +59,7 @@ const PageNumbers = ({ page, totalPages, onPageClick }: PageNumbersProps) => {
   return <div className="flex gap-1">{pages}</div>
 }
 
-export const BottomContent = ({ page, setPage, total }: BottomContentProps) => {
+export function BottomContent({ page, setPage, total }: BottomContentProps) {
   const totalPages = total || 1
 
   const handlePrevious = useCallback(() => {

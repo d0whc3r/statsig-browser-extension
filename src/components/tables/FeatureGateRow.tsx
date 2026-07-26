@@ -13,7 +13,7 @@ interface FeatureGateCellProps {
   showInlineId: boolean
 }
 
-const FeatureGateCellContent = ({ item, columnKey, onRowClick, showInlineId }: FeatureGateCellProps) => {
+function FeatureGateCellContent({ item, columnKey, onRowClick, showInlineId }: FeatureGateCellProps) {
   switch (columnKey) {
     case 'name': {
       return <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
@@ -42,7 +42,9 @@ const FeatureGateCellContent = ({ item, columnKey, onRowClick, showInlineId }: F
   }
 }
 
-const FeatureGateCell = memo((props: FeatureGateCellProps) => <FeatureGateCellContent {...props} />)
+const FeatureGateCell = memo(function FeatureGateCell(props: FeatureGateCellProps) {
+  return <FeatureGateCellContent {...props} />
+})
 FeatureGateCell.displayName = 'FeatureGateCell'
 
 interface FeatureGateRowProps {
@@ -51,7 +53,7 @@ interface FeatureGateRowProps {
   onRowClick: (id: string) => void
 }
 
-export const FeatureGateRow = memo(({ item, headerColumns, onRowClick }: FeatureGateRowProps) => {
+export const FeatureGateRow = memo(function FeatureGateRow({ item, headerColumns, onRowClick }: FeatureGateRowProps) {
   const handleRowClick = useCallback(() => {
     onRowClick(item.id)
   }, [onRowClick, item.id])

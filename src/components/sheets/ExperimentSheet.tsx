@@ -47,7 +47,7 @@ const useExperimentSheetState = () => {
 
 const noOp = () => {}
 
-export const ExperimentSheet = () => {
+export function ExperimentSheet() {
   const { currentItemId, error, experiment, handleClose, isLoading, typeApiKey } = useExperimentSheetState()
 
   const detailsContent = useMemo(

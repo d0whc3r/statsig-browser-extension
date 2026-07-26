@@ -20,54 +20,56 @@ interface ConfigHeaderProps {
   config?: DynamicConfig
 }
 
-const ConfigHeader = ({ isLoading, config }: ConfigHeaderProps) => (
-  <div className="flex items-start justify-between gap-4">
-    <div className="min-w-0 flex-1 space-y-1.5">
-      <div className="flex flex-wrap items-center gap-2">
-        <SheetTitle className="text-xl font-bold break-all">
-          {isLoading ? <Skeleton className="h-6 w-32" /> : (config?.name ?? config?.id ?? 'Dynamic Config')}
-        </SheetTitle>
-        {!isLoading && config && (
-          <Badge variant={config.isEnabled ? 'default' : 'destructive'} className="h-5 shrink-0 px-1.5 text-[10px]">
-            {config.isEnabled ? 'Enabled' : 'Disabled'}
-          </Badge>
-        )}
+function ConfigHeader({ isLoading, config }: ConfigHeaderProps) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div className="min-w-0 flex-1 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <SheetTitle className="text-xl font-bold break-all">
+            {isLoading ? <Skeleton className="h-6 w-32" /> : (config?.name ?? config?.id ?? 'Dynamic Config')}
+          </SheetTitle>
+          {!isLoading && config && (
+            <Badge variant={config.isEnabled ? 'default' : 'destructive'} className="h-5 shrink-0 px-1.5 text-[10px]">
+              {config.isEnabled ? 'Enabled' : 'Disabled'}
+            </Badge>
+          )}
+        </div>
+        <div className="flex flex-wrap items-center gap-3">
+          {config?.id && (
+            <CopyableText
+              value={config.id}
+              copyLabel="Copy ID"
+              containerClassName="text-xs text-muted-foreground font-mono"
+            />
+          )}
+          {!isLoading && config && (
+            <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
+              <span className="flex items-center gap-1">
+                Created <TimeAgo date={config.createdTime} />
+              </span>
+              <span className="flex items-center gap-1">
+                Updated <TimeAgo date={config.lastModifiedTime} />
+              </span>
+            </div>
+          )}
+        </div>
       </div>
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="shrink-0">
         {config?.id && (
-          <CopyableText
-            value={config.id}
-            copyLabel="Copy ID"
-            containerClassName="text-xs text-muted-foreground font-mono"
-          />
-        )}
-        {!isLoading && config && (
-          <div className="flex items-center gap-3 text-[10px] text-muted-foreground">
-            <span className="flex items-center gap-1">
-              Created <TimeAgo date={config.createdTime} />
-            </span>
-            <span className="flex items-center gap-1">
-              Updated <TimeAgo date={config.lastModifiedTime} />
-            </span>
-          </div>
+          <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
+            <a
+              href={`https://console.statsig.com/dynamic_configs/${config.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Statsig
+            </a>
+          </Button>
         )}
       </div>
     </div>
-    <div className="shrink-0">
-      {config?.id && (
-        <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
-          <a
-            href={`https://console.statsig.com/dynamic_configs/${config.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Statsig
-          </a>
-        </Button>
-      )}
-    </div>
-  </div>
-)
+  )
+}
 
 interface ConfigDetailsProps {
   isLoading: boolean
@@ -75,7 +77,7 @@ interface ConfigDetailsProps {
   config?: DynamicConfig
 }
 
-const ConfigMetadata = ({ config }: { config: DynamicConfig }) => {
+function ConfigMetadata({ config }: { config: DynamicConfig }) {
   const hasTags = config.tags && config.tags.length > 0
   const hasDescription = Boolean(config.description)
 
@@ -100,18 +102,20 @@ const ConfigMetadata = ({ config }: { config: DynamicConfig }) => {
   )
 }
 
-const ConfigDefaultValue = ({ defaultValue }: { defaultValue: unknown }) => (
-  <div className="space-y-2">
-    <h3 className="text-lg font-semibold">Default Value</h3>
-    <div className="max-h-[400px] overflow-auto rounded-md border bg-muted p-4">
-      <pre className="font-mono text-xs break-all whitespace-pre-wrap">
-        {JSON.stringify(defaultValue, undefined, 2)}
-      </pre>
+function ConfigDefaultValue({ defaultValue }: { defaultValue: unknown }) {
+  return (
+    <div className="space-y-2">
+      <h3 className="text-lg font-semibold">Default Value</h3>
+      <div className="max-h-[400px] overflow-auto rounded-md border bg-muted p-4">
+        <pre className="font-mono text-xs break-all whitespace-pre-wrap">
+          {JSON.stringify(defaultValue, undefined, 2)}
+        </pre>
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
-const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
+function ConfigDetails({ isLoading, error, config }: ConfigDetailsProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">
@@ -141,7 +145,7 @@ const ConfigDetails = ({ isLoading, error, config }: ConfigDetailsProps) => {
   )
 }
 
-export const DynamicConfigSheet = () => {
+export function DynamicConfigSheet() {
   const { currentItemId, isItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === 'dynamic_config'

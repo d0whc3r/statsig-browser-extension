@@ -19,13 +19,13 @@ interface AuditLogListProps {
   isLoading: boolean
 }
 
-const EmptyState = ({ filterValue, actionFilter }: { filterValue: string; actionFilter: string }) => {
+function EmptyState({ filterValue, actionFilter }: { filterValue: string; actionFilter: string }) {
   const isFiltered = filterValue || actionFilter !== 'all'
 
   return <GeneralEmptyState variant={isFiltered ? 'search' : 'audit_log'} />
 }
 
-const Footer = ({
+function Footer({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
@@ -33,7 +33,7 @@ const Footer = ({
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
-}) => {
+}) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -69,60 +69,58 @@ const Footer = ({
 
 const SKELETON_IDS = Array.from({ length: 10 }, (_unused, index) => `skeleton-${index}`)
 
-export const AuditLogList = memo(
-  ({
-    filteredItems,
-    filterValue,
-    actionFilter,
-    onViewDetails,
-    onLoadMore,
-    hasNextPage,
-    isFetchingNextPage,
-    isLoading,
-  }: AuditLogListProps) => {
-    if (isLoading) {
-      return (
-        <div className="min-h-0 flex-1 divide-y overflow-auto">
-          {SKELETON_IDS.map((key) => (
-            <div key={key} className="px-4 py-3">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <div className="mb-1.5 flex items-center gap-2">
-                    <Skeleton className="h-5 w-16" />
-                    <Skeleton className="h-5 max-w-[200px] flex-1" />
-                  </div>
-                  <Skeleton className="mb-1.5 h-4 w-3/4" />
-                  <div className="flex items-center gap-1.5">
-                    <Skeleton className="h-3 w-24" />
-                    <Skeleton className="h-3 w-32" />
-                  </div>
+export const AuditLogList = memo(function AuditLogList({
+  filteredItems,
+  filterValue,
+  actionFilter,
+  onViewDetails,
+  onLoadMore,
+  hasNextPage,
+  isFetchingNextPage,
+  isLoading,
+}: AuditLogListProps) {
+  if (isLoading) {
+    return (
+      <div className="min-h-0 flex-1 divide-y overflow-auto">
+        {SKELETON_IDS.map((key) => (
+          <div key={key} className="px-4 py-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="mb-1.5 flex items-center gap-2">
+                  <Skeleton className="h-5 w-16" />
+                  <Skeleton className="h-5 max-w-[200px] flex-1" />
+                </div>
+                <Skeleton className="mb-1.5 h-4 w-3/4" />
+                <div className="flex items-center gap-1.5">
+                  <Skeleton className="h-3 w-24" />
+                  <Skeleton className="h-3 w-32" />
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      )
-    }
-
-    return (
-      <div className="min-h-0 flex-1 overflow-auto">
-        {filteredItems.length === 0 ? (
-          <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
-        ) : (
-          <div className="divide-y">
-            {filteredItems.map((auditLog) => (
-              <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
-            ))}
           </div>
-        )}
-
-        {filteredItems.length > 0 && (
-          <div className="flex-none border-t bg-background p-3">
-            <Footer hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} onLoadMore={onLoadMore} />
-          </div>
-        )}
+        ))}
       </div>
     )
-  },
-)
+  }
+
+  return (
+    <div className="min-h-0 flex-1 overflow-auto">
+      {filteredItems.length === 0 ? (
+        <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
+      ) : (
+        <div className="divide-y">
+          {filteredItems.map((auditLog) => (
+            <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
+          ))}
+        </div>
+      )}
+
+      {filteredItems.length > 0 && (
+        <div className="flex-none border-t bg-background p-3">
+          <Footer hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} onLoadMore={onLoadMore} />
+        </div>
+      )}
+    </div>
+  )
+})
 AuditLogList.displayName = 'AuditLogList'

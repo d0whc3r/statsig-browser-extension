@@ -18,7 +18,13 @@ interface UserOverridesTableProps {
   onDelete: (override: AnyOverride) => void
 }
 
-const UserOverridesTable = memo(({ canEdit, isPending, overrides, groups, onDelete }: UserOverridesTableProps) => {
+const UserOverridesTable = memo(function UserOverridesTable({
+  canEdit,
+  isPending,
+  overrides,
+  groups,
+  onDelete,
+}: UserOverridesTableProps) {
   const isCurrentUserPredicate = useCallback(
     (item: UserIDOverride & { isCurrentUser?: boolean }) => Boolean(item.isCurrentUser),
     [],
@@ -75,45 +81,53 @@ interface GateOverridesTableProps {
   onDelete: (override: AnyOverride) => void
 }
 
-const GateOverridesTable = memo(({ canEdit, isPending, overrides, groups, onDelete }: GateOverridesTableProps) => (
-  <div className="mt-8 space-y-3">
-    <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">Gate/Segment Overrides</h4>
-    <div className="overflow-hidden rounded-md border bg-card shadow-sm">
-      <Table>
-        <TableHeader className="bg-muted/30">
-          <TableRow>
-            <TableHead>Type</TableHead>
-            <TableHead>Name</TableHead>
-            <TableHead>Group</TableHead>
-            {canEdit && <TableHead className="w-[50px]" />}
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {overrides && overrides.length > 0 ? (
-            overrides.map((override) => (
-              <ExperimentOverrideRow
-                key={`${override.type}-${override.name}-${override.groupID}`}
-                override={override}
-                canEdit={canEdit}
-                isPending={isPending}
-                onDelete={onDelete}
-                groups={groups}
-              />
-            ))
-          ) : (
+const GateOverridesTable = memo(function GateOverridesTable({
+  canEdit,
+  isPending,
+  overrides,
+  groups,
+  onDelete,
+}: GateOverridesTableProps) {
+  return (
+    <div className="mt-8 space-y-3">
+      <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">Gate/Segment Overrides</h4>
+      <div className="overflow-hidden rounded-md border bg-card shadow-sm">
+        <Table>
+          <TableHeader className="bg-muted/30">
             <TableRow>
-              <TableCell colSpan={canEdit ? 4 : 3} className="h-24 text-center">
-                <div className="flex justify-center">
-                  <GeneralEmptyState variant="override" entityName="item" />
-                </div>
-              </TableCell>
+              <TableHead>Type</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Group</TableHead>
+              {canEdit && <TableHead className="w-[50px]" />}
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {overrides && overrides.length > 0 ? (
+              overrides.map((override) => (
+                <ExperimentOverrideRow
+                  key={`${override.type}-${override.name}-${override.groupID}`}
+                  override={override}
+                  canEdit={canEdit}
+                  isPending={isPending}
+                  onDelete={onDelete}
+                  groups={groups}
+                />
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={canEdit ? 4 : 3} className="h-24 text-center">
+                  <div className="flex justify-center">
+                    <GeneralEmptyState variant="override" entityName="item" />
+                  </div>
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
-  </div>
-))
+  )
+})
 
 GateOverridesTable.displayName = 'GateOverridesTable'
 
@@ -134,33 +148,38 @@ interface OverridesListProps {
 const EMPTY_USERS: (UserIDOverride & { isCurrentUser?: boolean })[] = []
 const EMPTY_EXPERIMENTS: ExperimentOverride[] = []
 
-export const OverridesList = memo(
-  ({ canEdit, onCreateOverrideClick, onDeleteOverride, isPending, overridesData, groups }: OverridesListProps) => {
-    const userOverrides = overridesData?.userIDOverrides ?? EMPTY_USERS
-    const gateOverrides = overridesData?.overrides ?? EMPTY_EXPERIMENTS
+export const OverridesList = memo(function OverridesList({
+  canEdit,
+  onCreateOverrideClick,
+  onDeleteOverride,
+  isPending,
+  overridesData,
+  groups,
+}: OverridesListProps) {
+  const userOverrides = overridesData?.userIDOverrides ?? EMPTY_USERS
+  const gateOverrides = overridesData?.overrides ?? EMPTY_EXPERIMENTS
 
-    return (
-      <SharedOverridesList onAddManual={onCreateOverrideClick} canEdit={canEdit}>
-        <div className="flex flex-col gap-6">
-          <UserOverridesTable
-            canEdit={canEdit}
-            isPending={isPending}
-            overrides={userOverrides}
-            groups={groups}
-            onDelete={onDeleteOverride}
-          />
+  return (
+    <SharedOverridesList onAddManual={onCreateOverrideClick} canEdit={canEdit}>
+      <div className="flex flex-col gap-6">
+        <UserOverridesTable
+          canEdit={canEdit}
+          isPending={isPending}
+          overrides={userOverrides}
+          groups={groups}
+          onDelete={onDeleteOverride}
+        />
 
-          <GateOverridesTable
-            canEdit={canEdit}
-            isPending={isPending}
-            overrides={gateOverrides}
-            groups={groups}
-            onDelete={onDeleteOverride}
-          />
-        </div>
-      </SharedOverridesList>
-    )
-  },
-)
+        <GateOverridesTable
+          canEdit={canEdit}
+          isPending={isPending}
+          overrides={gateOverrides}
+          groups={groups}
+          onDelete={onDeleteOverride}
+        />
+      </div>
+    </SharedOverridesList>
+  )
+})
 
 OverridesList.displayName = 'OverridesList'

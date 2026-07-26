@@ -12,7 +12,7 @@ interface ExperimentGroupsProps {
   experiment: Experiment
 }
 
-export const ExperimentGroups = memo(({ experiment }: ExperimentGroupsProps) => {
+export const ExperimentGroups = memo(function ExperimentGroups({ experiment }: ExperimentGroupsProps) {
   const { groups, allocation, targetingGateID, primaryMetrics, secondaryMetrics } = experiment
 
   return (

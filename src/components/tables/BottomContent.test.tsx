@@ -7,7 +7,7 @@ import { BottomContent } from './BottomContent'
 
 const noop = () => {}
 
-const Harness = ({ initialPage = 1, total }: { initialPage?: number; total: number }) => {
+function Harness({ initialPage = 1, total }: { initialPage?: number; total: number }) {
   const [page, setPage] = useState(initialPage)
   return (
     <>

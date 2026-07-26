@@ -27,7 +27,7 @@ const getBadgeVariant = (percentage: number): BadgeVariant => {
   return 'secondary'
 }
 
-export const FeatureGateRules = memo(({ featureGateId }: Props) => {
+export const FeatureGateRules = memo(function FeatureGateRules({ featureGateId }: Props) {
   const { data: rules, isLoading, error } = useFeatureGateRules(featureGateId)
 
   if (isLoading) {

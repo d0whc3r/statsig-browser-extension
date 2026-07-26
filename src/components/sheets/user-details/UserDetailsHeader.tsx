@@ -10,16 +10,18 @@ interface UserDetailsHeaderProps {
   onRefetch: () => void
 }
 
-export const UserDetailsHeader = memo(({ isLoading, onRefetch }: UserDetailsHeaderProps) => (
-  <SheetHeader className="flex flex-row items-center justify-between space-y-0 border-b px-6 py-4 pr-12">
-    <div>
-      <SheetTitle>User Details</SheetTitle>
-      <p className="text-xs text-muted-foreground">Statsig SDK identity on this page</p>
-    </div>
-    <Button variant="ghost" size="icon" onClick={onRefetch} disabled={isLoading}>
-      <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
-    </Button>
-  </SheetHeader>
-))
+export const UserDetailsHeader = memo(function UserDetailsHeader({ isLoading, onRefetch }: UserDetailsHeaderProps) {
+  return (
+    <SheetHeader className="flex flex-row items-center justify-between space-y-0 border-b px-6 py-4 pr-12">
+      <div>
+        <SheetTitle>User Details</SheetTitle>
+        <p className="text-xs text-muted-foreground">Statsig SDK identity on this page</p>
+      </div>
+      <Button variant="ghost" size="icon" onClick={onRefetch} disabled={isLoading}>
+        <RefreshCw className={cn('h-4 w-4', isLoading && 'animate-spin')} />
+      </Button>
+    </SheetHeader>
+  )
+})
 
 UserDetailsHeader.displayName = 'UserDetailsHeader'

@@ -22,89 +22,87 @@ interface TopContentProps {
   statusOptions?: readonly StatusOption[]
 }
 
-export const TopContent = memo(
-  ({
-    filterValue,
-    onRowsPerPageChange,
-    onSearchChange,
-    rowsPerPage,
-    setFilterValue,
-    setStatusFilter,
-    setVisibleColumns,
-    statusFilter,
-    total,
-    type,
-    visibleColumns,
-    columns,
-    statusOptions,
-  }: TopContentProps) => {
-    const typeLabel = useMemo(() => {
-      switch (type) {
-        case 'experiments': {
-          return 'experiment'
-        }
-        case 'dynamicConfigs': {
-          return 'dynamic config'
-        }
-        case 'featureGates': {
-          return 'feature gate'
-        }
-        case 'auditLogs': {
-          return 'audit log'
-        }
-        default: {
-          return type
-        }
+export const TopContent = memo(function TopContent({
+  filterValue,
+  onRowsPerPageChange,
+  onSearchChange,
+  rowsPerPage,
+  setFilterValue,
+  setStatusFilter,
+  setVisibleColumns,
+  statusFilter,
+  total,
+  type,
+  visibleColumns,
+  columns,
+  statusOptions,
+}: TopContentProps) {
+  const typeLabel = useMemo(() => {
+    switch (type) {
+      case 'experiments': {
+        return 'experiment'
       }
-    }, [type])
-
-    const typeLabelPlural = useMemo(() => {
-      switch (type) {
-        case 'experiments': {
-          return 'experiments'
-        }
-        case 'dynamicConfigs': {
-          return 'dynamic configs'
-        }
-        case 'featureGates': {
-          return 'feature gates'
-        }
-        case 'auditLogs': {
-          return 'audit logs'
-        }
-        default: {
-          return type
-        }
+      case 'dynamicConfigs': {
+        return 'dynamic config'
       }
-    }, [type])
+      case 'featureGates': {
+        return 'feature gate'
+      }
+      case 'auditLogs': {
+        return 'audit log'
+      }
+      default: {
+        return type
+      }
+    }
+  }, [type])
 
-    return (
-      <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <TopContentSearch
-            filterValue={filterValue}
-            onSearchChange={onSearchChange}
-            setFilterValue={setFilterValue}
-            typeLabel={typeLabel}
-          />
-          <TopContentActions
-            type={type}
-            statusOptions={statusOptions}
-            statusFilter={statusFilter}
-            setStatusFilter={setStatusFilter}
-            columns={columns}
-            visibleColumns={visibleColumns}
-            setVisibleColumns={setVisibleColumns}
-          />
-        </div>
-        <TopContentPagination
-          total={total}
-          typeLabelPlural={typeLabelPlural}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={onRowsPerPageChange}
+  const typeLabelPlural = useMemo(() => {
+    switch (type) {
+      case 'experiments': {
+        return 'experiments'
+      }
+      case 'dynamicConfigs': {
+        return 'dynamic configs'
+      }
+      case 'featureGates': {
+        return 'feature gates'
+      }
+      case 'auditLogs': {
+        return 'audit logs'
+      }
+      default: {
+        return type
+      }
+    }
+  }, [type])
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <TopContentSearch
+          filterValue={filterValue}
+          onSearchChange={onSearchChange}
+          setFilterValue={setFilterValue}
+          typeLabel={typeLabel}
+        />
+        <TopContentActions
+          type={type}
+          statusOptions={statusOptions}
+          statusFilter={statusFilter}
+          setStatusFilter={setStatusFilter}
+          columns={columns}
+          visibleColumns={visibleColumns}
+          setVisibleColumns={setVisibleColumns}
         />
       </div>
-    )
-  },
-)
+      <TopContentPagination
+        total={total}
+        typeLabelPlural={typeLabelPlural}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={onRowsPerPageChange}
+      />
+    </div>
+  )
+})
 TopContent.displayName = 'TopContent'

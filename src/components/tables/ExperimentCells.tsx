@@ -32,36 +32,50 @@ interface ExperimentNameCellProps {
   showInlineId: boolean
 }
 
-export const ExperimentNameCell = memo(({ item, showInlineId }: ExperimentNameCellProps) => (
-  <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
-))
+export const ExperimentNameCell = memo(function ExperimentNameCell({ item, showInlineId }: ExperimentNameCellProps) {
+  return <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />
+})
 
 ExperimentNameCell.displayName = 'ExperimentNameCell'
 
-export const ExperimentStatusCell = memo(({ item }: BaseCellProps) => (
-  <StatusCell
-    status={item.status}
-    variant={getBadgeVariant(item.status)}
-    label={statusMap[item.status] || item.status}
-  />
-))
+export const ExperimentStatusCell = memo(function ExperimentStatusCell({ item }: BaseCellProps) {
+  return (
+    <StatusCell
+      status={item.status}
+      variant={getBadgeVariant(item.status)}
+      label={statusMap[item.status] || item.status}
+    />
+  )
+})
 
 ExperimentStatusCell.displayName = 'ExperimentStatusCell'
 
-export const ExperimentAllocationCell = memo(({ item }: BaseCellProps) => <div>{item.allocation}%</div>)
+export const ExperimentAllocationCell = memo(function ExperimentAllocationCell({ item }: BaseCellProps) {
+  return <div>{item.allocation}%</div>
+})
 
 ExperimentAllocationCell.displayName = 'ExperimentAllocationCell'
 
-export const ExperimentTagsCell = memo(({ item }: BaseCellProps) => <TagsCell tags={item.tags} />)
+export const ExperimentTagsCell = memo(function ExperimentTagsCell({ item }: BaseCellProps) {
+  return <TagsCell tags={item.tags} />
+})
 
 ExperimentTagsCell.displayName = 'ExperimentTagsCell'
 
-export const ExperimentActionsCell = memo(({ item, onRowClick }: BaseCellProps) => (
-  <ActionsCell id={item.id} onRowClick={onRowClick} statsigUrl={`https://console.statsig.com/experiments/${item.id}`} />
-))
+export const ExperimentActionsCell = memo(function ExperimentActionsCell({ item, onRowClick }: BaseCellProps) {
+  return (
+    <ActionsCell
+      id={item.id}
+      onRowClick={onRowClick}
+      statsigUrl={`https://console.statsig.com/experiments/${item.id}`}
+    />
+  )
+})
 
 ExperimentActionsCell.displayName = 'ExperimentActionsCell'
 
-export const ExperimentDefaultCell = memo(({ value }: { value: unknown }) => <div>{String(value)}</div>)
+export const ExperimentDefaultCell = memo(function ExperimentDefaultCell({ value }: { value: unknown }) {
+  return <div>{String(value)}</div>
+})
 
 ExperimentDefaultCell.displayName = 'ExperimentDefaultCell'

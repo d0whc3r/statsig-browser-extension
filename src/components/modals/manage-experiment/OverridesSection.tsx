@@ -8,7 +8,7 @@ import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
 import { PageContextCard } from './PageContextCard'
 
-export const OverridesSection = () => {
+export function OverridesSection() {
   const {
     addOverride,
     deleteOverride,

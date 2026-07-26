@@ -17,26 +17,28 @@ interface NameCellProps {
   showInlineId: boolean
 }
 
-export const NameCell = memo(({ id, name, showInlineId }: NameCellProps) => (
-  <div className="min-w-0">
-    <div className="cursor-pointer truncate font-medium hover:underline">{name}</div>
-    {showInlineId && (
-      <CopyableText
-        value={id}
-        copyLabel="Copy ID"
-        containerClassName="text-xs text-muted-foreground font-mono"
-        valueClassName="truncate hover:text-foreground transition-colors"
-      />
-    )}
-  </div>
-))
+export const NameCell = memo(function NameCell({ id, name, showInlineId }: NameCellProps) {
+  return (
+    <div className="min-w-0">
+      <div className="cursor-pointer truncate font-medium hover:underline">{name}</div>
+      {showInlineId && (
+        <CopyableText
+          value={id}
+          copyLabel="Copy ID"
+          containerClassName="text-xs text-muted-foreground font-mono"
+          valueClassName="truncate hover:text-foreground transition-colors"
+        />
+      )}
+    </div>
+  )
+})
 NameCell.displayName = 'NameCell'
 
 interface TagsCellProps {
   tags?: string[]
 }
 
-export const TagsCell = memo(({ tags }: TagsCellProps) => {
+export const TagsCell = memo(function TagsCell({ tags }: TagsCellProps) {
   if (!tags || tags.length === 0) {
     return null
   }
@@ -59,11 +61,13 @@ interface StatusCellProps {
   label?: string
 }
 
-export const StatusCell = memo(({ status, variant = 'outline', label }: StatusCellProps) => (
-  <Badge variant={variant} className="capitalize">
-    {label ?? status}
-  </Badge>
-))
+export const StatusCell = memo(function StatusCell({ status, variant = 'outline', label }: StatusCellProps) {
+  return (
+    <Badge variant={variant} className="capitalize">
+      {label ?? status}
+    </Badge>
+  )
+})
 StatusCell.displayName = 'StatusCell'
 
 interface ActionsCellProps {
@@ -72,7 +76,7 @@ interface ActionsCellProps {
   statsigUrl: string
 }
 
-export const ActionsCell = memo(({ id, onRowClick, statsigUrl }: ActionsCellProps) => {
+export const ActionsCell = memo(function ActionsCell({ id, onRowClick, statsigUrl }: ActionsCellProps) {
   const handleRowClick = useCallback(() => {
     onRowClick(id)
   }, [onRowClick, id])

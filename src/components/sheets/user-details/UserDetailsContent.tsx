@@ -26,62 +26,64 @@ const toDisplayValue = (value: unknown): string => {
   return serialized ?? ''
 }
 
-const UserHeader = memo(({ userDetails }: { userDetails: StatsigUser }) => (
-  <div className="flex flex-col gap-4">
-    <div className="flex items-start gap-4">
-      <div className="min-w-0 flex-1 space-y-1">
-        <div className="flex items-center justify-between gap-2">
-          <h4 className="truncate text-xl font-bold tracking-tight">{userDetails.name ?? 'Anonymous User'}</h4>
-          {userDetails.statsigEnvironment && (
-            <Badge variant="outline" className="shrink-0 px-2 py-0.5 text-xs font-medium capitalize">
-              {userDetails.statsigEnvironment.tier ?? 'unknown'}
-            </Badge>
-          )}
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <div className="group flex items-center gap-2 text-sm text-muted-foreground">
-            <User className="h-3.5 w-3.5 shrink-0" />
-            <span className="w-16 text-xs font-medium tracking-wider uppercase">User ID</span>
-            {userDetails.userID ? (
-              <CopyableText
-                value={userDetails.userID}
-                copyLabel="Copy"
-                containerClassName="w-full gap-2"
-                valueClassName="text-sm font-mono break-all text-foreground"
-                buttonClassName="text-muted-foreground"
-                hideButtonUntilHover
-              />
-            ) : (
-              <span className="font-mono text-muted-foreground/50">No User ID</span>
+const UserHeader = memo(function UserHeader({ userDetails }: { userDetails: StatsigUser }) {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-start gap-4">
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex items-center justify-between gap-2">
+            <h4 className="truncate text-xl font-bold tracking-tight">{userDetails.name ?? 'Anonymous User'}</h4>
+            {userDetails.statsigEnvironment && (
+              <Badge variant="outline" className="shrink-0 px-2 py-0.5 text-xs font-medium capitalize">
+                {userDetails.statsigEnvironment.tier ?? 'unknown'}
+              </Badge>
             )}
           </div>
 
-          <div className="group flex items-center gap-2 text-sm text-muted-foreground">
-            <Lock className="h-3.5 w-3.5 shrink-0" />
-            <span className="w-16 text-xs font-medium tracking-wider uppercase">Stable ID</span>
-            {userDetails.stableID ? (
-              <CopyableText
-                value={userDetails.stableID}
-                copyLabel="Copy"
-                containerClassName="w-full gap-2"
-                valueClassName="text-sm font-mono break-all text-foreground"
-                buttonClassName="text-muted-foreground"
-                hideButtonUntilHover
-              />
-            ) : (
-              <span className="font-mono text-muted-foreground/50">No Stable ID</span>
-            )}
+          <div className="flex flex-col gap-1">
+            <div className="group flex items-center gap-2 text-sm text-muted-foreground">
+              <User className="h-3.5 w-3.5 shrink-0" />
+              <span className="w-16 text-xs font-medium tracking-wider uppercase">User ID</span>
+              {userDetails.userID ? (
+                <CopyableText
+                  value={userDetails.userID}
+                  copyLabel="Copy"
+                  containerClassName="w-full gap-2"
+                  valueClassName="text-sm font-mono break-all text-foreground"
+                  buttonClassName="text-muted-foreground"
+                  hideButtonUntilHover
+                />
+              ) : (
+                <span className="font-mono text-muted-foreground/50">No User ID</span>
+              )}
+            </div>
+
+            <div className="group flex items-center gap-2 text-sm text-muted-foreground">
+              <Lock className="h-3.5 w-3.5 shrink-0" />
+              <span className="w-16 text-xs font-medium tracking-wider uppercase">Stable ID</span>
+              {userDetails.stableID ? (
+                <CopyableText
+                  value={userDetails.stableID}
+                  copyLabel="Copy"
+                  containerClassName="w-full gap-2"
+                  valueClassName="text-sm font-mono break-all text-foreground"
+                  buttonClassName="text-muted-foreground"
+                  hideButtonUntilHover
+                />
+              ) : (
+                <span className="font-mono text-muted-foreground/50">No Stable ID</span>
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-))
+  )
+})
 
 UserHeader.displayName = 'UserHeader'
 
-const InfoItem = ({
+function InfoItem({
   icon: Icon,
   label,
   value,
@@ -91,7 +93,7 @@ const InfoItem = ({
   label: string
   value?: string
   className?: string
-}) => {
+}) {
   if (!value) {
     return null
   }
@@ -110,7 +112,7 @@ const InfoItem = ({
   )
 }
 
-const UserOverview = memo(({ userDetails }: { userDetails: StatsigUser }) => {
+const UserOverview = memo(function UserOverview({ userDetails }: { userDetails: StatsigUser }) {
   const hasContent =
     userDetails.email ?? userDetails.country ?? userDetails.locale ?? userDetails.ip ?? userDetails.userAgent
 
@@ -136,7 +138,7 @@ const UserOverview = memo(({ userDetails }: { userDetails: StatsigUser }) => {
 
 UserOverview.displayName = 'UserOverview'
 
-const PropertySection = ({
+function PropertySection({
   title,
   icon: Icon,
   data,
@@ -146,7 +148,7 @@ const PropertySection = ({
   icon: LucideIcon
   data?: Record<string, unknown>
   variant?: 'default' | 'private'
-}) => {
+}) {
   if (!data || Object.keys(data).length === 0) {
     return null
   }
@@ -178,7 +180,7 @@ const PropertySection = ({
   )
 }
 
-const UserAdditionalProperties = memo(({ userDetails }: { userDetails: StatsigUser }) => {
+const UserAdditionalProperties = memo(function UserAdditionalProperties({ userDetails }: { userDetails: StatsigUser }) {
   const standardKeys = new Set([
     'name',
     'userID',
@@ -199,7 +201,11 @@ const UserAdditionalProperties = memo(({ userDetails }: { userDetails: StatsigUs
 
 UserAdditionalProperties.displayName = 'UserAdditionalProperties'
 
-export const UserDetailsContent = memo(({ userDetails, onRefetch, error }: UserDetailsContentProps) => {
+export const UserDetailsContent = memo(function UserDetailsContent({
+  userDetails,
+  onRefetch,
+  error,
+}: UserDetailsContentProps) {
   if (!userDetails || Object.keys(userDetails).length === 0 || error) {
     return <UserEmptyState onRefetch={onRefetch} error={error} />
   }

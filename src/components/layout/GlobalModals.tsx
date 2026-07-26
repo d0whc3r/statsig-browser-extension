@@ -44,17 +44,19 @@ const UserDetailsSheet = lazy(() =>
   })),
 )
 
-export const GlobalModals = memo(() => (
-  <Suspense fallback={undefined}>
-    <AuthModal />
-    <ManageExperimentModal />
-    <ManageGateOverridesModal />
-    <ExperimentSheet />
-    <DynamicConfigSheet />
-    <FeatureGateSheet />
-    <SettingsSheet />
-    <UserDetailsSheet />
-    <AuditLogDetailSheet />
-  </Suspense>
-))
+export const GlobalModals = memo(function GlobalModals() {
+  return (
+    <Suspense fallback={undefined}>
+      <AuthModal />
+      <ManageExperimentModal />
+      <ManageGateOverridesModal />
+      <ExperimentSheet />
+      <DynamicConfigSheet />
+      <FeatureGateSheet />
+      <SettingsSheet />
+      <UserDetailsSheet />
+      <AuditLogDetailSheet />
+    </Suspense>
+  )
+})
 GlobalModals.displayName = 'GlobalModals'

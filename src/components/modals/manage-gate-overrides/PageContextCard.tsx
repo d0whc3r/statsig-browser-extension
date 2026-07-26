@@ -27,103 +27,97 @@ const EMPTY_OVERRIDES: {
   type: 'pass' | 'fail'
 }[] = []
 
-const GateOverrideControls = memo(
-  ({
-    currentEnvValue,
-    detectedUserId,
-    onAddOverride,
-    idType,
-    isPending,
-    isCurrentEnvOverridden,
-  }: {
-    currentEnvValue: string | null
-    detectedUserId: string
-    onAddOverride: (params: AddGateOverrideParams) => void
-    idType: string
-    isPending: boolean
-    isCurrentEnvOverridden: boolean
-  }) => {
-    const handlePass = useCallback(() => {
-      onAddOverride({ environment: currentEnvValue, idType, type: 'pass', userId: detectedUserId })
-    }, [detectedUserId, currentEnvValue, idType, onAddOverride])
+const GateOverrideControls = memo(function GateOverrideControls({
+  currentEnvValue,
+  detectedUserId,
+  onAddOverride,
+  idType,
+  isPending,
+  isCurrentEnvOverridden,
+}: {
+  currentEnvValue: string | null
+  detectedUserId: string
+  onAddOverride: (params: AddGateOverrideParams) => void
+  idType: string
+  isPending: boolean
+  isCurrentEnvOverridden: boolean
+}) {
+  const handlePass = useCallback(() => {
+    onAddOverride({ environment: currentEnvValue, idType, type: 'pass', userId: detectedUserId })
+  }, [detectedUserId, currentEnvValue, idType, onAddOverride])
 
-    const handleFail = useCallback(() => {
-      onAddOverride({ environment: currentEnvValue, idType, type: 'fail', userId: detectedUserId })
-    }, [detectedUserId, currentEnvValue, idType, onAddOverride])
+  const handleFail = useCallback(() => {
+    onAddOverride({ environment: currentEnvValue, idType, type: 'fail', userId: detectedUserId })
+  }, [detectedUserId, currentEnvValue, idType, onAddOverride])
 
-    return (
-      <div className="mt-2 flex flex-col gap-2">
-        <Label className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-          Override Value
-        </Label>
-        <div className="flex w-full gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 flex-1 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
-            onClick={handlePass}
-            disabled={isPending || isCurrentEnvOverridden}
-          >
-            PASS
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 flex-1 border-destructive/20 text-xs hover:bg-destructive/10 hover:text-destructive"
-            onClick={handleFail}
-            disabled={isPending || isCurrentEnvOverridden}
-          >
-            FAIL
-          </Button>
-        </div>
+  return (
+    <div className="mt-2 flex flex-col gap-2">
+      <Label className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Override Value</Label>
+      <div className="flex w-full gap-2">
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 flex-1 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
+          onClick={handlePass}
+          disabled={isPending || isCurrentEnvOverridden}
+        >
+          PASS
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 flex-1 border-destructive/20 text-xs hover:bg-destructive/10 hover:text-destructive"
+          onClick={handleFail}
+          disabled={isPending || isCurrentEnvOverridden}
+        >
+          FAIL
+        </Button>
       </div>
-    )
-  },
-)
+    </div>
+  )
+})
 
 GateOverrideControls.displayName = 'GateOverrideControls'
 
-export const PageContextCard = memo(
-  ({
-    detectedUser,
-    detectedUserId,
-    isDetectedUserOverridden,
-    detectedUserOverrides = EMPTY_OVERRIDES,
-    canEdit,
-    isPending,
-    onAddOverride,
-    featureGate,
-  }: PageContextCardProps) => {
-    const idType = featureGate?.idType ?? 'userID'
+export const PageContextCard = memo(function PageContextCard({
+  detectedUser,
+  detectedUserId,
+  isDetectedUserOverridden,
+  detectedUserOverrides = EMPTY_OVERRIDES,
+  canEdit,
+  isPending,
+  onAddOverride,
+  featureGate,
+}: PageContextCardProps) {
+  const idType = featureGate?.idType ?? 'userID'
 
-    return (
-      <BaseOverrideContextCard
-        detectedUser={detectedUser}
-        detectedUserId={detectedUserId}
-        isDetectedUserOverridden={isDetectedUserOverridden}
-        detectedUserOverrides={detectedUserOverrides}
-        canEdit={canEdit}
-        idType={idType}
-      >
-        {(currentEnvValue) => {
-          const isCurrentEnvOverridden = detectedUserOverrides.some(
-            (override) => override.environment === currentEnvValue,
-          )
+  return (
+    <BaseOverrideContextCard
+      detectedUser={detectedUser}
+      detectedUserId={detectedUserId}
+      isDetectedUserOverridden={isDetectedUserOverridden}
+      detectedUserOverrides={detectedUserOverrides}
+      canEdit={canEdit}
+      idType={idType}
+    >
+      {(currentEnvValue) => {
+        const isCurrentEnvOverridden = detectedUserOverrides.some(
+          (override) => override.environment === currentEnvValue,
+        )
 
-          return (
-            <GateOverrideControls
-              currentEnvValue={currentEnvValue}
-              detectedUserId={detectedUserId}
-              onAddOverride={onAddOverride}
-              idType={idType}
-              isPending={isPending}
-              isCurrentEnvOverridden={isCurrentEnvOverridden}
-            />
-          )
-        }}
-      </BaseOverrideContextCard>
-    )
-  },
-)
+        return (
+          <GateOverrideControls
+            currentEnvValue={currentEnvValue}
+            detectedUserId={detectedUserId}
+            onAddOverride={onAddOverride}
+            idType={idType}
+            isPending={isPending}
+            isCurrentEnvOverridden={isCurrentEnvOverridden}
+          />
+        )
+      }}
+    </BaseOverrideContextCard>
+  )
+})
 
 PageContextCard.displayName = 'PageContextCard'

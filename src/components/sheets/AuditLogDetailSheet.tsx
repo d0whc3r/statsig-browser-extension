@@ -15,7 +15,7 @@ import { useAuditLogs } from '@/src/hooks/use-audit-logs'
 import { useUIStore } from '@/src/store/use-ui-store'
 import { getActionTypeColor } from '@/src/utils/audit-log-utils'
 
-const AuditLogHeader = ({
+function AuditLogHeader({
   auditLog,
   isLoading,
   currentAuditLogId,
@@ -23,60 +23,62 @@ const AuditLogHeader = ({
   auditLog?: AuditLog | null
   isLoading: boolean
   currentAuditLogId?: string
-}) => (
-  <SheetHeader className="shrink-0 border-b px-6 py-4 pr-12">
-    <div className="flex items-start justify-between gap-4">
-      <div className="min-w-0 flex-1 space-y-1.5">
-        <div className="flex flex-wrap items-center gap-2">
-          <SheetTitle className="truncate" title={auditLog?.name}>
-            {isLoading && !auditLog ? <Skeleton className="h-6 w-32" /> : (auditLog?.name ?? 'Audit Log Detail')}
-          </SheetTitle>
-          {!isLoading && auditLog && (
-            <Badge
-              variant={getActionTypeColor(auditLog.actionType)}
-              className="h-5 shrink-0 rounded-sm px-1.5 text-[10px]"
-            >
-              {auditLog.actionType}
-            </Badge>
-          )}
-        </div>
+}) {
+  return (
+    <SheetHeader className="shrink-0 border-b px-6 py-4 pr-12">
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1 space-y-1.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <SheetTitle className="truncate" title={auditLog?.name}>
+              {isLoading && !auditLog ? <Skeleton className="h-6 w-32" /> : (auditLog?.name ?? 'Audit Log Detail')}
+            </SheetTitle>
+            {!isLoading && auditLog && (
+              <Badge
+                variant={getActionTypeColor(auditLog.actionType)}
+                className="h-5 shrink-0 rounded-sm px-1.5 text-[10px]"
+              >
+                {auditLog.actionType}
+              </Badge>
+            )}
+          </div>
 
-        <div className="flex flex-wrap items-center gap-3">
-          {!isLoading && auditLog && currentAuditLogId && (
-            <CopyableText
-              value={currentAuditLogId}
-              copyLabel="Copy ID"
-              containerClassName="text-xs text-muted-foreground font-mono"
-            />
-          )}
+          <div className="flex flex-wrap items-center gap-3">
+            {!isLoading && auditLog && currentAuditLogId && (
+              <CopyableText
+                value={currentAuditLogId}
+                copyLabel="Copy ID"
+                containerClassName="text-xs text-muted-foreground font-mono"
+              />
+            )}
+            {!isLoading && auditLog && (
+              <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                <span>{auditLog.date}</span>
+                <span className="font-mono">{auditLog.time}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <div className="shrink-0">
           {!isLoading && auditLog && (
-            <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-              <span>{auditLog.date}</span>
-              <span className="font-mono">{auditLog.time}</span>
-            </div>
+            <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
+              <a
+                href={`https://console.statsig.com/audit_logs/${currentAuditLogId}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Statsig
+                <ExternalLink className="h-3 w-3" />
+              </a>
+            </Button>
           )}
         </div>
       </div>
-      <div className="shrink-0">
-        {!isLoading && auditLog && (
-          <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
-            <a
-              href={`https://console.statsig.com/audit_logs/${currentAuditLogId}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Statsig
-              <ExternalLink className="h-3 w-3" />
-            </a>
-          </Button>
-        )}
-      </div>
-    </div>
-    <SheetDescription className="sr-only">Details for audit log {auditLog?.name}</SheetDescription>
-  </SheetHeader>
-)
+      <SheetDescription className="sr-only">Details for audit log {auditLog?.name}</SheetDescription>
+    </SheetHeader>
+  )
+}
 
-const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog | null; isLoading: boolean }) => {
+function AuditLogContent({ auditLog, isLoading }: { auditLog?: AuditLog | null; isLoading: boolean }) {
   if (isLoading && !auditLog) {
     return (
       <ScrollArea className="flex-1">
@@ -138,7 +140,7 @@ const AuditLogContent = ({ auditLog, isLoading }: { auditLog?: AuditLog | null; 
   )
 }
 
-export const AuditLogDetailSheet = () => {
+export function AuditLogDetailSheet() {
   const { currentAuditLogId, isAuditLogDetailSheetOpen, setAuditLogDetailSheetOpen } = useUIStore((state) => state)
 
   const { data, isLoading } = useAuditLogs()

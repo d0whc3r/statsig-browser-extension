@@ -17,7 +17,13 @@ interface OverrideRowProps {
   groups: Group[]
 }
 
-export const OverrideRow = memo(({ override, canEdit, isPending, onDelete, groups }: OverrideRowProps) => {
+export const OverrideRow = memo(function OverrideRow({
+  override,
+  canEdit,
+  isPending,
+  onDelete,
+  groups,
+}: OverrideRowProps) {
   const handleDelete = useCallback(() => {
     onDelete(override, Boolean(override.isCurrentUser))
   }, [onDelete, override])

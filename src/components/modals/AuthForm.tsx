@@ -24,7 +24,7 @@ interface AuthFormProps {
   onSuccess: () => void
 }
 
-export const AuthForm = ({ onSuccess }: AuthFormProps) => {
+export function AuthForm({ onSuccess }: AuthFormProps) {
   const { setApiKey } = useSettingsStorage()
   const queryClient = useQueryClient()
 

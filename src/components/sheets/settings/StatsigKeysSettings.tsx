@@ -13,7 +13,7 @@ interface StatsigKeysSettingsProps {
   control: Control<SettingsFormValues>
 }
 
-export const StatsigKeysSettings = ({ control }: StatsigKeysSettingsProps) => {
+export function StatsigKeysSettings({ control }: StatsigKeysSettingsProps) {
   const renderLocalStorageKeyField = useCallback(
     ({ field }: { field: ControllerRenderProps<SettingsFormValues, 'localStorageKey'> }) => (
       <FormItem className="w-full space-y-0 sm:w-[200px]">

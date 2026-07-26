@@ -11,7 +11,11 @@ interface FeatureGateSheetDetailsProps {
   featureGate?: FeatureGate
 }
 
-export const FeatureGateSheetDetails = memo(({ isLoading, error, featureGate }: FeatureGateSheetDetailsProps) => {
+export const FeatureGateSheetDetails = memo(function FeatureGateSheetDetails({
+  isLoading,
+  error,
+  featureGate,
+}: FeatureGateSheetDetailsProps) {
   if (isLoading) {
     return (
       <div className="flex justify-center p-8">

@@ -31,7 +31,7 @@ export interface GenericAddOverrideFormProps<TValue> {
   getSubmitButtonText?: (value: TValue) => string
 }
 
-export const GenericAddOverrideForm = <TValue extends string>({
+export function GenericAddOverrideForm<TValue extends string>({
   isPending,
   onAddOverride,
   onCancel,
@@ -42,7 +42,7 @@ export const GenericAddOverrideForm = <TValue extends string>({
   defaultIdType = 'userID',
   getSubmitButtonClassName,
   getSubmitButtonText,
-}: GenericAddOverrideFormProps<TValue>) => {
+}: GenericAddOverrideFormProps<TValue>) {
   const [id, setId] = useState('')
   const [environment, setEnvironment] = useState('Production')
   const [idType, setIdType] = useState(defaultIdType)

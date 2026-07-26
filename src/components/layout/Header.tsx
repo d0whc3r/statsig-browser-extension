@@ -18,7 +18,7 @@ interface HeaderProps {
   onLogout: () => void
 }
 
-export const Header = memo(({ onLogout }: HeaderProps) => {
+export const Header = memo(function Header({ onLogout }: HeaderProps) {
   const { setUserDetailsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
 
   const handleOpenUserDetails = useCallback(() => {

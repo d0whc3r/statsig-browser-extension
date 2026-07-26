@@ -21,12 +21,10 @@ interface FormFieldContextValue<
 
 const FormFieldContext = React.createContext<FormFieldContextValue | null>(null)
 
-const FormField = <
+function FormField<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
->({
-  ...props
-}: ControllerProps<TFieldValues, TName>) => {
+>({ ...props }: ControllerProps<TFieldValues, TName>) {
   const value = React.useMemo(() => ({ name: props.name }), [props.name])
   return (
     <FormFieldContext.Provider value={value}>

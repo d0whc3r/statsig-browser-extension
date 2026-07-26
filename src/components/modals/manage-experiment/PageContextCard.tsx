@@ -34,121 +34,115 @@ const EMPTY_OVERRIDES: {
   groupID: string
 }[] = []
 
-const ExperimentOverrideControls = memo(
-  ({
-    currentEnvValue,
-    detectedUserId,
-    selectedGroupId,
-    setSelectedGroupId,
-    onAddOverride,
-    idType,
-    isPending,
-    isCurrentEnvOverridden,
-    groups,
-  }: {
-    currentEnvValue: string | null
-    detectedUserId: string
-    selectedGroupId: string
-    setSelectedGroupId: (value: string) => void
-    onAddOverride: (params: AddOverrideParams) => void
-    idType: string
-    isPending: boolean
-    isCurrentEnvOverridden: boolean
-    groups: Group[]
-  }) => {
-    const handleOverride = useCallback(() => {
-      if (detectedUserId && selectedGroupId) {
-        onAddOverride({
-          environment: currentEnvValue,
-          groupId: selectedGroupId,
-          idType,
-          userId: detectedUserId,
-        })
-      }
-    }, [detectedUserId, selectedGroupId, currentEnvValue, idType, onAddOverride])
+const ExperimentOverrideControls = memo(function ExperimentOverrideControls({
+  currentEnvValue,
+  detectedUserId,
+  selectedGroupId,
+  setSelectedGroupId,
+  onAddOverride,
+  idType,
+  isPending,
+  isCurrentEnvOverridden,
+  groups,
+}: {
+  currentEnvValue: string | null
+  detectedUserId: string
+  selectedGroupId: string
+  setSelectedGroupId: (value: string) => void
+  onAddOverride: (params: AddOverrideParams) => void
+  idType: string
+  isPending: boolean
+  isCurrentEnvOverridden: boolean
+  groups: Group[]
+}) {
+  const handleOverride = useCallback(() => {
+    if (detectedUserId && selectedGroupId) {
+      onAddOverride({
+        environment: currentEnvValue,
+        groupId: selectedGroupId,
+        idType,
+        userId: detectedUserId,
+      })
+    }
+  }, [detectedUserId, selectedGroupId, currentEnvValue, idType, onAddOverride])
 
-    return (
-      <div className="mt-2 flex flex-col gap-2">
-        <Label className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
-          Override Group
-        </Label>
-        <div className="flex items-center gap-2">
-          <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
-            <SelectTrigger className="h-8 w-full bg-background" aria-label="Select group for detected user">
-              <SelectValue placeholder="Select group" />
-            </SelectTrigger>
-            <SelectContent>
-              {groups.map((group) => (
-                <SelectItem key={group.name} value={group.name}>
-                  {group.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
-            onClick={handleOverride}
-            disabled={isPending || !selectedGroupId || isCurrentEnvOverridden}
-          >
-            {isCurrentEnvOverridden ? 'Overridden' : 'Override'}
-          </Button>
-        </div>
+  return (
+    <div className="mt-2 flex flex-col gap-2">
+      <Label className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">Override Group</Label>
+      <div className="flex items-center gap-2">
+        <Select value={selectedGroupId} onValueChange={setSelectedGroupId}>
+          <SelectTrigger className="h-8 w-full bg-background" aria-label="Select group for detected user">
+            <SelectValue placeholder="Select group" />
+          </SelectTrigger>
+          <SelectContent>
+            {groups.map((group) => (
+              <SelectItem key={group.name} value={group.name}>
+                {group.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          size="sm"
+          variant="outline"
+          className="h-8 border-primary/20 text-xs hover:bg-primary/10 hover:text-primary"
+          onClick={handleOverride}
+          disabled={isPending || !selectedGroupId || isCurrentEnvOverridden}
+        >
+          {isCurrentEnvOverridden ? 'Overridden' : 'Override'}
+        </Button>
       </div>
-    )
-  },
-)
+    </div>
+  )
+})
 
 ExperimentOverrideControls.displayName = 'ExperimentOverrideControls'
 
-export const PageContextCard = memo(
-  ({
-    detectedUser,
-    detectedUserId,
-    isDetectedUserOverridden,
-    detectedUserOverrides = EMPTY_OVERRIDES,
-    canEdit,
-    isPending,
-    groups,
-    onAddOverride,
-    experiment,
-  }: ExperimentPageContextCardProps) => {
-    const [selectedGroupId, setSelectedGroupId] = useState('')
+export const PageContextCard = memo(function PageContextCard({
+  detectedUser,
+  detectedUserId,
+  isDetectedUserOverridden,
+  detectedUserOverrides = EMPTY_OVERRIDES,
+  canEdit,
+  isPending,
+  groups,
+  onAddOverride,
+  experiment,
+}: ExperimentPageContextCardProps) {
+  const [selectedGroupId, setSelectedGroupId] = useState('')
 
-    const idType = experiment?.idType ?? 'userID'
+  const idType = experiment?.idType ?? 'userID'
 
-    return (
-      <BaseOverrideContextCard
-        detectedUser={detectedUser}
-        detectedUserId={detectedUserId}
-        isDetectedUserOverridden={isDetectedUserOverridden}
-        detectedUserOverrides={detectedUserOverrides}
-        canEdit={canEdit}
-        idType={idType}
-      >
-        {(currentEnvValue) => {
-          const isCurrentEnvOverridden = detectedUserOverrides.some(
-            (override) => override.environment === currentEnvValue,
-          )
+  return (
+    <BaseOverrideContextCard
+      detectedUser={detectedUser}
+      detectedUserId={detectedUserId}
+      isDetectedUserOverridden={isDetectedUserOverridden}
+      detectedUserOverrides={detectedUserOverrides}
+      canEdit={canEdit}
+      idType={idType}
+    >
+      {(currentEnvValue) => {
+        const isCurrentEnvOverridden = detectedUserOverrides.some(
+          (override) => override.environment === currentEnvValue,
+        )
 
-          return (
-            <ExperimentOverrideControls
-              currentEnvValue={currentEnvValue}
-              detectedUserId={detectedUserId}
-              selectedGroupId={selectedGroupId}
-              setSelectedGroupId={setSelectedGroupId}
-              onAddOverride={onAddOverride}
-              idType={idType}
-              isPending={isPending}
-              isCurrentEnvOverridden={isCurrentEnvOverridden}
-              groups={groups}
-            />
-          )
-        }}
-      </BaseOverrideContextCard>
-    )
-  },
-)
+        return (
+          <ExperimentOverrideControls
+            currentEnvValue={currentEnvValue}
+            detectedUserId={detectedUserId}
+            selectedGroupId={selectedGroupId}
+            setSelectedGroupId={setSelectedGroupId}
+            onAddOverride={onAddOverride}
+            idType={idType}
+            isPending={isPending}
+            isCurrentEnvOverridden={isCurrentEnvOverridden}
+            groups={groups}
+          />
+        )
+      }}
+    </BaseOverrideContextCard>
+  )
+})
 
 PageContextCard.displayName = 'PageContextCard'

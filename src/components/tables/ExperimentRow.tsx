@@ -24,7 +24,12 @@ type DefaultExperimentColumnKey = Exclude<ExperimentColumnKey, 'actions' | 'allo
 
 const getExperimentDefaultValue = (item: Experiment, columnKey: DefaultExperimentColumnKey) => item[columnKey]
 
-const ExperimentCell = memo(({ item, columnKey, onRowClick, showInlineId }: ExperimentCellProps) => {
+const ExperimentCell = memo(function ExperimentCell({
+  item,
+  columnKey,
+  onRowClick,
+  showInlineId,
+}: ExperimentCellProps) {
   switch (columnKey) {
     case 'name': {
       return <ExperimentNameCell item={item} showInlineId={showInlineId} />
@@ -57,7 +62,7 @@ interface ExperimentRowProps {
   onRowClick: (id: string) => void
 }
 
-export const ExperimentRow = memo(({ item, headerColumns, onRowClick }: ExperimentRowProps) => {
+export const ExperimentRow = memo(function ExperimentRow({ item, headerColumns, onRowClick }: ExperimentRowProps) {
   const handleRowClick = useCallback(() => {
     onRowClick(item.id)
   }, [onRowClick, item.id])

@@ -11,7 +11,7 @@ import { AddOverrideForm } from './AddOverrideForm'
 import { OverridesList } from './OverridesList'
 import { PageContextCard } from './PageContextCard'
 
-export const GateOverridesSection = ({ featureGate }: { featureGate?: FeatureGate }) => {
+export function GateOverridesSection({ featureGate }: { featureGate?: FeatureGate }) {
   const { currentItemId } = useUIStore((state) => state)
   const { data: overrides, isLoading } = useGateOverrides(currentItemId)
 
@@ -36,7 +36,7 @@ export const GateOverridesSection = ({ featureGate }: { featureGate?: FeatureGat
   return <GateOverridesManager currentItemId={currentItemId} overrides={overrides} featureGate={featureGate} />
 }
 
-const GateOverridesManager = ({
+function GateOverridesManager({
   currentItemId,
   overrides,
   featureGate,
@@ -44,7 +44,7 @@ const GateOverridesManager = ({
   currentItemId: string | undefined
   overrides: GateOverride
   featureGate?: FeatureGate
-}) => {
+}) {
   const {
     view,
     detectedUser,

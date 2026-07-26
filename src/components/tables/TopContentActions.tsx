@@ -31,7 +31,7 @@ interface StatusFilterItemProps {
   onChange: (checked: boolean, uid: string) => void
 }
 
-const StatusFilterItem = memo(({ status, isChecked, onChange }: StatusFilterItemProps) => {
+const StatusFilterItem = memo(function StatusFilterItem({ status, isChecked, onChange }: StatusFilterItemProps) {
   const handleChange = useCallback(
     (checked: boolean) => {
       onChange(checked, status.uid)
@@ -53,7 +53,11 @@ interface ColumnVisibilityItemProps {
   onChange: (checked: boolean, uid: string) => void
 }
 
-const ColumnVisibilityItem = memo(({ column, isChecked, onChange }: ColumnVisibilityItemProps) => {
+const ColumnVisibilityItem = memo(function ColumnVisibilityItem({
+  column,
+  isChecked,
+  onChange,
+}: ColumnVisibilityItemProps) {
   const handleChange = useCallback(
     (checked: boolean) => {
       onChange(checked, column.uid)
@@ -69,90 +73,88 @@ const ColumnVisibilityItem = memo(({ column, isChecked, onChange }: ColumnVisibi
 })
 ColumnVisibilityItem.displayName = 'ColumnVisibilityItem'
 
-export const TopContentActions = memo(
-  ({
-    type,
-    statusOptions,
-    statusFilter,
-    setStatusFilter,
-    columns,
-    visibleColumns,
-    setVisibleColumns,
-  }: TopContentActionsProps) => {
-    const handleStatusFilterChange = useCallback(
-      (checked: boolean, statusUid: string) => {
-        const newFilter = new Set(statusFilter)
-        if (checked) {
-          newFilter.add(statusUid)
-        } else {
-          newFilter.delete(statusUid)
-        }
-        setStatusFilter(newFilter)
-      },
-      [statusFilter, setStatusFilter],
-    )
+export const TopContentActions = memo(function TopContentActions({
+  type,
+  statusOptions,
+  statusFilter,
+  setStatusFilter,
+  columns,
+  visibleColumns,
+  setVisibleColumns,
+}: TopContentActionsProps) {
+  const handleStatusFilterChange = useCallback(
+    (checked: boolean, statusUid: string) => {
+      const newFilter = new Set(statusFilter)
+      if (checked) {
+        newFilter.add(statusUid)
+      } else {
+        newFilter.delete(statusUid)
+      }
+      setStatusFilter(newFilter)
+    },
+    [statusFilter, setStatusFilter],
+  )
 
-    const handleVisibleColumnsChange = useCallback(
-      (checked: boolean, columnUid: string) => {
-        const newColumns = new Set(visibleColumns)
-        if (checked) {
-          newColumns.add(columnUid)
-        } else {
-          newColumns.delete(columnUid)
-        }
-        setVisibleColumns([...newColumns])
-      },
-      [visibleColumns, setVisibleColumns],
-    )
+  const handleVisibleColumnsChange = useCallback(
+    (checked: boolean, columnUid: string) => {
+      const newColumns = new Set(visibleColumns)
+      if (checked) {
+        newColumns.add(columnUid)
+      } else {
+        newColumns.delete(columnUid)
+      }
+      setVisibleColumns([...newColumns])
+    },
+    [visibleColumns, setVisibleColumns],
+  )
 
-    return (
-      <div className="flex gap-3">
-        {type === 'experiments' && statusOptions && (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="hidden sm:flex">
-                Status
-                <ChevronDown className="ml-2 size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              {statusOptions.map((status) => (
-                <StatusFilterItem
-                  key={status.uid}
-                  status={status}
-                  isChecked={statusFilter.has(status.uid)}
-                  onChange={handleStatusFilterChange}
-                />
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )}
+  return (
+    <div className="flex gap-3">
+      {type === 'experiments' && statusOptions && (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="hidden sm:flex">
-              Columns
+              Status
               <ChevronDown className="ml-2 size-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            {columns.map((column) => (
-              <ColumnVisibilityItem
-                key={column.uid}
-                column={column}
-                isChecked={visibleColumns.has(column.uid)}
-                onChange={handleVisibleColumnsChange}
+            {statusOptions.map((status) => (
+              <StatusFilterItem
+                key={status.uid}
+                status={status}
+                isChecked={statusFilter.has(status.uid)}
+                onChange={handleStatusFilterChange}
               />
             ))}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Button asChild size="sm" className="bg-foreground text-background hover:bg-foreground/90">
-          <a href="https://console.statsig.com/" target="_blank" rel="noopener noreferrer">
-            Open Statsig
-            <ExternalLink className="ml-2 size-4" />
-          </a>
-        </Button>
-      </div>
-    )
-  },
-)
+      )}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="hidden sm:flex">
+            Columns
+            <ChevronDown className="ml-2 size-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          {columns.map((column) => (
+            <ColumnVisibilityItem
+              key={column.uid}
+              column={column}
+              isChecked={visibleColumns.has(column.uid)}
+              onChange={handleVisibleColumnsChange}
+            />
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <Button asChild size="sm" className="bg-foreground text-background hover:bg-foreground/90">
+        <a href="https://console.statsig.com/" target="_blank" rel="noopener noreferrer">
+          Open Statsig
+          <ExternalLink className="ml-2 size-4" />
+        </a>
+      </Button>
+    </div>
+  )
+})
 TopContentActions.displayName = 'TopContentActions'

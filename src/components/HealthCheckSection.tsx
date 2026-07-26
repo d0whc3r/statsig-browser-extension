@@ -4,7 +4,7 @@ import { Progress } from '@/src/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { cn } from '@/src/lib/utils'
 
-export const HealthCheckSection = ({ healthChecks }: { healthChecks?: HealthCheck[] }) => {
+export function HealthCheckSection({ healthChecks }: { healthChecks?: HealthCheck[] }) {
   if (!healthChecks || healthChecks.length === 0) {
     return null
   }

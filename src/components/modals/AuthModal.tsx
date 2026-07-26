@@ -5,7 +5,7 @@ import { useUIStore } from '@/src/store/use-ui-store'
 
 import { AuthForm } from './AuthForm'
 
-export const AuthModal = () => {
+export function AuthModal() {
   const { isAuthModalOpen, setAuthModalOpen, setSettingsSheetOpen } = useUIStore((state) => state)
 
   const handleSuccess = useCallback(() => {

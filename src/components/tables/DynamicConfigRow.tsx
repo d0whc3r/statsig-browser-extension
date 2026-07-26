@@ -19,7 +19,12 @@ interface DynamicConfigCellProps {
   showInlineId: boolean
 }
 
-const DynamicConfigCell = memo(({ config, columnKey, onRowClick, showInlineId }: DynamicConfigCellProps) => {
+const DynamicConfigCell = memo(function DynamicConfigCell({
+  config,
+  columnKey,
+  onRowClick,
+  showInlineId,
+}: DynamicConfigCellProps) {
   switch (columnKey) {
     case 'name': {
       return <NameCell id={config.id} name={config.name} showInlineId={showInlineId} />
@@ -51,7 +56,11 @@ const DynamicConfigCell = memo(({ config, columnKey, onRowClick, showInlineId }:
 
 DynamicConfigCell.displayName = 'DynamicConfigCell'
 
-export const DynamicConfigRow = memo(({ item, headerColumns, onRowClick }: DynamicConfigRowProps) => {
+export const DynamicConfigRow = memo(function DynamicConfigRow({
+  item,
+  headerColumns,
+  onRowClick,
+}: DynamicConfigRowProps) {
   const handleRowClick = useCallback(() => {
     onRowClick(item.id)
   }, [onRowClick, item.id])

@@ -19,7 +19,12 @@ const OVERRIDE_TYPE_VALUES: { label: string; value: OverrideType }[] = [
   { label: 'FAIL', value: 'fail' },
 ]
 
-export const AddOverrideForm = memo(({ isPending, onAddOverride, onCancel, featureGate }: AddOverrideFormProps) => {
+export const AddOverrideForm = memo(function AddOverrideForm({
+  isPending,
+  onAddOverride,
+  onCancel,
+  featureGate,
+}: AddOverrideFormProps) {
   const [overrideType, setOverrideType] = useState<OverrideType>('pass')
 
   const handleAddOverride = useCallback(

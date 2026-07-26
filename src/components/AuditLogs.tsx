@@ -55,7 +55,7 @@ const useAuditLogState = () => {
   }
 }
 
-export const AuditLogs = memo(() => {
+export const AuditLogs = memo(function AuditLogs() {
   const {
     actionFilter,
     fetchNextPage,

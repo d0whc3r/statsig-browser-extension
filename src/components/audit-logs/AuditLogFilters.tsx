@@ -23,22 +23,24 @@ interface AuditLogFiltersProps {
   isFetching: boolean
 }
 
-const HeaderControls = ({ onRefresh, isFetching }: { onRefresh: () => void; isFetching: boolean }) => (
-  <div className="flex items-center justify-between">
-    <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isFetching} className="h-8 gap-2">
-      <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
-      Refresh
-    </Button>
-    <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
-      <a href="https://console.statsig.com/" target="_blank" rel="noreferrer">
-        Open Statsig
-        <ExternalLink className="h-3 w-3" />
-      </a>
-    </Button>
-  </div>
-)
+function HeaderControls({ onRefresh, isFetching }: { onRefresh: () => void; isFetching: boolean }) {
+  return (
+    <div className="flex items-center justify-between">
+      <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isFetching} className="h-8 gap-2">
+        <RefreshCw className={cn('h-4 w-4', isFetching && 'animate-spin')} />
+        Refresh
+      </Button>
+      <Button variant="outline" size="sm" className="h-8 gap-2" asChild>
+        <a href="https://console.statsig.com/" target="_blank" rel="noreferrer">
+          Open Statsig
+          <ExternalLink className="h-3 w-3" />
+        </a>
+      </Button>
+    </div>
+  )
+}
 
-const SearchControls = ({
+function SearchControls({
   filterValue,
   onFilterChange,
   actionFilter,
@@ -48,43 +50,45 @@ const SearchControls = ({
   onFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   actionFilter: string
   onActionFilterChange: (value: string) => void
-}) => (
-  <div className="flex items-center gap-2">
-    <div className="relative flex-1">
-      <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 transform text-muted-foreground" />
-      <Input
-        type="search"
-        className="h-9 w-full pl-9 text-xs"
-        placeholder="Search audit logs..."
-        value={filterValue}
-        onChange={onFilterChange}
-      />
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <div className="relative flex-1">
+        <Search className="absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 transform text-muted-foreground" />
+        <Input
+          type="search"
+          className="h-9 w-full pl-9 text-xs"
+          placeholder="Search audit logs..."
+          value={filterValue}
+          onChange={onFilterChange}
+        />
+      </div>
+      <Select value={actionFilter} onValueChange={onActionFilterChange}>
+        <SelectTrigger className="h-9 w-[140px] text-xs">
+          <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
+          <SelectValue placeholder="Filter" />
+        </SelectTrigger>
+        <SelectContent>
+          {actionFilterOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value} className="text-xs">
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
-    <Select value={actionFilter} onValueChange={onActionFilterChange}>
-      <SelectTrigger className="h-9 w-[140px] text-xs">
-        <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
-        <SelectValue placeholder="Filter" />
-      </SelectTrigger>
-      <SelectContent>
-        {actionFilterOptions.map((option) => (
-          <SelectItem key={option.value} value={option.value} className="text-xs">
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-)
+  )
+}
 
-export const AuditLogFilters = memo(
-  ({
-    filterValue,
-    onFilterChange,
-    actionFilter,
-    onActionFilterChange,
-    onRefresh,
-    isFetching,
-  }: AuditLogFiltersProps) => (
+export const AuditLogFilters = memo(function AuditLogFilters({
+  filterValue,
+  onFilterChange,
+  actionFilter,
+  onActionFilterChange,
+  onRefresh,
+  isFetching,
+}: AuditLogFiltersProps) {
+  return (
     <div className="flex flex-col gap-3 border-b p-3">
       <HeaderControls onRefresh={onRefresh} isFetching={isFetching} />
       <SearchControls
@@ -94,7 +98,7 @@ export const AuditLogFilters = memo(
         onActionFilterChange={onActionFilterChange}
       />
     </div>
-  ),
-)
+  )
+})
 
 AuditLogFilters.displayName = 'AuditLogFilters'

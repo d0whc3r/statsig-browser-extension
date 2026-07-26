@@ -13,7 +13,11 @@ interface ExperimentSheetDetailsProps {
   experiment?: Experiment
 }
 
-export const ExperimentSheetDetails = memo(({ isLoading, error, experiment }: ExperimentSheetDetailsProps) => {
+export const ExperimentSheetDetails = memo(function ExperimentSheetDetails({
+  isLoading,
+  error,
+  experiment,
+}: ExperimentSheetDetailsProps) {
   if (isLoading) {
     return (
       <div className="space-y-4">

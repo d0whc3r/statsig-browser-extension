@@ -10,13 +10,13 @@ import { Form } from '@/src/components/ui/form'
 import { StatsigKeysSettings } from './StatsigKeysSettings'
 import { StorageSettings } from './StorageSettings'
 
-const Harness = ({
+function Harness({
   defaultValues,
   children,
 }: {
   defaultValues: SettingsFormValues
   children: (control: ReturnType<typeof useForm<SettingsFormValues>>['control']) => React.ReactNode
-}) => {
+}) {
   const form = useForm<SettingsFormValues>({ defaultValues })
   return <Form {...form}>{children(form.control)}</Form>
 }

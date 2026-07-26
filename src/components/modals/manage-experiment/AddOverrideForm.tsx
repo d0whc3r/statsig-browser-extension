@@ -18,7 +18,12 @@ interface GateSegmentOverrideFormProps {
   isPending: boolean
 }
 
-const GateSegmentOverrideForm = memo(({ groups, onAddOverride, onCancel, isPending }: GateSegmentOverrideFormProps) => {
+const GateSegmentOverrideForm = memo(function GateSegmentOverrideForm({
+  groups,
+  onAddOverride,
+  onCancel,
+  isPending,
+}: GateSegmentOverrideFormProps) {
   const [overrideType, setOverrideType] = useState<'gate' | 'segment'>('gate')
   const [gateName, setGateName] = useState('')
   const [targetGroup, setTargetGroup] = useState(groups[0]?.name || '')
@@ -104,59 +109,63 @@ interface CreateOverrideFormProps {
   experiment?: Experiment
 }
 
-export const AddOverrideForm = memo(
-  ({ groups, onAddOverride, onCancel, isPending, experiment }: CreateOverrideFormProps) => {
-    const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name || '')
+export const AddOverrideForm = memo(function AddOverrideForm({
+  groups,
+  onAddOverride,
+  onCancel,
+  isPending,
+  experiment,
+}: CreateOverrideFormProps) {
+  const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name || '')
 
-    const groupValues = useMemo(() => groups.map((group) => ({ label: group.name, value: group.name })), [groups])
+  const groupValues = useMemo(() => groups.map((group) => ({ label: group.name, value: group.name })), [groups])
 
-    const handleAddUserOverride = useCallback(
-      ({ id, value: groupID, environment, idType }: AddOverrideParams<string>) => {
-        onAddOverride({
-          environment: environment ?? undefined,
-          groupID,
-          ids: [id],
-          unitType: idType ?? undefined,
-        })
-      },
-      [onAddOverride],
-    )
+  const handleAddUserOverride = useCallback(
+    ({ id, value: groupID, environment, idType }: AddOverrideParams<string>) => {
+      onAddOverride({
+        environment: environment ?? undefined,
+        groupID,
+        ids: [id],
+        unitType: idType ?? undefined,
+      })
+    },
+    [onAddOverride],
+  )
 
-    const getSubmitButtonClassName = useCallback(() => 'bg-primary', [])
-    const getSubmitButtonText = useCallback((val: string) => `Add Override to ${val}`, [])
+  const getSubmitButtonClassName = useCallback(() => 'bg-primary', [])
+  const getSubmitButtonText = useCallback((val: string) => `Add Override to ${val}`, [])
 
-    return (
-      <Tabs defaultValue="user" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="user">User Override</TabsTrigger>
-          <TabsTrigger value="gate_segment">Gate/Segment Override</TabsTrigger>
-        </TabsList>
-        <TabsContent value="user">
-          <GenericAddOverrideForm
-            key={experiment?.id}
-            isPending={isPending}
-            onAddOverride={handleAddUserOverride}
-            onCancel={onCancel}
-            valueLabel="Group"
-            values={groupValues}
-            selectedValue={selectedGroup}
-            onValueChange={setSelectedGroup}
-            defaultIdType={experiment?.idType ?? 'userID'}
-            getSubmitButtonClassName={getSubmitButtonClassName}
-            getSubmitButtonText={getSubmitButtonText}
-          />
-        </TabsContent>
-        <TabsContent value="gate_segment">
-          <GateSegmentOverrideForm
-            groups={groups}
-            onAddOverride={onAddOverride}
-            onCancel={onCancel}
-            isPending={isPending}
-          />
-        </TabsContent>
-      </Tabs>
-    )
-  },
-)
+  return (
+    <Tabs defaultValue="user" className="w-full">
+      <TabsList className="grid w-full grid-cols-2">
+        <TabsTrigger value="user">User Override</TabsTrigger>
+        <TabsTrigger value="gate_segment">Gate/Segment Override</TabsTrigger>
+      </TabsList>
+      <TabsContent value="user">
+        <GenericAddOverrideForm
+          key={experiment?.id}
+          isPending={isPending}
+          onAddOverride={handleAddUserOverride}
+          onCancel={onCancel}
+          valueLabel="Group"
+          values={groupValues}
+          selectedValue={selectedGroup}
+          onValueChange={setSelectedGroup}
+          defaultIdType={experiment?.idType ?? 'userID'}
+          getSubmitButtonClassName={getSubmitButtonClassName}
+          getSubmitButtonText={getSubmitButtonText}
+        />
+      </TabsContent>
+      <TabsContent value="gate_segment">
+        <GateSegmentOverrideForm
+          groups={groups}
+          onAddOverride={onAddOverride}
+          onCancel={onCancel}
+          isPending={isPending}
+        />
+      </TabsContent>
+    </Tabs>
+  )
+})
 
 AddOverrideForm.displayName = 'AddOverrideForm'

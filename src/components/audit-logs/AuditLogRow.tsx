@@ -20,7 +20,7 @@ interface AuditLogRowProps {
   onViewDetails: (id: string) => void
 }
 
-export const AuditLogRow = memo(({ auditLog, onViewDetails }: AuditLogRowProps) => {
+export const AuditLogRow = memo(function AuditLogRow({ auditLog, onViewDetails }: AuditLogRowProps) {
   const handleViewDetails = useCallback(
     (event: React.MouseEvent) => {
       event.stopPropagation()

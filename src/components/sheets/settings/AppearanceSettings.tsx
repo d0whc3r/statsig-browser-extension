@@ -5,7 +5,7 @@ import { Label } from '@/src/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 import { useTheme } from '@/src/hooks/use-theme'
 
-export const AppearanceSettings = () => {
+export function AppearanceSettings() {
   const { theme, setTheme } = useTheme()
 
   const handleThemeChange = useCallback(

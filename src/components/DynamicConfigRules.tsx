@@ -10,7 +10,7 @@ interface Props {
 
 const FULL_PASS_PERCENTAGE = 100
 
-export const DynamicConfigRules = memo(({ configId }: Props) => {
+export const DynamicConfigRules = memo(function DynamicConfigRules({ configId }: Props) {
   const { data: rules, isLoading, error } = useDynamicConfigRules(configId)
 
   if (isLoading) {

@@ -10,7 +10,7 @@ import { Separator } from '@/src/components/ui/separator'
 import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from '@/src/components/ui/sheet'
 import { useSettingsForm } from '@/src/hooks/use-settings-form'
 
-export const SettingsSheet = () => {
+export function SettingsSheet() {
   const { form, handleClose, handleSave, isSettingsSheetOpen } = useSettingsForm()
 
   return (
