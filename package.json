@@ -97,7 +97,7 @@
     "knip": "6.29.0",
     "lint-staged": "17.2.0",
     "oxfmt": "0.60.0",
-    "oxlint": "1.75.0",
+    "oxlint": "1.78.0",
     "oxlint-tsgolint": "7.0.2001",
     "postcss": "8.5.23",
     "postcss-load-config": "6.0.1",
