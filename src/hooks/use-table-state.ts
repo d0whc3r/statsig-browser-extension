@@ -2,27 +2,22 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { useCallback } from 'react'
 
+import { toggleFacetSelection } from '@/src/hooks/use-entity-table-logic.utils'
 import { usePersistentTableState } from '@/src/hooks/use-persistent-table-state'
 import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
 
 interface UseTableStateOptions {
   visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
   rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
-  initialStatusFilter?: Set<string>
 }
 
-export const useTableState = ({
-  visibleColumnsStorage,
-  rowsPerPageStorage,
-  initialStatusFilter,
-}: UseTableStateOptions) => {
+export const useTableState = ({ visibleColumnsStorage, rowsPerPageStorage }: UseTableStateOptions) => {
   const { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns } = usePersistentTableState({
     rowsPerPageStorage,
     visibleColumnsStorage,
   })
 
-  const { filterValue, page, setFilterValue, setPage, setStatusFilter, statusFilter } =
-    useTransientTableState(initialStatusFilter)
+  const { facetFilters, filterValue, page, setFacetFilters, setFilterValue, setPage } = useTransientTableState()
 
   const onRowsPerPageChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -51,12 +46,18 @@ export const useTableState = ({
     [setFilterValue],
   )
 
-  const handleSetStatusFilter = useCallback(
-    (keys: Set<string>) => {
-      setStatusFilter(keys)
+  const handleToggleFacet = useCallback(
+    (facetKey: string, value: string) => {
+      setFacetFilters((current) => toggleFacetSelection(current, facetKey, value))
+      setPage(1)
     },
-    [setStatusFilter],
+    [setFacetFilters, setPage],
   )
+
+  const handleClearFacets = useCallback(() => {
+    setFacetFilters({})
+    setPage(1)
+  }, [setFacetFilters, setPage])
 
   const handleSetVisibleColumns = useCallback(
     (keys: string[]) => {
@@ -66,16 +67,17 @@ export const useTableState = ({
   )
 
   return {
+    facetFilters,
     filterValue,
+    handleClearFacets,
     handleSetFilterValue,
-    handleSetStatusFilter,
     handleSetVisibleColumns,
+    handleToggleFacet,
     onRowsPerPageChange,
     onSearchChange,
     page,
     rowsPerPage,
     setPage,
-    statusFilter,
     visibleColumns,
   }
 }

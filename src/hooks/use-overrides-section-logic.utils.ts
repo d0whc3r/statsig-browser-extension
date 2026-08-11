@@ -32,7 +32,7 @@ export const getUpdatedUserIDOverrides = (
   })
 
   if (existingEntry) {
-    if (!existingEntry.ids.includes(userId)) {
+    if (userId !== undefined && !existingEntry.ids.includes(userId)) {
       existingEntry.ids.push(userId)
     }
     return filtered

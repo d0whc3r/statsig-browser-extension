@@ -186,6 +186,7 @@ export default defineConfig({
     'no-named-export': 'allow',
     'no-nested-ternary': 'off',
     'no-ternary': 'allow',
+    'one-var': 'off',
     'prefer-arrow-callback': 'off',
     'prefer-default-export': 'off',
     'sort-imports': 'off',

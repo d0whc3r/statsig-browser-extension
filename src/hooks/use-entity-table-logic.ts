@@ -2,6 +2,9 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { useCallback, useMemo } from 'react'
 
+import type { Facet } from '@/src/components/tables/table-types'
+
+import { applyFacetFilters, buildFacetGroups } from '@/src/hooks/use-entity-table-logic.utils'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -15,7 +18,7 @@ interface PaginationData<T> {
   }[]
 }
 
-interface UseEntityTableLogicProps {
+interface UseEntityTableLogicProps<T> {
   data: unknown
   isLoading: boolean
   isError?: boolean
@@ -25,14 +28,16 @@ interface UseEntityTableLogicProps {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   columns: readonly { uid: string; name: string }[]
-  statusOptions?: readonly { uid: string; name: string }[]
+  facets?: readonly Facet<T>[]
   rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
   visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
   fusedKeys: string[]
   entityType: 'experiment' | 'feature_gate' | 'dynamic_config'
 }
 
-export function useEntityTableLogic<T extends { id: string; status?: string; tags?: string[] }>({
+const NO_FACETS = [] as const
+
+export function useEntityTableLogic<T extends { id: string }>({
   data,
   isLoading,
   isError = false,
@@ -42,12 +47,12 @@ export function useEntityTableLogic<T extends { id: string; status?: string; tag
   hasNextPage,
   isFetchingNextPage,
   columns,
-  statusOptions,
+  facets = NO_FACETS,
   rowsPerPageStorage,
   visibleColumnsStorage,
   fusedKeys,
   entityType,
-}: UseEntityTableLogicProps) {
+}: UseEntityTableLogicProps<T>) {
   const entities = useMemo<T[]>(() => {
     // oxlint-disable-next-line typescript/no-unsafe-type-assertion
     const pData = data as PaginationData<T>
@@ -60,25 +65,20 @@ export function useEntityTableLogic<T extends { id: string; status?: string; tag
     return pData?.pages?.[0]?.pagination?.totalItems ?? 0
   }, [data])
 
-  const initialStatusFilter = useMemo(
-    () => (statusOptions ? new Set(statusOptions.map((option) => option.uid)) : undefined),
-    [statusOptions],
-  )
-
   const {
+    facetFilters,
     filterValue,
+    handleClearFacets,
     handleSetFilterValue,
-    handleSetStatusFilter,
     handleSetVisibleColumns,
+    handleToggleFacet,
     onRowsPerPageChange,
     onSearchChange,
     page,
     rowsPerPage,
     setPage,
-    statusFilter,
     visibleColumns,
   } = useTableState({
-    initialStatusFilter,
     rowsPerPageStorage,
     visibleColumnsStorage,
   })
@@ -90,14 +90,11 @@ export function useEntityTableLogic<T extends { id: string; status?: string; tag
     [visibleColumns, columns],
   )
 
+  const facetGroups = useMemo(() => buildFacetGroups(entities, facets), [entities, facets])
+
   const filteredItems = useFusedItems<T>({
     filterValue,
-    items: useMemo(() => {
-      if (statusOptions && statusFilter.size !== statusOptions.length) {
-        return entities.filter((entity) => entity.status && statusFilter.has(entity.status))
-      }
-      return entities
-    }, [entities, statusFilter, statusOptions]),
+    items: useMemo(() => applyFacetFilters(entities, facets, facetFilters), [entities, facets, facetFilters]),
     keys: fusedKeys,
   })
 
@@ -113,14 +110,18 @@ export function useEntityTableLogic<T extends { id: string; status?: string; tag
   return {
     entities,
     error,
+    facetFilters,
+    facetGroups,
     fetchNextPage,
     filterValue,
+    filteredCount: filteredItems.length,
+    handleClearFacets,
     handleRefetch: useCallback(() => {
       void refetch?.()
     }, [refetch]),
     handleSetFilterValue,
-    handleSetStatusFilter,
     handleSetVisibleColumns,
+    handleToggleFacet,
     hasNextPage,
     headerColumns,
     isError,
@@ -141,7 +142,6 @@ export function useEntityTableLogic<T extends { id: string; status?: string; tag
       [setCurrentItemId, setItemSheetOpen, setCurrentItemType, entityType],
     ),
     setPage,
-    statusFilter,
     totalItems: totalServerItems > 0 ? totalServerItems : entities.length,
     visibleColumns,
   }

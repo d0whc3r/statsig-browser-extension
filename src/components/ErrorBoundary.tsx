@@ -15,7 +15,7 @@ interface State {
 
 export class ErrorBoundary extends Component<Props, State> {
   // oxlint-disable-next-line react/state-in-constructor
-  public state: State = {
+  public override state: State = {
     error: undefined,
     hasError: false,
   }
@@ -24,7 +24,7 @@ export class ErrorBoundary extends Component<Props, State> {
     return { error, hasError: true }
   }
 
-  public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+  public override componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error('Uncaught error:', error, errorInfo)
   }
 
@@ -34,7 +34,7 @@ export class ErrorBoundary extends Component<Props, State> {
     globalThis.location.reload()
   }
 
-  public render() {
+  public override render() {
     if (this.state.hasError) {
       return (
         <div className="flex h-full w-full flex-col items-center justify-center p-8 text-center">

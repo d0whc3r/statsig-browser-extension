@@ -5,6 +5,7 @@ import type { FeatureGate } from '@/src/types/statsig'
 import { ActionsCell, NameCell, StatusCell, TagsCell } from '@/src/components/tables/CommonCells'
 import { Badge } from '@/src/components/ui/badge'
 import { TableCell, TableRow } from '@/src/components/ui/table'
+import { cn } from '@/src/lib/utils'
 
 interface FeatureGateCellProps {
   item: FeatureGate
@@ -61,7 +62,7 @@ export const FeatureGateRow = memo(function FeatureGateRow({ item, headerColumns
   return (
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
-        <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
+        <TableCell key={column.uid} className={cn('overflow-hidden', column.uid === 'actions' && 'text-right')}>
           <FeatureGateCell item={item} columnKey={column.uid} onRowClick={onRowClick} showInlineId />
         </TableCell>
       ))}

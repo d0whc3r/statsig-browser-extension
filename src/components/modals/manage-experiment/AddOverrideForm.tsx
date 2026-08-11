@@ -26,7 +26,7 @@ const GateSegmentOverrideForm = memo(function GateSegmentOverrideForm({
 }: GateSegmentOverrideFormProps) {
   const [overrideType, setOverrideType] = useState<'gate' | 'segment'>('gate')
   const [gateName, setGateName] = useState('')
-  const [targetGroup, setTargetGroup] = useState(groups[0]?.name || '')
+  const [targetGroup, setTargetGroup] = useState(groups[0]?.name ?? '')
 
   const handleGateNameChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     setGateName(event.target.value)
@@ -116,7 +116,7 @@ export const AddOverrideForm = memo(function AddOverrideForm({
   isPending,
   experiment,
 }: CreateOverrideFormProps) {
-  const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name || '')
+  const [selectedGroup, setSelectedGroup] = useState(groups[0]?.name ?? '')
 
   const groupValues = useMemo(() => groups.map((group) => ({ label: group.name, value: group.name })), [groups])
 

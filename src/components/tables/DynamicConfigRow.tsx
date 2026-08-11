@@ -5,6 +5,7 @@ import type { DynamicConfig } from '@/src/types/statsig'
 import { ActionsCell, NameCell, TagsCell } from '@/src/components/tables/CommonCells'
 import { Badge } from '@/src/components/ui/badge'
 import { TableCell, TableRow } from '@/src/components/ui/table'
+import { cn } from '@/src/lib/utils'
 
 interface DynamicConfigRowProps {
   item: DynamicConfig
@@ -68,7 +69,7 @@ export const DynamicConfigRow = memo(function DynamicConfigRow({
   return (
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
-        <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
+        <TableCell key={column.uid} className={cn('overflow-hidden', column.uid === 'actions' && 'text-right')}>
           <DynamicConfigCell config={item} columnKey={column.uid} onRowClick={onRowClick} showInlineId />
         </TableCell>
       ))}

@@ -43,9 +43,7 @@ const flushEffects = () => act(async () => {})
 describe('useTableState', () => {
   it('exposes initial values from storage and transient state', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() =>
-      useTableState({ initialStatusFilter: new Set(['active']), rowsPerPageStorage, visibleColumnsStorage }),
-    )
+    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
 
     await waitFor(() => {
       expect(result.current.visibleColumns).toStrictEqual(['col-a', 'col-b'])
@@ -54,15 +52,36 @@ describe('useTableState', () => {
 
     expect(result.current.filterValue).toBe('')
     expect(result.current.page).toBe(1)
-    expect(result.current.statusFilter).toStrictEqual(new Set(['active']))
+    expect(result.current.facetFilters).toStrictEqual({})
   })
 
-  it('defaults statusFilter to "all" when no initial filter is provided', async () => {
+  it('toggles facet values, resets the page, and clears them all', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
     await flushEffects()
 
-    expect(result.current.statusFilter).toStrictEqual(new Set(['all']))
+    act(() => {
+      result.current.setPage(4)
+    })
+    act(() => {
+      result.current.handleToggleFacet('tags', 'checkout')
+    })
+    act(() => {
+      result.current.handleToggleFacet('isEnabled', 'Enabled')
+    })
+
+    expect(result.current.facetFilters).toStrictEqual({ isEnabled: ['Enabled'], tags: ['checkout'] })
+    expect(result.current.page).toBe(1)
+
+    act(() => {
+      result.current.handleToggleFacet('tags', 'checkout')
+    })
+    expect(result.current.facetFilters).toStrictEqual({ isEnabled: ['Enabled'] })
+
+    act(() => {
+      result.current.handleClearFacets()
+    })
+    expect(result.current.facetFilters).toStrictEqual({})
   })
 
   it('resets the page when changing rows per page', async () => {
@@ -121,19 +140,17 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(7)
   })
 
-  it('exposes setters for filter, status filter, and visible columns', async () => {
+  it('exposes setters for filter value and visible columns', async () => {
     const { visibleColumnsStorage, rowsPerPageStorage } = setup()
     const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
     await flushEffects()
 
     act(() => {
       result.current.handleSetFilterValue('xx')
-      result.current.handleSetStatusFilter(new Set(['enabled']))
       result.current.handleSetVisibleColumns(['name'])
     })
 
     expect(result.current.filterValue).toBe('xx')
-    expect(result.current.statusFilter).toStrictEqual(new Set(['enabled']))
     expect(result.current.visibleColumns).toStrictEqual(['name'])
   })
 })

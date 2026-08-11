@@ -9,13 +9,9 @@ import {
   DropdownMenuTrigger,
 } from '@/src/components/ui/dropdown-menu'
 
-import type { Column, StatusOption } from './table-types'
+import type { Column } from './table-types'
 
 interface TopContentActionsProps {
-  type: string
-  statusOptions?: readonly StatusOption[]
-  statusFilter: Set<string>
-  setStatusFilter: (keys: Set<string>) => void
   columns: readonly Column[]
   visibleColumns: Set<string>
   setVisibleColumns: (keys: string[]) => void
@@ -24,28 +20,6 @@ interface TopContentActionsProps {
 function capitalize(string: string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-
-interface StatusFilterItemProps {
-  status: StatusOption
-  isChecked: boolean
-  onChange: (checked: boolean, uid: string) => void
-}
-
-const StatusFilterItem = memo(function StatusFilterItem({ status, isChecked, onChange }: StatusFilterItemProps) {
-  const handleChange = useCallback(
-    (checked: boolean) => {
-      onChange(checked, status.uid)
-    },
-    [onChange, status.uid],
-  )
-
-  return (
-    <DropdownMenuCheckboxItem checked={isChecked} onCheckedChange={handleChange}>
-      {capitalize(status.name)}
-    </DropdownMenuCheckboxItem>
-  )
-})
-StatusFilterItem.displayName = 'StatusFilterItem'
 
 interface ColumnVisibilityItemProps {
   column: Column
@@ -74,27 +48,10 @@ const ColumnVisibilityItem = memo(function ColumnVisibilityItem({
 ColumnVisibilityItem.displayName = 'ColumnVisibilityItem'
 
 export const TopContentActions = memo(function TopContentActions({
-  type,
-  statusOptions,
-  statusFilter,
-  setStatusFilter,
   columns,
   visibleColumns,
   setVisibleColumns,
 }: TopContentActionsProps) {
-  const handleStatusFilterChange = useCallback(
-    (checked: boolean, statusUid: string) => {
-      const newFilter = new Set(statusFilter)
-      if (checked) {
-        newFilter.add(statusUid)
-      } else {
-        newFilter.delete(statusUid)
-      }
-      setStatusFilter(newFilter)
-    },
-    [statusFilter, setStatusFilter],
-  )
-
   const handleVisibleColumnsChange = useCallback(
     (checked: boolean, columnUid: string) => {
       const newColumns = new Set(visibleColumns)
@@ -109,32 +66,12 @@ export const TopContentActions = memo(function TopContentActions({
   )
 
   return (
-    <div className="flex gap-3">
-      {type === 'experiments' && statusOptions && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              Status
-              <ChevronDown className="ml-2 size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {statusOptions.map((status) => (
-              <StatusFilterItem
-                key={status.uid}
-                status={status}
-                isChecked={statusFilter.has(status.uid)}
-                onChange={handleStatusFilterChange}
-              />
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+    <div className="flex shrink-0 gap-2">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="hidden sm:flex">
+          <Button variant="outline" size="sm">
             Columns
-            <ChevronDown className="ml-2 size-4" />
+            <ChevronDown className="ml-1 size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -151,7 +88,7 @@ export const TopContentActions = memo(function TopContentActions({
       <Button asChild size="sm" className="bg-foreground text-background hover:bg-foreground/90">
         <a href="https://console.statsig.com/" target="_blank" rel="noopener noreferrer">
           Open Statsig
-          <ExternalLink className="ml-2 size-4" />
+          <ExternalLink className="ml-1 size-4" />
         </a>
       </Button>
     </div>

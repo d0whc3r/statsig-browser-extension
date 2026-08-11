@@ -15,7 +15,7 @@ interface FeatureGateResponse {
 const fetchFeatureGateRules = async (gateId: string): Promise<FeatureGateRule[]> => {
   try {
     const result = await fetcher<FeatureGateResponse>(`/gates/${gateId}/rules`)
-    return result.data?.[0]?.rules || []
+    return result.data?.[0]?.rules ?? []
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

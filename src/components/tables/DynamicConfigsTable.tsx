@@ -1,6 +1,6 @@
 import type { DynamicConfig } from '@/src/types/statsig'
 
-import { dynamicConfigColumns } from '@/src/components/tables/data'
+import { dynamicConfigColumns, dynamicConfigFacets } from '@/src/components/tables/data'
 import { DynamicConfigRow } from '@/src/components/tables/DynamicConfigRow'
 import { EntityTable } from '@/src/components/tables/EntityTable'
 import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
@@ -17,6 +17,7 @@ export function DynamicConfigsTable() {
     data,
     entityType: 'dynamic_config',
     error,
+    facets: dynamicConfigFacets,
     fetchNextPage,
     fusedKeys: ['name', 'id', 'tags'],
     hasNextPage,

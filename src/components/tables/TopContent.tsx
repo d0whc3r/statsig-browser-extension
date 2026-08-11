@@ -1,7 +1,8 @@
 import React, { memo, useMemo } from 'react'
 
-import type { Column, StatusOption } from './table-types'
+import type { Column, FacetGroup, FacetSelection } from './table-types'
 
+import { TableFilters } from './TableFilters'
 import { TopContentActions } from './TopContentActions'
 import { TopContentPagination } from './TopContentPagination'
 import { TopContentSearch } from './TopContentSearch'
@@ -12,14 +13,16 @@ interface TopContentProps {
   onSearchChange: (value: string) => void
   rowsPerPage: number
   setFilterValue: (value: string) => void
-  setStatusFilter: (keys: Set<string>) => void
   setVisibleColumns: (keys: string[]) => void
-  statusFilter: Set<string>
   total: number
+  filteredCount: number
   type: 'experiments' | 'dynamicConfigs' | 'featureGates' | 'auditLogs'
   visibleColumns: Set<string>
   columns: readonly Column[]
-  statusOptions?: readonly StatusOption[]
+  facetGroups: FacetGroup[]
+  facetFilters: FacetSelection
+  onToggleFacet: (facetKey: string, value: string) => void
+  onClearFacets: () => void
 }
 
 export const TopContent = memo(function TopContent({
@@ -28,14 +31,16 @@ export const TopContent = memo(function TopContent({
   onSearchChange,
   rowsPerPage,
   setFilterValue,
-  setStatusFilter,
   setVisibleColumns,
-  statusFilter,
   total,
+  filteredCount,
   type,
   visibleColumns,
   columns,
-  statusOptions,
+  facetGroups,
+  facetFilters,
+  onToggleFacet,
+  onClearFacets,
 }: TopContentProps) {
   const typeLabel = useMemo(() => {
     switch (type) {
@@ -78,30 +83,31 @@ export const TopContent = memo(function TopContent({
   }, [type])
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
+    <div className="flex flex-col gap-2">
+      <div className="flex items-center gap-2">
         <TopContentSearch
           filterValue={filterValue}
           onSearchChange={onSearchChange}
           setFilterValue={setFilterValue}
           typeLabel={typeLabel}
         />
-        <TopContentActions
-          type={type}
-          statusOptions={statusOptions}
-          statusFilter={statusFilter}
-          setStatusFilter={setStatusFilter}
-          columns={columns}
-          visibleColumns={visibleColumns}
-          setVisibleColumns={setVisibleColumns}
+        <TopContentActions columns={columns} visibleColumns={visibleColumns} setVisibleColumns={setVisibleColumns} />
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <TableFilters
+          facetGroups={facetGroups}
+          facetFilters={facetFilters}
+          onToggleFacet={onToggleFacet}
+          onClearFacets={onClearFacets}
+        />
+        <TopContentPagination
+          total={total}
+          filteredCount={filteredCount}
+          typeLabelPlural={typeLabelPlural}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={onRowsPerPageChange}
         />
       </div>
-      <TopContentPagination
-        total={total}
-        typeLabelPlural={typeLabelPlural}
-        rowsPerPage={rowsPerPage}
-        onRowsPerPageChange={onRowsPerPageChange}
-      />
     </div>
   )
 })

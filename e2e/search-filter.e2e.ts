@@ -44,6 +44,23 @@ test.describe('search and filter', () => {
     await expect(page.getByRole('row', { name: /dark_theme_enabled/u })).toBeVisible()
   })
 
+  test('facet filters narrow the rows and clear restores them', async ({ context, extensionId }) => {
+    const page = await context.newPage()
+    await openOnGatesTab(page, extensionId)
+
+    await page.getByRole('button', { name: /^Enabled/u }).click()
+    await page.getByRole('menuitemcheckbox', { name: /^Disabled/u }).click()
+    await page.keyboard.press('Escape')
+
+    await expect(page.getByRole('row', { name: /dark_theme_enabled/u })).toBeVisible()
+    await expect(page.getByRole('row', { name: /new_checkout_flow/u })).toHaveCount(0)
+
+    await page.getByRole('button', { name: /Clear/u }).click()
+
+    await expect(page.getByRole('row', { name: /new_checkout_flow/u })).toBeVisible()
+    await expect(page.getByRole('row', { name: /dark_theme_enabled/u })).toBeVisible()
+  })
+
   test('search with no matches yields zero rows', async ({ context, extensionId }) => {
     const page = await context.newPage()
     await openOnGatesTab(page, extensionId)

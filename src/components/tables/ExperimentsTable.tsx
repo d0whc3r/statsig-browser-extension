@@ -1,6 +1,6 @@
 import type { Experiment } from '@/src/types/statsig'
 
-import { experimentColumns, experimentStatusOptions } from '@/src/components/tables/data'
+import { experimentColumns, experimentFacets } from '@/src/components/tables/data'
 import { EntityTable } from '@/src/components/tables/EntityTable'
 import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
@@ -15,13 +15,13 @@ export function ExperimentsTable() {
     columns: experimentColumns,
     data,
     entityType: 'experiment',
+    facets: experimentFacets,
     fetchNextPage,
     fusedKeys: ['name', 'id', 'description', 'hypothesis', 'tags'],
     hasNextPage,
     isFetchingNextPage,
     isLoading,
     rowsPerPageStorage: experimentsRowsPerPageStorage,
-    statusOptions: experimentStatusOptions,
     visibleColumnsStorage: experimentsVisibleColumnsStorage,
   })
 
@@ -29,7 +29,6 @@ export function ExperimentsTable() {
     <EntityTable
       {...tableLogic}
       columns={experimentColumns}
-      statusOptions={experimentStatusOptions}
       type="experiments"
       totalItems={tableLogic.totalItems}
       loadMoreText="Load More Experiments"

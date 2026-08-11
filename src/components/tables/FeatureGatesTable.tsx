@@ -1,6 +1,6 @@
 import type { FeatureGate } from '@/src/types/statsig'
 
-import { featureGateColumns } from '@/src/components/tables/data'
+import { featureGateColumns, featureGateFacets } from '@/src/components/tables/data'
 import { EntityTable } from '@/src/components/tables/EntityTable'
 import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
@@ -16,6 +16,7 @@ export function FeatureGatesTable() {
     data,
     entityType: 'feature_gate',
     error,
+    facets: featureGateFacets,
     fetchNextPage,
     fusedKeys: ['name', 'id', 'description', 'tags'],
     hasNextPage,

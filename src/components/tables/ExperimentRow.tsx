@@ -12,6 +12,7 @@ import {
   ExperimentTagsCell,
 } from '@/src/components/tables/ExperimentCells'
 import { TableCell, TableRow } from '@/src/components/ui/table'
+import { cn } from '@/src/lib/utils'
 
 interface ExperimentCellProps {
   item: Experiment
@@ -70,7 +71,7 @@ export const ExperimentRow = memo(function ExperimentRow({ item, headerColumns, 
   return (
     <TableRow className="cursor-pointer hover:bg-muted/50" onClick={handleRowClick}>
       {headerColumns.map((column) => (
-        <TableCell key={column.uid} className={column.uid === 'actions' ? 'text-right' : ''}>
+        <TableCell key={column.uid} className={cn('overflow-hidden', column.uid === 'actions' && 'text-right')}>
           <ExperimentCell item={item} columnKey={column.uid} onRowClick={onRowClick} showInlineId />
         </TableCell>
       ))}

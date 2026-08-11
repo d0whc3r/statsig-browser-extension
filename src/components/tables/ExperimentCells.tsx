@@ -3,14 +3,7 @@ import { memo } from 'react'
 import type { Experiment } from '@/src/types/statsig'
 
 import { ActionsCell, NameCell, StatusCell, TagsCell } from '@/src/components/tables/CommonCells'
-
-const statusMap: Record<string, string> = {
-  abandoned: 'Abandoned',
-  active: 'In Progress',
-  archived: 'Archived',
-  decision_made: 'Decision Made',
-  setup: 'Setup',
-}
+import { experimentStatusLabels } from '@/src/components/tables/data'
 
 const statusColorMap: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
   abandoned: 'destructive',
@@ -20,7 +13,7 @@ const statusColorMap: Record<string, 'default' | 'secondary' | 'destructive' | '
 }
 
 const getBadgeVariant = (status: string): 'default' | 'secondary' | 'destructive' | 'outline' =>
-  statusColorMap[status] || 'outline'
+  statusColorMap[status] ?? 'outline'
 
 interface BaseCellProps {
   item: Experiment
@@ -43,7 +36,7 @@ export const ExperimentStatusCell = memo(function ExperimentStatusCell({ item }:
     <StatusCell
       status={item.status}
       variant={getBadgeVariant(item.status)}
-      label={statusMap[item.status] || item.status}
+      label={experimentStatusLabels[item.status] ?? item.status}
     />
   )
 })

@@ -15,7 +15,7 @@ interface DynamicConfigRulesResponse {
 const fetchDynamicConfigRules = async (configId: string): Promise<DynamicConfigRule[]> => {
   try {
     const result = await fetcher<DynamicConfigRulesResponse>(`/dynamic_configs/${configId}/rules`)
-    return result.data?.[0]?.rules || []
+    return result.data?.[0]?.rules ?? []
   } catch (error) {
     throw new Error(handleApiError(error), { cause: error })
   }

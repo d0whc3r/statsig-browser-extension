@@ -199,9 +199,9 @@ const handleWindowMessage = (event: MessageEvent) => {
 export default defineContentScript({
   main() {
     globalThis.window.addEventListener('message', handleWindowMessage)
-    browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-      handleRuntimeMessage(message, _sender, sendResponse)
-    })
+    browser.runtime.onMessage.addListener((message, _sender, sendResponse) =>
+      handleRuntimeMessage(message, _sender, sendResponse),
+    )
   },
   matches: ['<all_urls>'],
   runAt: 'document_start',

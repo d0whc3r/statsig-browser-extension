@@ -20,7 +20,9 @@ interface NameCellProps {
 export const NameCell = memo(function NameCell({ id, name, showInlineId }: NameCellProps) {
   return (
     <div className="min-w-0">
-      <div className="cursor-pointer truncate font-medium hover:underline">{name}</div>
+      <div className="cursor-pointer truncate font-medium hover:underline" title={name}>
+        {name}
+      </div>
       {showInlineId && (
         <CopyableText
           value={id}
@@ -38,18 +40,29 @@ interface TagsCellProps {
   tags?: string[]
 }
 
+// Rows stay one line tall: extra tags collapse into a `+n` badge instead of wrapping.
+const MAX_VISIBLE_TAGS = 1
+
 export const TagsCell = memo(function TagsCell({ tags }: TagsCellProps) {
   if (!tags || tags.length === 0) {
-    return null
+    return <span className="text-xs text-muted-foreground">—</span>
   }
 
+  const visibleTags = tags.slice(0, MAX_VISIBLE_TAGS)
+  const hiddenTags = tags.slice(MAX_VISIBLE_TAGS)
+
   return (
-    <div className="flex flex-wrap gap-1">
-      {tags.map((tag) => (
-        <Badge key={tag} variant="secondary" className="text-xs capitalize">
-          {tag}
+    <div className="flex items-center gap-1 overflow-hidden">
+      {visibleTags.map((tag) => (
+        <Badge key={tag} variant="secondary" className="min-w-0 shrink text-xs capitalize" title={tag}>
+          <span className="truncate">{tag}</span>
         </Badge>
       ))}
+      {hiddenTags.length > 0 && (
+        <Badge variant="outline" className="shrink-0 text-xs" title={hiddenTags.join(', ')}>
+          +{hiddenTags.length}
+        </Badge>
+      )}
     </div>
   )
 })
