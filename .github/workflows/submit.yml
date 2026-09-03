@@ -1,23 +1,23 @@
-name: "Submit to Web Store"
+name: 'Submit to Web Store'
 on:
   push:
     tags:
-      - "v*"
+      - 'v*'
   workflow_dispatch:
     inputs:
       publish_chrome:
-        description: "Publish to Chrome Web Store"
+        description: 'Publish to Chrome Web Store'
         required: true
         type: boolean
         default: true
       publish_firefox:
-        description: "Publish to Firefox Add-ons"
+        description: 'Publish to Firefox Add-ons'
         required: true
         type: boolean
         default: true
 
 env:
-  NODE_OPTIONS: "--max-old-space-size=4096 --trace-warnings"
+  NODE_OPTIONS: '--max-old-space-size=4096 --trace-warnings'
 
 jobs:
   build:
@@ -26,13 +26,13 @@ jobs:
       - uses: actions/checkout@v7
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Use Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -81,6 +81,6 @@ jobs:
           echo "$EOF" >> $GITHUB_OUTPUT
 
       - name: Browser Platform Publish
-        uses: PlasmoHQ/bpp@v3
+        uses: PlasmoHQ/bpp@c15984c0a74f452851c605cab46f34d9fd6cb158 # v3.8.0
         with:
           keys: ${{ steps.filter_keys.outputs.filtered_keys }}

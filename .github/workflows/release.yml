@@ -22,13 +22,13 @@ jobs:
           persist-credentials: false # Required for semantic-release/git
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
-          node-version-file: ".nvmrc"
-          cache: "pnpm"
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -40,7 +40,7 @@ jobs:
         run: pnpm vitest run --reporter=dot --silent --coverage.reporter=lcovonly
 
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
@@ -66,4 +66,4 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: pnpm exec semantic-release
