@@ -1,3 +1,9 @@
+## [1.5.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.0...v1.5.1) (2026-09-03)
+
+### Bug Fixes
+
+- sonar issues ([41dc0de](https://github.com/d0whc3r/statsig-browser-extension/commit/41dc0ded8201606b13ef32e66f20dd9f98ba4409))
+
 # [1.5.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.5...v1.5.0) (2026-09-03)
 
 ### Bug Fixes
