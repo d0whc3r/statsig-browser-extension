@@ -41,6 +41,7 @@ export const toColumnVisibility = (
   return Object.fromEntries(columns.map((column) => [column.uid, visible.has(column.uid)]))
 }
 
+/** @internal Inverse of toColumnVisibility; used by unit tests. */
 export const fromColumnVisibility = (
   columns: readonly { uid: string }[],
   visibility: ColumnVisibilityState,

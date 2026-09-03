@@ -43,6 +43,8 @@ export const getUpdatedUserIDOverrides = (
 
 /**
  * Pure logic for deleting an override.
+ *
+ * @internal Used by unit tests. Production delete talks to the API directly.
  */
 export const getDeletedOverrides = (
   existingUserIDOverrides: UserIDOverride[],

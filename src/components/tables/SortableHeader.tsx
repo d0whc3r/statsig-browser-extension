@@ -12,7 +12,7 @@ interface SortableHeaderProps {
   onSort?: (event: unknown) => void
 }
 
-export const getAriaSort = (sortDirection: SortableHeaderProps['sortDirection']) => {
+const getAriaSort = (sortDirection: SortableHeaderProps['sortDirection']) => {
   if (sortDirection === 'asc') {
     return 'ascending'
   }
@@ -27,7 +27,7 @@ const sortIcons = {
   desc: ArrowDown,
 } as const
 
-export function SortableHeader({ label, onSort, sortDirection }: Readonly<SortableHeaderProps>) {
+function SortableHeader({ label, onSort, sortDirection }: Readonly<SortableHeaderProps>) {
   const Icon = sortDirection === false ? ArrowUpDown : sortIcons[sortDirection]
 
   return (

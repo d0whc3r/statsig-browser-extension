@@ -4,8 +4,20 @@
   // WXT, Vitest, Playwright, PostCSS, Tailwind, semantic-release, husky,
   // lint-staged and oxlint plugins auto-activate from their config files.
   // Only override what they can't infer.
+  // Do not override wxt.entry: the plugin already uses entrypoints/**/* as
+  // production entries. Overriding without `!` drops them from --production.
 
-  "project": ["src/**/*.{ts,tsx}", "entrypoints/**/*.{ts,tsx}", "types/**/*.{ts,tsx,d.ts}", "e2e/**/*.ts"],
+  // The `!` suffix marks production files for `knip --production`.
+  // Include .css so the Tailwind compiler follows @import in globals.css.
+  // Overriding `project` drops compiler extensions unless they are listed.
+  "project": [
+    "src/**/*.{ts,tsx,css}!",
+    "!src/tests/**!",
+    "!src/**/*.{test,spec}.{ts,tsx}!",
+    "entrypoints/**/*.{ts,tsx}!",
+    "types/**/*.{ts,tsx,d.ts}",
+    "e2e/**/*.ts",
+  ],
 
   // Ambient type declarations consumed by tsc via tsconfig "include" —
   // not statically importable, so anchor them as entries.
@@ -14,12 +26,6 @@
   "ignore": [
     // shadcn/ui vendored primitives — re-export many symbols intentionally
     "src/components/ui/**",
-  ],
-
-  "ignoreDependencies": [
-    // CSS-only imports (knip doesn't parse CSS @import without a compiler)
-    "tw-animate-css",
-    "tailwindcss",
   ],
 
   // Vitest plugin already picks up vitest.config.ts; declare the setup file
@@ -39,18 +45,5 @@
   "playwright": {
     "config": ["playwright.config.ts"],
     "entry": ["e2e/**/*.e2e.ts", "e2e/fixtures.ts", "e2e/mocks.ts", "e2e/mock-data.ts"],
-  },
-
-  // WXT plugin discovers entrypoints; pin the explicit list to keep the
-  // detector script (injected via chrome.scripting) from being flagged.
-  "wxt": {
-    "config": ["wxt.config.ts"],
-    "entry": [
-      "entrypoints/background.ts",
-      "entrypoints/content.ts",
-      "entrypoints/statsig-detector.ts",
-      "entrypoints/popup/index.html",
-      "entrypoints/popup/main.tsx",
-    ],
   },
 }

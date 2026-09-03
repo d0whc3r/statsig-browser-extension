@@ -1,8 +1,9 @@
-import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
 import type { HealthCheck } from '@/src/types/statsig'
+
+import { TooltipProvider } from '@/src/components/ui/tooltip'
 
 import { HealthCheckSection } from './HealthCheckSection'
 

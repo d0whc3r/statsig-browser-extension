@@ -1,6 +1,7 @@
 import wretch from 'wretch'
 import { browser } from 'wxt/browser'
 
+/** @internal Referenced by unit tests; used by the wretch client below. */
 export const API_BASE_URL = 'https://statsigapi.net/console/v1'
 
 const getRequestUrl = (url: RequestInfo | URL): string => {

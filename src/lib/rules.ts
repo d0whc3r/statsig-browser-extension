@@ -17,6 +17,7 @@ const CONDITION_LABELS: Record<string, string> = {
   user_id: 'User ID',
 }
 
+/** @internal Tested directly; used by formatConditionDetails. */
 export const getConditionLabel = (type: string) => {
   const label = CONDITION_LABELS[type]
   if (label) {
