@@ -86,7 +86,7 @@
     "@types/chrome": "0.2.8",
     "@types/node": "^24.12.2",
     "@types/react": "19.2.18",
-    "@types/react-dom": "19.2.6",
+    "@types/react-dom": "19.2.7",
     "@types/webextension-polyfill": "0.12.6",
     "@vitejs/plugin-react": "6.1.1",
     "@vitest/coverage-v8": "4.1.11",
