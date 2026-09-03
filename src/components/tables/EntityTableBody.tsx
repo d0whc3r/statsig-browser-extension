@@ -37,7 +37,7 @@ export function EntityTableBody<T extends { id: string }>({
   error,
   onRetry,
   errorTitle,
-}: EntityTableBodyProps<T>) {
+}: Readonly<EntityTableBodyProps<T>>) {
   if (isLoading) {
     return <TableLoadingState columnCount={headerColumns.length} />
   }

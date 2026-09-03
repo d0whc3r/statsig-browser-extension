@@ -36,16 +36,16 @@ const ExperimentCell = memo(function ExperimentCell({
       return <ExperimentNameCell item={item} showInlineId={showInlineId} />
     }
     case 'status': {
-      return <ExperimentStatusCell item={item} onRowClick={onRowClick} />
+      return <ExperimentStatusCell item={item} />
     }
     case 'allocation': {
-      return <ExperimentAllocationCell item={item} onRowClick={onRowClick} />
+      return <ExperimentAllocationCell item={item} />
     }
     case 'hypothesis': {
       return <ExperimentDefaultCell value={getExperimentDefaultValue(item, columnKey)} />
     }
     case 'tags': {
-      return <ExperimentTagsCell item={item} onRowClick={onRowClick} />
+      return <ExperimentTagsCell item={item} />
     }
     case 'actions': {
       return <ExperimentActionsCell item={item} onRowClick={onRowClick} />

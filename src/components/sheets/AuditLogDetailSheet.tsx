@@ -19,11 +19,11 @@ function AuditLogHeader({
   auditLog,
   isLoading,
   currentAuditLogId,
-}: {
+}: Readonly<{
   auditLog?: AuditLog | null
   isLoading: boolean
   currentAuditLogId?: string
-}) {
+}>) {
   return (
     <SheetHeader className="shrink-0 border-b px-6 py-4 pr-12">
       <div className="flex items-start justify-between gap-4">
@@ -78,7 +78,7 @@ function AuditLogHeader({
   )
 }
 
-function AuditLogContent({ auditLog, isLoading }: { auditLog?: AuditLog | null; isLoading: boolean }) {
+function AuditLogContent({ auditLog, isLoading }: Readonly<{ auditLog?: AuditLog | null; isLoading: boolean }>) {
   if (isLoading && !auditLog) {
     return (
       <ScrollArea className="flex-1">

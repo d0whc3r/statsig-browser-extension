@@ -17,6 +17,9 @@ const getBadgeVariant = (status: string): 'default' | 'secondary' | 'destructive
 
 interface BaseCellProps {
   item: Experiment
+}
+
+interface ExperimentActionsCellProps extends BaseCellProps {
   onRowClick: (id: string) => void
 }
 
@@ -55,7 +58,10 @@ export const ExperimentTagsCell = memo(function ExperimentTagsCell({ item }: Bas
 
 ExperimentTagsCell.displayName = 'ExperimentTagsCell'
 
-export const ExperimentActionsCell = memo(function ExperimentActionsCell({ item, onRowClick }: BaseCellProps) {
+export const ExperimentActionsCell = memo(function ExperimentActionsCell({
+  item,
+  onRowClick,
+}: Readonly<ExperimentActionsCellProps>) {
   return (
     <ActionsCell
       id={item.id}

@@ -19,7 +19,7 @@ interface AuditLogListProps {
   isLoading: boolean
 }
 
-function EmptyState({ filterValue, actionFilter }: { filterValue: string; actionFilter: string }) {
+function EmptyState({ filterValue, actionFilter }: Readonly<{ filterValue: string; actionFilter: string }>) {
   const isFiltered = filterValue || actionFilter !== 'all'
 
   return <GeneralEmptyState variant={isFiltered ? 'search' : 'audit_log'} />
@@ -29,11 +29,11 @@ function Footer({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
-}: {
+}: Readonly<{
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
-}) {
+}>) {
   const loadMoreRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {

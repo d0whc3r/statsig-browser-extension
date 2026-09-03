@@ -23,7 +23,7 @@ interface AuditLogFiltersProps {
   isFetching: boolean
 }
 
-function HeaderControls({ onRefresh, isFetching }: { onRefresh: () => void; isFetching: boolean }) {
+function HeaderControls({ onRefresh, isFetching }: Readonly<{ onRefresh: () => void; isFetching: boolean }>) {
   return (
     <div className="flex items-center justify-between">
       <Button variant="ghost" size="sm" onClick={onRefresh} disabled={isFetching} className="h-8 gap-2">
@@ -45,12 +45,12 @@ function SearchControls({
   onFilterChange,
   actionFilter,
   onActionFilterChange,
-}: {
+}: Readonly<{
   filterValue: string
   onFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   actionFilter: string
   onActionFilterChange: (value: string) => void
-}) {
+}>) {
   return (
     <div className="flex items-center gap-2">
       <div className="relative flex-1">

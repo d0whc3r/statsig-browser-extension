@@ -10,7 +10,7 @@ interface CommonSheetProps {
   children: ReactNode
 }
 
-export function CommonSheet({ type, children }: CommonSheetProps) {
+export function CommonSheet({ type, children }: Readonly<CommonSheetProps>) {
   const { isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === type
@@ -35,7 +35,12 @@ interface SheetTabsProps {
 
 const EMPTY_LABELS = {}
 
-export function SheetTabs({ detailsContent, rulesContent, overridesContent, labels = EMPTY_LABELS }: SheetTabsProps) {
+export function SheetTabs({
+  detailsContent,
+  rulesContent,
+  overridesContent,
+  labels = EMPTY_LABELS,
+}: Readonly<SheetTabsProps>) {
   const { details = 'Details', rules = 'Rules', overrides = 'Overrides' } = labels
   const gridCols = overridesContent ? 'grid-cols-3' : 'grid-cols-2'
 

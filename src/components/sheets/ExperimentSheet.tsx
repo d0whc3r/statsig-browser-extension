@@ -1,11 +1,9 @@
-import { useCallback, useMemo } from 'react'
+import { useMemo } from 'react'
 
 import { ExperimentGroups } from '@/src/components/ExperimentGroups'
 import { OverridesSection } from '@/src/components/modals/manage-experiment/OverridesSection'
 import { useExperiment } from '@/src/hooks/use-experiment'
 import { useOverrides } from '@/src/hooks/use-overrides'
-import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
-import { apiKeyTypeStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { CommonSheet, SheetTabs } from './CommonSheet'
@@ -13,9 +11,7 @@ import { ExperimentSheetDetails } from './ExperimentSheetDetails'
 import { ExperimentSheetHeader } from './ExperimentSheetHeader'
 
 const useExperimentSheetState = () => {
-  const { currentItemId, isItemSheetOpen, setItemSheetOpen, currentItemType } = useUIStore((state) => state)
-
-  const [typeApiKey] = useWxtStorage<'write-key' | 'read-key'>(apiKeyTypeStorage)
+  const { currentItemId, isItemSheetOpen, currentItemType } = useUIStore((state) => state)
 
   const isOpen = isItemSheetOpen && currentItemType === 'experiment'
 
@@ -24,31 +20,17 @@ const useExperimentSheetState = () => {
     isLoading: isLoadingExperiment,
     error: experimentError,
   } = useExperiment(isOpen ? currentItemId : undefined)
-  const {
-    data: overridesData,
-    isLoading: isLoadingOverrides,
-    error: overridesError,
-  } = useOverrides(isOpen ? currentItemId : undefined)
-
-  const handleClose = useCallback(() => {
-    setItemSheetOpen(false)
-  }, [setItemSheetOpen])
+  const { isLoading: isLoadingOverrides, error: overridesError } = useOverrides(isOpen ? currentItemId : undefined)
 
   return {
-    currentItemId,
     error: experimentError ?? overridesError,
     experiment,
-    handleClose,
     isLoading: isLoadingExperiment || isLoadingOverrides,
-    overridesData,
-    typeApiKey,
   }
 }
 
-const noOp = () => {}
-
 export function ExperimentSheet() {
-  const { currentItemId, error, experiment, handleClose, isLoading, typeApiKey } = useExperimentSheetState()
+  const { error, experiment, isLoading } = useExperimentSheetState()
 
   const detailsContent = useMemo(
     () => <ExperimentSheetDetails isLoading={isLoading} error={error} experiment={experiment} />,
@@ -61,14 +43,7 @@ export function ExperimentSheet() {
 
   return (
     <CommonSheet type="experiment">
-      <ExperimentSheetHeader
-        isLoading={isLoading}
-        experiment={experiment}
-        currentItemId={currentItemId}
-        typeApiKey={typeApiKey}
-        onClose={handleClose}
-        onManage={noOp} // No-op as manage button is removed
-      />
+      <ExperimentSheetHeader isLoading={isLoading} experiment={experiment} />
       <SheetTabs
         detailsContent={detailsContent}
         rulesContent={groupsContent}

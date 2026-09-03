@@ -12,16 +12,12 @@ import { TimeAgo } from '@/src/components/ui/time-ago'
 interface ExperimentSheetHeaderProps {
   isLoading: boolean
   experiment?: Experiment
-  currentItemId?: string
-  typeApiKey: string
-  onClose: () => void
-  onManage: () => void
 }
 
 export const ExperimentSheetHeader = memo(function ExperimentSheetHeader({
   isLoading,
   experiment,
-}: ExperimentSheetHeaderProps) {
+}: Readonly<ExperimentSheetHeaderProps>) {
   return (
     <SheetHeader className="shrink-0 border-b px-6 py-4 pr-12">
       <div className="flex items-start justify-between gap-4">

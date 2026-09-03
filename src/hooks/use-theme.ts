@@ -47,7 +47,8 @@ export function useTheme() {
 
   // To make it easy to get the actual applied theme (light/dark)
   const isSystemDark = globalThis.matchMedia('(prefers-color-scheme: dark)').matches
-  const resolvedTheme = theme === 'system' ? (isSystemDark ? 'dark' : 'light') : theme
+  const systemTheme = isSystemDark ? 'dark' : 'light'
+  const resolvedTheme = theme === 'system' ? systemTheme : theme
 
   return { isLoading, resolvedTheme, setTheme: setResolvedTheme, theme }
 }

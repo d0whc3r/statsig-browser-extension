@@ -14,7 +14,7 @@ interface FeatureGateCellProps {
   showInlineId: boolean
 }
 
-function FeatureGateCellContent({ item, columnKey, onRowClick, showInlineId }: FeatureGateCellProps) {
+function FeatureGateCellContent({ item, columnKey, onRowClick, showInlineId }: Readonly<FeatureGateCellProps>) {
   switch (columnKey) {
     case 'name': {
       return <NameCell id={item.id} name={item.name} showInlineId={showInlineId} />

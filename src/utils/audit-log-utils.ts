@@ -1,9 +1,11 @@
-export const getActionTypeColor = (actionType: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
+type BadgeVariant = 'default' | 'secondary' | 'destructive' | 'outline'
+
+export const getActionTypeColor = (actionType: string): BadgeVariant => {
   const action = actionType.toLowerCase()
 
   const mappings: {
     keywords: string[]
-    color: 'default' | 'secondary' | 'destructive' | 'outline'
+    color: BadgeVariant
   }[] = [
     { color: 'default', keywords: ['start', 'create', 'edit', 'update', 'condition', 'add'] },
     { color: 'destructive', keywords: ['delete', 'archive', 'toggle'] },
@@ -21,9 +23,9 @@ export const getActionTypeColor = (actionType: string): 'default' | 'secondary' 
 
 export const getActionTypeLabel = (actionType: string) => actionType.charAt(0).toUpperCase() + actionType.slice(1)
 
-export const getTagColor = (tag: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
+export const getTagColor = (tag: string): BadgeVariant => {
   const tagLower = tag.toLowerCase()
-  const mappings: { keywords: string[]; color: 'secondary' | 'destructive' | 'default' }[] = [
+  const mappings: { keywords: string[]; color: Exclude<BadgeVariant, 'outline'> }[] = [
     { color: 'secondary', keywords: ['nexus', 'platform', 'test', 'dev', 'staging'] },
     { color: 'destructive', keywords: ['prod', 'production'] },
     {

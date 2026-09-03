@@ -3,15 +3,15 @@ import type { ReactNode } from 'react'
 import { Badge } from '@/src/components/ui/badge'
 import { cn } from '@/src/lib/utils'
 
-export function EntityDetailsContainer({ children }: { children: ReactNode }) {
+export function EntityDetailsContainer({ children }: Readonly<{ children: ReactNode }>) {
   return <div className="space-y-6">{children}</div>
 }
 
-export function EntityDetailsList({ children, className }: { children: ReactNode; className?: string }) {
+export function EntityDetailsList({ children, className }: Readonly<{ children: ReactNode; className?: string }>) {
   return <dl className={cn('divide-y divide-border rounded-md border bg-card text-sm', className)}>{children}</dl>
 }
 
-export function EntityDetailsField({ label, children }: { label?: string; children: ReactNode }) {
+export function EntityDetailsField({ label, children }: Readonly<{ label?: string; children: ReactNode }>) {
   return (
     <div className="flex items-center justify-between px-4 py-3">
       {label && <dt className="font-medium text-muted-foreground">{label}</dt>}
@@ -22,7 +22,7 @@ export function EntityDetailsField({ label, children }: { label?: string; childr
   )
 }
 
-export function EntityDetailsSection({ title, children }: { title: string; children: ReactNode }) {
+export function EntityDetailsSection({ title, children }: Readonly<{ title: string; children: ReactNode }>) {
   return (
     <div className="space-y-2">
       <h3 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">{title}</h3>
@@ -31,7 +31,7 @@ export function EntityDetailsSection({ title, children }: { title: string; child
   )
 }
 
-export function EntityDetailsTags({ tags }: { tags?: string[] }) {
+export function EntityDetailsTags({ tags }: Readonly<{ tags?: string[] }>) {
   if (!tags?.length) {
     return null
   }

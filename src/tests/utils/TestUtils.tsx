@@ -19,10 +19,10 @@ const createTestQueryClient = () =>
 function TestProviders({
   children,
   queryClient: externalQueryClient,
-}: {
+}: Readonly<{
   children: ReactNode
   queryClient?: QueryClient
-}) {
+}>) {
   // oxlint-disable-next-line react/hook-use-state
   const [queryClient] = React.useState(() => externalQueryClient ?? createTestQueryClient())
 

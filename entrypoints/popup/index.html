@@ -6,22 +6,20 @@
     <title>Statsig Browser Extension</title>
     <meta name="manifest.type" content="browser_action" />
     <script>
-      ;(async function () {
-        try {
-          const item = await chrome.storage.local.get('local:theme')
+      try {
+        chrome.storage.local.get('local:theme', (item) => {
           const theme = item['local:theme'] || 'system'
           const root = document.documentElement
           if (theme === 'system') {
-            if (globalThis.matchMedia('(prefers-color-scheme: dark)').matches) {
-              root.classList.add('dark')
-            } else {
-              root.classList.add('light')
-            }
+            const systemTheme = globalThis.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+            root.classList.add(systemTheme)
           } else {
             root.classList.add(theme)
           }
-        } catch {}
-      })()
+        })
+      } catch {
+        // Theme is applied later by React if storage is unavailable.
+      }
     </script>
   </head>
   <body>

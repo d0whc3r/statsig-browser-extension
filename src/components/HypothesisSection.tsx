@@ -1,4 +1,4 @@
-export function HypothesisSection({ hypothesis }: { hypothesis?: string }) {
+export function HypothesisSection({ hypothesis }: Readonly<{ hypothesis?: string }>) {
   return (
     <div className="space-y-2 pt-4">
       <h3 className="text-lg font-semibold">Hypothesis</h3>

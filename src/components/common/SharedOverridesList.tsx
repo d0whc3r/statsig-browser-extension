@@ -10,7 +10,7 @@ interface SharedOverridesListProps {
   children: ReactNode
 }
 
-export function SharedOverridesList({ onAddManual, canEdit, children }: SharedOverridesListProps) {
+export function SharedOverridesList({ onAddManual, canEdit, children }: Readonly<SharedOverridesListProps>) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">

@@ -20,7 +20,7 @@ interface ConfigHeaderProps {
   config?: DynamicConfig
 }
 
-function ConfigHeader({ isLoading, config }: ConfigHeaderProps) {
+function ConfigHeader({ isLoading, config }: Readonly<ConfigHeaderProps>) {
   return (
     <div className="flex items-start justify-between gap-4">
       <div className="min-w-0 flex-1 space-y-1.5">
@@ -77,7 +77,7 @@ interface ConfigDetailsProps {
   config?: DynamicConfig
 }
 
-function ConfigMetadata({ config }: { config: DynamicConfig }) {
+function ConfigMetadata({ config }: Readonly<{ config: DynamicConfig }>) {
   const hasTags = config.tags && config.tags.length > 0
   const hasDescription = Boolean(config.description)
 
@@ -102,7 +102,7 @@ function ConfigMetadata({ config }: { config: DynamicConfig }) {
   )
 }
 
-function ConfigDefaultValue({ defaultValue }: { defaultValue: unknown }) {
+function ConfigDefaultValue({ defaultValue }: Readonly<{ defaultValue: unknown }>) {
   return (
     <div className="space-y-2">
       <h3 className="text-lg font-semibold">Default Value</h3>
@@ -115,7 +115,7 @@ function ConfigDefaultValue({ defaultValue }: { defaultValue: unknown }) {
   )
 }
 
-function ConfigDetails({ isLoading, error, config }: ConfigDetailsProps) {
+function ConfigDetails({ isLoading, error, config }: Readonly<ConfigDetailsProps>) {
   if (isLoading) {
     return (
       <div className="space-y-4">

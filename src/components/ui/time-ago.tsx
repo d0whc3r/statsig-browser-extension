@@ -25,7 +25,7 @@ const getTimeAgoString = (date: number | string | Date): string => {
   return 'just now'
 }
 
-export function TimeAgo({ date }: { date: number | string | Date }) {
+export function TimeAgo({ date }: Readonly<{ date: number | string | Date }>) {
   const timeString = useMemo(() => getTimeAgoString(date), [date])
 
   return <span>{timeString}</span>

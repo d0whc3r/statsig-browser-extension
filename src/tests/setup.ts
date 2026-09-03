@@ -40,9 +40,15 @@ if (typeof globalThis.chrome === 'object' && globalThis.chrome !== null) {
 
 // Mock ResizeObserver
 globalThis.ResizeObserver = class ResizeObserver {
-  observe() {}
-  unobserve() {}
-  disconnect() {}
+  observe() {
+    // No-op: jsdom does not implement ResizeObserver
+  }
+  unobserve() {
+    // No-op: jsdom does not implement ResizeObserver
+  }
+  disconnect() {
+    // No-op: jsdom does not implement ResizeObserver
+  }
 }
 
 const createMatchMediaResult = (query: string) =>

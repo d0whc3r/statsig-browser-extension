@@ -27,7 +27,7 @@ const sortIcons = {
   desc: ArrowDown,
 } as const
 
-export function SortableHeader({ label, onSort, sortDirection }: SortableHeaderProps) {
+export function SortableHeader({ label, onSort, sortDirection }: Readonly<SortableHeaderProps>) {
   const Icon = sortDirection === false ? ArrowUpDown : sortIcons[sortDirection]
 
   return (

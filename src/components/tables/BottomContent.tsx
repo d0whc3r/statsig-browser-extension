@@ -42,7 +42,7 @@ const PageButton = memo(function PageButton({
 
 PageButton.displayName = 'PageButton'
 
-function PageNumbers({ page, totalPages, onPageClick }: PageNumbersProps) {
+function PageNumbers({ page, totalPages, onPageClick }: Readonly<PageNumbersProps>) {
   const pages = []
   const maxVisiblePages = 5
   let startPage = Math.max(1, page - Math.floor(maxVisiblePages / 2))
@@ -59,7 +59,7 @@ function PageNumbers({ page, totalPages, onPageClick }: PageNumbersProps) {
   return <div className="flex gap-1">{pages}</div>
 }
 
-export function BottomContent({ page, setPage, total }: BottomContentProps) {
+export function BottomContent({ page, setPage, total }: Readonly<BottomContentProps>) {
   const totalPages = total || 1
 
   const handlePrevious = useCallback(() => {

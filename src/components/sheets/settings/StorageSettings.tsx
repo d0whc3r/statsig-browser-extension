@@ -13,7 +13,7 @@ interface StorageSettingsProps {
   control: Control<SettingsFormValues>
 }
 
-export function StorageSettings({ control }: StorageSettingsProps) {
+export function StorageSettings({ control }: Readonly<StorageSettingsProps>) {
   const renderStorageTypeField = useCallback(
     ({ field }: { field: ControllerRenderProps<SettingsFormValues, 'storageType'> }) => {
       const handleStorageChange = field.onChange

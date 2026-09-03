@@ -32,7 +32,7 @@ export function SharedOverridesTable<T extends RowData>({
   colSpan,
   emptyEntityName,
   getRowId,
-}: SharedOverridesTableProps<T>) {
+}: Readonly<SharedOverridesTableProps<T>>) {
   const [showOthers, setShowOthers] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<T | null>(null)
   const { headerColumns, items: sortedItems } = useSortedTable({ columns, data: items, getRowId })

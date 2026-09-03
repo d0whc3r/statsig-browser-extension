@@ -42,7 +42,7 @@ export function GenericAddOverrideForm<TValue extends string>({
   defaultIdType = 'userID',
   getSubmitButtonClassName,
   getSubmitButtonText,
-}: GenericAddOverrideFormProps<TValue>) {
+}: Readonly<GenericAddOverrideFormProps<TValue>>) {
   const [id, setId] = useState('')
   const [environment, setEnvironment] = useState('Production')
   const [idType, setIdType] = useState(defaultIdType)

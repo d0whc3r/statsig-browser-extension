@@ -118,7 +118,7 @@ export function GeneralEmptyState({
   className,
   entityName,
   ...props
-}: GeneralEmptyStateProps) {
+}: Readonly<GeneralEmptyStateProps>) {
   const config = EMPTY_STATE_CONFIGS[variant]
   const Icon = icon ?? config.icon
 

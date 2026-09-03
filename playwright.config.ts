@@ -11,7 +11,7 @@ export default defineConfig({
   reporter: isCI ? 'github' : 'list',
   retries: isCI ? 2 : 0,
   testDir: './e2e',
-  testMatch: /.*\.e2e\.ts$/u,
+  testMatch: '**/*.e2e.ts',
   timeout: 30_000,
   use: {
     screenshot: 'only-on-failure',

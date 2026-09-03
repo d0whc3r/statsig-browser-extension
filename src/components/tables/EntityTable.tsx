@@ -62,7 +62,7 @@ export function EntityTable({
   visibleColumns,
   children,
   loadMoreText,
-}: EntityTableProps) {
+}: Readonly<EntityTableProps>) {
   const handleFetchNextPage = useCallback(() => {
     void fetchNextPage()
   }, [fetchNextPage])

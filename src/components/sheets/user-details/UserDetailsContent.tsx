@@ -88,12 +88,12 @@ function InfoItem({
   label,
   value,
   className,
-}: {
+}: Readonly<{
   icon: LucideIcon
   label: string
   value?: string
   className?: string
-}) {
+}>) {
   if (!value) {
     return null
   }
@@ -143,12 +143,12 @@ function PropertySection({
   icon: Icon,
   data,
   variant = 'default',
-}: {
+}: Readonly<{
   title: string
   icon: LucideIcon
   data?: Record<string, unknown>
   variant?: 'default' | 'private'
-}) {
+}>) {
   if (!data || Object.keys(data).length === 0) {
     return null
   }
