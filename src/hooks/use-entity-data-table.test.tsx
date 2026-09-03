@@ -1,4 +1,7 @@
+import type { SortingState } from '@tanstack/react-table'
+
 import { act, renderHook } from '@testing-library/react'
+import { useState } from 'react'
 import { describe, expect, it, vi } from 'vitest'
 
 import type { Column } from '@/src/components/tables/table-types'
@@ -28,16 +31,22 @@ const rows: Row[] = [
 ]
 
 const setup = (overrides: Partial<Parameters<typeof useEntityDataTable<Row>>[0]> = {}) =>
-  renderHook(() =>
-    useEntityDataTable<Row>({
+  renderHook(() => {
+    const [sorting, setSorting] = useState<SortingState>(overrides.sorting ?? [])
+    return useEntityDataTable<Row>({
       columns,
       data: rows,
       page: 1,
       rowsPerPage: 10,
       visibleColumns: ['name', 'tags', 'isEnabled', 'allocation', 'actions'],
       ...overrides,
-    }),
-  )
+      onSortingChange: (next) => {
+        setSorting(next)
+        overrides.onSortingChange?.(next)
+      },
+      sorting: overrides.sorting ?? sorting,
+    })
+  })
 
 describe('useEntityDataTable', () => {
   it('keeps the original row order until a column is sorted', () => {

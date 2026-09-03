@@ -6,12 +6,6 @@ import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { ExperimentRow } from '@/src/components/tables/ExperimentRow'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { useExperiments } from '@/src/hooks/use-experiments'
-import {
-  experimentsFacetFiltersStorage,
-  experimentsFilterValueStorage,
-  experimentsRowsPerPageStorage,
-  experimentsVisibleColumnsStorage,
-} from '@/src/lib/storage'
 
 export function ExperimentsTable() {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
@@ -20,16 +14,12 @@ export function ExperimentsTable() {
     columns: experimentColumns,
     data,
     entityType: 'experiment',
-    facetFiltersStorage: experimentsFacetFiltersStorage,
     facets: experimentFacets,
     fetchNextPage,
-    filterValueStorage: experimentsFilterValueStorage,
     fusedKeys: ['name', 'id', 'description', 'hypothesis', 'tags'],
     hasNextPage,
     isFetchingNextPage,
     isLoading,
-    rowsPerPageStorage: experimentsRowsPerPageStorage,
-    visibleColumnsStorage: experimentsVisibleColumnsStorage,
   })
 
   return (

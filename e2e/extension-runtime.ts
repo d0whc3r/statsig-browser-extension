@@ -1,0 +1,49 @@
+/**
+ * Playwright `evaluate` callbacks are serialized in isolation (no module
+ * closures). Each function below is self-contained on purpose.
+ *
+ * WXT app code uses `import { browser } from 'wxt/browser'`. Chromium's native
+ * global is still `chrome`; Firefox's is `browser`. These helpers alias once
+ * and then only call `browser`.
+ */
+
+type RuntimeRoot = typeof globalThis & {
+  browser?: {
+    runtime?: { sendMessage: unknown }
+    storage?: {
+      local?: {
+        clear: () => Promise<void>
+        get: (key: string) => Promise<Record<string, unknown>>
+        set: (items: Record<string, unknown>) => Promise<void>
+      }
+    }
+  }
+  chrome?: RuntimeRoot['browser']
+}
+
+export const ensureBrowserGlobal = (): void => {
+  const root = globalThis as RuntimeRoot
+  root.browser ??= root.chrome
+}
+
+export const seedExtensionLocalStorage = async ([storageKey, value]: [string, string]): Promise<void> => {
+  const root = globalThis as RuntimeRoot
+  root.browser ??= root.chrome
+  const local = root.browser?.storage?.local
+  if (!local) {
+    throw new Error('browser.storage.local is not available')
+  }
+  await local.clear()
+  await local.set({ [storageKey]: value })
+}
+
+export const readExtensionLocalValue = async (key: string): Promise<unknown> => {
+  const root = globalThis as RuntimeRoot
+  root.browser ??= root.chrome
+  const local = root.browser?.storage?.local
+  if (!local) {
+    throw new Error('browser.storage.local is not available')
+  }
+  const items = await local.get(key)
+  return items[key]
+}

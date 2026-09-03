@@ -1,7 +1,7 @@
 import type { SortingState } from '@tanstack/react-table'
 
 import { useTable } from '@tanstack/react-table'
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useMemo } from 'react'
 
 import type { Column, HeaderColumn } from '@/src/components/tables/table-types'
 
@@ -16,8 +16,9 @@ interface UseEntityDataTableOptions<T extends { id: string }> {
   data: T[]
   page: number
   rowsPerPage: number
+  sorting: SortingState
   visibleColumns: string[]
-  onSortingChange?: () => void
+  onSortingChange: (sorting: SortingState) => void
 }
 
 interface VisibleTableColumn {
@@ -59,18 +60,17 @@ export function useEntityDataTable<T extends { id: string }>({
   onSortingChange,
   page,
   rowsPerPage,
+  sorting,
   visibleColumns,
 }: UseEntityDataTableOptions<T>) {
   const columnDefs = useMemo(() => createEntityColumnDefs<T>(columns), [columns])
   const columnVisibility = useMemo(() => toColumnVisibility(columns, visibleColumns), [columns, visibleColumns])
-  const [sorting, setSorting] = useState<SortingState>([])
 
   const handleSortingChange = useCallback(
     (updater: SortingState | ((current: SortingState) => SortingState)) => {
-      setSorting((current) => (typeof updater === 'function' ? updater(current) : updater))
-      onSortingChange?.()
+      onSortingChange(typeof updater === 'function' ? updater(sorting) : updater)
     },
-    [onSortingChange],
+    [onSortingChange, sorting],
   )
 
   const table = useTable({

@@ -44,6 +44,6 @@
   // and mock helpers so they aren't reported as unused.
   "playwright": {
     "config": ["playwright.config.ts"],
-    "entry": ["e2e/**/*.e2e.ts", "e2e/fixtures.ts", "e2e/mocks.ts", "e2e/mock-data.ts"],
+    "entry": ["e2e/**/*.e2e.ts", "e2e/fixtures.ts", "e2e/mocks.ts", "e2e/mock-data.ts", "e2e/extension-runtime.ts"],
   },
 }

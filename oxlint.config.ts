@@ -78,6 +78,7 @@ export default defineConfig({
         'import/no-nodejs-modules': 'off',
         'max-lines-per-function': 'off',
         'max-statements': 'off',
+        'no-restricted-globals': 'off',
         'require-await': 'off',
         'typescript/no-unsafe-type-assertion': 'off',
         'typescript/require-await': 'off',
@@ -185,6 +186,13 @@ export default defineConfig({
     ],
     'no-named-export': 'allow',
     'no-nested-ternary': 'off',
+    'no-restricted-globals': [
+      'error',
+      {
+        message: 'Use `browser` from `wxt/browser` instead of the Chromium-only `chrome` global.',
+        name: 'chrome',
+      },
+    ],
     'no-ternary': 'allow',
     'one-var': 'off',
     'prefer-arrow-callback': 'off',

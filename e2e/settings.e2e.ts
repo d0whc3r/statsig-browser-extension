@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 
+import { readExtensionLocalValue } from './extension-runtime'
 import { expect, test } from './fixtures'
 import { defaultRoutes } from './mock-data'
 import { mockApi, seedApiKey } from './mocks'
@@ -56,16 +57,7 @@ test.describe('settings sheet', () => {
 
     await expect(page.getByRole('heading', { name: /Extension Settings/iu })).toBeHidden()
 
-    // Wxt persists the value to chrome.storage.local under `local:` area.
-    const stored = await serviceWorker.evaluate(
-      (key) =>
-        new Promise<unknown>((resolve) => {
-          chrome.storage.local.get(key, (items) => {
-            resolve((items as Record<string, unknown>)[key])
-          })
-        }),
-      STORAGE_KEY_LOCAL,
-    )
+    const stored = await serviceWorker.evaluate(readExtensionLocalValue, STORAGE_KEY_LOCAL)
 
     expect(stored).toBe('custom_user_key')
   })

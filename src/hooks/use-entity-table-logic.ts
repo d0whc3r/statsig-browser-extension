@@ -1,11 +1,10 @@
-import type { WxtStorageItem } from 'wxt/utils/storage'
-
 import { useCallback, useMemo } from 'react'
 
-import type { Column, Facet, FacetSelection } from '@/src/components/tables/table-types'
+import type { Column, Facet } from '@/src/components/tables/table-types'
+import type { TableId } from '@/src/store/use-ui-preferences-store'
 
 import { useEntityDataTable } from '@/src/hooks/use-entity-data-table'
-import { applyFacetFilters, buildFacetGroups } from '@/src/hooks/use-entity-table-logic.utils'
+import { applyFacetFilters, buildFacetGroups, clampPage } from '@/src/hooks/use-entity-table-logic.utils'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -30,13 +29,15 @@ interface UseEntityTableLogicProps<T> {
   isFetchingNextPage: boolean
   columns: readonly Column[]
   facets?: readonly Facet<T>[]
-  rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
-  visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
-  filterValueStorage: WxtStorageItem<string, Record<string, unknown>>
-  facetFiltersStorage: WxtStorageItem<FacetSelection, Record<string, unknown>>
   fusedKeys: string[]
   entityType: 'experiment' | 'feature_gate' | 'dynamic_config'
 }
+
+const TABLE_ID_BY_ENTITY = {
+  dynamic_config: 'dynamicConfigs',
+  experiment: 'experiments',
+  feature_gate: 'featureGates',
+} as const satisfies Record<UseEntityTableLogicProps<never>['entityType'], TableId>
 
 const NO_FACETS = [] as const
 
@@ -51,10 +52,6 @@ export function useEntityTableLogic<T extends { id: string }>({
   isFetchingNextPage,
   columns,
   facets = NO_FACETS,
-  rowsPerPageStorage,
-  visibleColumnsStorage,
-  filterValueStorage,
-  facetFiltersStorage,
   fusedKeys,
   entityType,
 }: UseEntityTableLogicProps<T>) {
@@ -82,13 +79,10 @@ export function useEntityTableLogic<T extends { id: string }>({
     page,
     rowsPerPage,
     setPage,
+    setSorting,
+    sorting,
     visibleColumns,
-  } = useTableState({
-    facetFiltersStorage,
-    filterValueStorage,
-    rowsPerPageStorage,
-    visibleColumnsStorage,
-  })
+  } = useTableState(TABLE_ID_BY_ENTITY[entityType])
 
   const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
 
@@ -100,16 +94,15 @@ export function useEntityTableLogic<T extends { id: string }>({
     keys: fusedKeys,
   })
 
-  const handleSortingChange = useCallback(() => {
-    setPage(1)
-  }, [setPage])
+  const safePage = clampPage(page, Math.ceil(filteredItems.length / rowsPerPage) || 1)
 
   const { headerColumns, items, pages } = useEntityDataTable({
     columns,
     data: filteredItems,
-    onSortingChange: handleSortingChange,
-    page,
+    onSortingChange: setSorting,
+    page: safePage,
     rowsPerPage,
+    sorting,
     visibleColumns,
   })
 
@@ -136,7 +129,7 @@ export function useEntityTableLogic<T extends { id: string }>({
     items,
     onRowsPerPageChange,
     onSearchChange,
-    page,
+    page: safePage,
     pages,
     rowsPerPage,
     setCurrentEntity: useCallback(

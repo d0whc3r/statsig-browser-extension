@@ -39,6 +39,9 @@ export const applyFacetFilters = <T>(entities: T[], facets: readonly Facet<T>[],
   )
 }
 
+export const clampPage = (page: number, pageCount: number): number =>
+  Math.min(Math.max(page, 1), Math.max(pageCount, 1))
+
 /** Adds/removes a value from a facet selection, dropping the key when it empties. */
 export const toggleFacetSelection = (selection: FacetSelection, facetKey: string, value: string): FacetSelection => {
   const current = selection[facetKey] ?? []

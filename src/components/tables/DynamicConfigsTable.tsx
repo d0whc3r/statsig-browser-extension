@@ -6,12 +6,6 @@ import { EntityTable } from '@/src/components/tables/EntityTable'
 import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { useDynamicConfigs } from '@/src/hooks/use-dynamic-configs'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
-import {
-  dynamicConfigFacetFiltersStorage,
-  dynamicConfigFilterValueStorage,
-  dynamicConfigRowsPerPageStorage,
-  dynamicConfigVisibleColumnsStorage,
-} from '@/src/lib/storage'
 
 export function DynamicConfigsTable() {
   const { data, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } =
@@ -22,18 +16,14 @@ export function DynamicConfigsTable() {
     data,
     entityType: 'dynamic_config',
     error,
-    facetFiltersStorage: dynamicConfigFacetFiltersStorage,
     facets: dynamicConfigFacets,
     fetchNextPage,
-    filterValueStorage: dynamicConfigFilterValueStorage,
     fusedKeys: ['name', 'id', 'tags'],
     hasNextPage,
     isError,
     isFetchingNextPage,
     isLoading,
     refetch,
-    rowsPerPageStorage: dynamicConfigRowsPerPageStorage,
-    visibleColumnsStorage: dynamicConfigVisibleColumnsStorage,
   })
 
   return (

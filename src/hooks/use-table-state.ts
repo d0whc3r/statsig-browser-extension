@@ -1,103 +1,100 @@
-import type { WxtStorageItem } from 'wxt/utils/storage'
+import type { SortingState } from '@tanstack/react-table'
+import type { Dispatch, SetStateAction } from 'react'
 
 import { useCallback } from 'react'
+import { useShallow } from 'zustand/react/shallow'
 
-import type { FacetSelection } from '@/src/components/tables/table-types'
+import type { TableId } from '@/src/store/use-ui-preferences-store'
 
 import { toggleFacetSelection } from '@/src/hooks/use-entity-table-logic.utils'
-import { usePersistentTableState } from '@/src/hooks/use-persistent-table-state'
-import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
+import { useUiPreferencesStore } from '@/src/store/use-ui-preferences-store'
 
-interface UseTableStateOptions {
-  visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
-  rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
-  filterValueStorage: WxtStorageItem<string, Record<string, unknown>>
-  facetFiltersStorage: WxtStorageItem<FacetSelection, Record<string, unknown>>
-}
-
-export const useTableState = ({
-  visibleColumnsStorage,
-  rowsPerPageStorage,
-  filterValueStorage,
-  facetFiltersStorage,
-}: UseTableStateOptions) => {
-  const {
-    facetFilters,
-    filterValue,
-    rowsPerPage,
-    setFacetFilters,
-    setFilterValue,
-    setRowsPerPage,
-    setVisibleColumns,
-    visibleColumns,
-  } = usePersistentTableState({
-    facetFiltersStorage,
-    filterValueStorage,
-    rowsPerPageStorage,
-    visibleColumnsStorage,
-  })
-
-  const { page, setPage } = useTransientTableState()
+const useTableMutations = (tableId: TableId) => {
+  const updateTable = useUiPreferencesStore((state) => state.updateTable)
 
   const onRowsPerPageChange = useCallback(
     (value: number) => {
-      setRowsPerPage(value)
-      setPage(1)
+      updateTable(tableId, { page: 1, rowsPerPage: value })
     },
-    [setRowsPerPage, setPage],
+    [tableId, updateTable],
   )
 
   const onSearchChange = useCallback(
     (value: string) => {
-      if (value) {
-        setFilterValue(value)
-        setPage(1)
-      } else {
-        setFilterValue('')
-      }
+      updateTable(tableId, value ? { filterValue: value, page: 1 } : { filterValue: '' })
     },
-    [setFilterValue, setPage],
+    [tableId, updateTable],
   )
 
   const handleSetFilterValue = useCallback(
     (value: string) => {
-      setFilterValue(value)
+      updateTable(tableId, { filterValue: value })
     },
-    [setFilterValue],
+    [tableId, updateTable],
   )
 
   const handleToggleFacet = useCallback(
     (facetKey: string, value: string) => {
-      setFacetFilters((current) => toggleFacetSelection(current, facetKey, value))
-      setPage(1)
+      updateTable(tableId, (current) => ({
+        ...current,
+        facetFilters: toggleFacetSelection(current.facetFilters, facetKey, value),
+        page: 1,
+      }))
     },
-    [setFacetFilters, setPage],
+    [tableId, updateTable],
   )
 
   const handleClearFacets = useCallback(() => {
-    setFacetFilters({})
-    setPage(1)
-  }, [setFacetFilters, setPage])
+    updateTable(tableId, { facetFilters: {}, page: 1 })
+  }, [tableId, updateTable])
 
   const handleSetVisibleColumns = useCallback(
     (keys: string[]) => {
-      setVisibleColumns(keys)
+      updateTable(tableId, { visibleColumns: keys })
     },
-    [setVisibleColumns],
+    [tableId, updateTable],
+  )
+
+  const setPage = useCallback<Dispatch<SetStateAction<number>>>(
+    (page) => {
+      updateTable(tableId, (current) => ({
+        ...current,
+        page: typeof page === 'function' ? page(current.page) : page,
+      }))
+    },
+    [tableId, updateTable],
+  )
+
+  const setSorting = useCallback(
+    (sorting: SortingState) => {
+      updateTable(tableId, { page: 1, sorting })
+    },
+    [tableId, updateTable],
   )
 
   return {
-    facetFilters,
-    filterValue,
     handleClearFacets,
     handleSetFilterValue,
     handleSetVisibleColumns,
     handleToggleFacet,
     onRowsPerPageChange,
     onSearchChange,
-    page,
-    rowsPerPage,
     setPage,
-    visibleColumns,
+    setSorting,
+  }
+}
+
+export const useTableState = (tableId: TableId) => {
+  const table = useUiPreferencesStore(useShallow((state) => state.tables[tableId]))
+  const mutations = useTableMutations(tableId)
+
+  return {
+    facetFilters: table.facetFilters,
+    filterValue: table.filterValue,
+    page: table.page,
+    rowsPerPage: table.rowsPerPage,
+    sorting: table.sorting,
+    visibleColumns: table.visibleColumns,
+    ...mutations,
   }
 }

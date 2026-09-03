@@ -13,7 +13,7 @@ afterEach(() => {
   cleanup()
 })
 
-const chromeMock = {
+const browserMock = {
   runtime: {
     getManifest: () => ({ version: '1.0.0' }),
     id: 'test-id',
@@ -28,12 +28,14 @@ const chromeMock = {
   },
 }
 
-if (typeof globalThis.chrome === 'object' && globalThis.chrome !== null) {
-  Object.assign(globalThis.chrome, chromeMock)
+const root = globalThis as typeof globalThis & { browser?: typeof browserMock }
+
+if (typeof root.browser === 'object' && root.browser !== null) {
+  Object.assign(root.browser, browserMock)
 } else {
-  Object.defineProperty(globalThis, 'chrome', {
+  Object.defineProperty(globalThis, 'browser', {
     configurable: true,
-    value: chromeMock,
+    value: browserMock,
     writable: true,
   })
 }

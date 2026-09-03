@@ -1,5 +1,7 @@
 import type { Page, Worker } from '@playwright/test'
 
+import { seedExtensionLocalStorage } from './extension-runtime'
+
 export interface MockRoute {
   /** Regex (as string) matched against the request URL (the path passed to wretch). */
   urlPattern: string
@@ -35,17 +37,7 @@ const RECORD_GLOBAL = '__e2eMockApiCalls'
  * Forces the popup to skip the login modal on next load.
  */
 export const seedApiKey = async (serviceWorker: Worker, apiKey = 'console-mock-key'): Promise<void> => {
-  await serviceWorker.evaluate(
-    async ([storageKey, key]) =>
-      new Promise<void>((resolve) => {
-        chrome.storage.local.clear(() => {
-          chrome.storage.local.set({ [storageKey as string]: key }, () => {
-            resolve()
-          })
-        })
-      }),
-    [STORAGE_KEY, apiKey] as const,
-  )
+  await serviceWorker.evaluate(seedExtensionLocalStorage, [STORAGE_KEY, apiKey] as [string, string])
 }
 
 /**
@@ -54,8 +46,8 @@ export const seedApiKey = async (serviceWorker: Worker, apiKey = 'console-mock-k
  * are matched against the supplied routes; everything else falls through to the
  * real runtime.
  *
- * Patches BOTH `chrome.runtime.sendMessage` and `browser.runtime.sendMessage`
- * because wxt's webextension-polyfill may hold a cached reference.
+ * Patches `browser.runtime.sendMessage` (WXT polyfill). On Chromium the native
+ * global is aliased onto `browser` first so Firefox and Chrome share this path.
  *
  * Must be called before `page.goto(...)`.
  *
@@ -145,6 +137,12 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
           })
         }
 
+      const runtimeRoot = root as {
+        browser?: { runtime?: { sendMessage: unknown } }
+        chrome?: { runtime?: { sendMessage: unknown } }
+      }
+      runtimeRoot.browser ??= runtimeRoot.chrome
+
       const patchRuntime = (namespace: { runtime?: { sendMessage: unknown } } | undefined): void => {
         if (!namespace?.runtime) {
           return
@@ -154,8 +152,7 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
         namespace.runtime.sendMessage = buildHandler(bound)
       }
 
-      patchRuntime((root as { chrome?: { runtime?: { sendMessage: unknown } } }).chrome)
-      patchRuntime((root as { browser?: { runtime?: { sendMessage: unknown } } }).browser)
+      patchRuntime(runtimeRoot.browser)
     },
     { httpOkMax: HTTP_OK_MAX, httpOkMin: HTTP_OK_MIN, recordGlobal: RECORD_GLOBAL, serializedRoutes: routes },
   )

@@ -1,77 +1,41 @@
-import type { WxtStorageItem } from 'wxt/utils/storage'
+import { act, renderHook } from '@testing-library/react'
+import { beforeEach, describe, expect, it } from 'vitest'
+import { storage } from 'wxt/utils/storage'
 
-import { act, renderHook, waitFor } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
-
-import type { FacetSelection } from '@/src/components/tables/table-types'
+import {
+  DEFAULT_UI_PREFERENCES,
+  UI_PREFERENCES_STORAGE_KEY,
+  useUiPreferencesStore,
+} from '@/src/store/use-ui-preferences-store'
 
 import { useTableState } from './use-table-state'
 
-type Listener<T> = (value: T) => void
-
-const createStorageItem = <T,>(initial: T) => {
-  const listeners: Listener<T>[] = []
-  let stored = initial
-  const item = {
-    fallback: initial,
-    getValue: () => stored,
-    setValue: (value: T) => {
-      stored = value
-      return Promise.resolve()
-    },
-    watch: (cb: Listener<T>) => {
-      listeners.push(cb)
-      return () => {
-        const i = listeners.indexOf(cb)
-        if (i !== -1) {
-          listeners.splice(i, 1)
-        }
-      }
-    },
-  }
-  return item as unknown as WxtStorageItem<T, Record<string, unknown>>
+const resetPreferences = async () => {
+  useUiPreferencesStore.setState({
+    activeTab: DEFAULT_UI_PREFERENCES.activeTab,
+    auditLogs: structuredClone(DEFAULT_UI_PREFERENCES.auditLogs),
+    tables: structuredClone(DEFAULT_UI_PREFERENCES.tables),
+  })
+  await storage.removeItem(UI_PREFERENCES_STORAGE_KEY)
 }
-
-const setup = () => {
-  const visibleColumnsStorage = createStorageItem<string[]>(['col-a', 'col-b'])
-  const rowsPerPageStorage = createStorageItem<number>(10)
-  const filterValueStorage = createStorageItem('')
-  const facetFiltersStorage = createStorageItem<FacetSelection>({})
-  return { facetFiltersStorage, filterValueStorage, rowsPerPageStorage, visibleColumnsStorage }
-}
-
-const renderTableState = (storages = setup()) =>
-  renderHook(() =>
-    useTableState({
-      facetFiltersStorage: storages.facetFiltersStorage,
-      filterValueStorage: storages.filterValueStorage,
-      rowsPerPageStorage: storages.rowsPerPageStorage,
-      visibleColumnsStorage: storages.visibleColumnsStorage,
-    }),
-  )
-
-// Flush the async storage-init effect (getValue resolves in a microtask and
-// Updates state) so the deferred state update happens inside act(...).
-const flushEffects = () => act(async () => {})
 
 describe('useTableState', () => {
-  it('exposes initial values from storage and transient page state', async () => {
-    const { result } = renderTableState()
+  beforeEach(async () => {
+    await resetPreferences()
+  })
 
-    await waitFor(() => {
-      expect(result.current.visibleColumns).toStrictEqual(['col-a', 'col-b'])
-      expect(result.current.rowsPerPage).toBe(10)
-    })
+  it('exposes default table prefs and page 1', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
+    expect(result.current.visibleColumns).toStrictEqual(['name', 'tags', 'status', 'isEnabled', 'actions'])
+    expect(result.current.rowsPerPage).toBe(5)
     expect(result.current.filterValue).toBe('')
     expect(result.current.page).toBe(1)
     expect(result.current.facetFilters).toStrictEqual({})
   })
 
-  it('restores search and facet filters from storage after remount', async () => {
-    const storages = setup()
-    const { result, unmount } = renderTableState(storages)
-    await flushEffects()
+  it('keeps search and facet filters after remount', () => {
+    const { result, unmount } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.onSearchChange('checkout')
@@ -85,16 +49,13 @@ describe('useTableState', () => {
 
     unmount()
 
-    const { result: remounted } = renderTableState(storages)
-    await waitFor(() => {
-      expect(remounted.current.filterValue).toBe('checkout')
-      expect(remounted.current.facetFilters).toStrictEqual({ tags: ['checkout'] })
-    })
+    const { result: remounted } = renderHook(() => useTableState('featureGates'))
+    expect(remounted.current.filterValue).toBe('checkout')
+    expect(remounted.current.facetFilters).toStrictEqual({ tags: ['checkout'] })
   })
 
-  it('toggles facet values, resets the page, and clears them all', async () => {
-    const { result } = renderTableState()
-    await flushEffects()
+  it('toggles facet values, resets the page, and clears them all', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.setPage(4)
@@ -120,9 +81,8 @@ describe('useTableState', () => {
     expect(result.current.facetFilters).toStrictEqual({})
   })
 
-  it('resets the page when changing rows per page', async () => {
-    const { result } = renderTableState()
-    await flushEffects()
+  it('resets the page when changing rows per page', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.setPage(5)
@@ -137,14 +97,12 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(1)
   })
 
-  it('resets the page to 1 when a non-empty search value is set', async () => {
-    const { result } = renderTableState()
-    await flushEffects()
+  it('resets the page to 1 when a non-empty search value is set', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.setPage(3)
     })
-
     act(() => {
       result.current.onSearchChange('gate_a')
     })
@@ -153,9 +111,8 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(1)
   })
 
-  it('clears filterValue without resetting page when search is emptied', async () => {
-    const { result } = renderTableState()
-    await flushEffects()
+  it('clears filterValue without resetting page when search is emptied', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.onSearchChange('foo')
@@ -171,16 +128,18 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(7)
   })
 
-  it('exposes setters for filter value and visible columns', async () => {
-    const { result } = renderTableState()
-    await flushEffects()
+  it('exposes setters for filter value, visible columns, and sorting', () => {
+    const { result } = renderHook(() => useTableState('featureGates'))
 
     act(() => {
       result.current.handleSetFilterValue('xx')
       result.current.handleSetVisibleColumns(['name'])
+      result.current.setSorting([{ desc: true, id: 'name' }])
     })
 
     expect(result.current.filterValue).toBe('xx')
     expect(result.current.visibleColumns).toStrictEqual(['name'])
+    expect(result.current.sorting).toStrictEqual([{ desc: true, id: 'name' }])
+    expect(result.current.page).toBe(1)
   })
 })

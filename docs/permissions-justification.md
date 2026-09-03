@@ -6,7 +6,7 @@
 This permission is required to allow the extension to interact with the current tab when the user clicks the extension icon. It is used to:
 
 1.  Detect if the Statsig SDK is initialized on the current page.
-2.  Inject scripts (`chrome.scripting.executeScript`) to retrieve the current Statsig user object (`statsig.getCurrentUser()`) and SDK state.
+2.  Inject scripts (`browser.scripting.executeScript` via WXT) to retrieve the current Statsig user object (`statsig.getCurrentUser()`) and SDK state.
 3.  Read and write local storage or cookies associated with Statsig configurations (e.g., overrides) specifically on the active page.
     The extension only accesses the tab's content when the user explicitly invokes it, ensuring privacy and minimal permission scope.
 
@@ -27,8 +27,8 @@ This permission is required to allow the extension to interact with the current 
 
 **Justification/Clarification:**
 The extension does **NOT** load, execute, or interpret any code hosted remotely (e.g., via CDN, external servers, or eval() of fetched strings).
-All scripts executed by the extension (including those injected via `chrome.scripting.executeScript`) are fully bundled within the extension package itself (`storage-helper.js` and content scripts).
-The use of `chrome.scripting` is strictly limited to injecting these _local_, _bundled_ resources into the page context to interact with the page's DOM and `window` object (specifically to access `window.statsig`). No external JavaScript is ever retrieved or executed.
+All scripts executed by the extension (including those injected via `browser.scripting.executeScript`) are fully bundled within the extension package itself (`storage-helper.js` and content scripts).
+The use of `browser.scripting` is strictly limited to injecting these _local_, _bundled_ resources into the page context to interact with the page's DOM and `window` object (specifically to access `window.statsig`). No external JavaScript is ever retrieved or executed.
 
 ## Scripting
 
@@ -42,7 +42,7 @@ The `scripting` permission is essential for the core functionality of the extens
 ## Storage
 
 **Justification:**
-The `storage` permission (`chrome.storage.local`) is used to persist:
+The `storage` permission (`browser.storage.local` via WXT) is used to persist:
 
 1.  **User Settings**: The Statsig Console API Key provided by the user.
 2.  **Extension State**: Caching fetched configurations (gates/experiments) to improve performance and reduce API calls.

@@ -4,6 +4,8 @@ import { test as base, chromium } from '@playwright/test'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
 
+import { ensureBrowserGlobal } from './extension-runtime'
+
 const EXTENSION_PATH = path.resolve(import.meta.dirname, '..', '.output', 'chrome-mv3')
 
 const isExtensionWorker = (worker: Worker): boolean => worker.url().startsWith('chrome-extension://')
@@ -47,6 +49,7 @@ export const test = base.extend<ExtensionFixtures>({
     // Playwright returns unrelated SW entries when parallelism is re-enabled.
     const existing = context.serviceWorkers().find((worker) => isExtensionWorker(worker))
     const worker = existing ?? (await context.waitForEvent('serviceworker', { predicate: isExtensionWorker }))
+    await worker.evaluate(ensureBrowserGlobal)
     await contextUse(worker)
   },
 })

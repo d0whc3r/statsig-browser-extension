@@ -6,12 +6,6 @@ import { EntityTableBody } from '@/src/components/tables/EntityTableBody'
 import { FeatureGateRow } from '@/src/components/tables/FeatureGateRow'
 import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
-import {
-  featureGatesFacetFiltersStorage,
-  featureGatesFilterValueStorage,
-  featureGatesRowsPerPageStorage,
-  featureGatesVisibleColumnsStorage,
-} from '@/src/lib/storage'
 
 export function FeatureGatesTable() {
   const { data, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useFeatureGates()
@@ -21,18 +15,14 @@ export function FeatureGatesTable() {
     data,
     entityType: 'feature_gate',
     error,
-    facetFiltersStorage: featureGatesFacetFiltersStorage,
     facets: featureGateFacets,
     fetchNextPage,
-    filterValueStorage: featureGatesFilterValueStorage,
     fusedKeys: ['name', 'id', 'description', 'tags'],
     hasNextPage,
     isError,
     isFetchingNextPage,
     isLoading,
     refetch,
-    rowsPerPageStorage: featureGatesRowsPerPageStorage,
-    visibleColumnsStorage: featureGatesVisibleColumnsStorage,
   })
 
   return (

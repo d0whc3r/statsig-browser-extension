@@ -1,5 +1,6 @@
 import type { Page } from '@playwright/test'
 
+import { readExtensionLocalValue } from './extension-runtime'
 import { expect, test } from './fixtures'
 import { defaultRoutes } from './mock-data'
 import { mockApi, seedApiKey } from './mocks'
@@ -40,15 +41,7 @@ test.describe('logout flow', () => {
     await page.getByRole('menuitem', { name: /Logout/iu }).click()
     await expect(page.getByText('Login to Statsig')).toBeVisible()
 
-    const stored = await serviceWorker.evaluate(
-      (key) =>
-        new Promise<unknown>((resolve) => {
-          chrome.storage.local.get(key, (items) => {
-            resolve((items as Record<string, unknown>)[key])
-          })
-        }),
-      STORAGE_KEY,
-    )
+    const stored = await serviceWorker.evaluate(readExtensionLocalValue, STORAGE_KEY)
 
     // UseLogout calls setApiKey('') — either the empty string or no entry counts as cleared.
     expect(stored === '' || stored === undefined).toBe(true)

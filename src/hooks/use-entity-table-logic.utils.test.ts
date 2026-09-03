@@ -5,6 +5,7 @@ import type { Facet } from '@/src/components/tables/table-types'
 import {
   applyFacetFilters,
   buildFacetGroups,
+  clampPage,
   countActiveFacetValues,
   toggleFacetSelection,
 } from './use-entity-table-logic.utils'
@@ -87,5 +88,14 @@ describe('countActiveFacetValues', () => {
   it('counts every selected value across facets', () => {
     expect(countActiveFacetValues({})).toBe(0)
     expect(countActiveFacetValues({ isEnabled: ['Enabled'], tags: ['ui', 'checkout'] })).toBe(3)
+  })
+})
+
+describe('clampPage', () => {
+  it('keeps the page within 1..pageCount', () => {
+    expect(clampPage(5, 2)).toBe(2)
+    expect(clampPage(0, 4)).toBe(1)
+    expect(clampPage(3, 0)).toBe(1)
+    expect(clampPage(2, 4)).toBe(2)
   })
 })
