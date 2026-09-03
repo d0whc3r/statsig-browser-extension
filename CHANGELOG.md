@@ -1,3 +1,13 @@
+# [1.5.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.5...v1.5.0) (2026-09-03)
+
+### Bug Fixes
+
+- update tables ([612d143](https://github.com/d0whc3r/statsig-browser-extension/commit/612d143286db263c964910286d5f518a25a17719))
+
+### Features
+
+- add tanstack table and sort tab ([ee300cc](https://github.com/d0whc3r/statsig-browser-extension/commit/ee300cc0823c255b0217fe20db146fef03a6be9b))
+
 ## [1.4.5](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.4.4...v1.4.5) (2026-08-11)
 
 ### Bug Fixes
