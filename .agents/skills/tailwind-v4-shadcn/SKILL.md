@@ -442,7 +442,7 @@ For detailed patterns and component composition examples, load `references/advan
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
-    "@vitejs/plugin-react": "^5.1.1",
+    "@vitejs/plugin-react": "^5.2.0",
     "vite": "^7.2.4",
     "typescript": "~5.9.3"
   }
