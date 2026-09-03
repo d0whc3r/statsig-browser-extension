@@ -1,19 +1,30 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 
+import type { SortableColumnConfig } from '@/src/hooks/use-sorted-table'
 import type { AnyOverride, ExperimentOverride, Group, UserIDOverride } from '@/src/types/statsig'
 
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { SharedOverridesTable } from '@/src/components/common/SharedOverridesTable'
+import { SortableTableHeads } from '@/src/components/tables/SortableHeader'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
+import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/src/components/ui/table'
+import { useSortedTable } from '@/src/hooks/use-sorted-table'
 
 import { ExperimentOverrideRow } from './ExperimentOverrideRow'
 import { OverrideRow } from './OverrideRow'
 
+type UserOverrideItem = UserIDOverride & { isCurrentUser?: boolean }
+
+const getUserOverrideRowId = (override: UserOverrideItem) => `${override.groupID}-${override.ids?.join(',')}`
+const getExperimentOverrideRowId = (override: ExperimentOverride) =>
+  `${override.type}-${override.name}-${override.groupID}`
+
+const groupLabel = (groups: Group[], groupID: string) => groups.find((group) => group.id === groupID)?.name ?? groupID
+
 interface UserOverridesTableProps {
   canEdit: boolean
   isPending: boolean
-  overrides: (UserIDOverride & { isCurrentUser?: boolean })[]
+  overrides: UserOverrideItem[]
   groups: Group[]
   onDelete: (override: AnyOverride) => void
 }
@@ -25,18 +36,12 @@ const UserOverridesTable = memo(function UserOverridesTable({
   groups,
   onDelete,
 }: UserOverridesTableProps) {
-  const isCurrentUserPredicate = useCallback(
-    (item: UserIDOverride & { isCurrentUser?: boolean }) => Boolean(item.isCurrentUser),
-    [],
-  )
+  const isCurrentUserPredicate = useCallback((item: UserOverrideItem) => Boolean(item.isCurrentUser), [])
 
   const renderRow = useCallback(
-    (
-      override: UserIDOverride & { isCurrentUser?: boolean },
-      onDeleteClick: (item: UserIDOverride & { isCurrentUser?: boolean }, isCurrentUser: boolean) => void,
-    ) => (
+    (override: UserOverrideItem, onDeleteClick: (item: UserOverrideItem, isCurrentUser: boolean) => void) => (
       <OverrideRow
-        key={`${override.groupID}-${override.ids?.join(',')}`}
+        key={getUserOverrideRowId(override)}
         override={override}
         canEdit={canEdit}
         isPending={isPending}
@@ -47,24 +52,32 @@ const UserOverridesTable = memo(function UserOverridesTable({
     [canEdit, isPending, groups],
   )
 
+  const columns = useMemo((): SortableColumnConfig<UserOverrideItem>[] => {
+    const next: SortableColumnConfig<UserOverrideItem>[] = [
+      { accessor: (item) => item.ids.join(', '), header: 'IDs', id: 'ids' },
+      { accessor: (item) => item.environment ?? 'All', header: 'Environment', id: 'environment' },
+      { accessor: (item) => item.unitType ?? 'userID', header: 'ID Type', id: 'idType' },
+      { accessor: (item) => groupLabel(groups, item.groupID), header: 'Group', id: 'group' },
+    ]
+
+    if (canEdit) {
+      next.push({ className: 'w-[50px]', header: '', id: 'actions' })
+    }
+
+    return next
+  }, [canEdit, groups])
+
   return (
     <div className="space-y-3">
       <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">User Overrides</h4>
       <SharedOverridesTable
         items={overrides}
+        columns={columns}
+        getRowId={getUserOverrideRowId}
         isCurrentUserPredicate={isCurrentUserPredicate}
         onDeleteConfirm={onDelete}
         colSpan={canEdit ? 5 : 4}
         emptyEntityName="item"
-        headers={
-          <>
-            <TableHead>IDs</TableHead>
-            <TableHead>Environment</TableHead>
-            <TableHead>ID Type</TableHead>
-            <TableHead>Group</TableHead>
-            {canEdit && <TableHead className="w-[50px]" />}
-          </>
-        }
         renderRow={renderRow}
       />
     </div>
@@ -88,6 +101,26 @@ const GateOverridesTable = memo(function GateOverridesTable({
   groups,
   onDelete,
 }: GateOverridesTableProps) {
+  const columns = useMemo((): SortableColumnConfig<ExperimentOverride>[] => {
+    const next: SortableColumnConfig<ExperimentOverride>[] = [
+      { accessor: (item) => item.type, header: 'Type', id: 'type' },
+      { accessor: (item) => item.name, header: 'Name', id: 'name' },
+      { accessor: (item) => groupLabel(groups, item.groupID), header: 'Group', id: 'group' },
+    ]
+
+    if (canEdit) {
+      next.push({ className: 'w-[50px]', header: '', id: 'actions' })
+    }
+
+    return next
+  }, [canEdit, groups])
+
+  const { headerColumns, items: sortedOverrides } = useSortedTable({
+    columns,
+    data: overrides,
+    getRowId: getExperimentOverrideRowId,
+  })
+
   return (
     <div className="mt-8 space-y-3">
       <h4 className="text-xs font-bold tracking-wider text-muted-foreground uppercase">Gate/Segment Overrides</h4>
@@ -95,17 +128,14 @@ const GateOverridesTable = memo(function GateOverridesTable({
         <Table>
           <TableHeader className="bg-muted/30">
             <TableRow>
-              <TableHead>Type</TableHead>
-              <TableHead>Name</TableHead>
-              <TableHead>Group</TableHead>
-              {canEdit && <TableHead className="w-[50px]" />}
+              <SortableTableHeads columns={headerColumns} />
             </TableRow>
           </TableHeader>
           <TableBody>
-            {overrides && overrides.length > 0 ? (
-              overrides.map((override) => (
+            {sortedOverrides.length > 0 ? (
+              sortedOverrides.map((override) => (
                 <ExperimentOverrideRow
-                  key={`${override.type}-${override.name}-${override.groupID}`}
+                  key={getExperimentOverrideRowId(override)}
                   override={override}
                   canEdit={canEdit}
                   isPending={isPending}

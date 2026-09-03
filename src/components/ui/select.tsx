@@ -4,8 +4,52 @@ import * as React from 'react'
 
 import { cn } from '@/src/lib/utils'
 
-function Select({ ...props }: React.ComponentProps<typeof SelectPrimitive.Root>) {
-  return <SelectPrimitive.Root data-slot="select" {...props} />
+type SelectRootProps = React.ComponentProps<typeof SelectPrimitive.Root>
+
+function Select({
+  open,
+  defaultOpen,
+  onOpenChange,
+  ...props
+}: Omit<SelectRootProps, 'onOpenChange'> & {
+  onOpenChange?: (open: boolean) => void
+}) {
+  const isControlled = open !== undefined
+  const [uncontrolledOpen, setUncontrolledOpen] = React.useState(defaultOpen ?? false)
+  const isOpen = isControlled ? open : uncontrolledOpen
+
+  const handleOpenChange = React.useCallback(
+    (nextOpen: boolean) => {
+      if (!isControlled) {
+        setUncontrolledOpen(nextOpen)
+      }
+      onOpenChange?.(nextOpen)
+    },
+    [isControlled, onOpenChange],
+  )
+
+  React.useLayoutEffect(() => {
+    if (!isOpen) {
+      return () => {}
+    }
+
+    /*
+      Radix Select dismisses on window resize/blur. In a Chrome extension
+      popup, react-remove-scroll padding (and popup autosizing to content)
+      fires those events as soon as the menu opens, so it closes on the same click.
+    */
+    const stopWindowDismiss = (event: Event) => {
+      event.stopImmediatePropagation()
+    }
+    window.addEventListener('resize', stopWindowDismiss, true)
+    window.addEventListener('blur', stopWindowDismiss, true)
+    return () => {
+      window.removeEventListener('resize', stopWindowDismiss, true)
+      window.removeEventListener('blur', stopWindowDismiss, true)
+    }
+  }, [isOpen])
+
+  return <SelectPrimitive.Root data-slot="select" open={isOpen} onOpenChange={handleOpenChange} {...props} />
 }
 
 function SelectValue({ ...props }: React.ComponentProps<typeof SelectPrimitive.Value>) {
@@ -41,7 +85,7 @@ function SelectTrigger({
 function SelectContent({
   className,
   children,
-  position = 'item-aligned',
+  position = 'popper',
   align = 'center',
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Content>) {
@@ -50,7 +94,7 @@ function SelectContent({
       <SelectPrimitive.Content
         data-slot="select-content"
         className={cn(
-          'relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
+          'relative z-[100] max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border bg-popover text-popover-foreground shadow-md data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95',
           position === 'popper' &&
             'data-[side=bottom]:translate-y-1 data-[side=left]:-translate-x-1 data-[side=right]:translate-x-1 data-[side=top]:-translate-y-1',
           className,

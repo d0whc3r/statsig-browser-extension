@@ -6,21 +6,25 @@ import type { Column } from '@/src/components/tables/table-types'
 import { useEntityDataTable } from './use-entity-data-table'
 
 interface Row {
+  allocation: number
   id: string
+  isEnabled: boolean
   name: string
   tags: string[]
 }
 
 const columns: readonly Column[] = [
-  { name: 'NAME', sortable: true, uid: 'name', width: 'w-[50%]' },
-  { name: 'TAGS', sortable: true, uid: 'tags', width: 'w-[30%]' },
-  { name: 'ACTIONS', sortable: false, uid: 'actions', width: 'w-[20%]' },
+  { name: 'NAME', sortable: true, uid: 'name', width: 'w-[28%]' },
+  { name: 'TAGS', sortable: true, uid: 'tags', width: 'w-[22%]' },
+  { name: 'ENABLED', sortable: true, uid: 'isEnabled', width: 'w-[18%]' },
+  { name: 'ALLOCATION', sortable: true, uid: 'allocation', width: 'w-[18%]' },
+  { name: 'ACTIONS', sortable: false, uid: 'actions', width: 'w-[14%]' },
 ]
 
 const rows: Row[] = [
-  { id: '2', name: 'bravo', tags: ['z'] },
-  { id: '1', name: 'alpha', tags: ['m'] },
-  { id: '3', name: 'charlie', tags: ['a'] },
+  { allocation: 50, id: '2', isEnabled: false, name: 'bravo', tags: ['z'] },
+  { allocation: 10, id: '1', isEnabled: true, name: 'alpha', tags: ['m'] },
+  { allocation: 80, id: '3', isEnabled: false, name: 'charlie', tags: ['a'] },
 ]
 
 const setup = (overrides: Partial<Parameters<typeof useEntityDataTable<Row>>[0]> = {}) =>
@@ -30,7 +34,7 @@ const setup = (overrides: Partial<Parameters<typeof useEntityDataTable<Row>>[0]>
       data: rows,
       page: 1,
       rowsPerPage: 10,
-      visibleColumns: ['name', 'tags', 'actions'],
+      visibleColumns: ['name', 'tags', 'isEnabled', 'allocation', 'actions'],
       ...overrides,
     }),
   )
@@ -99,5 +103,40 @@ describe('useEntityDataTable', () => {
     })
 
     expect(onSortingChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('sorts boolean columns with enabled values first on the initial click', () => {
+    const { result } = setup()
+    const enabledHeader = () => result.current.headerColumns.find((column) => column.uid === 'isEnabled')
+
+    act(() => {
+      enabledHeader()?.onSort?.({})
+    })
+
+    expect(result.current.items.map((item) => item.name)).toStrictEqual(['alpha', 'bravo', 'charlie'])
+    expect(enabledHeader()?.sortDirection).toBe('desc')
+  })
+
+  it('sorts numeric columns highest-first on the initial click', () => {
+    const { result } = setup()
+    const allocationHeader = () => result.current.headerColumns.find((column) => column.uid === 'allocation')
+
+    act(() => {
+      allocationHeader()?.onSort?.({})
+    })
+
+    expect(result.current.items.map((item) => item.allocation)).toStrictEqual([80, 50, 10])
+    expect(allocationHeader()?.sortDirection).toBe('desc')
+  })
+
+  it('sorts tag arrays as a joined string', () => {
+    const { result } = setup()
+    const tagsHeader = () => result.current.headerColumns.find((column) => column.uid === 'tags')
+
+    act(() => {
+      tagsHeader()?.onSort?.({})
+    })
+
+    expect(result.current.items.map((item) => item.tags)).toStrictEqual([['a'], ['m'], ['z']])
   })
 })

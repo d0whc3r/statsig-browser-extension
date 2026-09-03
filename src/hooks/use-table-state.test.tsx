@@ -130,9 +130,7 @@ describe('useTableState', () => {
     expect(result.current.page).toBe(5)
 
     act(() => {
-      result.current.onRowsPerPageChange({
-        target: { value: '25' },
-      } as React.ChangeEvent<HTMLSelectElement>)
+      result.current.onRowsPerPageChange(25)
     })
 
     expect(result.current.rowsPerPage).toBe(25)

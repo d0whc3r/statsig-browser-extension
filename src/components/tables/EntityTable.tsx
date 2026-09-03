@@ -5,11 +5,10 @@ import React, { useCallback } from 'react'
 import type { Column, FacetGroup, FacetSelection, HeaderColumn } from '@/src/components/tables/table-types'
 
 import { BottomContent } from '@/src/components/tables/BottomContent'
-import { getAriaSort, SortableHeader } from '@/src/components/tables/SortableHeader'
+import { SortableTableHeads } from '@/src/components/tables/SortableHeader'
 import { TopContent } from '@/src/components/tables/TopContent'
 import { Button } from '@/src/components/ui/button'
-import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
-import { cn } from '@/src/lib/utils'
+import { Table, TableBody, TableHeader, TableRow } from '@/src/components/ui/table'
 
 interface EntityTableProps {
   columns: readonly Column[]
@@ -25,7 +24,7 @@ interface EntityTableProps {
   hasNextPage: boolean
   headerColumns: readonly HeaderColumn[]
   isFetchingNextPage: boolean
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+  onRowsPerPageChange: (value: number) => void
   onSearchChange: (value: string) => void
   page: number
   pages: number
@@ -95,19 +94,7 @@ export function EntityTable({
           <Table className="table-fixed" containerClassName="h-full overflow-y-auto">
             <TableHeader>
               <TableRow>
-                {headerColumns.map((column) => (
-                  <TableHead
-                    key={column.uid}
-                    className={cn(column.width, column.uid === 'actions' && 'text-right')}
-                    aria-sort={column.canSort ? getAriaSort(column.sortDirection) : undefined}
-                  >
-                    {column.canSort ? (
-                      <SortableHeader label={column.name} sortDirection={column.sortDirection} onSort={column.onSort} />
-                    ) : (
-                      column.name
-                    )}
-                  </TableHead>
-                ))}
+                <SortableTableHeads columns={headerColumns} />
               </TableRow>
             </TableHeader>
             <TableBody>{children}</TableBody>

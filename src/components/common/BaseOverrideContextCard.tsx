@@ -70,11 +70,11 @@ export const BaseOverrideContextCard = memo(function BaseOverrideContextCard({
   }, [detectedUserOverrides, currentTier, availableEnvironments])
 
   const [environment, setEnvironment] = useState(initialEnv)
-
-  // Sync if initialEnv changes (e.g. user details loaded later)
-  useMemo(() => {
+  const [prevInitialEnv, setPrevInitialEnv] = useState(initialEnv)
+  if (initialEnv !== prevInitialEnv) {
+    setPrevInitialEnv(initialEnv)
     setEnvironment(initialEnv)
-  }, [initialEnv])
+  }
 
   const currentEnvValue = environment === ALL_ENVIRONMENTS ? null : environment
 

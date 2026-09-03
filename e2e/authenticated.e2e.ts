@@ -60,6 +60,23 @@ test.describe('authenticated popup', () => {
     await expect(page.getByText('new_checkout_flow').first()).toBeVisible()
   })
 
+  test('audit log action filter stays open so a value can be chosen', async ({ context, extensionId }) => {
+    const page = await context.newPage()
+    await page.setViewportSize({ height: 600, width: 800 })
+    await openPopup(page, extensionId, defaultRoutes())
+
+    await page.getByRole('tab', { name: /Audit Logs/iu }).click()
+
+    const actionSelect = page.getByRole('combobox', { name: /filter by action/iu })
+    await actionSelect.click()
+
+    const createOption = page.getByRole('option', { name: /Create \/ Start/iu })
+    await expect(createOption).toBeVisible()
+    await createOption.click()
+
+    await expect(actionSelect).toHaveText(/Create \/ Start/iu)
+  })
+
   test('shows empty state when api returns no data and actually calls /gates', async ({ context, extensionId }) => {
     const page = await context.newPage()
     const mock = await mockApi(page, [

@@ -1,8 +1,9 @@
-import { memo, useCallback } from 'react'
+import { memo, useCallback, useMemo } from 'react'
+
+import type { SortableColumnConfig } from '@/src/hooks/use-sorted-table'
 
 import { SharedOverridesList } from '@/src/components/common/SharedOverridesList'
 import { SharedOverridesTable } from '@/src/components/common/SharedOverridesTable'
-import { TableHead } from '@/src/components/ui/table'
 
 import type { DeleteGateOverrideParams, OverrideType } from './types'
 
@@ -21,6 +22,10 @@ interface OverridesListProps {
   onDeleteOverride: (params: DeleteGateOverrideParams) => void
   onSwitchToForm: () => void
 }
+
+type GateOverrideItem = OverridesListProps['allOverrides'][0]
+
+const getGateOverrideRowId = (item: GateOverrideItem) => `${item.type}-${item.id}-${item.idType}-${item.environment}`
 
 export const OverridesList = memo(function OverridesList({
   allOverrides,
@@ -44,12 +49,9 @@ export const OverridesList = memo(function OverridesList({
   )
 
   const renderRow = useCallback(
-    (
-      item: OverridesListProps['allOverrides'][0],
-      onDeleteClick: (item: OverridesListProps['allOverrides'][0], isCurrentUser: boolean) => void,
-    ) => (
+    (item: GateOverrideItem, onDeleteClick: (item: GateOverrideItem, isCurrentUser: boolean) => void) => (
       <OverrideRow
-        key={`${item.type}-${item.id}-${item.idType}-${item.environment}`}
+        key={getGateOverrideRowId(item)}
         item={item}
         canEdit={canEdit}
         isPending={isPending}
@@ -59,23 +61,31 @@ export const OverridesList = memo(function OverridesList({
     [canEdit, isPending],
   )
 
+  const columns = useMemo((): SortableColumnConfig<GateOverrideItem>[] => {
+    const next: SortableColumnConfig<GateOverrideItem>[] = [
+      { accessor: (item) => item.id, header: 'ID', id: 'id' },
+      { accessor: (item) => item.idType ?? 'userID', header: 'Type', id: 'idType' },
+      { accessor: (item) => item.environment ?? 'All Environments', header: 'Environment', id: 'environment' },
+      { accessor: (item) => item.type, header: 'Result', id: 'result' },
+    ]
+
+    if (canEdit) {
+      next.push({ className: 'w-[50px]', header: '', id: 'actions' })
+    }
+
+    return next
+  }, [canEdit])
+
   return (
     <SharedOverridesList onAddManual={onSwitchToForm} canEdit={canEdit}>
       <SharedOverridesTable
         items={allOverrides}
+        columns={columns}
+        getRowId={getGateOverrideRowId}
         isCurrentUserPredicate={isCurrentUserPredicate}
         onDeleteConfirm={handleDeleteConfirm}
         colSpan={canEdit ? 5 : 4}
         emptyEntityName="gate"
-        headers={
-          <>
-            <TableHead>ID</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Environment</TableHead>
-            <TableHead>Result</TableHead>
-            {canEdit && <TableHead className="w-[50px]" />}
-          </>
-        }
         renderRow={renderRow}
       />
     </SharedOverridesList>

@@ -1,11 +1,15 @@
-import React, { memo } from 'react'
+import { memo, useCallback } from 'react'
+
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
+
+const ROW_COUNT_OPTIONS = ['5', '10', '15', '25'] as const
 
 interface TopContentPaginationProps {
   total: number
   filteredCount: number
   typeLabelPlural: string
   rowsPerPage: number
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+  onRowsPerPageChange: (value: number) => void
 }
 
 export const TopContentPagination = memo(function TopContentPagination({
@@ -15,6 +19,13 @@ export const TopContentPagination = memo(function TopContentPagination({
   rowsPerPage,
   onRowsPerPageChange,
 }: TopContentPaginationProps) {
+  const handleValueChange = useCallback(
+    (value: string) => {
+      onRowsPerPageChange(Number(value))
+    },
+    [onRowsPerPageChange],
+  )
+
   if (total <= 0) {
     return null
   }
@@ -25,19 +36,21 @@ export const TopContentPagination = memo(function TopContentPagination({
         {filteredCount === total ? `${total} ${typeLabelPlural}` : `${filteredCount} of ${total} ${typeLabelPlural}`}
       </span>
       {total > 5 && (
-        <label className="flex items-center gap-2 text-sm whitespace-nowrap text-muted-foreground">
-          Rows:
-          <select
-            className="rounded-md border border-input bg-transparent px-2 py-1 text-sm text-muted-foreground outline-none"
-            onChange={onRowsPerPageChange}
-            value={rowsPerPage}
-          >
-            <option value="5">5</option>
-            <option value="10">10</option>
-            <option value="15">15</option>
-            <option value="25">25</option>
-          </select>
-        </label>
+        <div className="flex items-center gap-2 text-sm whitespace-nowrap text-muted-foreground">
+          <span>Rows:</span>
+          <Select value={String(rowsPerPage)} onValueChange={handleValueChange}>
+            <SelectTrigger size="sm" aria-label="Rows per page" className="w-[4.5rem] text-muted-foreground">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ROW_COUNT_OPTIONS.map((count) => (
+                <SelectItem key={count} value={count}>
+                  {count}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
       )}
     </div>
   )

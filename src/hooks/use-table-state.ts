@@ -40,8 +40,8 @@ export const useTableState = ({
   const { page, setPage } = useTransientTableState()
 
   const onRowsPerPageChange = useCallback(
-    (event: React.ChangeEvent<HTMLSelectElement>) => {
-      setRowsPerPage(Number(event.target.value))
+    (value: number) => {
+      setRowsPerPage(value)
       setPage(1)
     },
     [setRowsPerPage, setPage],

@@ -5,19 +5,29 @@ import {
   createSortedRowModel,
   rowSortingFeature,
   sortFn_alphanumeric,
+  sortFn_basic,
   sortFn_text,
   tableFeatures,
 } from '@tanstack/react-table'
 
 import type { Column } from './table-types'
 
+const sortFns = {
+  alphanumeric: sortFn_alphanumeric,
+  basic: sortFn_basic,
+  text: sortFn_text,
+}
+
+export const sortableTableFeatures = tableFeatures({
+  rowSortingFeature,
+  sortFns,
+  sortedRowModel: createSortedRowModel(),
+})
+
 export const entityTableFeatures = tableFeatures({
   columnVisibilityFeature,
   rowSortingFeature,
-  sortFns: {
-    alphanumeric: sortFn_alphanumeric,
-    text: sortFn_text,
-  },
+  sortFns,
   sortedRowModel: createSortedRowModel(),
 })
 

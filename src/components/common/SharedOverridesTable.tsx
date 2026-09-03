@@ -1,32 +1,41 @@
+import type { RowData } from '@tanstack/react-table'
+
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useCallback, useMemo, useState } from 'react'
 
+import type { SortableColumnConfig } from '@/src/hooks/use-sorted-table'
+
 import { ConfirmDialog } from '@/src/components/common/ConfirmDialog'
+import { SortableTableHeads } from '@/src/components/tables/SortableHeader'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '@/src/components/ui/table'
+import { useSortedTable } from '@/src/hooks/use-sorted-table'
 
-interface SharedOverridesTableProps<T> {
+interface SharedOverridesTableProps<T extends RowData> {
   items: T[]
+  columns: readonly SortableColumnConfig<T>[]
   isCurrentUserPredicate: (item: T) => boolean
   renderRow: (item: T, onDeleteClick: (item: T, isCurrentUser: boolean) => void) => React.ReactNode
   onDeleteConfirm: (item: T) => void
-  headers: React.ReactNode
   colSpan: number
   emptyEntityName: string
+  getRowId?: (item: T, index: number) => string
 }
 
-export function SharedOverridesTable<T>({
+export function SharedOverridesTable<T extends RowData>({
   items,
+  columns,
   isCurrentUserPredicate,
   renderRow,
   onDeleteConfirm,
-  headers,
   colSpan,
   emptyEntityName,
+  getRowId,
 }: SharedOverridesTableProps<T>) {
   const [showOthers, setShowOthers] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<T | null>(null)
+  const { headerColumns, items: sortedItems } = useSortedTable({ columns, data: items, getRowId })
 
   const toggleOthers = useCallback(() => {
     setShowOthers((prev) => !prev)
@@ -57,7 +66,7 @@ export function SharedOverridesTable<T>({
   const { currentUserOverrides, otherOverrides } = useMemo(() => {
     const current: T[] = []
     const others: T[] = []
-    for (const item of items) {
+    for (const item of sortedItems) {
       if (isCurrentUserPredicate(item)) {
         current.push(item)
       } else {
@@ -65,7 +74,7 @@ export function SharedOverridesTable<T>({
       }
     }
     return { currentUserOverrides: current, otherOverrides: others }
-  }, [items, isCurrentUserPredicate])
+  }, [sortedItems, isCurrentUserPredicate])
 
   const hasOverrides = items.length > 0
 
@@ -74,7 +83,9 @@ export function SharedOverridesTable<T>({
       <div className="overflow-hidden rounded-md border bg-card shadow-sm">
         <Table>
           <TableHeader className="bg-muted/30">
-            <TableRow>{headers}</TableRow>
+            <TableRow>
+              <SortableTableHeads columns={headerColumns} />
+            </TableRow>
           </TableHeader>
           <TableBody>
             {hasOverrides ? (

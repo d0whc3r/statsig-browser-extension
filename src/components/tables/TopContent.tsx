@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react'
+import { memo, useMemo } from 'react'
 
 import type { Column, FacetGroup, FacetSelection } from './table-types'
 
@@ -9,7 +9,7 @@ import { TopContentSearch } from './TopContentSearch'
 
 interface TopContentProps {
   filterValue: string
-  onRowsPerPageChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
+  onRowsPerPageChange: (value: number) => void
   onSearchChange: (value: string) => void
   rowsPerPage: number
   setFilterValue: (value: string) => void

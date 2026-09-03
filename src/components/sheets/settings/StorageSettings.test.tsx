@@ -31,6 +31,20 @@ describe('storageSettings', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent(/cookies/iu)
   })
 
+  it('keeps storage options visible after opening the select', async () => {
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    render(
+      <Harness defaultValues={{ localStorageKey: 'k', storageType: 'localStorage' }}>
+        {(control) => <StorageSettings control={control} />}
+      </Harness>,
+    )
+
+    await user.click(screen.getByRole('combobox'))
+
+    expect(screen.getByRole('option', { name: /local storage/iu })).toBeVisible()
+    expect(screen.getByRole('option', { name: /cookies/iu })).toBeVisible()
+  })
+
   it('updates the form value when the user picks a different storage type', async () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 })
     render(

@@ -31,6 +31,16 @@ describe('appearanceSettings', () => {
     expect(screen.getByRole('combobox')).toHaveTextContent(/light/iu)
   })
 
+  it('keeps theme options visible after opening the select', async () => {
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+    render(<AppearanceSettings />)
+
+    await user.click(screen.getByRole('combobox'))
+
+    expect(screen.getByRole('option', { name: /^light$/iu })).toBeVisible()
+    expect(screen.getByRole('option', { name: /^dark$/iu })).toBeVisible()
+  })
+
   it('calls setTheme with "dark" when the user picks dark mode', async () => {
     const user = userEvent.setup({ pointerEventsCheck: 0 })
     render(<AppearanceSettings />)

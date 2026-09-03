@@ -64,7 +64,7 @@ function SearchControls({
         />
       </div>
       <Select value={actionFilter} onValueChange={onActionFilterChange}>
-        <SelectTrigger className="h-9 w-[140px] text-xs">
+        <SelectTrigger className="h-9 w-[140px] text-xs" aria-label="Filter by action">
           <Filter className="mr-2 h-3.5 w-3.5 text-muted-foreground" />
           <SelectValue placeholder="Filter" />
         </SelectTrigger>
