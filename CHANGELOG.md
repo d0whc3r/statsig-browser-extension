@@ -1,3 +1,9 @@
+## [1.5.3](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.2...v1.5.3) (2026-09-03)
+
+### Bug Fixes
+
+- chrome/browser access ([ef04628](https://github.com/d0whc3r/statsig-browser-extension/commit/ef046282d41ce050f4bbc4561d03d260c4822032))
+
 ## [1.5.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.1...v1.5.2) (2026-09-03)
 
 ### Bug Fixes
