@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.1...v1.5.2) (2026-09-03)
+
+### Bug Fixes
+
+- sonar and knip ([96672ba](https://github.com/d0whc3r/statsig-browser-extension/commit/96672ba8363061222a7c20cdfaa5a53ed07ee793))
+- update sonar issues ([9b3a67e](https://github.com/d0whc3r/statsig-browser-extension/commit/9b3a67e5980ff885f7325b97d6091a5fd653da4e))
+
 ## [1.5.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.0...v1.5.1) (2026-09-03)
 
 ### Bug Fixes
