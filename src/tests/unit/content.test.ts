@@ -34,8 +34,11 @@ const loadContent = async () => {
   return listener
 }
 
-const windowMessage = (data: unknown, source: Window | null = globalThis.window) =>
-  new MessageEvent('message', { data, source })
+const windowMessage = (
+  data: unknown,
+  source: Window | null = globalThis.window,
+  origin: string = globalThis.window.location.origin,
+) => new MessageEvent('message', { data, origin, source })
 
 describe('content script statsig detection', () => {
   beforeEach(() => {
@@ -58,7 +61,7 @@ describe('content script statsig detection', () => {
     sendResponse.mockClear()
     expect(listener({ type: 'RETRY_DETECTION' }, {}, sendResponse)).toBeTruthy()
     expect(sendResponse).toHaveBeenCalledWith({ success: true })
-    expect(postMessage).toHaveBeenCalledWith({ type: 'RETRY_STATSIG_DETECTION' }, '*')
+    expect(postMessage).toHaveBeenCalledWith({ type: 'RETRY_STATSIG_DETECTION' }, globalThis.window.location.origin)
   })
 
   it('returns cached user on GET_STATSIG_USER after a window detection event', async () => {
@@ -158,6 +161,20 @@ describe('content script statsig detection', () => {
     expect(sendResponse).not.toHaveBeenCalled()
 
     globalThis.window.dispatchEvent(windowMessage({ type: 'STATSIG_USER_DETECTED', user: { userID: 'nope' } }, null))
+    expect(sendMessage).not.toHaveBeenCalled()
+  })
+
+  it('ignores window events from other origins even when sent by the same window', async () => {
+    await loadContent()
+
+    globalThis.window.dispatchEvent(
+      windowMessage(
+        { type: 'STATSIG_USER_DETECTED', user: { userID: 'spoofed' } },
+        globalThis.window,
+        'https://evil.example',
+      ),
+    )
+
     expect(sendMessage).not.toHaveBeenCalled()
   })
 

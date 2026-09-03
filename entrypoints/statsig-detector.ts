@@ -16,7 +16,10 @@ function checkStatsig() {
   const result = getUserDetailsFromPage()
 
   if (result) {
-    window.postMessage({ context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user }, '*')
+    window.postMessage(
+      { context: result.context, type: 'STATSIG_USER_DETECTED', user: result.user },
+      globalThis.window.location.origin,
+    )
     return true
   }
   return false
@@ -44,6 +47,9 @@ export default defineContentScript({
 
     // Listen for retry request
     window.addEventListener('message', (event) => {
+      if (event.source !== globalThis.window || event.origin !== globalThis.window.location.origin) {
+        return
+      }
       const type = getMessageType(event.data)
       if (type === 'RETRY_STATSIG_DETECTION' || type === 'FETCH_STATSIG_DATA_FROM_PAGE') {
         checkStatsig()

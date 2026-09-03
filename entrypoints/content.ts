@@ -69,17 +69,15 @@ const handleNotDetected = (sendResponse: (response: unknown) => void, cleanup: (
   cleanup()
 }
 
-const isValidMessage = (event: MessageEvent): StatsigUserMessage | null => {
-  if (event.source !== globalThis.window) {
-    return null
-  }
-
-  return parseStatsigUserMessage(event.data)
-}
+const isSameWindowMessage = (event: MessageEvent) =>
+  event.source === globalThis.window && event.origin === globalThis.window.location.origin
 
 const createMessageHandler = (sendResponse: (response: unknown) => void) => {
   const handler = (event: MessageEvent) => {
-    const data = isValidMessage(event)
+    if (!isSameWindowMessage(event)) {
+      return
+    }
+    const data = parseStatsigUserMessage(event.data)
     if (!data) {
       return
     }
@@ -119,7 +117,7 @@ const handleGetStatsigUser = (sendResponse: (response: unknown) => void) => {
   const handler = createMessageHandler(wrappedSendResponse)
 
   globalThis.window.addEventListener('message', handler)
-  globalThis.window.postMessage({ type: 'FETCH_STATSIG_DATA_FROM_PAGE' }, '*')
+  globalThis.window.postMessage({ type: 'FETCH_STATSIG_DATA_FROM_PAGE' }, globalThis.window.location.origin)
 
   timeout.id = setTimeout(() => {
     globalThis.window.removeEventListener('message', handler)
@@ -135,7 +133,7 @@ const handlePing = (sendResponse: (response: unknown) => void) => {
 }
 
 const handleRetryDetection = (sendResponse: (response: unknown) => void) => {
-  globalThis.window.postMessage({ type: 'RETRY_STATSIG_DETECTION' }, '*')
+  globalThis.window.postMessage({ type: 'RETRY_STATSIG_DETECTION' }, globalThis.window.location.origin)
   sendResponse({ success: true })
   return true
 }
@@ -185,7 +183,10 @@ const handleWindowErrorDetected = (data: StatsigUserMessage) => {
 }
 
 const handleWindowMessage = (event: MessageEvent) => {
-  const data = isValidMessage(event)
+  if (!isSameWindowMessage(event)) {
+    return
+  }
+  const data = parseStatsigUserMessage(event.data)
   if (!data) {
     return
   }

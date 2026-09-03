@@ -16,6 +16,9 @@ const loadDetector = async () => {
   return mod.default as { main: () => void }
 }
 
+const pageMessage = (data: unknown) =>
+  new MessageEvent('message', { data, origin: globalThis.window.location.origin, source: globalThis.window })
+
 describe('statsig detector content script', () => {
   beforeEach(() => {
     getUserDetailsFromPage.mockReset()
@@ -35,7 +38,7 @@ describe('statsig detector content script', () => {
 
     expect(postMessage).toHaveBeenCalledWith(
       { context: { sdk: 'js' }, type: 'STATSIG_USER_DETECTED', user: { userID: 'u_1' } },
-      '*',
+      globalThis.window.location.origin,
     )
 
     getUserDetailsFromPage.mockClear()
@@ -57,7 +60,7 @@ describe('statsig detector content script', () => {
 
     expect(postMessage).toHaveBeenCalledWith(
       { context: undefined, type: 'STATSIG_USER_DETECTED', user: { userID: 'late' } },
-      '*',
+      globalThis.window.location.origin,
     )
 
     postMessage.mockClear()
@@ -83,11 +86,35 @@ describe('statsig detector content script', () => {
     detector.main()
     const callsBefore = getUserDetailsFromPage.mock.calls.length
 
-    globalThis.window.dispatchEvent(new MessageEvent('message', { data: { type: 'RETRY_STATSIG_DETECTION' } }))
-    globalThis.window.dispatchEvent(new MessageEvent('message', { data: { type: 'FETCH_STATSIG_DATA_FROM_PAGE' } }))
-    globalThis.window.dispatchEvent(new MessageEvent('message', { data: { type: 'UNRELATED' } }))
-    globalThis.window.dispatchEvent(new MessageEvent('message', { data: null }))
+    globalThis.window.dispatchEvent(pageMessage({ type: 'RETRY_STATSIG_DETECTION' }))
+    globalThis.window.dispatchEvent(pageMessage({ type: 'FETCH_STATSIG_DATA_FROM_PAGE' }))
+    globalThis.window.dispatchEvent(pageMessage({ type: 'UNRELATED' }))
+    globalThis.window.dispatchEvent(pageMessage(null))
 
     expect(getUserDetailsFromPage.mock.calls.length).toBeGreaterThan(callsBefore)
+  })
+
+  it('ignores retry requests from other origins or windows', async () => {
+    getUserDetailsFromPage.mockReturnValue(null)
+    const detector = await loadDetector()
+    detector.main()
+    const callsBefore = getUserDetailsFromPage.mock.calls.length
+
+    globalThis.window.dispatchEvent(
+      new MessageEvent('message', {
+        data: { type: 'RETRY_STATSIG_DETECTION' },
+        origin: 'https://evil.example',
+        source: globalThis.window,
+      }),
+    )
+    globalThis.window.dispatchEvent(
+      new MessageEvent('message', {
+        data: { type: 'RETRY_STATSIG_DETECTION' },
+        origin: globalThis.window.location.origin,
+        source: null,
+      }),
+    )
+
+    expect(getUserDetailsFromPage).toHaveBeenCalledTimes(callsBefore)
   })
 })
