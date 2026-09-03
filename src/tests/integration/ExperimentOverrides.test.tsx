@@ -155,6 +155,15 @@ const setupMocks = () => {
   })
 }
 
+const openExperimentOverrides = async (user: { click: (element: Element) => Promise<void> }) => {
+  await waitFor(() => expect(screen.getByRole('tab', { name: /Experiments/iu })).toBeInTheDocument())
+  await user.click(screen.getByRole('tab', { name: /Experiments/iu }))
+  await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
+  await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
+  await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
+  await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+}
+
 describe('experiment Overrides Flow', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -165,20 +174,7 @@ describe('experiment Overrides Flow', () => {
     setupMocks()
     const { user } = renderWithProviders(<AppContent />)
 
-    // Wait for experiments to load
-    await waitFor(() => {
-      expect(screen.getByText('Test Experiment 1')).toBeInTheDocument()
-    })
-
-    // Click on the experiment to open details
-    const experimentRow = screen.getByText('Test Experiment 1').closest('tr')
-    await user.click(experimentRow!)
-
-    // Wait for sheet to open and switch to Overrides tab
-    await waitFor(() => {
-      expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument()
-    })
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    await openExperimentOverrides(user)
 
     // Check for User ID override (isCurrentUser: true since we mocked user_123)
     // Use findAllByText because user_123 appears in context card AND list
@@ -198,11 +194,7 @@ describe('experiment Overrides Flow', () => {
     setupMocks()
     const { user } = renderWithProviders(<AppContent />)
 
-    // Open experiment details and go to Overrides
-    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    await openExperimentOverrides(user)
 
     // Click Add Manual
     await waitFor(() => {
@@ -245,11 +237,7 @@ describe('experiment Overrides Flow', () => {
     setupMocks()
     const { user } = renderWithProviders(<AppContent />)
 
-    // Open experiment details and go to Overrides
-    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    await openExperimentOverrides(user)
 
     // Click Add Manual
     await waitFor(() => {
@@ -292,11 +280,7 @@ describe('experiment Overrides Flow', () => {
 
     const { user } = renderWithProviders(<AppContent />)
 
-    // Navigate to overrides
-    await waitFor(() => expect(screen.getByText('Test Experiment 1')).toBeInTheDocument())
-    await user.click(screen.getByText('Test Experiment 1').closest('tr')!)
-    await waitFor(() => expect(screen.getByRole('tab', { name: /Overrides/iu })).toBeInTheDocument())
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    await openExperimentOverrides(user)
 
     // Click "Show others" button since other_user is not current user
     await waitFor(() => {

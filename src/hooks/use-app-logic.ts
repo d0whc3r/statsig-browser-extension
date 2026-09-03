@@ -18,7 +18,7 @@ export const useAppLogic = () => {
     })),
   )
 
-  const [activeTab, setActiveTab] = useState('experiments')
+  const [activeTab, setActiveTab] = useState('feature_gates')
 
   const handleTabChange = useCallback(
     (value: string) => {

@@ -2,8 +2,9 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { useCallback, useMemo } from 'react'
 
-import type { Facet } from '@/src/components/tables/table-types'
+import type { Column, Facet, FacetSelection } from '@/src/components/tables/table-types'
 
+import { useEntityDataTable } from '@/src/hooks/use-entity-data-table'
 import { applyFacetFilters, buildFacetGroups } from '@/src/hooks/use-entity-table-logic.utils'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
@@ -27,10 +28,12 @@ interface UseEntityTableLogicProps<T> {
   fetchNextPage: () => void | Promise<unknown>
   hasNextPage: boolean
   isFetchingNextPage: boolean
-  columns: readonly { uid: string; name: string }[]
+  columns: readonly Column[]
   facets?: readonly Facet<T>[]
   rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
   visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
+  filterValueStorage: WxtStorageItem<string, Record<string, unknown>>
+  facetFiltersStorage: WxtStorageItem<FacetSelection, Record<string, unknown>>
   fusedKeys: string[]
   entityType: 'experiment' | 'feature_gate' | 'dynamic_config'
 }
@@ -50,6 +53,8 @@ export function useEntityTableLogic<T extends { id: string }>({
   facets = NO_FACETS,
   rowsPerPageStorage,
   visibleColumnsStorage,
+  filterValueStorage,
+  facetFiltersStorage,
   fusedKeys,
   entityType,
 }: UseEntityTableLogicProps<T>) {
@@ -79,16 +84,13 @@ export function useEntityTableLogic<T extends { id: string }>({
     setPage,
     visibleColumns,
   } = useTableState({
+    facetFiltersStorage,
+    filterValueStorage,
     rowsPerPageStorage,
     visibleColumnsStorage,
   })
 
   const { setCurrentItemId, setItemSheetOpen, setCurrentItemType } = useUIStore((state) => state)
-
-  const headerColumns = useMemo(
-    () => columns.filter((column) => visibleColumns.includes(column.uid)),
-    [visibleColumns, columns],
-  )
 
   const facetGroups = useMemo(() => buildFacetGroups(entities, facets), [entities, facets])
 
@@ -98,14 +100,18 @@ export function useEntityTableLogic<T extends { id: string }>({
     keys: fusedKeys,
   })
 
-  const pages = Math.ceil(filteredItems.length / rowsPerPage) || 1
+  const handleSortingChange = useCallback(() => {
+    setPage(1)
+  }, [setPage])
 
-  const items = useMemo(() => {
-    const start = (page - 1) * rowsPerPage
-    const end = start + rowsPerPage
-
-    return filteredItems.slice(start, end)
-  }, [page, filteredItems, rowsPerPage])
+  const { headerColumns, items, pages } = useEntityDataTable({
+    columns,
+    data: filteredItems,
+    onSortingChange: handleSortingChange,
+    page,
+    rowsPerPage,
+    visibleColumns,
+  })
 
   return {
     entities,

@@ -6,6 +6,13 @@ export interface Column {
   width?: string
 }
 
+/** A visible header cell, including TanStack sort affordances. */
+export interface HeaderColumn extends Column {
+  canSort: boolean
+  sortDirection: false | 'asc' | 'desc'
+  onSort?: (event: unknown) => void
+}
+
 /** Describes a filterable dimension of a table. Options are derived from the loaded rows. */
 export interface Facet<T> {
   key: string

@@ -2,6 +2,8 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { useCallback } from 'react'
 
+import type { FacetSelection } from '@/src/components/tables/table-types'
+
 import { toggleFacetSelection } from '@/src/hooks/use-entity-table-logic.utils'
 import { usePersistentTableState } from '@/src/hooks/use-persistent-table-state'
 import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
@@ -9,15 +11,33 @@ import { useTransientTableState } from '@/src/hooks/use-transient-table-state'
 interface UseTableStateOptions {
   visibleColumnsStorage: WxtStorageItem<string[], Record<string, unknown>>
   rowsPerPageStorage: WxtStorageItem<number, Record<string, unknown>>
+  filterValueStorage: WxtStorageItem<string, Record<string, unknown>>
+  facetFiltersStorage: WxtStorageItem<FacetSelection, Record<string, unknown>>
 }
 
-export const useTableState = ({ visibleColumnsStorage, rowsPerPageStorage }: UseTableStateOptions) => {
-  const { rowsPerPage, setRowsPerPage, setVisibleColumns, visibleColumns } = usePersistentTableState({
+export const useTableState = ({
+  visibleColumnsStorage,
+  rowsPerPageStorage,
+  filterValueStorage,
+  facetFiltersStorage,
+}: UseTableStateOptions) => {
+  const {
+    facetFilters,
+    filterValue,
+    rowsPerPage,
+    setFacetFilters,
+    setFilterValue,
+    setRowsPerPage,
+    setVisibleColumns,
+    visibleColumns,
+  } = usePersistentTableState({
+    facetFiltersStorage,
+    filterValueStorage,
     rowsPerPageStorage,
     visibleColumnsStorage,
   })
 
-  const { facetFilters, filterValue, page, setFacetFilters, setFilterValue, setPage } = useTransientTableState()
+  const { page, setPage } = useTransientTableState()
 
   const onRowsPerPageChange = useCallback(
     (event: React.ChangeEvent<HTMLSelectElement>) => {

@@ -3,6 +3,8 @@ import type { WxtStorageItem } from 'wxt/utils/storage'
 import { act, renderHook, waitFor } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 
+import type { FacetSelection } from '@/src/components/tables/table-types'
+
 import { useTableState } from './use-table-state'
 
 type Listener<T> = (value: T) => void
@@ -33,17 +35,28 @@ const createStorageItem = <T,>(initial: T) => {
 const setup = () => {
   const visibleColumnsStorage = createStorageItem<string[]>(['col-a', 'col-b'])
   const rowsPerPageStorage = createStorageItem<number>(10)
-  return { rowsPerPageStorage, visibleColumnsStorage }
+  const filterValueStorage = createStorageItem('')
+  const facetFiltersStorage = createStorageItem<FacetSelection>({})
+  return { facetFiltersStorage, filterValueStorage, rowsPerPageStorage, visibleColumnsStorage }
 }
+
+const renderTableState = (storages = setup()) =>
+  renderHook(() =>
+    useTableState({
+      facetFiltersStorage: storages.facetFiltersStorage,
+      filterValueStorage: storages.filterValueStorage,
+      rowsPerPageStorage: storages.rowsPerPageStorage,
+      visibleColumnsStorage: storages.visibleColumnsStorage,
+    }),
+  )
 
 // Flush the async storage-init effect (getValue resolves in a microtask and
 // Updates state) so the deferred state update happens inside act(...).
 const flushEffects = () => act(async () => {})
 
 describe('useTableState', () => {
-  it('exposes initial values from storage and transient state', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+  it('exposes initial values from storage and transient page state', async () => {
+    const { result } = renderTableState()
 
     await waitFor(() => {
       expect(result.current.visibleColumns).toStrictEqual(['col-a', 'col-b'])
@@ -55,9 +68,32 @@ describe('useTableState', () => {
     expect(result.current.facetFilters).toStrictEqual({})
   })
 
+  it('restores search and facet filters from storage after remount', async () => {
+    const storages = setup()
+    const { result, unmount } = renderTableState(storages)
+    await flushEffects()
+
+    act(() => {
+      result.current.onSearchChange('checkout')
+    })
+    act(() => {
+      result.current.handleToggleFacet('tags', 'checkout')
+    })
+
+    expect(result.current.filterValue).toBe('checkout')
+    expect(result.current.facetFilters).toStrictEqual({ tags: ['checkout'] })
+
+    unmount()
+
+    const { result: remounted } = renderTableState(storages)
+    await waitFor(() => {
+      expect(remounted.current.filterValue).toBe('checkout')
+      expect(remounted.current.facetFilters).toStrictEqual({ tags: ['checkout'] })
+    })
+  })
+
   it('toggles facet values, resets the page, and clears them all', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    const { result } = renderTableState()
     await flushEffects()
 
     act(() => {
@@ -85,8 +121,7 @@ describe('useTableState', () => {
   })
 
   it('resets the page when changing rows per page', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    const { result } = renderTableState()
     await flushEffects()
 
     act(() => {
@@ -105,8 +140,7 @@ describe('useTableState', () => {
   })
 
   it('resets the page to 1 when a non-empty search value is set', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    const { result } = renderTableState()
     await flushEffects()
 
     act(() => {
@@ -122,8 +156,7 @@ describe('useTableState', () => {
   })
 
   it('clears filterValue without resetting page when search is emptied', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    const { result } = renderTableState()
     await flushEffects()
 
     act(() => {
@@ -141,8 +174,7 @@ describe('useTableState', () => {
   })
 
   it('exposes setters for filter value and visible columns', async () => {
-    const { visibleColumnsStorage, rowsPerPageStorage } = setup()
-    const { result } = renderHook(() => useTableState({ rowsPerPageStorage, visibleColumnsStorage }))
+    const { result } = renderTableState()
     await flushEffects()
 
     act(() => {

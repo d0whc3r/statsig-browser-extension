@@ -1,8 +1,10 @@
-import { memo, useCallback, useMemo, useState } from 'react'
+import { memo, useCallback, useMemo } from 'react'
 
 import { useAuditLogFiltering } from '@/src/hooks/use-audit-log-filtering'
 import { useAuditLogs } from '@/src/hooks/use-audit-logs'
 import { useDebounce } from '@/src/hooks/use-debounce'
+import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
+import { auditLogsActionFilterStorage, auditLogsFilterValueStorage } from '@/src/lib/storage'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 import { AuditLogFilters } from './audit-logs/AuditLogFilters'
@@ -31,9 +33,9 @@ const useAuditLogActions = (
 }
 
 const useAuditLogState = () => {
-  const [filterValue, setFilterValue] = useState('')
+  const [filterValue, setFilterValue] = useWxtStorage(auditLogsFilterValueStorage)
   const debouncedFilterValue = useDebounce(filterValue, FILTER_DEBOUNCE_MS)
-  const [actionFilter, setActionFilter] = useState('all')
+  const [actionFilter, setActionFilter] = useWxtStorage(auditLogsActionFilterStorage)
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } = useAuditLogs()
 
   const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])

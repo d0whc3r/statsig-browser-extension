@@ -3,27 +3,27 @@ import type { DynamicConfig, Experiment, FeatureGate } from '@/src/types/statsig
 import type { Facet } from './table-types'
 
 export const experimentColumns = [
-  { name: 'NAME', sortable: false, uid: 'name', width: 'w-[26%]' },
-  { name: 'HYPOTHESIS', sortable: false, uid: 'hypothesis', width: 'w-[20%]' },
-  { name: 'ALLOCATION', sortable: false, uid: 'allocation', width: 'w-[12%]' },
-  { name: 'TAGS', sortable: false, uid: 'tags', width: 'w-[18%]' },
-  { name: 'STATUS', sortable: false, uid: 'status', width: 'w-[14%]' },
-  { name: 'ACTIONS', uid: 'actions', width: 'w-[10%]' },
+  { name: 'NAME', sortable: true, uid: 'name', width: 'w-[26%]' },
+  { name: 'HYPOTHESIS', sortable: true, uid: 'hypothesis', width: 'w-[20%]' },
+  { name: 'ALLOCATION', sortable: true, uid: 'allocation', width: 'w-[12%]' },
+  { name: 'TAGS', sortable: true, uid: 'tags', width: 'w-[18%]' },
+  { name: 'STATUS', sortable: true, uid: 'status', width: 'w-[14%]' },
+  { name: 'ACTIONS', sortable: false, uid: 'actions', width: 'w-[10%]' },
 ] as const
 
 export const dynamicConfigColumns = [
-  { name: 'NAME', sortable: false, uid: 'name', width: 'w-[42%]' },
-  { name: 'TAGS', sortable: false, uid: 'tags', width: 'w-[28%]' },
-  { name: 'ENABLED', sortable: false, uid: 'isEnabled', width: 'w-[18%]' },
-  { name: 'ACTIONS', uid: 'actions', width: 'w-[12%]' },
+  { name: 'NAME', sortable: true, uid: 'name', width: 'w-[42%]' },
+  { name: 'TAGS', sortable: true, uid: 'tags', width: 'w-[28%]' },
+  { name: 'ENABLED', sortable: true, uid: 'isEnabled', width: 'w-[18%]' },
+  { name: 'ACTIONS', sortable: false, uid: 'actions', width: 'w-[12%]' },
 ] as const
 
 export const featureGateColumns = [
-  { name: 'NAME', sortable: false, uid: 'name', width: 'w-[34%]' },
-  { name: 'TAGS', sortable: false, uid: 'tags', width: 'w-[24%]' },
-  { name: 'STATUS', sortable: false, uid: 'status', width: 'w-[15%]' },
-  { name: 'ENABLED', sortable: false, uid: 'isEnabled', width: 'w-[14%]' },
-  { name: 'ACTIONS', uid: 'actions', width: 'w-[13%]' },
+  { name: 'NAME', sortable: true, uid: 'name', width: 'w-[34%]' },
+  { name: 'TAGS', sortable: true, uid: 'tags', width: 'w-[24%]' },
+  { name: 'STATUS', sortable: true, uid: 'status', width: 'w-[15%]' },
+  { name: 'ENABLED', sortable: true, uid: 'isEnabled', width: 'w-[14%]' },
+  { name: 'ACTIONS', sortable: false, uid: 'actions', width: 'w-[13%]' },
 ] as const
 
 export type ExperimentColumnKey = (typeof experimentColumns)[number]['uid']

@@ -2,9 +2,10 @@ import type { Dispatch, SetStateAction } from 'react'
 
 import React, { useCallback } from 'react'
 
-import type { Column, FacetGroup, FacetSelection } from '@/src/components/tables/table-types'
+import type { Column, FacetGroup, FacetSelection, HeaderColumn } from '@/src/components/tables/table-types'
 
 import { BottomContent } from '@/src/components/tables/BottomContent'
+import { getAriaSort, SortableHeader } from '@/src/components/tables/SortableHeader'
 import { TopContent } from '@/src/components/tables/TopContent'
 import { Button } from '@/src/components/ui/button'
 import { Table, TableBody, TableHead, TableHeader, TableRow } from '@/src/components/ui/table'
@@ -22,7 +23,7 @@ interface EntityTableProps {
   handleSetFilterValue: (value: string) => void
   handleSetVisibleColumns: (keys: string[]) => void
   hasNextPage: boolean
-  headerColumns: readonly Column[]
+  headerColumns: readonly HeaderColumn[]
   isFetchingNextPage: boolean
   onRowsPerPageChange: (event: React.ChangeEvent<HTMLSelectElement>) => void
   onSearchChange: (value: string) => void
@@ -95,8 +96,16 @@ export function EntityTable({
             <TableHeader>
               <TableRow>
                 {headerColumns.map((column) => (
-                  <TableHead key={column.uid} className={cn(column.width, column.uid === 'actions' && 'text-right')}>
-                    {column.name}
+                  <TableHead
+                    key={column.uid}
+                    className={cn(column.width, column.uid === 'actions' && 'text-right')}
+                    aria-sort={column.canSort ? getAriaSort(column.sortDirection) : undefined}
+                  >
+                    {column.canSort ? (
+                      <SortableHeader label={column.name} sortDirection={column.sortDirection} onSort={column.onSort} />
+                    ) : (
+                      column.name
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
