@@ -96,6 +96,27 @@ test.describe('settings sheet', () => {
     await expect(page.getByRole('heading', { name: /Extension Settings/iu })).toBeVisible()
   })
 
+  test('theme choice applies immediately and survives a reload', async ({ context, extensionId }) => {
+    const page = await context.newPage()
+    await page.setViewportSize({ height: 600, width: 800 })
+    await openAuthenticated(page, extensionId)
+    await openSettingsSheet(page)
+
+    const themeSelect = page.getByRole('combobox').first()
+    await themeSelect.click()
+    await page.getByRole('option', { name: /^Dark$/iu }).click()
+
+    await expect(page.locator('html')).toHaveClass(/dark/u)
+
+    await page.keyboard.press('Escape')
+    await page.reload()
+    await expect(page.getByText('Login to Statsig')).toBeHidden()
+    await expect(page.locator('html')).toHaveClass(/dark/u)
+
+    await openSettingsSheet(page)
+    await expect(page.getByRole('combobox').first()).toHaveText(/dark/iu)
+  })
+
   test('closes sheet via Escape without persisting an edit', async ({ context, extensionId }) => {
     const page = await context.newPage()
     await openAuthenticated(page, extensionId)

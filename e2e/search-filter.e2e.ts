@@ -116,6 +116,22 @@ test.describe('search and filter', () => {
     await expect(page.getByRole('button', { name: /Clear/u })).toBeVisible()
   })
 
+  test('audit log search filters the visible entries', async ({ context, extensionId }) => {
+    const page = await context.newPage()
+    await mockApi(page, defaultRoutes())
+    await page.goto(`chrome-extension://${extensionId}/popup.html`)
+    await expect(page.getByText('Login to Statsig')).toBeHidden()
+
+    await page.getByRole('tab', { name: /Audit Logs/iu }).click()
+    await expect(page.getByText('new_checkout_flow').first()).toBeVisible()
+
+    await page.getByPlaceholder(/Search audit logs/iu).fill('nonexistent_log_xyz')
+    await expect(page.getByText('No results found')).toBeVisible()
+
+    await page.getByPlaceholder(/Search audit logs/iu).fill('checkout')
+    await expect(page.getByText('new_checkout_flow').first()).toBeVisible()
+  })
+
   test('search survives reopening the popup', async ({ context, extensionId }) => {
     const page = await context.newPage()
     await openOnGatesTab(page, extensionId)

@@ -97,7 +97,7 @@ export const BaseOverrideContextCard = memo(function BaseOverrideContextCard({
                 <Badge
                   key={override.environment ?? 'global'}
                   variant="secondary"
-                  className="h-5 border-green-500/20 bg-green-500/10 px-1.5 text-[10px] text-green-600"
+                  className="h-5 border-success/20 bg-success/10 px-1.5 text-[10px] text-success"
                 >
                   <CheckCircle2 className="mr-1 h-3 w-3" />
                   {override.environment ?? 'Global'}

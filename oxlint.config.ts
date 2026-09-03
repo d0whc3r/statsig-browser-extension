@@ -52,6 +52,7 @@ export default defineConfig({
         'max-statements': 'off',
         'no-explicit-any': 'off',
         'no-magic-numbers': 'off',
+        'numeric-separators-style': 'off',
         'typescript/consistent-type-imports': 'off',
         'typescript/no-explicit-any': 'off',
         'typescript/no-unsafe-argument': 'off',

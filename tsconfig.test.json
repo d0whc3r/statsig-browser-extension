@@ -5,6 +5,6 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false
   },
-  "include": ["src/tests/**/*", "src/**/*", "types/**/*"],
+  "include": ["src/tests/**/*", "src/**/*", "entrypoints/**/*", "types/**/*", ".wxt/wxt.d.ts"],
   "exclude": [".output"]
 }

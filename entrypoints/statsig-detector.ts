@@ -1,3 +1,5 @@
+import { defineContentScript } from 'wxt/utils/define-content-script'
+
 import { getUserDetailsFromPage } from '@/src/lib/get-user-details-injector'
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null

@@ -21,8 +21,11 @@ const detailRoutes = (): MockRoute[] => [
   { data: paginated(mockAuditLogs), urlPattern: String.raw`/audit_logs(\?|$)` },
   // Per-entity detail endpoints. Order matters: list patterns above are anchored
   // To `?` or end-of-string, so detail URLs (`/gates/:id`) cannot collide.
-  { data: emptyOverrides, urlPattern: String.raw`/gates/[^/]+/overrides(\?|$)` },
+  { data: { data: [{ rules: [] }], message: 'ok' }, urlPattern: String.raw`/gates/[^/]+/rules(\?|$)` },
+  { data: { data: [{ rules: [] }], message: 'ok' }, urlPattern: String.raw`/dynamic_configs/[^/]+/rules(\?|$)` },
+  { data: single(emptyOverrides), urlPattern: String.raw`/gates/[^/]+/overrides(\?|$)` },
   { data: single(mockFeatureGates[0]), urlPattern: String.raw`/gates/[^/]+(\?|$)` },
+  { data: single({ overrides: [], userIDOverrides: [] }), urlPattern: String.raw`/experiments/[^/]+/overrides(\?|$)` },
   { data: single(mockExperiments[0]), urlPattern: String.raw`/experiments/[^/]+(\?|$)` },
   { data: single(mockDynamicConfigs[0]), urlPattern: String.raw`/dynamic_configs/[^/]+(\?|$)` },
 ]
@@ -81,6 +84,34 @@ test.describe('detail sheets', () => {
 
     // Sheet header repeats the name and exposes Statsig deep link button.
     await expect(page.getByRole('dialog').getByRole('link', { name: /Statsig/iu })).toBeVisible()
+  })
+
+  test('gate sheet details tab shows description and the rules tab shows empty rules', async ({
+    context,
+    extensionId,
+  }) => {
+    const page = await context.newPage()
+    await openAuthenticated(page, extensionId)
+
+    await page.getByRole('tab', { name: /Gates/iu }).click()
+    await page.getByRole('row', { name: /new_checkout_flow/u }).click()
+
+    await expect(page.getByRole('dialog').getByText(/brand-new shiny checkout/u)).toBeVisible()
+    await expect(page.getByRole('dialog').getByText('checkout', { exact: true })).toBeVisible()
+
+    await page.getByRole('tab', { name: /^Rules$/iu }).click()
+    await expect(page.getByText(/No rules configured|Failed to load rules/iu)).toBeVisible()
+  })
+
+  test('config sheet shows the default value JSON', async ({ context, extensionId }) => {
+    const page = await context.newPage()
+    await openAuthenticated(page, extensionId)
+
+    await page.getByRole('tab', { name: /Configs/iu }).click()
+    await page.getByRole('row', { name: /homepage_banner_config/u }).click()
+
+    await expect(page.getByText('Default Value')).toBeVisible()
+    await expect(page.getByText(/"greeting": "Hello"/u)).toBeVisible()
   })
 
   test('Escape closes an open detail sheet', async ({ context, extensionId }) => {

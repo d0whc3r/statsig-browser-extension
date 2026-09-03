@@ -1,6 +1,7 @@
 import type { Runtime } from 'webextension-polyfill'
 
 import { browser } from 'wxt/browser'
+import { defineContentScript } from 'wxt/utils/define-content-script'
 
 interface StatsigUserMessage {
   type: string

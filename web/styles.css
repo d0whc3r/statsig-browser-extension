@@ -13,14 +13,14 @@
   --surface: oklch(0.98 0.01 271.41);
   --surface-elevated: oklch(1 0 0);
   --text: oklch(0.21 0.03 263.61);
-  --text-muted: oklch(0.55 0.02 264.41);
+  --text-muted: oklch(0.45 0.03 264.41);
   --primary: oklch(0.48 0.2 260.47);
   --primary-hover: oklch(0.42 0.18 260.47);
   --primary-soft: oklch(0.95 0.02 260.18);
   --primary-soft-border: oklch(0.89 0.02 259.43);
   --border: oklch(0.89 0.02 259.43);
   --border-soft: oklch(0.93 0.01 262);
-  --destructive: oklch(0.58 0.22 27.29);
+  --destructive: oklch(0.52 0.22 27.29);
   --accent: oklch(0.95 0.02 260.18);
 
   /* Shadows */
@@ -829,7 +829,7 @@ img {
     --surface: oklch(0.17 0.02 263);
     --surface-elevated: oklch(0.2 0.02 263);
     --text: oklch(0.94 0.01 263);
-    --text-muted: oklch(0.65 0.02 263);
+    --text-muted: oklch(0.78 0.02 263);
     --primary: oklch(0.62 0.2 260.47);
     --primary-hover: oklch(0.68 0.2 260.47);
     --primary-soft: oklch(0.22 0.04 260);
@@ -852,6 +852,10 @@ img {
 
   .topbar {
     background: oklch(0.14 0.02 263 / 0.9);
+  }
+
+  .hero-visual img {
+    filter: brightness(0) invert(1);
   }
 
   .cta-section {

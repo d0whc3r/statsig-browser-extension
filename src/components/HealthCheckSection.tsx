@@ -33,7 +33,7 @@ export function HealthCheckSection({ healthChecks }: Readonly<{ healthChecks?: H
             <div
               className={cn(
                 'h-2.5 w-2.5 shrink-0 rounded-full',
-                healthCheck.status === 'PASSED' ? 'bg-green-500' : 'bg-muted-foreground/30',
+                healthCheck.status === 'PASSED' ? 'bg-success' : 'bg-muted-foreground',
               )}
             />
             <Tooltip>

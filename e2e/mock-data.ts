@@ -10,6 +10,7 @@ import type { MockRoute } from './mocks'
 
 export {
   emptyGateOverride as emptyOverrides,
+  makeFeatureGate,
   mockAuditLogs,
   mockDynamicConfigs,
   mockExperiments,
