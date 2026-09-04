@@ -8,7 +8,8 @@ export default defineConfig({
   test: {
     clearMocks: true,
     coverage: {
-      enabled: true,
+      // Coverage costs ~20% of runtime; CI needs it for Codecov, a local `pnpm test` does not.
+      enabled: Boolean(process.env.CI),
       exclude: ['src/tests/**/*', '**/*.d.ts', '**/*.test.ts', '**/*.test.tsx', 'src/components/ui/**/*'],
       include: ['{src,entrypoints}/**/*.{ts,tsx}'],
       reporter: ['text', 'json', 'html'],
@@ -17,6 +18,8 @@ export default defineConfig({
     exclude: ['**/node_modules/**', '**/dist/**', '**/.output/**', 'e2e/**'],
     globals: true,
     mockReset: false,
+    // Threads beat the default forks pool by ~20% here; nothing in this suite needs process isolation.
+    pool: 'threads',
     reporters: ['dot'],
     restoreMocks: true,
     setupFiles: ['./src/tests/setup.ts'],
