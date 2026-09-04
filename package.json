@@ -92,7 +92,7 @@
     "@vitest/ui": "4.1.11",
     "@wxt-dev/module-react": "1.2.2",
     "autoprefixer": "10.5.4",
-    "happy-dom": "20.13.2",
+    "happy-dom": "20.14.0",
     "husky": "9.1.7",
     "knip": "6.34.0",
     "lint-staged": "17.4.1",
