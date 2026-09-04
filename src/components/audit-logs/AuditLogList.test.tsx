@@ -37,6 +37,7 @@ describe('auditLogList', () => {
         hasNextPage={false}
         isFetchingNextPage={false}
         isLoading
+        onClearFilters={vi.fn()}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
       />,
@@ -53,6 +54,7 @@ describe('auditLogList', () => {
         hasNextPage={false}
         isFetchingNextPage={false}
         isLoading={false}
+        onClearFilters={vi.fn()}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
       />,
@@ -60,7 +62,9 @@ describe('auditLogList', () => {
     expect(screen.getByText('No audit logs found')).toBeInTheDocument()
   })
 
-  it('shows the search empty state when filters are active', () => {
+  it('shows the search empty state when filters are active and clears them', async () => {
+    const user = userEvent.setup()
+    const onClearFilters = vi.fn()
     render(
       <AuditLogList
         actionFilter="create"
@@ -69,11 +73,14 @@ describe('auditLogList', () => {
         hasNextPage={false}
         isFetchingNextPage={false}
         isLoading={false}
+        onClearFilters={onClearFilters}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
       />,
     )
-    expect(screen.getByText('No results found')).toBeInTheDocument()
+    expect(screen.getByText('No results with the current filters')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /clear all filters/iu }))
+    expect(onClearFilters).toHaveBeenCalledTimes(1)
   })
 
   it('renders rows, load-more, and the end-of-list footer', async () => {
@@ -90,6 +97,7 @@ describe('auditLogList', () => {
         hasNextPage
         isFetchingNextPage={false}
         isLoading={false}
+        onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
       />,
@@ -110,6 +118,7 @@ describe('auditLogList', () => {
         hasNextPage
         isFetchingNextPage
         isLoading={false}
+        onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
       />,
@@ -124,6 +133,7 @@ describe('auditLogList', () => {
         hasNextPage={false}
         isFetchingNextPage={false}
         isLoading={false}
+        onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
       />,

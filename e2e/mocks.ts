@@ -1,6 +1,6 @@
 import type { Page, Worker } from '@playwright/test'
 
-import { seedExtensionLocalStorage } from './extension-runtime'
+import { seedExtensionLocalStorage, seedPinnedProject } from './extension-runtime'
 
 export interface MockRoute {
   /** Regex (as string) matched against the request URL (the path passed to wretch). */
@@ -28,15 +28,29 @@ export interface MockApi {
 }
 
 const STORAGE_KEY = 'statsig-console-api-key'
+/**
+ * Origin reported to the popup as the inspected site. Chrome hides the URL of the
+ * `chrome-extension://` tabs the e2e popups run in (`<all_urls>` does not cover them), so the popup
+ * would see no site at all and refuse to load a project. `mockApi` fills that URL in and
+ * {@link seedApiKey} pins the seeded project to it, which is the state of a real popup opened on a
+ * site belonging to the project.
+ */
+export const ACTIVE_TAB_ORIGIN = 'https://e2e-app.test'
 const HTTP_OK_MIN = 200
 const HTTP_OK_MAX = 300
 const RECORD_GLOBAL = '__e2eMockApiCalls'
 
 /**
- * Resets the extension's local storage and seeds the API key.
+ * Resets the extension's local storage and seeds a project holding the API key, pinned to the
+ * extension origin so the popup accepts the page it is opened on.
  * Forces the popup to skip the login modal on next load.
  */
 export const seedApiKey = async (serviceWorker: Worker, apiKey = 'console-mock-key'): Promise<void> => {
+  await serviceWorker.evaluate(seedPinnedProject, [STORAGE_KEY, apiKey, ACTIVE_TAB_ORIGIN] as [string, string, string])
+}
+
+/** Seeds only the pre-projects API key, as stored by versions before multi-project support. */
+export const seedLegacyApiKey = async (serviceWorker: Worker, apiKey = 'console-mock-key'): Promise<void> => {
   await serviceWorker.evaluate(seedExtensionLocalStorage, [STORAGE_KEY, apiKey] as [string, string])
 }
 
@@ -60,11 +74,13 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
       httpOkMin,
       httpOkMax,
       recordGlobal,
+      activeTabUrl,
     }: {
       serializedRoutes: MockRoute[]
       httpOkMin: number
       httpOkMax: number
       recordGlobal: string
+      activeTabUrl: string
     }) => {
       interface ApiMessage {
         type?: string
@@ -153,8 +169,31 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
       }
 
       patchRuntime(runtimeRoot.browser)
+
+      interface FakeTab {
+        url?: string
+      }
+      const tabsRoot = root as { browser?: { tabs?: { query?: (...args: unknown[]) => Promise<FakeTab[]> } } }
+      const queryTabs = tabsRoot.browser?.tabs?.query?.bind(tabsRoot.browser.tabs)
+
+      // Chrome withholds the URL of extension tabs, so report the inspected site the popup expects.
+      if (queryTabs && tabsRoot.browser?.tabs) {
+        tabsRoot.browser.tabs.query = async (...args: unknown[]) => {
+          const tabs = await queryTabs(...args)
+          for (const tab of tabs) {
+            tab.url ??= activeTabUrl
+          }
+          return tabs
+        }
+      }
     },
-    { httpOkMax: HTTP_OK_MAX, httpOkMin: HTTP_OK_MIN, recordGlobal: RECORD_GLOBAL, serializedRoutes: routes },
+    {
+      activeTabUrl: `${ACTIVE_TAB_ORIGIN}/`,
+      httpOkMax: HTTP_OK_MAX,
+      httpOkMin: HTTP_OK_MIN,
+      recordGlobal: RECORD_GLOBAL,
+      serializedRoutes: routes,
+    },
   )
 
   const calls = async (): Promise<RecordedCall[]> =>

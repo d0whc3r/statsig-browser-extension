@@ -21,6 +21,10 @@ export interface WindowWithStatsig extends Window {
   __STATSIG_SDK__?: StatsigGlobal
   __STATSIG__?: {
     instances?: Record<string, StatsigInstance>
+    /** Session replay instances, also keyed by client SDK key. */
+    srInstances?: Record<string, unknown>
+    /** Auto capture instances, also keyed by client SDK key. */
+    acInstances?: Record<string, unknown>
     instance: (key?: string) => StatsigInstance
     firstInstance?: StatsigInstance
     firstInterface?: StatsigInstance | (() => StatsigInstance)

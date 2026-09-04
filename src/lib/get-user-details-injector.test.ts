@@ -1,5 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { djb2 } from './djb2'
 import { getUserDetailsFromPage } from './get-user-details-injector'
 
 interface StatsigGlobals {
@@ -102,6 +103,7 @@ describe('getUserDetailsFromPage', () => {
 
     expect(getUserDetailsFromPage()).toStrictEqual({
       context: undefined,
+      keys: { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-1'] },
       user: { stableID: 'react_stable', userID: 'u_react' },
     })
   })
@@ -159,5 +161,112 @@ describe('getUserDetailsFromPage', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {})
     expect(getUserDetailsFromPage()).toBeNull()
     spy.mockRestore()
+  })
+})
+
+describe('getUserDetailsFromPage key detection', () => {
+  afterEach(() => {
+    cleanup()
+    globalThis.localStorage.clear()
+  })
+
+  it('collects the client SDK key from every instance map and from the context', () => {
+    win.__STATSIG__ = {
+      acInstances: { 'client-autocapture': {} },
+      instance: () => ({}),
+      instances: {
+        'client-main': {
+          _user: { userID: 'u_1' },
+          getContext: () => ({ sdkKey: 'client-context', values: {} }),
+        },
+      },
+      srInstances: { 'client-replay': {} },
+    }
+
+    expect(getUserDetailsFromPage()?.keys).toStrictEqual({
+      gateHashes: [],
+      hashedSdkKeys: [],
+      sdkKeys: ['client-main', 'client-replay', 'client-autocapture', 'client-context'],
+    })
+  })
+
+  it('ignores instance keys that are not client SDK keys', () => {
+    win.__STATSIG__ = {
+      instance: () => ({}),
+      instances: { 'not-a-key': { _user: { userID: 'u_1' } } },
+    }
+
+    expect(getUserDetailsFromPage()?.keys).toBeUndefined()
+  })
+
+  it('reads the hashed SDK key and the gate hashes from the evaluation payload', () => {
+    win.statsig = {
+      _user: { userID: 'u_1' },
+      getContext: () => ({
+        sdkKey: 'client-main',
+        values: {
+          feature_gates: { '111': {}, '222': {} },
+          hash_used: 'djb2',
+          hashed_sdk_key_used: '2447027979',
+        },
+      }),
+    }
+
+    expect(getUserDetailsFromPage()?.keys).toStrictEqual({
+      gateHashes: ['111', '222'],
+      hashedSdkKeys: ['2447027979'],
+      sdkKeys: ['client-main'],
+    })
+  })
+
+  it('hashes plain gate names when the payload is not hashed', () => {
+    win.statsig = {
+      _user: { userID: 'u_1' },
+      getContext: () => ({
+        values: { feature_gates: { a_gate: {} }, hash_used: 'none' },
+      }),
+    }
+
+    expect(getUserDetailsFromPage()?.keys?.gateHashes).toStrictEqual([djb2('a_gate')])
+  })
+
+  it('skips gate hashes the Console API cannot reproduce', () => {
+    win.statsig = {
+      _user: { userID: 'u_1' },
+      getContext: () => ({
+        values: { feature_gates: { abc: {} }, hash_used: 'sha256', hashed_sdk_key_used: '123' },
+      }),
+    }
+
+    expect(getUserDetailsFromPage()?.keys).toStrictEqual({
+      gateHashes: [],
+      hashedSdkKeys: ['123'],
+      sdkKeys: [],
+    })
+  })
+
+  it('falls back to the cached evaluations of a bootstrapped page', () => {
+    globalThis.localStorage.setItem(
+      'statsig.cached.evaluations.123',
+      JSON.stringify({
+        data: JSON.stringify({ feature_gates: { '999': {} }, hash_used: 'djb2', hashed_sdk_key_used: '2414204405' }),
+      }),
+    )
+    win.statsig = { _user: { userID: 'u_1' } }
+
+    expect(getUserDetailsFromPage()?.keys).toStrictEqual({
+      gateHashes: ['999'],
+      hashedSdkKeys: ['2414204405'],
+      sdkKeys: [],
+    })
+  })
+
+  it('ignores unrelated or malformed storage entries', () => {
+    globalThis.localStorage.setItem('unrelated', 'value')
+    globalThis.localStorage.setItem('statsig.cached.evaluations.1', 'not json')
+    globalThis.localStorage.setItem('statsig.cached.evaluations.2', JSON.stringify({ data: 42 }))
+    win.statsig = { _user: { userID: 'u_1' } }
+
+    expect(getUserDetailsFromPage()?.keys).toBeUndefined()
   })
 })

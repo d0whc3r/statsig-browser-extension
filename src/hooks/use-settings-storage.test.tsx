@@ -3,7 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useSettingsStorage } from './use-settings-storage'
 
-const setApiKey = vi.fn()
+const clearProjects = vi.fn()
 const setLocalStorageKey = vi.fn()
 const setStorageType = vi.fn()
 const setTypeApiKey = vi.fn()
@@ -21,15 +21,17 @@ vi.mock('@/src/store/use-settings-store', () => ({
 
 describe('useSettingsStorage', () => {
   beforeEach(() => {
-    setApiKey.mockReset()
+    clearProjects.mockReset()
     setLocalStorageKey.mockReset()
     setStorageType.mockReset()
     setTypeApiKey.mockReset()
     setCurrentOverrides.mockReset()
     useSettingsStore.mockReturnValue({
+      activeProjectId: 'p1',
       apiKey: 'console-key',
+      clearProjects,
       isApiKeyLoading: false,
-      setApiKey,
+      projects: [],
     })
     useWxtStorage
       .mockReset()
@@ -61,14 +63,14 @@ describe('useSettingsStorage', () => {
     expect(setTypeApiKey).toHaveBeenCalledWith('write-key')
   })
 
-  it('reset clears the api key, local storage key, and overrides', async () => {
+  it('reset clears the projects, local storage key, and overrides', async () => {
     const { result } = renderHook(() => useSettingsStorage())
 
     await act(async () => {
       await result.current.reset()
     })
 
-    expect(setApiKey).toHaveBeenCalledWith('')
+    expect(clearProjects).toHaveBeenCalledWith()
     expect(setLocalStorageKey).toHaveBeenCalledWith('statsig_user')
     expect(setCurrentOverrides).toHaveBeenCalledWith([])
     expect(setStorageType).not.toHaveBeenCalled()

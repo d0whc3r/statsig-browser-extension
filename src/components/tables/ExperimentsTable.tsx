@@ -32,6 +32,9 @@ export function ExperimentsTable() {
     >
       <EntityTableBody<Experiment>
         headerColumns={tableLogic.headerColumns}
+        hasActiveFilters={tableLogic.hasActiveFilters}
+        // oxlint-disable-next-line react/jsx-handler-names
+        onClearFilters={tableLogic.handleClearAllFilters}
         isLoading={tableLogic.isLoading}
         items={tableLogic.items}
         onRowClick={tableLogic.setCurrentEntity}

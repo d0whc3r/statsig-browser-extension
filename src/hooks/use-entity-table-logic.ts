@@ -4,7 +4,12 @@ import type { Column, Facet } from '@/src/components/tables/table-types'
 import type { TableId } from '@/src/store/use-ui-preferences-store'
 
 import { useEntityDataTable } from '@/src/hooks/use-entity-data-table'
-import { applyFacetFilters, buildFacetGroups, clampPage } from '@/src/hooks/use-entity-table-logic.utils'
+import {
+  applyFacetFilters,
+  buildFacetGroups,
+  clampPage,
+  countActiveFacetValues,
+} from '@/src/hooks/use-entity-table-logic.utils'
 import { useFusedItems } from '@/src/hooks/use-fused-items'
 import { useTableState } from '@/src/hooks/use-table-state'
 import { useUIStore } from '@/src/store/use-ui-store'
@@ -70,6 +75,7 @@ export function useEntityTableLogic<T extends { id: string }>({
   const {
     facetFilters,
     filterValue,
+    handleClearAllFilters,
     handleClearFacets,
     handleSetFilterValue,
     handleSetVisibleColumns,
@@ -114,6 +120,7 @@ export function useEntityTableLogic<T extends { id: string }>({
     fetchNextPage,
     filterValue,
     filteredCount: filteredItems.length,
+    handleClearAllFilters,
     handleClearFacets,
     handleRefetch: useCallback(() => {
       void refetch?.()
@@ -121,6 +128,7 @@ export function useEntityTableLogic<T extends { id: string }>({
     handleSetFilterValue,
     handleSetVisibleColumns,
     handleToggleFacet,
+    hasActiveFilters: filterValue.length > 0 || countActiveFacetValues(facetFilters) > 0,
     hasNextPage,
     headerColumns,
     isError,

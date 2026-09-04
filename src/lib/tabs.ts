@@ -24,3 +24,18 @@ export async function getActiveTab() {
   }
   return null
 }
+
+/**
+ * Resolves the origin of the active tab, used to pin a site to a Statsig project.
+ *
+ * @returns The active tab origin, or an empty string when it cannot be resolved
+ */
+export async function getActiveTabOrigin() {
+  const tab = await getActiveTab()
+
+  try {
+    return tab?.url ? new URL(tab.url).origin : ''
+  } catch {
+    return ''
+  }
+}

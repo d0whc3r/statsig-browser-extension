@@ -38,6 +38,9 @@ export function DynamicConfigsTable() {
         error={tableLogic.error}
         onRetry={tableLogic.handleRefetch}
         headerColumns={tableLogic.headerColumns}
+        hasActiveFilters={tableLogic.hasActiveFilters}
+        // oxlint-disable-next-line react/jsx-handler-names
+        onClearFilters={tableLogic.handleClearAllFilters}
         isError={tableLogic.isError}
         isLoading={tableLogic.isLoading}
         items={tableLogic.items}

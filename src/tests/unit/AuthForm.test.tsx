@@ -24,23 +24,12 @@ vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
   }
 })
 
-// Mock useSettingsStorage
-vi.mock(import('@/src/hooks/use-settings-storage'), async (importOriginal) => {
-  const actual = await importOriginal<typeof import('@/src/hooks/use-settings-storage')>()
+// Mock project creation, which persists the key and fetches its detection data
+vi.mock(import('@/src/hooks/use-projects'), async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/src/hooks/use-projects')>()
   return {
     ...actual,
-    useSettingsStorage: () => ({
-      apiKey: '',
-      isApiKeyLoading: false,
-      localStorageValue: 'statsig_user',
-      reset: vi.fn().mockImplementation(async () => {}),
-      setApiKey: vi.fn().mockImplementation(async () => {}),
-      setLocalStorageKey: vi.fn(),
-      setStorageType: vi.fn(),
-      setTypeApiKey: vi.fn(),
-      storageType: 'localStorage',
-      typeApiKey: 'write-key',
-    }),
+    useAddProject: () => vi.fn().mockResolvedValue('project-1'),
   }
 })
 

@@ -73,6 +73,9 @@ const useTableMutations = (tableId: TableId) => {
   )
 
   return {
+    handleClearAllFilters: useCallback(() => {
+      updateTable(tableId, { facetFilters: {}, filterValue: '', page: 1 })
+    }, [tableId, updateTable]),
     handleClearFacets,
     handleSetFilterValue,
     handleSetVisibleColumns,

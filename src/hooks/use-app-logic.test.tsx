@@ -15,8 +15,8 @@ vi.mock('./use-app-initialization', () => ({
   useAppInitialization: vi.fn(),
 }))
 
-vi.mock('./use-detected-user', () => ({
-  useDetectedUser: vi.fn(),
+vi.mock('./use-page-detection', () => ({
+  usePageDetection: () => ({ retryDetection: vi.fn() }),
 }))
 
 vi.mock('./use-logout', () => ({

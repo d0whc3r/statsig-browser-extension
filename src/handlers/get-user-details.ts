@@ -1,5 +1,6 @@
 import { browser } from 'wxt/browser'
 
+import type { DetectedStatsigKeys } from '../lib/projects'
 import type { StatsigUser } from '../types/statsig'
 
 import { getUserDetailsFromPage } from '../lib/get-user-details-injector'
@@ -8,6 +9,8 @@ import { handleApiError } from '../lib/utils'
 export interface UserDetails {
   user: StatsigUser
   context?: Record<string, unknown>
+  /** Identifiers that tell which Statsig project the page belongs to. */
+  keys?: DetectedStatsigKeys
 }
 
 export const getUserDetails = async (tabId: number): Promise<UserDetails | undefined> => {

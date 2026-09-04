@@ -3,6 +3,7 @@ import { memo, useCallback } from 'react'
 
 import statsigLogo from '@/assets/statsig_full.png'
 import packageJson from '@/package.json'
+import { ProjectStatus } from '@/src/components/layout/ProjectStatus'
 import { Button } from '@/src/components/ui/button'
 import {
   DropdownMenu,
@@ -36,6 +37,7 @@ export const Header = memo(function Header({ onLogout }: HeaderProps) {
         <span className="rounded-md bg-muted px-1.5 py-0.5 font-mono text-[10px] leading-none text-muted-foreground">
           v{packageJson.version}
         </span>
+        <ProjectStatus />
       </div>
       <div className="flex items-center gap-2">
         <DropdownMenu>

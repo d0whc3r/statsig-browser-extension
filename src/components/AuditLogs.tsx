@@ -102,6 +102,11 @@ export const AuditLogs = memo(function AuditLogs() {
     [setFilterValue],
   )
 
+  const handleClearFilters = useCallback(() => {
+    setFilterValue('')
+    setActionFilter('all')
+  }, [setFilterValue, setActionFilter])
+
   const { handleLoadMore, handleRefresh, setCurrentAuditLogDetail } = useAuditLogActions(
     fetchNextPage,
     refetch,
@@ -125,6 +130,7 @@ export const AuditLogs = memo(function AuditLogs() {
         actionFilter={actionFilter}
         onViewDetails={setCurrentAuditLogDetail}
         onLoadMore={handleLoadMore}
+        onClearFilters={handleClearFilters}
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         isLoading={isLoading}

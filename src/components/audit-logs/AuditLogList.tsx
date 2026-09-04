@@ -1,3 +1,4 @@
+import { FilterX } from 'lucide-react'
 import { memo, useEffect, useRef } from 'react'
 
 import type { AuditLog } from '@/src/types/statsig'
@@ -14,15 +15,35 @@ interface AuditLogListProps {
   actionFilter: string
   onViewDetails: (id: string) => void
   onLoadMore: () => void
+  onClearFilters: () => void
   hasNextPage: boolean
   isFetchingNextPage: boolean
   isLoading: boolean
 }
 
-function EmptyState({ filterValue, actionFilter }: Readonly<{ filterValue: string; actionFilter: string }>) {
-  const isFiltered = filterValue || actionFilter !== 'all'
+function EmptyState({
+  filterValue,
+  actionFilter,
+  onClearFilters,
+}: Readonly<{ filterValue: string; actionFilter: string; onClearFilters: () => void }>) {
+  const isFiltered = Boolean(filterValue) || actionFilter !== 'all'
 
-  return <GeneralEmptyState variant={isFiltered ? 'search' : 'audit_log'} />
+  if (!isFiltered) {
+    return <GeneralEmptyState variant="audit_log" />
+  }
+
+  return (
+    <GeneralEmptyState
+      variant="search"
+      title="No results with the current filters"
+      description="Every audit log is hidden by the active search or filters. Clear them to see all results."
+    >
+      <Button variant="outline" size="sm" onClick={onClearFilters} className="mt-2">
+        <FilterX className="size-4" />
+        Clear all filters
+      </Button>
+    </GeneralEmptyState>
+  )
 }
 
 function Footer({
@@ -75,6 +96,7 @@ export const AuditLogList = memo(function AuditLogList({
   actionFilter,
   onViewDetails,
   onLoadMore,
+  onClearFilters,
   hasNextPage,
   isFetchingNextPage,
   isLoading,
@@ -106,7 +128,12 @@ export const AuditLogList = memo(function AuditLogList({
   return (
     <div className="min-h-0 flex-1 overflow-auto">
       {filteredItems.length === 0 ? (
-        <EmptyState filterValue={filterValue} actionFilter={actionFilter} />
+        <EmptyState
+          filterValue={filterValue}
+          actionFilter={actionFilter}
+          // oxlint-disable-next-line react/jsx-handler-names
+          onClearFilters={onClearFilters}
+        />
       ) : (
         <div className="divide-y">
           {filteredItems.map((auditLog) => (

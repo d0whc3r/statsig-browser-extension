@@ -8,7 +8,7 @@ import {
 import { useSettingsStore } from '@/src/store/use-settings-store'
 
 export const useSettingsStorage = () => {
-  const { apiKey, isApiKeyLoading, setApiKey } = useSettingsStore()
+  const { activeProjectId, apiKey, clearProjects, isApiKeyLoading, projects } = useSettingsStore()
   const [localStorageValue, setLocalStorageKey] = useWxtStorage(localStorageKeyStorage)
   const [storageType, setStorageType] = useWxtStorage(storageTypeStorage)
   // Force write-key as default since user requested to remove the selector
@@ -21,18 +21,19 @@ export const useSettingsStorage = () => {
   }
 
   const reset = async () => {
-    await setApiKey('')
+    await clearProjects()
     setLocalStorageKey('statsig_user')
     setCurrentOverrides([])
     // We do not reset storageType or typeApiKey as they are user preferences
   }
 
   return {
+    activeProjectId,
     apiKey,
     isApiKeyLoading,
     localStorageValue,
+    projects,
     reset,
-    setApiKey,
     setLocalStorageKey,
     setStorageType,
     setTypeApiKey,

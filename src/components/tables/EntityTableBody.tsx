@@ -1,3 +1,4 @@
+import { FilterX } from 'lucide-react'
 import React from 'react'
 
 import type { GeneralEmptyStateVariant } from '@/src/components/ui/general-empty-state'
@@ -24,6 +25,8 @@ interface EntityTableBodyProps<T extends { id: string }> {
   error?: unknown
   onRetry?: () => void
   errorTitle?: string
+  hasActiveFilters?: boolean
+  onClearFilters?: () => void
 }
 
 export function EntityTableBody<T extends { id: string }>({
@@ -37,6 +40,8 @@ export function EntityTableBody<T extends { id: string }>({
   error,
   onRetry,
   errorTitle,
+  hasActiveFilters = false,
+  onClearFilters,
 }: Readonly<EntityTableBodyProps<T>>) {
   if (isLoading) {
     return <TableLoadingState columnCount={headerColumns.length} />
@@ -66,7 +71,22 @@ export function EntityTableBody<T extends { id: string }>({
     return (
       <TableRow>
         <TableCell colSpan={headerColumns.length} className="h-24 text-center">
-          <GeneralEmptyState variant={emptyVariant} />
+          {hasActiveFilters ? (
+            <GeneralEmptyState
+              variant="search"
+              title="No results with the current filters"
+              description="Every row is hidden by the active search or filters. Clear them to see all results."
+            >
+              {onClearFilters && (
+                <Button variant="outline" size="sm" onClick={onClearFilters} className="mt-2">
+                  <FilterX className="size-4" />
+                  Clear all filters
+                </Button>
+              )}
+            </GeneralEmptyState>
+          ) : (
+            <GeneralEmptyState variant={emptyVariant} />
+          )}
         </TableCell>
       </TableRow>
     )

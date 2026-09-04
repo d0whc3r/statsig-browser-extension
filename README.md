@@ -31,6 +31,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 - **Search & Filter**: Real-time fuzzy search across gates, experiments, and configs with persistent table state (sorting, pagination, column visibility)
 - **Health Checks**: Visual health check indicators on gates showing SDK evaluation status
 - **Dark Mode**: System-aware theme toggle with light/dark/system options
+- **Multiple Projects**: Store one Console API key per Statsig project; the extension detects the SDK key used by the page and switches to the matching project automatically
 - **Storage Options**: Choose between localStorage or cookies for persisting extension settings
 - **React DevTools**: Content script injection enables full React component inspection
 
@@ -41,6 +42,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 3.  **Open the Extension**: Click the Statsig icon in your browser toolbar.
     - _Note: The extension automatically detects the Statsig SDK on the page._
 4.  **Configure API Key**: Go to Settings and enter your **Statsig Console API Key** (Write access required for overrides).
+    - _Working with several Statsig projects? Add one Console API key per project in Settings → Statsig Projects. The extension matches the SDK key detected on the page against those projects and activates the right one; see [docs/project-key-detection.md](docs/project-key-detection.md)._
 5.  **Interact**:
     - **Toggle Gates**: Click on a gate to override its value (requires Console API Key).
     - **Change Groups**: Select a different experiment group to see how the app behaves.
@@ -133,7 +135,7 @@ The output artifacts will be in the `.output/` directory.
   - `pages-experiment/`: Experiment override page, form, row, and context card
   - `pages-gate-overrides/`: Gate override page, section, modal, row, and context card
   - `sheets/`: Detail sheets for gates, experiments, and configs
-- `src/handlers/`: API interaction logic (gate/experiment overrides, user details, initial login)
+- `src/handlers/`: API interaction logic (gate/experiment overrides, user details, initial login, project fingerprint)
 - `src/hooks/`: TanStack Query hooks, storage hooks, mutation logic, and form hooks
 - `src/lib/`: Core utilities (`fetcher`, `rules`, `storage`, `utils`, `query-client`)
 - `src/store/`: Zustand stores (`use-settings-store`, `use-ui-store`, `use-context-store`)

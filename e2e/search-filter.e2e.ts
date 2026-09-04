@@ -126,7 +126,7 @@ test.describe('search and filter', () => {
     await expect(page.getByText('new_checkout_flow').first()).toBeVisible()
 
     await page.getByPlaceholder(/Search audit logs/iu).fill('nonexistent_log_xyz')
-    await expect(page.getByText('No results found')).toBeVisible()
+    await expect(page.getByText('No results with the current filters')).toBeVisible()
 
     await page.getByPlaceholder(/Search audit logs/iu).fill('checkout')
     await expect(page.getByText('new_checkout_flow').first()).toBeVisible()

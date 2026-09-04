@@ -2,14 +2,16 @@ import { useCallback } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 
 import { useAppInitialization } from '@/src/hooks/use-app-initialization'
-import { useDetectedUser } from '@/src/hooks/use-detected-user'
 import { useLogout } from '@/src/hooks/use-logout'
+import { usePageDetection } from '@/src/hooks/use-page-detection'
+import { usePageProject } from '@/src/hooks/use-page-project'
 import { isMainTab, useUiPreferencesStore } from '@/src/store/use-ui-preferences-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 export const useAppLogic = () => {
   useAppInitialization()
-  useDetectedUser()
+  usePageDetection()
+  const { status: pageProjectStatus } = usePageProject()
   const handleLogout = useLogout()
 
   const { setCurrentItemId, setItemSheetOpen } = useUIStore(
@@ -39,5 +41,7 @@ export const useAppLogic = () => {
     activeTab,
     handleLogout,
     handleTabChange,
+    // Project data is only fetched once the page is known to belong to a configured project.
+    isPageMatched: pageProjectStatus === 'matched',
   }
 }

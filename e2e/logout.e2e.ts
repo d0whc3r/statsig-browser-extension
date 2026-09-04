@@ -43,7 +43,7 @@ test.describe('logout flow', () => {
 
     const stored = await serviceWorker.evaluate(readExtensionLocalValue, STORAGE_KEY)
 
-    // UseLogout calls setApiKey('') — either the empty string or no entry counts as cleared.
+    // UseLogout clears every project, which mirrors an empty active key — no entry counts as cleared too.
     expect(stored === '' || stored === undefined).toBe(true)
   })
 

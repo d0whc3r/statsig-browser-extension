@@ -69,6 +69,17 @@ describe('entityTableBody', () => {
     expect(screen.getByText('No feature gates found')).toBeInTheDocument()
   })
 
+  it('explains the empty result comes from filters and clears them', async () => {
+    const user = userEvent.setup()
+    const onClearFilters = vi.fn()
+    renderBody({ hasActiveFilters: true, items: EMPTY_ITEMS, onClearFilters })
+
+    expect(screen.getByText('No results with the current filters')).toBeInTheDocument()
+    expect(screen.queryByText('No feature gates found')).not.toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: /clear all filters/iu }))
+    expect(onClearFilters).toHaveBeenCalledTimes(1)
+  })
+
   it('renders rows', () => {
     renderBody({ items: GATE_ITEMS })
     expect(screen.getByText('gate_one')).toBeInTheDocument()

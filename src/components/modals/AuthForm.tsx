@@ -12,7 +12,7 @@ import { DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/sr
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/src/components/ui/form'
 import { Input } from '@/src/components/ui/input'
 import { initialLogin } from '@/src/handlers/initial-login'
-import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
+import { useAddProject } from '@/src/hooks/use-projects'
 
 const authSchema = z.object({
   apiKey: z.string().min(1, 'Please enter an API key').startsWith('console-', 'API key should start with "console-"'),
@@ -25,7 +25,7 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ onSuccess }: Readonly<AuthFormProps>) {
-  const { setApiKey } = useSettingsStorage()
+  const addProject = useAddProject()
   const queryClient = useQueryClient()
 
   const form = useForm<AuthFormValues>({
@@ -50,7 +50,7 @@ export function AuthForm({ onSuccess }: Readonly<AuthFormProps>) {
       }
 
       if (data.success) {
-        void setApiKey(variables)
+        void addProject(variables)
         void queryClient.invalidateQueries()
         onSuccess()
       }

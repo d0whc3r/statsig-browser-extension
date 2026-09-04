@@ -59,6 +59,11 @@ vi.mock(import('@/src/hooks/use-wxt-storage'), async (importOriginal) => {
   }
 })
 
+// The popup only loads project data for a page that belongs to the active project.
+vi.mock('@/src/hooks/use-page-project', () => ({
+  usePageProject: () => ({ activeLabel: 'Project 1', hasProjects: true, reason: 'client-key', status: 'matched' }),
+}))
+
 vi.mock(import('@/src/hooks/use-user-details'), async (importOriginal) => {
   const actual = await importOriginal<typeof import('@/src/hooks/use-user-details')>()
   return {

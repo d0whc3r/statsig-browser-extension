@@ -1,6 +1,20 @@
 import { storage } from 'wxt/utils/storage'
 
+import type { StatsigProject } from '@/src/lib/projects'
+
+/**
+ * Console API key of the active project. Derived from {@link projectsStorage} plus
+ * {@link activeProjectIdStorage}; the background script reads it to authorize API requests.
+ */
 export const apiKeyStorage = storage.defineItem<string>('local:statsig-console-api-key', {
+  fallback: '',
+})
+
+export const projectsStorage = storage.defineItem<StatsigProject[]>('local:statsig-projects', {
+  fallback: [],
+})
+
+export const activeProjectIdStorage = storage.defineItem<string>('local:statsig-active-project-id', {
   fallback: '',
 })
 
