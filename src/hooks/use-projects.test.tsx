@@ -5,16 +5,16 @@ import { useAddProject, useBackfillProjectFingerprints, useRefreshProject, useSw
 
 const {
   addProjectMock,
-  clearMock,
   fetchProjectFingerprintMock,
   getActiveTabOriginMock,
+  resetQueriesMock,
   setActiveProjectMock,
   updateProjectMock,
 } = vi.hoisted(() => ({
   addProjectMock: vi.fn(),
-  clearMock: vi.fn(),
   fetchProjectFingerprintMock: vi.fn(),
   getActiveTabOriginMock: vi.fn(),
+  resetQueriesMock: vi.fn(),
   setActiveProjectMock: vi.fn(),
   updateProjectMock: vi.fn(),
 }))
@@ -24,7 +24,7 @@ vi.mock('@/src/handlers/project-fingerprint', () => ({
 }))
 
 vi.mock('@/src/lib/query-client', () => ({
-  queryClient: { clear: clearMock },
+  queryClient: { resetQueries: resetQueriesMock },
 }))
 
 vi.mock('@/src/lib/tabs', () => ({
@@ -52,6 +52,7 @@ describe('project hooks', () => {
     vi.clearAllMocks()
     getActiveTabOriginMock.mockResolvedValue('https://app.example.com')
     addProjectMock.mockResolvedValue('p1')
+    resetQueriesMock.mockResolvedValue(null)
     updateProjectMock.mockImplementation(async () => {})
     setActiveProjectMock.mockImplementation(async () => {})
     fetchProjectFingerprintMock.mockResolvedValue({ clientKeys: ['client-a'], gateHashes: [] })
@@ -81,16 +82,23 @@ describe('project hooks', () => {
   })
 
   it('pins the current origin when the project is picked manually', async () => {
+    const activation = Promise.withResolvers<void>()
+    setActiveProjectMock.mockReturnValue(activation.promise)
     const { result } = renderHook(() => useSwitchProject())
 
     // Let the active tab origin resolve before the manual switch pins it
     await act(async () => {
       await Promise.resolve()
     })
-    await result.current('p2', true)
+    const switching = result.current('p2', true)
 
-    expect(clearMock).toHaveBeenCalledTimes(1)
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2', 'https://app.example.com')
+    expect(resetQueriesMock).not.toHaveBeenCalled()
+
+    activation.resolve()
+    await switching
+
+    expect(resetQueriesMock).toHaveBeenCalledTimes(1)
   })
 
   it('does not pin the origin when the switch is automatic', async () => {

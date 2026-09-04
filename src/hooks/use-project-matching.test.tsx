@@ -5,9 +5,9 @@ import type { StatsigProject } from '@/src/lib/projects'
 
 import { useProjectMatching } from './use-project-matching'
 
-const { clearMock, getActiveTabOriginMock, setActiveProjectMock, setProjectMatchMock } = vi.hoisted(() => ({
-  clearMock: vi.fn(),
+const { getActiveTabOriginMock, resetQueriesMock, setActiveProjectMock, setProjectMatchMock } = vi.hoisted(() => ({
   getActiveTabOriginMock: vi.fn(),
+  resetQueriesMock: vi.fn(),
   setActiveProjectMock: vi.fn(),
   setProjectMatchMock: vi.fn(),
 }))
@@ -20,7 +20,7 @@ vi.mock('@/src/lib/tabs', () => ({
 }))
 
 vi.mock('@/src/lib/query-client', () => ({
-  queryClient: { clear: clearMock },
+  queryClient: { resetQueries: resetQueriesMock },
 }))
 
 vi.mock('@/src/store/use-context-store', () => ({
@@ -45,6 +45,7 @@ describe('useProjectMatching', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     getActiveTabOriginMock.mockResolvedValue('')
+    resetQueriesMock.mockResolvedValue(null)
     contextState.detectedKeys = undefined
     contextState.setProjectMatch = setProjectMatchMock
     settingsState.activeProjectId = 'p1'
@@ -63,7 +64,12 @@ describe('useProjectMatching', () => {
     expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 
-  it('activates the project owning the detected SDK key and drops the stale cache', () => {
+  it('activates the project owning the detected SDK key before resetting cached data', async () => {
+    const activation = Promise.withResolvers<void>()
+    setActiveProjectMock.mockImplementation((projectId: string) => {
+      settingsState.activeProjectId = projectId
+      return activation.promise
+    })
     settingsState.projects = [project(), project({ clientKeys: ['client-b'], id: 'p2' })]
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-b'] }
 
@@ -72,8 +78,14 @@ describe('useProjectMatching', () => {
     })
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p2', reason: 'client-key' })
-    expect(clearMock).toHaveBeenCalledTimes(1)
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2')
+    expect(resetQueriesMock).not.toHaveBeenCalled()
+
+    activation.resolve()
+
+    await vi.waitFor(() => {
+      expect(resetQueriesMock).toHaveBeenCalledTimes(1)
+    })
   })
 
   it('keeps the active project when it already owns the detected key', () => {
@@ -86,7 +98,7 @@ describe('useProjectMatching', () => {
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p1', reason: 'client-key' })
     expect(setActiveProjectMock).not.toHaveBeenCalled()
-    expect(clearMock).not.toHaveBeenCalled()
+    expect(resetQueriesMock).not.toHaveBeenCalled()
   })
 
   it('reports no match when the detected key belongs to an unconfigured project', () => {

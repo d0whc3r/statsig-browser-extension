@@ -79,8 +79,8 @@ export const useSwitchProject = () => {
 
   return useCallback(
     async (projectId: string, pinOrigin = false) => {
-      queryClient.clear()
       await setActiveProject(projectId, pinOrigin ? origin : undefined)
+      await queryClient.resetQueries()
     },
     [origin, setActiveProject],
   )

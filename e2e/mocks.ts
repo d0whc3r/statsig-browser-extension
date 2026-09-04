@@ -5,6 +5,8 @@ import { seedExtensionLocalStorage, seedPinnedProject } from './extension-runtim
 export interface MockRoute {
   /** Regex (as string) matched against the request URL (the path passed to wretch). */
   urlPattern: string
+  /** Active project API key required for this response. Omit to match every project. */
+  apiKey?: string
   /** HTTP method to match. Defaults to GET. */
   method?: string
   /** Response body (will be JSON-serialized). */
@@ -75,12 +77,14 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
       httpOkMax,
       recordGlobal,
       activeTabUrl,
+      storageKey,
     }: {
       serializedRoutes: MockRoute[]
       httpOkMin: number
       httpOkMax: number
       recordGlobal: string
       activeTabUrl: string
+      storageKey: string
     }) => {
       interface ApiMessage {
         type?: string
@@ -90,6 +94,17 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
       const root = globalThis as unknown as Record<string, unknown>
       root[recordGlobal] = []
 
+      interface ExtensionNamespace {
+        runtime?: { sendMessage: unknown }
+        storage?: { local?: { get: (key: string) => Promise<Record<string, unknown>> } }
+        tabs?: { query?: (...args: unknown[]) => Promise<{ url?: string }[]> }
+      }
+      const runtimeRoot = root as {
+        browser?: ExtensionNamespace
+        chrome?: ExtensionNamespace
+      }
+      runtimeRoot.browser ??= runtimeRoot.chrome
+
       const compiledRoutes = serializedRoutes.map((route) => ({
         ...route,
         regex: new RegExp(route.urlPattern, 'u'),
@@ -97,7 +112,7 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
 
       const buildHandler =
         (originalSendMessage: ((...args: unknown[]) => Promise<unknown>) | undefined) =>
-        (...args: unknown[]): Promise<unknown> => {
+        async (...args: unknown[]): Promise<unknown> => {
           const message = args.at(-1) as ApiMessage | undefined
           const isApiRequest =
             Boolean(message) &&
@@ -106,10 +121,12 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
             Boolean(message.config)
 
           if (!isApiRequest || !message?.config) {
-            return originalSendMessage ? originalSendMessage(...args) : Promise.resolve(null)
+            return originalSendMessage ? originalSendMessage(...args) : null
           }
 
           const { url = '', method = 'GET', body } = message.config
+          const stored = await runtimeRoot.browser?.storage?.local?.get(storageKey)
+          const currentApiKey = typeof stored?.[storageKey] === 'string' ? stored[storageKey] : undefined
           let parsedBody: unknown = body
           try {
             parsedBody = typeof body === 'string' ? JSON.parse(body) : body
@@ -121,7 +138,7 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
             if ((route.method ?? 'GET').toUpperCase() !== method.toUpperCase()) {
               return false
             }
-            return route.regex.test(url)
+            return (!route.apiKey || route.apiKey === currentApiKey) && route.regex.test(url)
           })
 
           ;(root[recordGlobal] as unknown[]).push({
@@ -132,15 +149,15 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
           })
 
           if (!match) {
-            return Promise.resolve({
+            return {
               error: `No mock for ${method} ${url}`,
               success: false,
-            })
+            }
           }
 
           const status = match.status ?? httpOkMin
           const ok = status >= httpOkMin && status < httpOkMax
-          return Promise.resolve({
+          return {
             response: {
               data: match.data,
               headers: { 'content-type': 'application/json' },
@@ -150,14 +167,8 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
               url,
             },
             success: true,
-          })
+          }
         }
-
-      const runtimeRoot = root as {
-        browser?: { runtime?: { sendMessage: unknown } }
-        chrome?: { runtime?: { sendMessage: unknown } }
-      }
-      runtimeRoot.browser ??= runtimeRoot.chrome
 
       const patchRuntime = (namespace: { runtime?: { sendMessage: unknown } } | undefined): void => {
         if (!namespace?.runtime) {
@@ -170,15 +181,11 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
 
       patchRuntime(runtimeRoot.browser)
 
-      interface FakeTab {
-        url?: string
-      }
-      const tabsRoot = root as { browser?: { tabs?: { query?: (...args: unknown[]) => Promise<FakeTab[]> } } }
-      const queryTabs = tabsRoot.browser?.tabs?.query?.bind(tabsRoot.browser.tabs)
+      const queryTabs = runtimeRoot.browser?.tabs?.query?.bind(runtimeRoot.browser.tabs)
 
       // Chrome withholds the URL of extension tabs, so report the inspected site the popup expects.
-      if (queryTabs && tabsRoot.browser?.tabs) {
-        tabsRoot.browser.tabs.query = async (...args: unknown[]) => {
+      if (queryTabs && runtimeRoot.browser?.tabs) {
+        runtimeRoot.browser.tabs.query = async (...args: unknown[]) => {
           const tabs = await queryTabs(...args)
           for (const tab of tabs) {
             tab.url ??= activeTabUrl
@@ -193,6 +200,7 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
       httpOkMin: HTTP_OK_MIN,
       recordGlobal: RECORD_GLOBAL,
       serializedRoutes: routes,
+      storageKey: STORAGE_KEY,
     },
   )
 

@@ -1,8 +1,10 @@
 import type { BrowserContext, Page } from '@playwright/test'
 
+import type { MockRoute } from './mocks'
+
 import { seedExtensionLocalRecord } from './extension-runtime'
 import { expect, test } from './fixtures'
-import { defaultRoutes } from './mock-data'
+import { defaultRoutes, makeFeatureGate, paginated } from './mock-data'
 import { mockApi } from './mocks'
 
 const PAGE_URL = 'https://statsig-fake.test/'
@@ -43,9 +45,13 @@ const openStatsigPage = async (context: BrowserContext): Promise<Page> => {
 }
 
 /** Opens the popup while the fake Statsig page is the active tab, which is what the popup inspects. */
-const openPopupForPage = async (context: BrowserContext, extensionId: string, statsig: Page): Promise<Page> => {
+const openPopupForPage = async (
+  context: BrowserContext,
+  extensionId: string,
+  { routes = defaultRoutes(), statsig }: { routes?: MockRoute[]; statsig: Page },
+): Promise<Page> => {
   const popup = await context.newPage()
-  await mockApi(popup, defaultRoutes())
+  await mockApi(popup, routes)
   await popup.goto(`chrome-extension://${extensionId}/popup.html`)
   await statsig.bringToFront()
   await popup.reload()
@@ -74,9 +80,60 @@ test.describe('page to project detection', () => {
     })
 
     const statsig = await openStatsigPage(context)
-    const popup = await openPopupForPage(context, extensionId, statsig)
+    const popup = await openPopupForPage(context, extensionId, { statsig })
 
     await expect(popup.getByRole('button', { name: /Page Project · this page/iu })).toBeVisible()
+  })
+
+  test('replaces every cached project response after detecting a different project', async ({
+    context,
+    extensionId,
+    serviceWorker,
+  }) => {
+    await serviceWorker.evaluate(seedExtensionLocalRecord, {
+      'statsig-active-project-id': 'p1',
+      'statsig-console-api-key': 'console-first-project',
+      'statsig-projects': [
+        {
+          apiKey: 'console-first-project',
+          clientKeys: ['client-first-project'],
+          gateHashes: [],
+          id: 'p1',
+          label: 'First Project',
+          origins: [],
+        },
+        {
+          apiKey: 'console-page-project',
+          clientKeys: [PAGE_SDK_KEY],
+          gateHashes: [],
+          id: 'p2',
+          label: 'Page Project',
+          origins: [],
+        },
+      ],
+    })
+
+    const statsig = await openStatsigPage(context)
+    const popup = await openPopupForPage(context, extensionId, {
+      routes: [
+        {
+          apiKey: 'console-first-project',
+          data: paginated([makeFeatureGate({ id: 'old-gate', name: 'first_project_gate' })]),
+          urlPattern: String.raw`/gates(\?|$)`,
+        },
+        {
+          apiKey: 'console-page-project',
+          data: paginated([makeFeatureGate({ id: 'new-gate', name: 'page_project_gate' })]),
+          urlPattern: String.raw`/gates(\?|$)`,
+        },
+        ...defaultRoutes(),
+      ],
+      statsig,
+    })
+
+    await expect(popup.getByRole('button', { name: /Page Project · this page/iu })).toBeVisible()
+    await expect(popup.getByRole('row', { name: /page_project_gate/u })).toBeVisible()
+    await expect(popup.getByRole('row', { name: /first_project_gate/u })).toHaveCount(0)
   })
 
   test('reports a page whose SDK key belongs to no configured project', async ({
@@ -100,7 +157,7 @@ test.describe('page to project detection', () => {
     })
 
     const statsig = await openStatsigPage(context)
-    const popup = await openPopupForPage(context, extensionId, statsig)
+    const popup = await openPopupForPage(context, extensionId, { statsig })
 
     await expect(popup.getByRole('button', { name: /Other Statsig project/iu })).toBeVisible()
     // Nothing may load: the page is not owned by the configured project
@@ -131,7 +188,7 @@ test.describe('page to project detection', () => {
     })
 
     const statsig = await openStatsigPage(context)
-    const popup = await openPopupForPage(context, extensionId, statsig)
+    const popup = await openPopupForPage(context, extensionId, { statsig })
 
     await expect(popup.getByRole('button', { name: /Fingerprinted Project · this page/iu })).toBeVisible()
   })
@@ -161,7 +218,7 @@ test.describe('page to project detection', () => {
     })
     await blank.goto('https://blank-page.test/')
 
-    const popup = await openPopupForPage(context, extensionId, blank)
+    const popup = await openPopupForPage(context, extensionId, { statsig: blank })
 
     await expect(popup.getByRole('button', { name: /No Statsig on this page/iu })).toBeVisible()
     await expect(popup.getByRole('tab', { name: /Gates/iu })).toBeHidden()
@@ -188,7 +245,7 @@ test.describe('page to project detection', () => {
     })
 
     const statsig = await openStatsigPage(context)
-    const popup = await openPopupForPage(context, extensionId, statsig)
+    const popup = await openPopupForPage(context, extensionId, { statsig })
 
     await expect(popup.getByRole('tab', { name: /Gates/iu })).toBeHidden()
 

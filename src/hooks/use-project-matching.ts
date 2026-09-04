@@ -27,8 +27,7 @@ export const useProjectMatching = () => {
     setProjectMatch(match)
 
     if (match && match.projectId !== activeProjectId) {
-      queryClient.clear()
-      void setActiveProject(match.projectId)
+      void setActiveProject(match.projectId).then(() => queryClient.resetQueries())
     }
   }, [projects, detectedKeys, origin, activeProjectId, setActiveProject, setProjectMatch])
 }
