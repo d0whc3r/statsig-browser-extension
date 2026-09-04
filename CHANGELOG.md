@@ -1,3 +1,13 @@
+# [1.6.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.4...v1.6.0) (2026-09-04)
+
+### Bug Fixes
+
+- new skill ([eab7954](https://github.com/d0whc3r/statsig-browser-extension/commit/eab79541fbd049d6851fbc5cd32068215c02a1f0))
+
+### Features
+
+- manage multiple projects ([91df6d2](https://github.com/d0whc3r/statsig-browser-extension/commit/91df6d20c8e7ada9cb190cc1cd5a29cea2666fbd))
+
 ## [1.5.4](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.3...v1.5.4) (2026-09-04)
 
 ### Bug Fixes
