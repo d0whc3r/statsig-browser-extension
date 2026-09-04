@@ -91,7 +91,7 @@
     "@vitest/coverage-v8": "5.0.0",
     "@vitest/ui": "5.0.0",
     "@wxt-dev/module-react": "1.2.2",
-    "autoprefixer": "10.5.4",
+    "autoprefixer": "10.5.5",
     "happy-dom": "20.14.0",
     "husky": "9.1.7",
     "knip": "6.34.0",
