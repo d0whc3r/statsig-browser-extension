@@ -10,28 +10,22 @@ permissions:
   issues: write # for semantic-release to comment on issues
   pull-requests: write # for semantic-release to comment on PRs
 
+# Queue releases instead of cancelling: killing semantic-release mid-publish
+# can leave a tag pushed without its GitHub release.
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
-  release:
-    name: Release
+  test:
+    name: Lint & unit tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-        with:
-          fetch-depth: 0 # Required for semantic-release to analyze commits
-          persist-credentials: false # Required for semantic-release/git
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup project
+        uses: ./.github/actions/setup-project
 
       - name: Lint
         run: pnpm lint
@@ -44,8 +38,18 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
 
+  e2e:
+    name: E2E tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup project
+        uses: ./.github/actions/setup-project
+
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
 
       - name: Build extension for e2e
         run: pnpm build:chrome
@@ -63,6 +67,21 @@ jobs:
             test-results/
           retention-days: 14
 
+  release:
+    name: Release
+    needs: [test, e2e]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0 # Required for semantic-release to analyze commits
+          persist-credentials: false # Required for semantic-release/git
+
+      - name: Setup project
+        uses: ./.github/actions/setup-project
+
+      # semantic-release builds the zips itself via the @semantic-release/exec prepareCmd.
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

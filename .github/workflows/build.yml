@@ -8,23 +8,19 @@ on:
 env:
   NODE_OPTIONS: '--max-old-space-size=4096 --trace-warnings'
 
+# Superseded pushes to the same PR are pointless work and compete for runners.
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-
-      - name: Use Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup project
+        uses: ./.github/actions/setup-project
 
       - name: Lint
         run: pnpm lint
@@ -52,20 +48,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6.0.10
-
-      - name: Use Node.js
-        uses: actions/setup-node@v7
-        with:
-          node-version-file: '.nvmrc'
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup project
+        uses: ./.github/actions/setup-project
 
       - name: Install Playwright browsers
-        run: pnpm exec playwright install --with-deps chromium
+        uses: ./.github/actions/install-playwright
 
       - name: Build extension for e2e
         run: pnpm build:chrome

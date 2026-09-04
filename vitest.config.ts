@@ -20,6 +20,8 @@ export default defineConfig({
     reporters: ['dot'],
     restoreMocks: true,
     setupFiles: ['./src/tests/setup.ts'],
+    // Must exceed the 5s asyncUtilTimeout set in src/tests/setup.ts, or one slow findBy* eats the whole budget.
+    testTimeout: 20_000,
     typecheck: {
       tsconfig: './tsconfig.test.json',
     },

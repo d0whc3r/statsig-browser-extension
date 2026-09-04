@@ -1,0 +1,26 @@
+name: 'Install Playwright'
+description: 'Install the Playwright browsers needed for e2e, cached by Playwright version'
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve Playwright version
+      id: version
+      run: echo "playwright=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+      shell: bash
+
+    - name: Restore Playwright browsers
+      id: cache
+      uses: actions/cache@v6
+      with:
+        path: ~/.cache/ms-playwright
+        key: playwright-${{ runner.os }}-${{ steps.version.outputs.playwright }}
+
+    # No --with-deps on purpose: ubuntu-24.04 runners already ship google-chrome-stable,
+    # which pulls in every shared library Chromium needs. --with-deps only adds an
+    # apt-get update plus ~20MB of CJK/Thai fonts this extension never renders — ~25s a run.
+    # ffmpeg is explicit because playwright.config.ts records video on failure.
+    - name: Install Playwright browsers
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: pnpm exec playwright install chromium ffmpeg
+      shell: bash

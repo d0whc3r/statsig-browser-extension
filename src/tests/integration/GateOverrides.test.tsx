@@ -151,12 +151,11 @@ describe('gate Overrides Flow', () => {
     await user.click(screen.getByRole('tab', { name: /Gates/iu }))
 
     // Wait for gates to load and click one
-    await expect(screen.findByText('Test Gate 1')).resolves.toBeInTheDocument()
-    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
+    const gateRow = await screen.findByText('Test Gate 1')
+    await user.click(gateRow.closest('tr')!)
 
     // Wait for sheet and go to Overrides
-    await expect(screen.findByRole('tab', { name: /Overrides/iu })).resolves.toBeInTheDocument()
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    await user.click(await screen.findByRole('tab', { name: /Overrides/iu }))
 
     // Wait for data to load and user_pass to be rendered
     // Use findAllByText because user_pass appears in context card AND list
@@ -179,10 +178,9 @@ describe('gate Overrides Flow', () => {
     // Navigate to overrides
     await waitFor(() => expect(screen.getByText('Gates')).toBeInTheDocument())
     await user.click(screen.getByRole('tab', { name: /Gates/iu }))
-    await expect(screen.findByText('Test Gate 1')).resolves.toBeInTheDocument()
-    await user.click(screen.getByText('Test Gate 1').closest('tr')!)
-    await expect(screen.findByRole('tab', { name: /Overrides/iu })).resolves.toBeInTheDocument()
-    await user.click(screen.getByRole('tab', { name: /Overrides/iu }))
+    const gateRow = await screen.findByText('Test Gate 1')
+    await user.click(gateRow.closest('tr')!)
+    await user.click(await screen.findByRole('tab', { name: /Overrides/iu }))
 
     // Delete user_pass (current user, no confirmation)
     const userElements = await screen.findAllByText('user_pass')
