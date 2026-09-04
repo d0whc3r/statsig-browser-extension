@@ -1,3 +1,9 @@
+## [1.6.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.6.0...v1.6.1) (2026-09-04)
+
+### Bug Fixes
+
+- reset queries after project switch and scope E2E mocks ([f4dabd0](https://github.com/d0whc3r/statsig-browser-extension/commit/f4dabd0005cd5e497fffd479f1284d1e3822b5ed))
+
 # [1.6.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.4...v1.6.0) (2026-09-04)
 
 ### Bug Fixes
