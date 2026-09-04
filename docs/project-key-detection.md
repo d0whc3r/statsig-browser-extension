@@ -107,10 +107,15 @@ detected = { sdkKeys[], hashedSdkKeys[], gateHashes[] }
 Outcomes:
 
 - one match → `useProjectMatching` activates that project and clears the query cache
-- no match while some project is recognisable → header warning plus a settings notice naming the
-  detected key, so its Console API key can be added
-- picking a project by hand pins the current origin to it, which is the only option on sites that
-  evaluate Statsig server-side
+- **no match → nothing is loaded at all.** The popup replaces the gates/experiments/configs/audit
+  tabs with `PageProjectGate`, which names what was detected and takes the Console API key of the
+  project the page actually uses. Showing another project's entities on a site it does not own is
+  worse than showing nothing, so it never happens — this covers all three non-matching states
+  (`unknown-project`, `unverifiable`, `no-statsig`)
+- a key added from that panel pins the current origin to its project (`useAddProject(key, true)`),
+  so it keeps winning there even when the project cannot be fingerprinted
+- picking a project by hand also pins the current origin to it, which is the only option on sites
+  that evaluate Statsig server-side
 
 `clientKeys` and the gate hashes are cached per project (they change rarely) and re-read on demand
 with the refresh button, since a brand-new client key would otherwise look like a foreign project.
@@ -137,8 +142,10 @@ with the refresh button, since a brand-new client key would otherwise look like 
   `useBackfillProjectFingerprints` fills this in for projects that have no identifiers yet
   (migrated keys), otherwise they could never be matched.
 - UI — the header shows a `ProjectStatus` chip with one of four states (`matched`,
-  `unknown-project`, `unverifiable`, `no-statsig`), and `ProjectsSettings` spells the same state out
-  in words next to the project list.
+  `unknown-project`, `unverifiable`, `no-statsig`), `ProjectsSettings` spells the same state out in
+  words next to the project list, and `PageProjectGate` takes over the main area whenever the state
+  is not `matched`. All three read `usePageProject`, which adds a fifth `pending` state so nothing
+  is claimed (nor blocked) before the page has been inspected.
 - Not done: preselecting the environment from the client key's `environments` / `envTier`.
 
 ## 5. Limits found
