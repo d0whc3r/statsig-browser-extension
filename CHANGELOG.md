@@ -1,3 +1,13 @@
+## [1.5.4](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.3...v1.5.4) (2026-09-04)
+
+### Bug Fixes
+
+- sonar lints ([b42e664](https://github.com/d0whc3r/statsig-browser-extension/commit/b42e664dc20f2720b5f34b30d6edf8c7de70e569))
+
+### Performance Improvements
+
+- pipeline improves ([c1d025a](https://github.com/d0whc3r/statsig-browser-extension/commit/c1d025a89efbbfb8f0edca0a446fea11c1f9125e))
+
 ## [1.5.3](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.5.2...v1.5.3) (2026-09-03)
 
 ### Bug Fixes
