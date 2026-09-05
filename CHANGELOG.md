@@ -1,3 +1,15 @@
+# [1.7.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.6.1...v1.7.0) (2026-09-05)
+
+### Bug Fixes
+
+- multi session viewer ([b4c1fea](https://github.com/d0whc3r/statsig-browser-extension/commit/b4c1fea7c279e4e6d92c4aa4abdc93bceb015047))
+- show cleanup signals in gate details and add tooltips ([5f3a21b](https://github.com/d0whc3r/statsig-browser-extension/commit/5f3a21b9e1340285b0f3000bf24292dfef02e49f))
+
+### Features
+
+- add cleanup audit coverage and overflow handling ([bf59d15](https://github.com/d0whc3r/statsig-browser-extension/commit/bf59d15c31fa395c46973474142c9a1dbab031fe))
+- simplify settings storage and refresh docs structure ([19f57be](https://github.com/d0whc3r/statsig-browser-extension/commit/19f57befc1c70ea62709023ce1dc28ec6854e17a))
+
 ## [1.6.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.6.0...v1.6.1) (2026-09-04)
 
 ### Bug Fixes
