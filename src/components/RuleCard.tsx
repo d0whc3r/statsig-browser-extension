@@ -78,9 +78,9 @@ export const RuleCard = memo(function RuleCard({ rule, passBadgeVariant }: RuleC
         <EntityDetailsList className="rounded-none border-0">
           {rule.environments && rule.environments.length > 0 && (
             <EntityDetailsField label="Environments">
-              <div className="flex flex-wrap justify-end gap-1">
+              <div className="flex min-w-0 flex-wrap justify-end gap-1">
                 {rule.environments.map((env) => (
-                  <Badge key={env} variant="outline" className="text-xs">
+                  <Badge key={env} variant="outline" className="max-w-full min-w-0 shrink truncate text-xs">
                     {env}
                   </Badge>
                 ))}
@@ -90,17 +90,22 @@ export const RuleCard = memo(function RuleCard({ rule, passBadgeVariant }: RuleC
 
           {rule.conditions && rule.conditions.length > 0 && (
             <EntityDetailsField label="Conditions">
-              <div className="flex flex-wrap justify-end gap-1">
-                {rule.conditions.map((condition, index) => (
-                  <Badge
-                    // oxlint-disable-next-line react/no-array-index-key
-                    key={`${rule.id}-${index}`}
-                    variant="secondary"
-                    className="text-xs font-normal"
-                  >
-                    {formatConditionDetails(condition)}
-                  </Badge>
-                ))}
+              <div className="flex min-w-0 flex-wrap justify-end gap-1">
+                {rule.conditions.map((condition, index) => {
+                  const details = formatConditionDetails(condition)
+
+                  return (
+                    <Badge
+                      // oxlint-disable-next-line react/no-array-index-key
+                      key={`${rule.id}-${index}`}
+                      variant="secondary"
+                      title={details}
+                      className="max-w-full min-w-0 shrink justify-start rounded-md text-left text-xs font-normal break-words whitespace-normal"
+                    >
+                      {details}
+                    </Badge>
+                  )
+                })}
               </div>
             </EntityDetailsField>
           )}

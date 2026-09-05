@@ -44,7 +44,24 @@ export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
   }
 }
 
-/** Flush pending async effects (microtask-resolved state updates) inside act(...). */
-export const flushEffects = () => act(async () => {})
+/**
+ * Renders inside an async `act`, so the promises settled during mount stay in the act scope.
+ * `useActiveTabOrigin` sets state from a `then()` that resolves one microtask after the *synchronous*
+ * `act` of a plain `render`/`renderHook` has already closed — flushing afterwards is too late and
+ * React still warns "An update to ... was not wrapped in act(...)".
+ */
+export async function renderInAct<T>(renderFn: () => T): Promise<T> {
+  // oxlint-disable-next-line init-declarations -- assigned inside the act scope below
+  let rendered!: T
+
+  // The `async` callback and the `await` are both load-bearing: they make `act` flush the mount
+  // Promises. A synchronous callback closes the scope too early and the warning comes back.
+  // oxlint-disable-next-line require-await, typescript/require-await
+  await act(async () => {
+    rendered = renderFn()
+  })
+
+  return rendered
+}
 
 export * from '@testing-library/react'

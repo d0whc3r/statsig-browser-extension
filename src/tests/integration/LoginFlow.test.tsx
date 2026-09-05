@@ -5,7 +5,7 @@ import { initialLogin } from '@/src/handlers/initial-login'
 import { useSettingsStore } from '@/src/store/use-settings-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
-import { flushEffects, renderWithProviders, screen, waitFor } from '../utils/TestUtils'
+import { renderInAct, renderWithProviders, screen, waitFor } from '../utils/TestUtils'
 
 // Mock the initialLogin handler
 vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
@@ -39,15 +39,14 @@ describe('login Flow', () => {
   })
 
   it('should render the login modal when open', async () => {
-    renderWithProviders(<AuthModal />)
-    await flushEffects()
+    await renderInAct(() => renderWithProviders(<AuthModal />))
 
     expect(screen.getByText('Login to Statsig')).toBeInTheDocument()
     expect(screen.getByLabelText(/Statsig Console API Key/iu)).toBeInTheDocument()
   })
 
   it('should show error when submitting empty key', async () => {
-    const { user } = renderWithProviders(<AuthModal />)
+    const { user } = await renderInAct(() => renderWithProviders(<AuthModal />))
 
     const loginButton = screen.getByRole('button', { name: /Login/iu })
     await user.click(loginButton)
@@ -61,7 +60,7 @@ describe('login Flow', () => {
     const mockLogin = vi.mocked(initialLogin)
     mockLogin.mockResolvedValue({ data: { message: 'Success' }, error: undefined, success: true })
 
-    const { user } = renderWithProviders(<AuthModal />)
+    const { user } = await renderInAct(() => renderWithProviders(<AuthModal />))
 
     const input = screen.getByLabelText(/Statsig Console API Key/iu)
     await user.type(input, 'console-test-key')
@@ -84,7 +83,7 @@ describe('login Flow', () => {
     const mockLogin = vi.mocked(initialLogin)
     mockLogin.mockResolvedValue({ data: undefined, error: 'Invalid API Key', success: false })
 
-    const { user } = renderWithProviders(<AuthModal />)
+    const { user } = await renderInAct(() => renderWithProviders(<AuthModal />))
 
     const input = screen.getByLabelText(/Statsig Console API Key/iu)
     // Add "console-" to satisfy Zod validation

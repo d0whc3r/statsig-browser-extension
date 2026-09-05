@@ -45,7 +45,7 @@ export const CopyableText = memo(function CopyableText({
 
   return (
     <div className={cn('group flex min-w-0 items-center gap-1', containerClassName)}>
-      <button type="button" className={cn('text-left', valueClassName)} onClick={handleCopy}>
+      <button type="button" className={cn('min-w-0 text-left', valueClassName)} onClick={handleCopy}>
         {value}
       </button>
       <TooltipProvider>

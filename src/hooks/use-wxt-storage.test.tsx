@@ -1,3 +1,4 @@
+import type { Mock } from 'vitest'
 import type { WxtStorageItem } from 'wxt/utils/storage'
 
 import { act, renderHook, waitFor } from '@testing-library/react'
@@ -137,6 +138,41 @@ describe('useWxtStorage', () => {
       // oxlint-disable-next-line typescript/no-unsafe-call
       expect(console.error).toHaveBeenCalledWith('Failed to set storage value:', expect.any(Error))
     })
+  })
+
+  it('ignores a persisted value that arrives after unmount', async () => {
+    const pending = Promise.withResolvers<string>()
+    const { item } = createStorageItem('fallback', () => pending.promise)
+
+    const { result, unmount } = renderHook(() => useWxtStorage(item))
+    unmount()
+
+    await act(async () => {
+      pending.resolve('stored')
+      await pending.promise
+    })
+
+    // Still the fallback and still "loading": the resolved value was dropped, not applied.
+    expect(result.current[0]).toBe('fallback')
+    expect(result.current[2]).toBeTruthy()
+  })
+
+  it('ignores a watcher notification that arrives after unmount', async () => {
+    const { item } = createStorageItem('a')
+    const { result, unmount } = renderHook(() => useWxtStorage(item))
+
+    await waitFor(() => {
+      expect(result.current[2]).toBeFalsy()
+    })
+
+    const [[notify]] = (item.watch as unknown as Mock<(cb: Listener<string>) => () => void>).mock.calls
+    unmount()
+
+    act(() => {
+      notify('b')
+    })
+
+    expect(result.current[0]).toBe('a')
   })
 
   it('unsubscribes the watcher on unmount', async () => {

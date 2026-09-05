@@ -93,6 +93,30 @@ describe('custom fetch bridge', () => {
     await expect(fetcher('/invalid')).rejects.toThrow('Invalid response from background script')
   })
 
+  it('throws when the background sends nothing back', async () => {
+    sendMessageMock.mockResolvedValue(null)
+
+    await expect(fetcher('/gone')).rejects.toThrow('Invalid response from background script')
+  })
+
+  it('throws when the background sends back a bare string', async () => {
+    sendMessageMock.mockResolvedValue('boom')
+
+    await expect(fetcher('/gone')).rejects.toThrow('Invalid response from background script')
+  })
+
+  it('throws a generic error when the failure carries no message', async () => {
+    sendMessageMock.mockResolvedValue({ success: false })
+
+    await expect(fetcher('/forbidden')).rejects.toThrow('Unknown error')
+  })
+
+  it('throws when the call succeeded but carries no response', async () => {
+    sendMessageMock.mockResolvedValue({ success: true })
+
+    await expect(fetcher('/empty')).rejects.toThrow('Unknown error')
+  })
+
   it('throws the background error when the request fails', async () => {
     sendMessageMock.mockResolvedValue({
       error: 'Forbidden',

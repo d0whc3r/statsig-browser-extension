@@ -41,6 +41,13 @@ export const FeatureGateSheetDetails = memo(function FeatureGateSheetDetails({
         </EntityDetailsSection>
       )}
 
+      {/* Description */}
+      {featureGate?.description && (
+        <EntityDetailsSection title="Description">
+          <p>{featureGate.description}</p>
+        </EntityDetailsSection>
+      )}
+
       {/* Cleanup signals */}
       {issues && issues.length > 0 && (
         <EntityDetailsSection title="Cleanup signals">
@@ -52,13 +59,6 @@ export const FeatureGateSheetDetails = memo(function FeatureGateSheetDetails({
               </li>
             ))}
           </ul>
-        </EntityDetailsSection>
-      )}
-
-      {/* Description */}
-      {featureGate?.description && (
-        <EntityDetailsSection title="Description">
-          <p>{featureGate.description}</p>
         </EntityDetailsSection>
       )}
     </EntityDetailsContainer>

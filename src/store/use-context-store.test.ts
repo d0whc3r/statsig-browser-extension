@@ -72,6 +72,59 @@ describe('useContextStore', () => {
     expect(state.detectionError).toBeUndefined()
   })
 
+  it('should set the detected statsig keys', () => {
+    const keys = { gateHashes: ['h1'], hashedSdkKeys: [], sdkKeys: ['client-a'] }
+    useContextStore.getState().setDetectedKeys(keys)
+
+    expect(useContextStore.getState().detectedKeys).toStrictEqual(keys)
+  })
+
+  it('should allow setting null for detected keys', () => {
+    useContextStore.getState().setDetectedKeys(null)
+
+    expect(useContextStore.getState().detectedKeys).toBeNull()
+  })
+
+  it('should set the project match', () => {
+    const match = { projectId: 'p1', reason: 'client-key' } as const
+    useContextStore.getState().setProjectMatch(match)
+
+    expect(useContextStore.getState().projectMatch).toStrictEqual(match)
+  })
+
+  it('should allow clearing the project match', () => {
+    useContextStore.getState().setProjectMatch({ projectId: 'p1', reason: 'origin' })
+    useContextStore.getState().setProjectMatch(null)
+
+    expect(useContextStore.getState().projectMatch).toBeNull()
+  })
+
+  it('should remember the project picked by hand', () => {
+    useContextStore.getState().setManualProject('p2')
+
+    expect(useContextStore.getState().manualProjectId).toBe('p2')
+  })
+
+  it('should let the manual project be cleared', () => {
+    useContextStore.getState().setManualProject('p2')
+    useContextStore.getState().setManualProject(undefined)
+
+    expect(useContextStore.getState().manualProjectId).toBeUndefined()
+  })
+
+  it('should clear the detection results on reset', () => {
+    useContextStore.getState().setDetectedKeys({ gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-a'] })
+    useContextStore.getState().setProjectMatch({ projectId: 'p1', reason: 'client-key' })
+    useContextStore.getState().setManualProject('p2')
+
+    useContextStore.getState().reset()
+
+    const state = useContextStore.getState()
+    expect(state.detectedKeys).toBeUndefined()
+    expect(state.projectMatch).toBeUndefined()
+    expect(state.manualProjectId).toBeUndefined()
+  })
+
   it('should allow setting null for detected user', () => {
     useContextStore.getState().setDetectedUser(null)
     expect(useContextStore.getState().detectedUser).toBeNull()

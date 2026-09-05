@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { flushEffects, renderHook, waitFor } from '@/src/tests/utils/TestUtils'
+import { renderHook, renderInAct, waitFor } from '@/src/tests/utils/TestUtils'
 
 import { useAddProject, useBackfillProjectFingerprints, useRefreshProject, useSwitchProject } from './use-projects'
 
@@ -64,8 +64,7 @@ describe('project hooks', () => {
   })
 
   it('stores the detection data of a newly added project', async () => {
-    const { result } = renderHook(() => useAddProject())
-    await flushEffects()
+    const { result } = await renderInAct(() => renderHook(() => useAddProject()))
 
     await expect(result.current('console-a')).resolves.toBe('p1')
 
@@ -86,10 +85,8 @@ describe('project hooks', () => {
   it('pins the current origin when the project is picked manually', async () => {
     const activation = Promise.withResolvers<void>()
     setActiveProjectMock.mockReturnValue(activation.promise)
-    const { result } = renderHook(() => useSwitchProject())
-
-    // Let the active tab origin resolve before the manual switch pins it
-    await flushEffects()
+    // RenderInAct lets the active tab origin resolve before the manual switch pins it
+    const { result } = await renderInAct(() => renderHook(() => useSwitchProject()))
     const switching = result.current('p2', true)
 
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2', 'https://app.example.com')
@@ -102,8 +99,7 @@ describe('project hooks', () => {
   })
 
   it('does not pin the origin when the switch is automatic', async () => {
-    const { result } = renderHook(() => useSwitchProject())
-    await flushEffects()
+    const { result } = await renderInAct(() => renderHook(() => useSwitchProject()))
 
     await result.current('p2')
 
@@ -122,9 +118,11 @@ describe('useBackfillProjectFingerprints', () => {
   it('looks up the identifiers of projects that have none', async () => {
     settingsState.projects = [project()]
 
-    renderHook(() => {
-      useBackfillProjectFingerprints()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useBackfillProjectFingerprints()
+      }),
+    )
 
     await waitFor(() => {
       expect(updateProjectMock).toHaveBeenCalledWith('p1', { clientKeys: ['client-a'], gateHashes: [] })
@@ -132,12 +130,14 @@ describe('useBackfillProjectFingerprints', () => {
     expect(fetchProjectFingerprintMock).toHaveBeenCalledWith('console-a')
   })
 
-  it('leaves projects that already know their identifiers alone', () => {
+  it('leaves projects that already know their identifiers alone', async () => {
     settingsState.projects = [project({ clientKeys: ['client-a'] }), project({ gateHashes: ['1'], id: 'p2' })]
 
-    renderHook(() => {
-      useBackfillProjectFingerprints()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useBackfillProjectFingerprints()
+      }),
+    )
 
     expect(fetchProjectFingerprintMock).not.toHaveBeenCalled()
   })
@@ -146,9 +146,11 @@ describe('useBackfillProjectFingerprints', () => {
     fetchProjectFingerprintMock.mockResolvedValue({ clientKeys: [], gateHashes: [] })
     settingsState.projects = [project()]
 
-    const { rerender } = renderHook(() => {
-      useBackfillProjectFingerprints()
-    })
+    const { rerender } = await renderInAct(() =>
+      renderHook(() => {
+        useBackfillProjectFingerprints()
+      }),
+    )
 
     await waitFor(() => {
       expect(fetchProjectFingerprintMock).toHaveBeenCalledTimes(1)

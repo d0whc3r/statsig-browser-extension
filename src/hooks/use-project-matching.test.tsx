@@ -1,7 +1,8 @@
-import { renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { StatsigProject } from '@/src/lib/projects'
+
+import { renderHook, renderInAct, waitFor } from '@/src/tests/utils/TestUtils'
 
 import { useProjectMatching } from './use-project-matching'
 
@@ -41,15 +42,6 @@ const project = (overrides: Partial<StatsigProject> = {}): StatsigProject => ({
   ...overrides,
 })
 
-const origError = console.error
-console.error = (...args: unknown[]) => {
-  if (typeof args[0] === 'string' && args[0].includes('not wrapped in act')) {
-    origError(new Error('ACT TRACE').stack)
-    return
-  }
-  origError(...args)
-}
-
 describe('useProjectMatching', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -63,12 +55,14 @@ describe('useProjectMatching', () => {
     settingsState.setActiveProject = setActiveProjectMock
   })
 
-  it('does nothing while no project is configured', () => {
+  it('does nothing while no project is configured', async () => {
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-b'] }
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
     expect(setProjectMatchMock).not.toHaveBeenCalled()
     expect(setActiveProjectMock).not.toHaveBeenCalled()
@@ -83,9 +77,11 @@ describe('useProjectMatching', () => {
     settingsState.projects = [project(), project({ clientKeys: ['client-b'], id: 'p2' })]
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-b'] }
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p2', reason: 'client-key' })
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2')
@@ -93,44 +89,50 @@ describe('useProjectMatching', () => {
 
     activation.resolve()
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(resetQueriesMock).toHaveBeenCalledTimes(1)
     })
   })
 
-  it('keeps the active project when it already owns the detected key', () => {
+  it('keeps the active project when it already owns the detected key', async () => {
     settingsState.projects = [project({ clientKeys: ['client-a'] })]
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-a'] }
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p1', reason: 'client-key' })
     expect(setActiveProjectMock).not.toHaveBeenCalled()
     expect(resetQueriesMock).not.toHaveBeenCalled()
   })
 
-  it('reports no match when the detected key belongs to an unconfigured project', () => {
+  it('reports no match when the detected key belongs to an unconfigured project', async () => {
     settingsState.projects = [project({ clientKeys: ['client-a'] })]
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-unknown'] }
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
     expect(setProjectMatchMock).toHaveBeenCalledWith(null)
     expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 
-  it('leaves a project picked by hand alone instead of dragging the user back to the page one', () => {
+  it('leaves a project picked by hand alone instead of dragging the user back to the page one', async () => {
     contextState.manualProjectId = 'p1'
     settingsState.projects = [project(), project({ clientKeys: ['client-b'], id: 'p2' })]
     contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-b'] }
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
     expect(setProjectMatchMock).not.toHaveBeenCalled()
     expect(setActiveProjectMock).not.toHaveBeenCalled()
@@ -140,11 +142,13 @@ describe('useProjectMatching', () => {
     getActiveTabOriginMock.mockResolvedValue('https://app.example.com')
     settingsState.projects = [project(), project({ id: 'p2', origins: ['https://app.example.com'] })]
 
-    renderHook(() => {
-      useProjectMatching()
-    })
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(setActiveProjectMock).toHaveBeenCalledWith('p2')
     })
     expect(setProjectMatchMock).toHaveBeenLastCalledWith({ projectId: 'p2', reason: 'origin' })

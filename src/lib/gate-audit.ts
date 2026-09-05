@@ -10,6 +10,7 @@ export const GATE_ISSUE_KEYS = [
   'dev_only',
   'twin_gates',
   'duplicate_rules',
+  'large_id_list',
   'orphan',
   'no_metadata',
 ] as const
@@ -33,11 +34,23 @@ export const GATE_ISSUE_LABELS: Record<GateIssueKey, string> = {
   dev_only: 'Never left dev',
   duplicate_rules: 'Duplicate rules',
   frozen: 'Frozen',
+  large_id_list: 'Large ID list',
   no_metadata: 'No metadata',
   no_traffic: 'No traffic',
   orphan: 'Orphan',
   twin_gates: 'Twin gate',
 }
+
+/** Signals that on their own justify removing the gate; the rest are only hygiene hints. */
+export const STRONG_GATE_ISSUE_KEYS: ReadonlySet<GateIssueKey> = new Set<GateIssueKey>([
+  'always_on',
+  'always_off',
+  'no_traffic',
+  'aging_temporary',
+  'dev_only',
+  'twin_gates',
+  'duplicate_rules',
+])
 
 export const GATE_ISSUE_DESCRIPTIONS: Record<GateIssueKey, string> = {
   aging_temporary: 'Marked as a temporary gate but has been around for a long time.',
@@ -46,6 +59,7 @@ export const GATE_ISSUE_DESCRIPTIONS: Record<GateIssueKey, string> = {
   dev_only: 'No rule targets production, so the gate never shipped.',
   duplicate_rules: 'The same conditions appear in more than one rule of this gate.',
   frozen: 'Nobody has touched this gate in a long time.',
+  large_id_list: 'A rule enumerates a long list of values, which belongs in a segment or ID list.',
   no_metadata: 'No description and no tags, so nobody can tell what it is for.',
   no_traffic: 'Statsig reports zero checks per hour for this gate.',
   orphan: 'No owner and no team, so nobody is accountable for it.',
@@ -54,6 +68,9 @@ export const GATE_ISSUE_DESCRIPTIONS: Record<GateIssueKey, string> = {
 
 /** Default age in days after which a gate counts as frozen or as an aged temporary gate. */
 export const DEFAULT_THRESHOLD_DAYS = 7
+
+/** Number of enumerated values in a single condition from which a rule counts as a large ID list. */
+export const LARGE_TARGET_SIZE = 20
 
 const DAY_MS = 86_400_000
 const FULL_PASS = 100
@@ -229,6 +246,25 @@ const duplicateRules: IssueCheck = (gate) => {
     : null
 }
 
+const targetValueSize = (condition: FeatureGateRule['conditions'][number]): number =>
+  Array.isArray(condition.targetValue) ? condition.targetValue.length : 0
+
+const largeIdList: IssueCheck = (gate) => {
+  const oversized = gateRules(gate)
+    .map((rule) => ({
+      name: rule.name,
+      size: Math.max(0, ...rule.conditions.map((condition) => targetValueSize(condition))),
+    }))
+    .filter((rule) => rule.size >= LARGE_TARGET_SIZE)
+
+  return oversized.length > 0
+    ? {
+        detail: `Long targeting list in: ${oversized.map((rule) => `"${rule.name}" (${rule.size} values)`).join(', ')}`,
+        key: 'large_id_list',
+      }
+    : null
+}
+
 const orphan: IssueCheck = (gate) =>
   gate.owner?.ownerName || gate.owner?.ownerEmail || gate.team
     ? null
@@ -246,6 +282,7 @@ const CHECKS: readonly IssueCheck[] = [
   devOnly,
   twinGates,
   duplicateRules,
+  largeIdList,
   orphan,
   noMetadata,
 ]
@@ -285,6 +322,7 @@ export const countIssues = (findings: readonly GateFinding[]): Record<GateIssueK
     dev_only: 0,
     duplicate_rules: 0,
     frozen: 0,
+    large_id_list: 0,
     no_metadata: 0,
     no_traffic: 0,
     orphan: 0,

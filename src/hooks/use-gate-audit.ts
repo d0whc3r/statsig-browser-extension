@@ -3,7 +3,7 @@ import { useEffect, useMemo } from 'react'
 import type { GateIssue } from '@/src/lib/gate-audit'
 
 import { useFeatureGates } from '@/src/hooks/use-feature-gates'
-import { auditGates, countIssues, DEFAULT_THRESHOLD_DAYS } from '@/src/lib/gate-audit'
+import { auditGates, countIssues, DEFAULT_THRESHOLD_DAYS, STRONG_GATE_ISSUE_KEYS } from '@/src/lib/gate-audit'
 
 /**
  * Audits every feature gate of the project for signals that it is no longer needed.
@@ -41,13 +41,13 @@ export const useGateAudit = (thresholdDays: number) => {
 }
 
 /**
- * Cleanup signals for a single gate, audited against the gate pages already loaded.
+ * Strong cleanup signals for a single gate, audited against the gate pages already loaded.
  *
- * Does not force the full pagination the cleanup panel does, so twin detection only sees the
- * gates fetched so far.
+ * Hygiene-only signals (frozen, orphan, no metadata) are dropped, and the full pagination the
+ * cleanup panel does is not forced, so twin detection only sees the gates fetched so far.
  *
  * @param gateId - Gate to look up, or undefined while no gate is selected.
- * @returns The gate issues, empty when the gate is clean or not loaded yet.
+ * @returns The gate issues worth acting on, empty when the gate is clean or not loaded yet.
  */
 export const useGateCleanupIssues = (gateId?: string): GateIssue[] => {
   const { data } = useFeatureGates()
@@ -58,6 +58,8 @@ export const useGateCleanupIssues = (gateId?: string): GateIssue[] => {
       return []
     }
 
-    return auditGates(gates, DEFAULT_THRESHOLD_DAYS).find((finding) => finding.gate.id === gateId)?.issues ?? []
+    const issues = auditGates(gates, DEFAULT_THRESHOLD_DAYS).find((finding) => finding.gate.id === gateId)?.issues ?? []
+
+    return issues.filter((issue) => STRONG_GATE_ISSUE_KEYS.has(issue.key))
   }, [data, gateId])
 }

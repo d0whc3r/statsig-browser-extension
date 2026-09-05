@@ -6,7 +6,7 @@ import { makeFeatureGate } from '@/src/tests/fixtures/statsig'
 
 import type { GateIssueKey } from './gate-audit'
 
-import { auditGates, countIssues } from './gate-audit'
+import { auditGates, countIssues, LARGE_TARGET_SIZE } from './gate-audit'
 
 const DAY_MS = 86_400_000
 
@@ -33,6 +33,8 @@ const healthyGate = (overrides: Partial<FeatureGate> = {}): FeatureGate =>
     tags: ['core'],
     ...overrides,
   })
+
+const userIds = (count: number) => Array.from({ length: count }, (_value, index) => `user-${index}`)
 
 const issuesOf = (gates: FeatureGate[], thresholdDays = 7, gateId = 'gate-1'): GateIssueKey[] =>
   auditGates(gates, thresholdDays)
@@ -117,6 +119,24 @@ describe('auditGates', () => {
     const gate = healthyGate({ rules: [makeRule(), makeRule({ id: 'rule-2', name: 'Everyone again' })] })
 
     expect(issuesOf([gate])).toContain('duplicate_rules')
+  })
+
+  it('flags a rule that enumerates a long list of values', () => {
+    const targetValue = userIds(LARGE_TARGET_SIZE)
+    const gate = healthyGate({
+      rules: [makeRule({ conditions: [{ operator: 'any', targetValue, type: 'user_id' }], name: 'Beta users' })],
+    })
+
+    expect(issuesOf([gate])).toContain('large_id_list')
+  })
+
+  it('does not flag a rule whose list stays under the threshold', () => {
+    const targetValue = userIds(LARGE_TARGET_SIZE - 1)
+    const gate = healthyGate({
+      rules: [makeRule({ conditions: [{ operator: 'any', targetValue, type: 'user_id' }], name: 'Beta users' })],
+    })
+
+    expect(issuesOf([gate])).not.toContain('large_id_list')
   })
 
   it('flags gates with no owner and no team, and gates with no description or tags', () => {

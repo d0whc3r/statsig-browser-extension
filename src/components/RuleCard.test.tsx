@@ -37,6 +37,24 @@ describe('ruleCard', () => {
     expect(screen.queryByText('Conditions')).toBeNull()
   })
 
+  it('keeps very long conditions inside the card bounds', () => {
+    const longIds = Array.from({ length: 60 }, (_value, index) => `user_id_value_${index}`)
+
+    render(
+      <RuleCard
+        passBadgeVariant="secondary"
+        rule={{ ...baseRule, conditions: [{ operator: 'any_of', targetValue: longIds, type: 'user_id' }] }}
+      />,
+    )
+
+    const badge = screen.getByText(/User ID any_of/u)
+
+    expect(badge.className).toContain('max-w-full')
+    expect(badge.className).toContain('whitespace-normal')
+    expect(badge.className).toContain('break-words')
+    expect(badge).toHaveAttribute('title', expect.stringContaining('user_id_value_59'))
+  })
+
   it('renders a return value block when present', () => {
     render(<RuleCard passBadgeVariant="default" rule={{ ...baseRule, returnValue: { greeting: 'hello' } }} />)
 

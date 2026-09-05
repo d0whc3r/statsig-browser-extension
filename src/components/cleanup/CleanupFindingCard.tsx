@@ -19,6 +19,7 @@ const ISSUE_VARIANTS: Record<GateIssueKey, BadgeVariant> = {
   dev_only: 'secondary',
   duplicate_rules: 'outline',
   frozen: 'secondary',
+  large_id_list: 'outline',
   no_metadata: 'outline',
   no_traffic: 'destructive',
   orphan: 'outline',

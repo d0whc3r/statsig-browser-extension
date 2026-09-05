@@ -13,9 +13,11 @@ export function EntityDetailsList({ children, className }: Readonly<{ children: 
 
 export function EntityDetailsField({ label, children }: Readonly<{ label?: string; children: ReactNode }>) {
   return (
-    <div className="flex items-center justify-between px-4 py-3">
-      {label && <dt className="font-medium text-muted-foreground">{label}</dt>}
-      <dd className={cn('flex items-center justify-end gap-2 text-right font-medium', !label && 'w-full')}>
+    <div className="flex items-start justify-between gap-3 px-4 py-3">
+      {label && <dt className="shrink-0 font-medium text-muted-foreground">{label}</dt>}
+      <dd
+        className={cn('flex min-w-0 flex-1 items-center justify-end gap-2 text-right font-medium', !label && 'w-full')}
+      >
         {children}
       </dd>
     </div>
@@ -39,7 +41,11 @@ export function EntityDetailsTags({ tags }: Readonly<{ tags?: string[] }>) {
   return (
     <div className="flex w-full flex-wrap justify-start gap-1.5">
       {tags.map((tag) => (
-        <Badge key={tag} variant="secondary" className="px-2 py-0.5 text-xs font-normal">
+        <Badge
+          key={tag}
+          variant="secondary"
+          className="max-w-full min-w-0 shrink rounded-md px-2 py-0.5 text-xs font-normal break-words whitespace-normal"
+        >
           {tag}
         </Badge>
       ))}
