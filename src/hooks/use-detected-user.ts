@@ -71,8 +71,6 @@ export function useDetectedUser() {
   )
 
   const retryDetection = useCallback(async () => {
-    setDetectionError(null)
-
     const tab = await getActiveTab()
     if (!tab?.id) {
       console.error('[Statsig Extension] No active tab found')
@@ -81,12 +79,17 @@ export function useDetectedUser() {
 
     await browser.tabs
       .sendMessage(tab.id, { type: 'GET_STATSIG_USER' })
-      .then(handleResponse)
+      .then((response: unknown) => {
+        const parsed = parseDetectedResponse(response)
+        handleResponse(parsed)
+        // Only settle the error once the page answered: clearing it up front flashed the stale user details
+        setDetectionError(parsed?.error ?? null)
+      })
       .catch((error) => {
         console.error('Statsig detection error:', error)
         setDetectionError('Connection failed. Please refresh the page.')
       })
-  }, [setDetectedUser, setDetectedContext, setDetectionError, handleResponse])
+  }, [setDetectionError, handleResponse])
 
   const fetchUser = useCallback(
     async (retries = 3, delay = 100) => {

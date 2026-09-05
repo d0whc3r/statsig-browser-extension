@@ -1,4 +1,4 @@
-import { CircleCheck, CircleHelp, CircleSlash, Hand, TriangleAlert } from 'lucide-react'
+import { ChevronDown, CircleCheck, CircleHelp, CircleSlash, Hand, TriangleAlert } from 'lucide-react'
 import React from 'react'
 
 import type { ProjectDetectionStatus } from '@/src/lib/projects'
@@ -60,15 +60,17 @@ export function ProjectStatus() {
             variant="ghost"
             size="sm"
             className={`h-7 gap-1.5 px-2 text-xs font-normal ${className}`}
-            aria-label={`Page project status: ${label}`}
+            aria-label={`Page project status: ${label}. Switch project`}
           >
             <Icon className="h-3.5 w-3.5" />
             <span className="max-w-[180px] truncate">{label}</span>
+            <ChevronDown className="h-3.5 w-3.5 opacity-60" />
           </Button>
         </TooltipTrigger>
       </ProjectPicker>
       <TooltipContent side="bottom" className="max-w-[320px]">
         {detail}
+        <span className="block pt-1 text-muted-foreground">Click to switch project.</span>
       </TooltipContent>
     </Tooltip>
   )

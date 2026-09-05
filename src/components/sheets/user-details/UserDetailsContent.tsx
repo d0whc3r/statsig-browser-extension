@@ -16,6 +16,8 @@ interface UserDetailsContentProps {
   userDetails: StatsigUser | null | undefined
   onRefetch: () => void
   error?: string | null
+  isRetrying?: boolean
+  lastCheckedAt?: number
 }
 
 const toDisplayValue = (value: unknown): string => {
@@ -205,9 +207,11 @@ export const UserDetailsContent = memo(function UserDetailsContent({
   userDetails,
   onRefetch,
   error,
+  isRetrying,
+  lastCheckedAt,
 }: UserDetailsContentProps) {
   if (!userDetails || Object.keys(userDetails).length === 0 || error) {
-    return <UserEmptyState onRefetch={onRefetch} error={error} />
+    return <UserEmptyState onRefetch={onRefetch} error={error} isRetrying={isRetrying} lastCheckedAt={lastCheckedAt} />
   }
 
   return (

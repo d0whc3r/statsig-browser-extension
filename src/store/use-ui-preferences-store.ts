@@ -9,7 +9,7 @@ import type { FacetSelection } from '@/src/components/tables/table-types'
 
 export const UI_PREFERENCES_STORAGE_KEY = 'local:ui-preferences'
 
-const MAIN_TABS = ['feature_gates', 'experiments', 'dynamic_configs', 'audit_logs'] as const
+const MAIN_TABS = ['feature_gates', 'experiments', 'dynamic_configs', 'audit_logs', 'cleanup'] as const
 type MainTab = (typeof MAIN_TABS)[number]
 export type TableId = 'featureGates' | 'experiments' | 'dynamicConfigs'
 

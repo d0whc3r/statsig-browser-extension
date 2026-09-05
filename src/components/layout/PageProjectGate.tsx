@@ -1,4 +1,4 @@
-import { CircleHelp, CircleSlash, Loader2, TriangleAlert } from 'lucide-react'
+import { ChevronDown, CircleHelp, CircleSlash, Loader2, TriangleAlert } from 'lucide-react'
 import React from 'react'
 
 import type { ProjectDetectionStatus } from '@/src/lib/projects'
@@ -64,8 +64,9 @@ function GatePanel({ detectedKey, status }: Readonly<GatePanelProps>) {
         </div>
 
         <ProjectPicker>
-          <Button type="button" variant="outline" size="sm" className="w-full">
-            Manage one of my projects anyway
+          <Button type="button" variant="outline" size="sm" className="w-full justify-between">
+            Switch to one of my projects
+            <ChevronDown className="h-4 w-4 opacity-60" />
           </Button>
         </ProjectPicker>
       </div>

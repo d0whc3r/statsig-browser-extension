@@ -32,6 +32,18 @@ describe('userDetailsContent', () => {
     expect(onRefetch).toHaveBeenCalled()
   })
 
+  it('shows a pending message and blocks the button while retrying', () => {
+    render(<UserDetailsContent userDetails={null} onRefetch={vi.fn()} isRetrying />)
+    expect(screen.getByRole('button', { name: /try again/iu })).toBeDisabled()
+    expect(screen.getByText(/checking the page/iu)).toBeInTheDocument()
+  })
+
+  it('reports the outcome once a retry finished without finding a user', () => {
+    render(<UserDetailsContent userDetails={null} onRefetch={vi.fn()} lastCheckedAt={Date.now()} />)
+    expect(screen.getByText(/still no Statsig user/iu)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /try again/iu })).toBeEnabled()
+  })
+
   it('renders user header with name, userID, stableID, and environment tier', () => {
     render(
       <UserDetailsContent

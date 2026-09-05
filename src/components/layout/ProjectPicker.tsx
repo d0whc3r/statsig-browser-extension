@@ -49,6 +49,7 @@ interface ProjectPickerProps {
  */
 export function ProjectPicker({ children }: Readonly<ProjectPickerProps>) {
   const projects = useSettingsStore((state) => state.projects)
+  const activeProjectId = useSettingsStore((state) => state.activeProjectId)
   const manualProjectId = useContextStore((state) => state.manualProjectId)
   const setManualProject = useContextStore((state) => state.setManualProject)
   const setSettingsSheetOpen = useUIStore((state) => state.setSettingsSheetOpen)
@@ -74,14 +75,18 @@ export function ProjectPicker({ children }: Readonly<ProjectPickerProps>) {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>{children}</DropdownMenuTrigger>
       <DropdownMenuContent align="start" className="max-w-[280px]">
-        <DropdownMenuLabel className="text-xs font-normal text-muted-foreground">
-          Manage a project without leaving this page. Only for this popup.
+        <DropdownMenuLabel className="flex flex-col gap-1">
+          <span className="text-sm leading-none font-medium">Switch project</span>
+          <span className="text-xs leading-tight font-normal text-muted-foreground">
+            Manage any project without leaving this page. Only for this popup.
+          </span>
         </DropdownMenuLabel>
+        <DropdownMenuSeparator />
         {projects.map((project) => (
           <ProjectMenuItem
             key={project.id}
             project={project}
-            isPicked={project.id === manualProjectId}
+            isPicked={project.id === (manualProjectId ?? activeProjectId)}
             onPick={handleSelect}
           />
         ))}

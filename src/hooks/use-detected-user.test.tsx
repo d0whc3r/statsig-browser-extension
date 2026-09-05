@@ -188,6 +188,25 @@ describe('useDetectedUser', () => {
     expect(setDetectionErrorMock).toHaveBeenCalledWith(null)
   })
 
+  it('retryDetection keeps the current error until the page answers', async () => {
+    getActiveTabMock.mockResolvedValue({ id: 3 })
+    browserMock.tabs.sendMessage.mockResolvedValueOnce({}).mockResolvedValueOnce({ error: 'still broken' })
+
+    const { result } = renderHook(() => useDetectedUser())
+
+    await vi.waitFor(() => {
+      expect(browserMock.tabs.sendMessage).toHaveBeenCalledTimes(1)
+    })
+    setDetectionErrorMock.mockClear()
+
+    await act(async () => {
+      await result.current.retryDetection()
+    })
+
+    expect(setDetectionErrorMock).not.toHaveBeenCalledWith(null)
+    expect(setDetectionErrorMock).toHaveBeenLastCalledWith('still broken')
+  })
+
   it('retryDetection writes a detection error if sending the message fails', async () => {
     getActiveTabMock.mockResolvedValueOnce({ id: 3 }).mockResolvedValueOnce({ id: 3 })
     browserMock.tabs.sendMessage.mockResolvedValueOnce({}).mockRejectedValueOnce(new Error('disconnected'))

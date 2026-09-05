@@ -131,7 +131,7 @@ describe('pageProjectGate component', () => {
   it('lets the user manage one of their projects on a page that does not use it', async () => {
     const { user } = renderWithProviders(<PageProjectGate />)
 
-    await user.click(screen.getByRole('button', { name: /Manage one of my projects anyway/iu }))
+    await user.click(screen.getByRole('button', { name: /Switch to one of my projects/iu }))
     await user.click(await screen.findByRole('menuitem', { name: /Project 1/iu }))
 
     expect(setManualProjectMock).toHaveBeenCalledWith('p1')
