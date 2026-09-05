@@ -9,6 +9,8 @@ interface ContextState {
   detectedKeys?: DetectedStatsigKeys | null
   projectMatch?: ProjectMatch | null
   detectionError?: string | null
+  /** Project chosen by hand to work on a site it does not own. Lives in memory: it dies with the popup. */
+  manualProjectId?: string
 
   // Setters
   setCurrentLocalStorageValue: (value: string) => void
@@ -17,6 +19,7 @@ interface ContextState {
   setDetectedKeys: (keys: DetectedStatsigKeys | null) => void
   setProjectMatch: (match: ProjectMatch | null) => void
   setDetectionError: (error: string | null) => void
+  setManualProject: (projectId: string | undefined) => void
   reset: () => void
 }
 
@@ -26,6 +29,7 @@ export const useContextStore = create<ContextState>((set) => ({
   detectedKeys: undefined,
   detectedUser: undefined,
   detectionError: undefined,
+  manualProjectId: undefined,
   projectMatch: undefined,
 
   reset: () => {
@@ -35,6 +39,7 @@ export const useContextStore = create<ContextState>((set) => ({
       detectedKeys: undefined,
       detectedUser: undefined,
       detectionError: undefined,
+      manualProjectId: undefined,
       projectMatch: undefined,
     }))
   },
@@ -52,6 +57,9 @@ export const useContextStore = create<ContextState>((set) => ({
   },
   setDetectionError: (error) => {
     set(() => ({ detectionError: error }))
+  },
+  setManualProject: (projectId) => {
+    set(() => ({ manualProjectId: projectId }))
   },
   setProjectMatch: (match) => {
     set(() => ({ projectMatch: match }))

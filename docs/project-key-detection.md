@@ -146,6 +146,12 @@ with the refresh button, since a brand-new client key would otherwise look like 
   words next to the project list, and `PageProjectGate` takes over the main area whenever the state
   is not `matched`. All three read `usePageProject`, which adds a fifth `pending` state so nothing
   is claimed (nor blocked) before the page has been inspected.
+- Escape hatch — `ProjectPicker` (the header chip and the gate panel both open it) lets the user work
+  on any configured project from any page. It stores the choice in `useContextStore.manualProjectId`,
+  which is memory-only: `usePageProject` then reports `matched` with reason `manual`,
+  `useProjectMatching` stops re-matching so the page cannot drag the user back, and closing the popup
+  drops everything. Nothing is written to storage beyond the active project id the detection already
+  moves around — pinning an origin stays an explicit Settings action.
 - Not done: preselecting the environment from the client key's `environments` / `envTier`.
 
 ## 5. Limits found

@@ -8,9 +8,11 @@ import { renderWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { PageProjectGate } from './PageProjectGate'
 
-const { addProjectMock, setSettingsSheetOpenMock } = vi.hoisted(() => ({
+const { addProjectMock, setManualProjectMock, setSettingsSheetOpenMock, switchProjectMock } = vi.hoisted(() => ({
   addProjectMock: vi.fn(),
+  setManualProjectMock: vi.fn(),
   setSettingsSheetOpenMock: vi.fn(),
+  switchProjectMock: vi.fn(),
 }))
 
 const contextState: Record<string, unknown> = {}
@@ -26,6 +28,7 @@ vi.mock('@/src/hooks/use-active-tab-origin', () => ({
 
 vi.mock('@/src/hooks/use-projects', () => ({
   useAddProject: () => addProjectMock,
+  useSwitchProject: () => switchProjectMock,
 }))
 
 vi.mock('@/src/store/use-context-store', () => ({
@@ -55,7 +58,9 @@ describe('pageProjectGate component', () => {
     vi.clearAllMocks()
     addProjectMock.mockResolvedValue('p9')
     contextState.detectedKeys = null
+    contextState.manualProjectId = undefined
     contextState.projectMatch = null
+    contextState.setManualProject = setManualProjectMock
     settingsState.activeProjectId = 'p1'
     settingsState.projects = [project()]
   })
@@ -123,11 +128,14 @@ describe('pageProjectGate component', () => {
     expect(screen.queryByText('That project is already configured')).not.toBeInTheDocument()
   })
 
-  it('opens the settings sheet to pick an existing project', async () => {
+  it('lets the user manage one of their projects on a page that does not use it', async () => {
     const { user } = renderWithProviders(<PageProjectGate />)
 
-    await user.click(screen.getByRole('button', { name: /Use one of my projects for this site/iu }))
+    await user.click(screen.getByRole('button', { name: /Manage one of my projects anyway/iu }))
+    await user.click(await screen.findByRole('menuitem', { name: /Project 1/iu }))
 
-    expect(setSettingsSheetOpenMock).toHaveBeenCalledWith(true)
+    expect(setManualProjectMock).toHaveBeenCalledWith('p1')
+    expect(switchProjectMock).toHaveBeenCalledWith('p1')
+    expect(setSettingsSheetOpenMock).not.toHaveBeenCalled()
   })
 })

@@ -1,13 +1,13 @@
 import { CircleHelp, CircleSlash, Loader2, TriangleAlert } from 'lucide-react'
-import React, { useCallback } from 'react'
+import React from 'react'
 
 import type { ProjectDetectionStatus } from '@/src/lib/projects'
 
+import { ProjectPicker } from '@/src/components/layout/ProjectPicker'
 import { AddProjectForm } from '@/src/components/sheets/settings/AddProjectForm'
 import { Button } from '@/src/components/ui/button'
 import { useActiveTabOrigin } from '@/src/hooks/use-active-tab-origin'
 import { usePageProject } from '@/src/hooks/use-page-project'
-import { useUIStore } from '@/src/store/use-ui-store'
 
 type GatedStatus = Exclude<ProjectDetectionStatus, 'matched' | 'pending'>
 
@@ -37,11 +37,6 @@ interface GatePanelProps {
 
 function GatePanel({ detectedKey, status }: Readonly<GatePanelProps>) {
   const origin = useActiveTabOrigin()
-  const setSettingsSheetOpen = useUIStore((state) => state.setSettingsSheetOpen)
-
-  const handleOpenSettings = useCallback(() => {
-    setSettingsSheetOpen(true)
-  }, [setSettingsSheetOpen])
 
   const { Icon, title } = GATE_COPY[status]
   const site = origin ? origin.replace(/^https?:\/\//u, '') : 'this site'
@@ -55,7 +50,8 @@ function GatePanel({ detectedKey, status }: Readonly<GatePanelProps>) {
             <h2 className="text-sm font-semibold">{title}</h2>
             <p className="text-xs text-muted-foreground">{describeSite(status, site, detectedKey)}</p>
             <p className="text-xs text-muted-foreground">
-              Nothing is loaded: the extension will not show another project&apos;s data here.
+              Nothing is loaded on its own: the extension will not guess which project&apos;s data belongs here. Pick
+              one below to manage it anyway — that choice only lasts until the popup closes.
             </p>
           </div>
         </div>
@@ -67,9 +63,11 @@ function GatePanel({ detectedKey, status }: Readonly<GatePanelProps>) {
           <AddProjectForm pinOrigin />
         </div>
 
-        <Button type="button" variant="outline" size="sm" className="w-full" onClick={handleOpenSettings}>
-          Use one of my projects for this site
-        </Button>
+        <ProjectPicker>
+          <Button type="button" variant="outline" size="sm" className="w-full">
+            Manage one of my projects anyway
+          </Button>
+        </ProjectPicker>
       </div>
     </div>
   )
@@ -77,9 +75,9 @@ function GatePanel({ detectedKey, status }: Readonly<GatePanelProps>) {
 
 /**
  * Shown instead of the gates, experiments, configs and audit logs whenever the inspected page does
- * not belong to a configured project. Nothing is fetched in that case — showing another project's
- * data on a site it does not own would be misleading — so the panel asks for the Console API key of
- * the project this site actually uses.
+ * not belong to a configured project. Nothing is fetched on its own in that case — guessing which
+ * project owns the page would be misleading — so the panel asks for the Console API key of the
+ * project this site uses, or lets the user pick one of theirs for the life of the popup.
  */
 export function PageProjectGate() {
   const { detectedKey, hasProjects, status } = usePageProject()

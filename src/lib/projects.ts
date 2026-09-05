@@ -23,7 +23,7 @@ export interface DetectedStatsigKeys {
   gateHashes: string[]
 }
 
-export type ProjectMatchReason = 'client-key' | 'fingerprint' | 'hashed-key' | 'origin'
+export type ProjectMatchReason = 'client-key' | 'fingerprint' | 'hashed-key' | 'manual' | 'origin'
 
 export interface ProjectMatch {
   projectId: string
@@ -43,6 +43,7 @@ export const MATCH_REASON_LABELS: Record<ProjectMatchReason, string> = {
   'client-key': 'SDK key matches this project',
   fingerprint: 'Gates match this project',
   'hashed-key': 'Hashed SDK key matches this project',
+  manual: 'Picked by hand for this popup',
   origin: 'Pinned to this site',
 }
 

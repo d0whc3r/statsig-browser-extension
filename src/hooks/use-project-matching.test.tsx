@@ -47,6 +47,7 @@ describe('useProjectMatching', () => {
     getActiveTabOriginMock.mockResolvedValue('')
     resetQueriesMock.mockResolvedValue(null)
     contextState.detectedKeys = undefined
+    contextState.manualProjectId = undefined
     contextState.setProjectMatch = setProjectMatchMock
     settingsState.activeProjectId = 'p1'
     settingsState.projects = []
@@ -110,6 +111,19 @@ describe('useProjectMatching', () => {
     })
 
     expect(setProjectMatchMock).toHaveBeenCalledWith(null)
+    expect(setActiveProjectMock).not.toHaveBeenCalled()
+  })
+
+  it('leaves a project picked by hand alone instead of dragging the user back to the page one', () => {
+    contextState.manualProjectId = 'p1'
+    settingsState.projects = [project(), project({ clientKeys: ['client-b'], id: 'p2' })]
+    contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-b'] }
+
+    renderHook(() => {
+      useProjectMatching()
+    })
+
+    expect(setProjectMatchMock).not.toHaveBeenCalled()
     expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 

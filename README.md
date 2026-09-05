@@ -31,7 +31,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 - **Search & Filter**: Real-time fuzzy search across gates, experiments, and configs with persistent table state (sorting, pagination, column visibility)
 - **Health Checks**: Visual health check indicators on gates showing SDK evaluation status
 - **Dark Mode**: System-aware theme toggle with light/dark/system options
-- **Multiple Projects**: Store one Console API key per Statsig project; the extension detects the SDK key used by the page and switches to the matching project automatically
+- **Multiple Projects**: Store one Console API key per Statsig project; the extension detects the SDK key used by the page and switches to the matching project automatically, and any project can be picked by hand from the header to manage it from any page
 - **Storage Options**: Choose between localStorage or cookies for persisting extension settings
 - **React DevTools**: Content script injection enables full React component inspection
 
@@ -42,7 +42,7 @@ This extension bridges the gap between the [Statsig Console](https://console.sta
 3.  **Open the Extension**: Click the Statsig icon in your browser toolbar.
     - _Note: The extension automatically detects the Statsig SDK on the page._
 4.  **Configure API Key**: Go to Settings and enter your **Statsig Console API Key** (Write access required for overrides).
-    - _Working with several Statsig projects? Add one Console API key per project in Settings → Statsig Projects. The extension matches the SDK key detected on the page against those projects and activates the right one; see [docs/project-key-detection.md](docs/project-key-detection.md)._
+    - _Working with several Statsig projects? Add one Console API key per project in Settings → Statsig Projects. The extension matches the SDK key detected on the page against those projects and activates the right one. To manage a project from a page that does not use it, pick it from the project chip in the header — that choice lasts until the popup closes; see [docs/project-key-detection.md](docs/project-key-detection.md)._
 5.  **Interact**:
     - **Toggle Gates**: Click on a gate to override its value (requires Console API Key).
     - **Change Groups**: Select a different experiment group to see how the app behaves.
