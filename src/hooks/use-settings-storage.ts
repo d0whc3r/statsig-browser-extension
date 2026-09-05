@@ -1,16 +1,10 @@
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
-import {
-  apiKeyTypeStorage,
-  currentOverridesStorage,
-  localStorageKeyStorage,
-  storageTypeStorage,
-} from '@/src/lib/storage'
+import { apiKeyTypeStorage, currentOverridesStorage, localStorageKeyStorage } from '@/src/lib/storage'
 import { useSettingsStore } from '@/src/store/use-settings-store'
 
 export const useSettingsStorage = () => {
   const { activeProjectId, apiKey, clearProjects, isApiKeyLoading, projects } = useSettingsStore()
   const [localStorageValue, setLocalStorageKey] = useWxtStorage(localStorageKeyStorage)
-  const [storageType, setStorageType] = useWxtStorage(storageTypeStorage)
   // Force write-key as default since user requested to remove the selector
   const [typeApiKey, setTypeApiKey] = useWxtStorage(apiKeyTypeStorage)
   const [, setCurrentOverrides] = useWxtStorage(currentOverridesStorage)
@@ -24,7 +18,7 @@ export const useSettingsStorage = () => {
     await clearProjects()
     setLocalStorageKey('statsig_user')
     setCurrentOverrides([])
-    // We do not reset storageType or typeApiKey as they are user preferences
+    // We do not reset typeApiKey as it is a user preference
   }
 
   return {
@@ -35,9 +29,7 @@ export const useSettingsStorage = () => {
     projects,
     reset,
     setLocalStorageKey,
-    setStorageType,
     setTypeApiKey,
-    storageType,
     typeApiKey,
   }
 }

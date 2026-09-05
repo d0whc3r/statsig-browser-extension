@@ -2,7 +2,7 @@ import { memo, useCallback } from 'react'
 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
 
-const ROW_COUNT_OPTIONS = ['5', '10', '15', '25'] as const
+export const ROW_COUNT_OPTIONS = ['5', '10', '15', '25'] as const
 
 interface TopContentPaginationProps {
   total: number

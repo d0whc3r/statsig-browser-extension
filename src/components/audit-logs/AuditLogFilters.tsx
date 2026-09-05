@@ -1,6 +1,7 @@
 import { ExternalLink, Filter, RefreshCw, Search } from 'lucide-react'
-import { memo } from 'react'
+import { memo, useCallback } from 'react'
 
+import { ROW_COUNT_OPTIONS } from '@/src/components/tables/TopContentPagination'
 import { Button } from '@/src/components/ui/button'
 import { Input } from '@/src/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
@@ -21,6 +22,8 @@ interface AuditLogFiltersProps {
   onActionFilterChange: (value: string) => void
   onRefresh: () => void
   isFetching: boolean
+  rowsPerPage: number
+  onRowsPerPageChange: (value: number) => void
 }
 
 function HeaderControls({ onRefresh, isFetching }: Readonly<{ onRefresh: () => void; isFetching: boolean }>) {
@@ -45,12 +48,23 @@ function SearchControls({
   onFilterChange,
   actionFilter,
   onActionFilterChange,
+  rowsPerPage,
+  onRowsPerPageChange,
 }: Readonly<{
   filterValue: string
   onFilterChange: (event: React.ChangeEvent<HTMLInputElement>) => void
   actionFilter: string
   onActionFilterChange: (value: string) => void
+  rowsPerPage: number
+  onRowsPerPageChange: (value: number) => void
 }>) {
+  const handleRowsPerPageChange = useCallback(
+    (value: string) => {
+      onRowsPerPageChange(Number(value))
+    },
+    [onRowsPerPageChange],
+  )
+
   return (
     <div className="flex items-center gap-2">
       <div className="relative flex-1">
@@ -76,6 +90,18 @@ function SearchControls({
           ))}
         </SelectContent>
       </Select>
+      <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+        <SelectTrigger className="h-9 w-[4.5rem] text-xs" aria-label="Rows per page">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {ROW_COUNT_OPTIONS.map((count) => (
+            <SelectItem key={count} value={count} className="text-xs">
+              {count}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     </div>
   )
 }
@@ -87,6 +113,8 @@ export const AuditLogFilters = memo(function AuditLogFilters({
   onActionFilterChange,
   onRefresh,
   isFetching,
+  rowsPerPage,
+  onRowsPerPageChange,
 }: AuditLogFiltersProps) {
   return (
     <div className="flex flex-col gap-3 border-b p-3">
@@ -96,6 +124,8 @@ export const AuditLogFilters = memo(function AuditLogFilters({
         onFilterChange={onFilterChange}
         actionFilter={actionFilter}
         onActionFilterChange={onActionFilterChange}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={onRowsPerPageChange}
       />
     </div>
   )

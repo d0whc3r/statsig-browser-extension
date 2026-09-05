@@ -3,14 +3,12 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { useSettingsForm } from './use-settings-form'
 
-const { setLocalStorageKeyMock, setStorageTypeMock, useSettingsStorageMock, useUIStoreMock, setSettingsSheetOpenMock } =
-  vi.hoisted(() => ({
-    setLocalStorageKeyMock: vi.fn(),
-    setSettingsSheetOpenMock: vi.fn(),
-    setStorageTypeMock: vi.fn(),
-    useSettingsStorageMock: vi.fn(),
-    useUIStoreMock: vi.fn(),
-  }))
+const { setLocalStorageKeyMock, useSettingsStorageMock, useUIStoreMock, setSettingsSheetOpenMock } = vi.hoisted(() => ({
+  setLocalStorageKeyMock: vi.fn(),
+  setSettingsSheetOpenMock: vi.fn(),
+  useSettingsStorageMock: vi.fn(),
+  useUIStoreMock: vi.fn(),
+}))
 
 vi.mock('@/src/hooks/use-settings-storage', () => ({
   useSettingsStorage: useSettingsStorageMock,
@@ -23,13 +21,10 @@ vi.mock('@/src/store/use-ui-store', () => ({
 describe('useSettingsForm', () => {
   beforeEach(() => {
     setLocalStorageKeyMock.mockReset()
-    setStorageTypeMock.mockReset()
     setSettingsSheetOpenMock.mockReset()
     useSettingsStorageMock.mockReturnValue({
       localStorageValue: 'statsig_user',
       setLocalStorageKey: setLocalStorageKeyMock,
-      setStorageType: setStorageTypeMock,
-      storageType: 'localStorage',
     })
     useUIStoreMock.mockImplementation((selector: (state: unknown) => unknown) =>
       selector({
@@ -45,10 +40,7 @@ describe('useSettingsForm', () => {
 
   it('initializes the form with values from storage', () => {
     const { result } = renderHook(() => useSettingsForm())
-    expect(result.current.form.getValues()).toStrictEqual({
-      localStorageKey: 'statsig_user',
-      storageType: 'localStorage',
-    })
+    expect(result.current.form.getValues()).toStrictEqual({ localStorageKey: 'statsig_user' })
     expect(result.current.isSettingsSheetOpen).toBeTruthy()
   })
 
@@ -56,14 +48,9 @@ describe('useSettingsForm', () => {
     useSettingsStorageMock.mockReturnValue({
       localStorageValue: '',
       setLocalStorageKey: setLocalStorageKeyMock,
-      setStorageType: setStorageTypeMock,
-      storageType: '',
     })
     const { result } = renderHook(() => useSettingsForm())
-    expect(result.current.form.getValues()).toStrictEqual({
-      localStorageKey: 'statsig_user',
-      storageType: 'localStorage',
-    })
+    expect(result.current.form.getValues()).toStrictEqual({ localStorageKey: 'statsig_user' })
   })
 
   it('handleSave persists values and closes the sheet on submit', async () => {
@@ -71,7 +58,6 @@ describe('useSettingsForm', () => {
 
     act(() => {
       result.current.form.setValue('localStorageKey', 'custom_key')
-      result.current.form.setValue('storageType', 'cookie')
     })
 
     act(() => {
@@ -82,7 +68,6 @@ describe('useSettingsForm', () => {
     await waitFor(() => {
       expect(setLocalStorageKeyMock).toHaveBeenCalledWith('custom_key')
     })
-    expect(setStorageTypeMock).toHaveBeenCalledWith('cookie')
     expect(setSettingsSheetOpenMock).toHaveBeenCalledWith(false)
   })
 
@@ -99,7 +84,6 @@ describe('useSettingsForm', () => {
     })
 
     expect(setLocalStorageKeyMock).not.toHaveBeenCalled()
-    expect(setStorageTypeMock).not.toHaveBeenCalled()
     expect(setSettingsSheetOpenMock).not.toHaveBeenCalled()
   })
 

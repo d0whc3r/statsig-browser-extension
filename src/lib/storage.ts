@@ -22,10 +22,6 @@ export const localStorageKeyStorage = storage.defineItem<string>('local:statsig-
   fallback: 'statsig_user',
 })
 
-export const storageTypeStorage = storage.defineItem<'localStorage' | 'cookie'>('local:storage_type', {
-  fallback: 'localStorage',
-})
-
 export const apiKeyTypeStorage = storage.defineItem<'write-key' | 'read-key'>('local:api_key_type', {
   fallback: 'write-key',
 })

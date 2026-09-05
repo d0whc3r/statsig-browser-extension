@@ -7,7 +7,7 @@ This permission is required to allow the extension to interact with the current 
 
 1.  Detect if the Statsig SDK is initialized on the current page.
 2.  Inject scripts (`browser.scripting.executeScript` via WXT) to retrieve the current Statsig user object (`statsig.getCurrentUser()`) and SDK state.
-3.  Read and write local storage or cookies associated with Statsig configurations (e.g., overrides) specifically on the active page.
+3.  Read and write local storage associated with Statsig configurations (e.g., overrides) specifically on the active page.
     The extension only accesses the tab's content when the user explicitly invokes it, ensuring privacy and minimal permission scope.
 
 ## Host Permissions
@@ -35,7 +35,7 @@ The use of `browser.scripting` is strictly limited to injecting these _local_, _
 **Justification:**
 The `scripting` permission is essential for the core functionality of the extension. It is used to:
 
-1.  Inject the `storage-helper.js` script into the active tab's context. This allows the extension to read and write the local storage/cookies that the Statsig SDK uses to store override values.
+1.  Inject the `storage-helper.js` script into the active tab's context. This allows the extension to read and write the local storage that the Statsig SDK uses to store override values.
 2.  Inject functions to retrieve the current Statsig user details (`getUserDetailsFromPage`) from the page's global scope.
     Without this permission, the extension cannot interact with the Statsig SDK running on the user's page to provide debugging capabilities.
 

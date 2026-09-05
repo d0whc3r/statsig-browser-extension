@@ -40,7 +40,7 @@ test.describe('settings sheet', () => {
 
     await openSettingsSheet(page)
 
-    // The form binds inputs for localStorageKey + storageType. We assert the bound field renders
+    // The form binds an input for localStorageKey. We assert the bound field renders
     // With the default value seeded by useSettingsStorage.
     await expect(page.locator('input[name="localStorageKey"]')).toBeVisible()
     await expect(page.locator('input[name="localStorageKey"]')).toHaveValue('statsig_user')
@@ -76,23 +76,6 @@ test.describe('settings sheet', () => {
     await darkOption.click()
 
     await expect(themeSelect).toHaveText(/dark/iu)
-    await expect(page.getByRole('heading', { name: /Extension Settings/iu })).toBeVisible()
-  })
-
-  test('storage method select stays open so a value can be chosen', async ({ context, extensionId }) => {
-    const page = await context.newPage()
-    await page.setViewportSize({ height: 600, width: 800 })
-    await openAuthenticated(page, extensionId)
-    await openSettingsSheet(page)
-
-    const storageSelect = page.getByRole('combobox').nth(1)
-    await storageSelect.click()
-
-    const cookiesOption = page.getByRole('option', { name: /cookies/iu })
-    await expect(cookiesOption).toBeVisible()
-    await cookiesOption.click()
-
-    await expect(storageSelect).toHaveText(/cookies/iu)
     await expect(page.getByRole('heading', { name: /Extension Settings/iu })).toBeVisible()
   })
 

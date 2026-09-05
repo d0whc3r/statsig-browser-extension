@@ -7,25 +7,7 @@ import { renderWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { AuditLogList } from './AuditLogList'
 
-const observe = vi.fn()
-const disconnect = vi.fn()
 const EMPTY_LOGS: typeof mockAuditLogs = []
-
-class MockIntersectionObserver {
-  constructor(callback: IntersectionObserverCallback) {
-    this.callback = callback
-  }
-
-  callback: IntersectionObserverCallback
-
-  observe = observe
-
-  unobserve = vi.fn()
-
-  disconnect = disconnect
-
-  takeRecords = () => []
-}
 
 describe('auditLogList', () => {
   it('renders skeletons while loading', () => {
@@ -40,6 +22,9 @@ describe('auditLogList', () => {
         onClearFilters={vi.fn()}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
     expect(container.querySelectorAll('[data-slot="skeleton"]').length).toBeGreaterThan(0)
@@ -57,6 +42,9 @@ describe('auditLogList', () => {
         onClearFilters={vi.fn()}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
     expect(screen.getByText('No audit logs found')).toBeInTheDocument()
@@ -76,6 +64,9 @@ describe('auditLogList', () => {
         onClearFilters={onClearFilters}
         onLoadMore={vi.fn()}
         onViewDetails={vi.fn()}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
     expect(screen.getByText('No results with the current filters')).toBeInTheDocument()
@@ -84,7 +75,6 @@ describe('auditLogList', () => {
   })
 
   it('renders rows, load-more, and the end-of-list footer', async () => {
-    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
     const onLoadMore = vi.fn()
     const onViewDetails = vi.fn()
     const user = userEvent.setup({ pointerEventsCheck: 0 })
@@ -100,10 +90,12 @@ describe('auditLogList', () => {
         onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
 
-    expect(observe).toHaveBeenCalled()
     await user.click(screen.getByRole('button', { name: /new_checkout_flow/u }))
     expect(onViewDetails).toHaveBeenCalledWith(mockAuditLogs[0]?.id)
 
@@ -121,6 +113,9 @@ describe('auditLogList', () => {
         onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
     expect(screen.getByRole('button', { name: /loading/iu })).toBeDisabled()
@@ -136,9 +131,36 @@ describe('auditLogList', () => {
         onClearFilters={vi.fn()}
         onLoadMore={onLoadMore}
         onViewDetails={onViewDetails}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
       />,
     )
-    expect(screen.getByText('No more audit logs')).toBeInTheDocument()
-    vi.unstubAllGlobals()
+    expect(screen.queryByRole('button', { name: /load more/iu })).not.toBeInTheDocument()
+  })
+
+  it('renders page controls and moves to the next page', async () => {
+    const setPage = vi.fn()
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+
+    renderWithProviders(
+      <AuditLogList
+        actionFilter="all"
+        filterValue=""
+        filteredItems={mockAuditLogs}
+        hasNextPage={false}
+        isFetchingNextPage={false}
+        isLoading={false}
+        onClearFilters={vi.fn()}
+        onLoadMore={vi.fn()}
+        onViewDetails={vi.fn()}
+        page={1}
+        setPage={setPage}
+        totalPages={3}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: '2' }))
+    expect(setPage).toHaveBeenCalledWith(2)
   })
 })

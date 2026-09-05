@@ -8,19 +8,17 @@ import { useUIStore } from '@/src/store/use-ui-store'
 
 const settingsSchema = z.object({
   localStorageKey: z.string().min(1, 'This field is required.'),
-  storageType: z.enum(['localStorage', 'cookie']),
 })
 
 export type SettingsFormValues = z.infer<typeof settingsSchema>
 
 export const useSettingsForm = () => {
   const { isSettingsSheetOpen, setSettingsSheetOpen } = useUIStore((state) => state)
-  const { localStorageValue, setLocalStorageKey, setStorageType, storageType } = useSettingsStorage()
+  const { localStorageValue, setLocalStorageKey } = useSettingsStorage()
 
   const form = useForm<SettingsFormValues>({
     defaultValues: {
       localStorageKey: localStorageValue || 'statsig_user',
-      storageType: storageType || 'localStorage',
     },
     resolver: zodResolver(settingsSchema),
   })
@@ -30,20 +28,18 @@ export const useSettingsForm = () => {
     if (isSettingsSheetOpen) {
       form.reset({
         localStorageKey: localStorageValue || 'statsig_user',
-        storageType: storageType || 'localStorage',
       })
     }
-  }, [isSettingsSheetOpen, localStorageValue, storageType, form])
+  }, [isSettingsSheetOpen, localStorageValue, form])
 
   const handleSave = useCallback(
     (event: React.ComponentProps<'form'>['onSubmit'] extends (event: infer T) => unknown ? T : never) => {
       void form.handleSubmit((values: SettingsFormValues) => {
         setLocalStorageKey(values.localStorageKey)
-        setStorageType(values.storageType)
         setSettingsSheetOpen(false)
       })(event)
     },
-    [form, setLocalStorageKey, setSettingsSheetOpen, setStorageType],
+    [form, setLocalStorageKey, setSettingsSheetOpen],
   )
 
   const handleClose = useCallback(

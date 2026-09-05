@@ -4,7 +4,6 @@ import React from 'react'
 import { AppearanceSettings } from '@/src/components/sheets/settings/AppearanceSettings'
 import { ProjectsSettings } from '@/src/components/sheets/settings/ProjectsSettings'
 import { StatsigKeysSettings } from '@/src/components/sheets/settings/StatsigKeysSettings'
-import { StorageSettings } from '@/src/components/sheets/settings/StorageSettings'
 import { Button } from '@/src/components/ui/button'
 import { Form } from '@/src/components/ui/form'
 import { Separator } from '@/src/components/ui/separator'
@@ -37,10 +36,6 @@ export function SettingsSheet() {
               <Separator />
 
               <StatsigKeysSettings control={form.control} />
-
-              <Separator />
-
-              <StorageSettings control={form.control} />
             </div>
 
             <SheetFooter className="border-t bg-muted/50 px-6 py-4">

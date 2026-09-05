@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react'
+
 import { memo, useCallback, useMemo } from 'react'
 
 import { useAuditLogFiltering } from '@/src/hooks/use-audit-log-filtering'
@@ -31,41 +33,77 @@ const useAuditLogActions = (
   }
 }
 
-const useAuditLogState = () => {
-  const filterValue = useUiPreferencesStore((state) => state.auditLogs.filterValue)
-  const actionFilter = useUiPreferencesStore((state) => state.auditLogs.actionFilter)
+const useAuditLogPreferences = () => {
   const setAuditLogs = useUiPreferencesStore((state) => state.setAuditLogs)
-  const setFilterValue = useCallback(
-    (value: string) => {
-      setAuditLogs({ filterValue: value })
-    },
-    [setAuditLogs],
-  )
-  const setActionFilter = useCallback(
-    (value: string) => {
-      setAuditLogs({ actionFilter: value })
-    },
-    [setAuditLogs],
-  )
+
+  return {
+    actionFilter: useUiPreferencesStore((state) => state.auditLogs.actionFilter),
+    filterValue: useUiPreferencesStore((state) => state.auditLogs.filterValue),
+    page: useUiPreferencesStore((state) => state.auditLogs.page),
+    rowsPerPage: useUiPreferencesStore((state) => state.auditLogs.rowsPerPage),
+    setActionFilter: useCallback(
+      (value: string) => {
+        setAuditLogs({ actionFilter: value, page: 1 })
+      },
+      [setAuditLogs],
+    ),
+    setFilterValue: useCallback(
+      (value: string) => {
+        setAuditLogs({ filterValue: value, page: 1 })
+      },
+      [setAuditLogs],
+    ),
+    setPage: useCallback<Dispatch<SetStateAction<number>>>(
+      (value) => {
+        setAuditLogs((current) => ({
+          ...current,
+          page: typeof value === 'function' ? value(current.page) : value,
+        }))
+      },
+      [setAuditLogs],
+    ),
+    setRowsPerPage: useCallback(
+      (value: number) => {
+        setAuditLogs({ page: 1, rowsPerPage: value })
+      },
+      [setAuditLogs],
+    ),
+  }
+}
+
+const useAuditLogState = () => {
+  const { actionFilter, filterValue, page, rowsPerPage, setActionFilter, setFilterValue, setPage, setRowsPerPage } =
+    useAuditLogPreferences()
   const debouncedFilterValue = useDebounce(filterValue, FILTER_DEBOUNCE_MS)
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } = useAuditLogs()
 
-  const auditLogs = useMemo(() => data?.pages.flatMap((page) => page?.data ?? []) ?? [], [data])
+  const auditLogs = useMemo(() => data?.pages.flatMap((apiPage) => apiPage?.data ?? []) ?? [], [data])
   const filteredItems = useAuditLogFiltering(auditLogs, debouncedFilterValue, actionFilter)
+
+  const totalPages = Math.max(1, Math.ceil(filteredItems.length / rowsPerPage))
+  const currentPage = Math.min(page, totalPages)
+  const pageItems = useMemo(
+    () => filteredItems.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage),
+    [filteredItems, currentPage, rowsPerPage],
+  )
 
   return {
     actionFilter,
-    debouncedFilterValue,
     fetchNextPage,
     filterValue,
-    filteredItems,
     hasNextPage,
     isFetching,
     isFetchingNextPage,
     isLoading,
+    page: currentPage,
+    pageItems,
     refetch,
+    rowsPerPage,
     setActionFilter,
     setFilterValue,
+    setPage,
+    setRowsPerPage,
+    totalPages,
   }
 }
 
@@ -74,14 +112,19 @@ export const AuditLogs = memo(function AuditLogs() {
     actionFilter,
     fetchNextPage,
     filterValue,
-    filteredItems,
     hasNextPage,
     isFetching,
     isFetchingNextPage,
     isLoading,
+    page,
+    pageItems,
     refetch,
+    rowsPerPage,
     setActionFilter,
     setFilterValue,
+    setPage,
+    setRowsPerPage,
+    totalPages,
   } = useAuditLogState()
 
   const { setCurrentAuditLogId, setAuditLogDetailSheetOpen, setAuditLogSheetOpen } = useUIStore((state) => state)
@@ -122,10 +165,12 @@ export const AuditLogs = memo(function AuditLogs() {
         onActionFilterChange={setActionFilter}
         onRefresh={handleRefresh}
         isFetching={isFetching}
+        rowsPerPage={rowsPerPage}
+        onRowsPerPageChange={setRowsPerPage}
       />
 
       <AuditLogList
-        filteredItems={filteredItems}
+        filteredItems={pageItems}
         filterValue={filterValue}
         actionFilter={actionFilter}
         onViewDetails={setCurrentAuditLogDetail}
@@ -134,6 +179,9 @@ export const AuditLogs = memo(function AuditLogs() {
         hasNextPage={hasNextPage}
         isFetchingNextPage={isFetchingNextPage}
         isLoading={isLoading}
+        page={page}
+        setPage={setPage}
+        totalPages={totalPages}
       />
     </div>
   )

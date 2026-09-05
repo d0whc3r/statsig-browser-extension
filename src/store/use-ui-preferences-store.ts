@@ -25,6 +25,8 @@ interface TablePreferences {
 interface AuditLogPreferences {
   actionFilter: string
   filterValue: string
+  page: number
+  rowsPerPage: number
 }
 
 interface PersistedUiPreferences {
@@ -35,7 +37,7 @@ interface PersistedUiPreferences {
 
 interface UiPreferencesState extends PersistedUiPreferences {
   setActiveTab: (tab: MainTab) => void
-  setAuditLogs: (patch: Partial<AuditLogPreferences>) => void
+  setAuditLogs: (patch: Partial<AuditLogPreferences> | ((current: AuditLogPreferences) => AuditLogPreferences)) => void
   updateTable: (
     tableId: TableId,
     patch: Partial<TablePreferences> | ((current: TablePreferences) => TablePreferences),
@@ -53,7 +55,7 @@ const defaultTable = (visibleColumns: string[]): TablePreferences => ({
 
 export const DEFAULT_UI_PREFERENCES: PersistedUiPreferences = {
   activeTab: 'feature_gates',
-  auditLogs: { actionFilter: 'all', filterValue: '' },
+  auditLogs: { actionFilter: 'all', filterValue: '', page: 1, rowsPerPage: 10 },
   tables: {
     dynamicConfigs: defaultTable(['name', 'tags', 'isEnabled', 'actions']),
     experiments: defaultTable(['name', 'status', 'allocation', 'tags', 'actions']),
@@ -107,6 +109,11 @@ const mergePersisted = (persistedState: unknown, current: PersistedUiPreferences
       actionFilter:
         typeof auditLogs.actionFilter === 'string' ? auditLogs.actionFilter : current.auditLogs.actionFilter,
       filterValue: typeof auditLogs.filterValue === 'string' ? auditLogs.filterValue : current.auditLogs.filterValue,
+      page: typeof auditLogs.page === 'number' && auditLogs.page > 0 ? auditLogs.page : current.auditLogs.page,
+      rowsPerPage:
+        typeof auditLogs.rowsPerPage === 'number' && auditLogs.rowsPerPage > 0
+          ? auditLogs.rowsPerPage
+          : current.auditLogs.rowsPerPage,
     },
     tables: {
       dynamicConfigs: mergeTable(tables.dynamicConfigs, current.tables.dynamicConfigs),
@@ -182,6 +189,7 @@ const migrateLegacyPreferences = async (): Promise<PersistedUiPreferences | null
   return {
     activeTab: DEFAULT_UI_PREFERENCES.activeTab,
     auditLogs: {
+      ...DEFAULT_UI_PREFERENCES.auditLogs,
       actionFilter: actionFilter ?? DEFAULT_UI_PREFERENCES.auditLogs.actionFilter,
       filterValue: filterValue ?? DEFAULT_UI_PREFERENCES.auditLogs.filterValue,
     },
@@ -234,7 +242,10 @@ export const useUiPreferencesStore = create<UiPreferencesState>()(
     (set) => ({
       ...structuredClone(DEFAULT_UI_PREFERENCES),
       setActiveTab: (tab) => set({ activeTab: tab }),
-      setAuditLogs: (patch) => set((state) => ({ auditLogs: { ...state.auditLogs, ...patch } })),
+      setAuditLogs: (patch) =>
+        set((state) => ({
+          auditLogs: typeof patch === 'function' ? patch(state.auditLogs) : { ...state.auditLogs, ...patch },
+        })),
       updateTable: (tableId, patch) =>
         set((state) => {
           const current = state.tables[tableId]

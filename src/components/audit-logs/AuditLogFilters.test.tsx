@@ -15,6 +15,8 @@ describe('auditLogFilters', () => {
         onActionFilterChange={vi.fn()}
         onRefresh={vi.fn()}
         isFetching={false}
+        rowsPerPage={10}
+        onRowsPerPageChange={vi.fn()}
       />,
     )
 

@@ -2,7 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { useUiPreferencesStore } from '@/src/store/use-ui-preferences-store'
+import { DEFAULT_UI_PREFERENCES, useUiPreferencesStore } from '@/src/store/use-ui-preferences-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 import { mockAuditLogs } from '@/src/tests/fixtures/statsig'
 import { renderWithProviders } from '@/src/tests/utils/TestUtils'
@@ -19,7 +19,7 @@ describe('auditLogs', () => {
   beforeEach(() => {
     useAuditLogs.mockReset()
     useUiPreferencesStore.setState({
-      auditLogs: { actionFilter: 'all', filterValue: '' },
+      auditLogs: structuredClone(DEFAULT_UI_PREFERENCES.auditLogs),
     })
     useUIStore.getState().reset()
     vi.stubGlobal(

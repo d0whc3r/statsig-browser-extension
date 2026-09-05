@@ -5,7 +5,6 @@ import { useSettingsStorage } from './use-settings-storage'
 
 const clearProjects = vi.fn()
 const setLocalStorageKey = vi.fn()
-const setStorageType = vi.fn()
 const setTypeApiKey = vi.fn()
 const setCurrentOverrides = vi.fn()
 const useWxtStorage = vi.fn()
@@ -23,7 +22,6 @@ describe('useSettingsStorage', () => {
   beforeEach(() => {
     clearProjects.mockReset()
     setLocalStorageKey.mockReset()
-    setStorageType.mockReset()
     setTypeApiKey.mockReset()
     setCurrentOverrides.mockReset()
     useSettingsStore.mockReturnValue({
@@ -36,7 +34,6 @@ describe('useSettingsStorage', () => {
     useWxtStorage
       .mockReset()
       .mockReturnValueOnce(['statsig_user', setLocalStorageKey, false])
-      .mockReturnValueOnce(['localStorage', setStorageType, false])
       .mockReturnValueOnce(['write-key', setTypeApiKey, false])
       .mockReturnValueOnce([[], setCurrentOverrides, false])
   })
@@ -46,7 +43,6 @@ describe('useSettingsStorage', () => {
 
     expect(result.current.apiKey).toBe('console-key')
     expect(result.current.localStorageValue).toBe('statsig_user')
-    expect(result.current.storageType).toBe('localStorage')
     expect(result.current.typeApiKey).toBe('write-key')
     expect(setTypeApiKey).not.toHaveBeenCalled()
   })
@@ -55,7 +51,6 @@ describe('useSettingsStorage', () => {
     useWxtStorage
       .mockReset()
       .mockReturnValueOnce(['statsig_user', setLocalStorageKey, false])
-      .mockReturnValueOnce(['localStorage', setStorageType, false])
       .mockReturnValueOnce(['read-key', setTypeApiKey, false])
       .mockReturnValueOnce([[], setCurrentOverrides, false])
 
@@ -73,6 +68,5 @@ describe('useSettingsStorage', () => {
     expect(clearProjects).toHaveBeenCalledWith()
     expect(setLocalStorageKey).toHaveBeenCalledWith('statsig_user')
     expect(setCurrentOverrides).toHaveBeenCalledWith([])
-    expect(setStorageType).not.toHaveBeenCalled()
   })
 })

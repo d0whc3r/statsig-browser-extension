@@ -1,8 +1,11 @@
+import type { Dispatch, SetStateAction } from 'react'
+
 import { FilterX } from 'lucide-react'
-import { memo, useEffect, useRef } from 'react'
+import { memo } from 'react'
 
 import type { AuditLog } from '@/src/types/statsig'
 
+import { BottomContent } from '@/src/components/tables/BottomContent'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { Skeleton } from '@/src/components/ui/skeleton'
@@ -19,6 +22,9 @@ interface AuditLogListProps {
   hasNextPage: boolean
   isFetchingNextPage: boolean
   isLoading: boolean
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+  totalPages: number
 }
 
 function EmptyState({
@@ -50,42 +56,27 @@ function Footer({
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
+  page,
+  setPage,
+  totalPages,
 }: Readonly<{
   hasNextPage: boolean
   isFetchingNextPage: boolean
   onLoadMore: () => void
+  page: number
+  setPage: Dispatch<SetStateAction<number>>
+  totalPages: number
 }>) {
-  const loadMoreRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting && hasNextPage && !isFetchingNextPage) {
-          onLoadMore()
-        }
-      },
-      { rootMargin: '100px' },
-    )
-
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current)
-    }
-
-    return () => {
-      observer.disconnect()
-    }
-  }, [hasNextPage, isFetchingNextPage, onLoadMore])
-
-  if (hasNextPage) {
-    return (
-      <div ref={loadMoreRef} className="w-full">
+  return (
+    <div className="flex flex-col gap-2">
+      <BottomContent page={page} setPage={setPage} total={totalPages} />
+      {hasNextPage && (
         <Button variant="secondary" onClick={onLoadMore} disabled={isFetchingNextPage} size="sm" className="h-8 w-full">
           {isFetchingNextPage ? 'Loading...' : 'Load More'}
         </Button>
-      </div>
-    )
-  }
-  return <div className="text-center text-[10px] font-medium text-muted-foreground">No more audit logs</div>
+      )}
+    </div>
+  )
 }
 
 const SKELETON_IDS = Array.from({ length: 10 }, (_unused, index) => `skeleton-${index}`)
@@ -100,6 +91,9 @@ export const AuditLogList = memo(function AuditLogList({
   hasNextPage,
   isFetchingNextPage,
   isLoading,
+  page,
+  setPage,
+  totalPages,
 }: AuditLogListProps) {
   if (isLoading) {
     return (
@@ -126,25 +120,34 @@ export const AuditLogList = memo(function AuditLogList({
   }
 
   return (
-    <div className="min-h-0 flex-1 overflow-auto">
-      {filteredItems.length === 0 ? (
-        <EmptyState
-          filterValue={filterValue}
-          actionFilter={actionFilter}
-          // oxlint-disable-next-line react/jsx-handler-names
-          onClearFilters={onClearFilters}
-        />
-      ) : (
-        <div className="divide-y">
-          {filteredItems.map((auditLog) => (
-            <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
-          ))}
-        </div>
-      )}
+    <div className="flex min-h-0 flex-1 flex-col">
+      <div className="min-h-0 flex-1 overflow-auto">
+        {filteredItems.length === 0 ? (
+          <EmptyState
+            filterValue={filterValue}
+            actionFilter={actionFilter}
+            // oxlint-disable-next-line react/jsx-handler-names
+            onClearFilters={onClearFilters}
+          />
+        ) : (
+          <div className="divide-y">
+            {filteredItems.map((auditLog) => (
+              <AuditLogRow key={auditLog.id} auditLog={auditLog} onViewDetails={onViewDetails} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {filteredItems.length > 0 && (
         <div className="flex-none border-t bg-background p-3">
-          <Footer hasNextPage={hasNextPage} isFetchingNextPage={isFetchingNextPage} onLoadMore={onLoadMore} />
+          <Footer
+            hasNextPage={hasNextPage}
+            isFetchingNextPage={isFetchingNextPage}
+            onLoadMore={onLoadMore}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
         </div>
       )}
     </div>

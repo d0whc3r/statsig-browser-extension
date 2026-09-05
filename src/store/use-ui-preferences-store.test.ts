@@ -58,7 +58,11 @@ describe('useUiPreferencesStore', () => {
     expect(state.tables.experiments.page).toBe(3)
     expect(state.tables.experiments.sorting).toStrictEqual([{ desc: false, id: 'name' }])
     expect(state.tables.experiments.facetFilters).toStrictEqual({ status: ['active'] })
-    expect(state.auditLogs).toStrictEqual({ actionFilter: 'create', filterValue: 'gate' })
+    expect(state.auditLogs).toStrictEqual({
+      ...DEFAULT_UI_PREFERENCES.auditLogs,
+      actionFilter: 'create',
+      filterValue: 'gate',
+    })
     expect(state.tables.featureGates.filterValue).toBe('')
   })
 
