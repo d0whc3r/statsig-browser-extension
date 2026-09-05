@@ -1,3 +1,9 @@
+## [1.7.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.7.0...v1.7.1) (2026-09-05)
+
+### Bug Fixes
+
+- refine hashing and lint-driven cleanup adjustments ([74bf63c](https://github.com/d0whc3r/statsig-browser-extension/commit/74bf63c0f296faef0a362a6094d19f8ae40a763f))
+
 # [1.7.0](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.6.1...v1.7.0) (2026-09-05)
 
 ### Bug Fixes
