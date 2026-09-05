@@ -22,12 +22,11 @@ export const getUserDetailsFromPage = () => {
 
     /** Statsig's DJB2 variant. Kept in sync with `src/lib/djb2.ts`, which cannot be imported here. */
     function hashName(value: string) {
+      const DJB2_MULTIPLIER = 31
       let hash = 0
       for (let index = 0; index < value.length; index++) {
         // oxlint-disable-next-line unicorn/prefer-code-point -- Statsig hashes UTF-16 code units
-        hash = (hash << 5) - hash + value.charCodeAt(index)
-        // oxlint-disable-next-line unicorn/prefer-math-trunc -- wraps to int32, which Math.trunc does not
-        hash |= 0
+        hash = Math.imul(hash, DJB2_MULTIPLIER) + value.charCodeAt(index) // NOSONAR: code units, not code points
       }
       return String(hash >>> 0)
     }

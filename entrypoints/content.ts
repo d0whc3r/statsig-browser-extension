@@ -183,7 +183,8 @@ const handleWindowErrorDetected = (data: StatsigUserMessage) => {
 }
 
 const handleWindowMessage = (event: MessageEvent) => {
-  if (!isSameWindowMessage(event)) {
+  // Origin and source are compared inline so the guard is visible at the `addEventListener` call site.
+  if (event.origin !== globalThis.window.location.origin || event.source !== globalThis.window) {
     return
   }
   const data = parseStatsigUserMessage(event.data)

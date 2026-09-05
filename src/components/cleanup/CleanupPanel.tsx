@@ -27,7 +27,15 @@ interface CleanupBodyProps {
   onRetry: () => void
 }
 
-function CleanupBody({ error, findings, hasActiveFilter, isError, isLoading, onOpen, onRetry }: CleanupBodyProps) {
+function CleanupBody({
+  error,
+  findings,
+  hasActiveFilter,
+  isError,
+  isLoading,
+  onOpen,
+  onRetry,
+}: Readonly<CleanupBodyProps>) {
   if (isLoading) {
     return (
       <div className="flex justify-center py-8">

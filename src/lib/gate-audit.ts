@@ -95,9 +95,11 @@ const coversAllEnvironments = (rule: FeatureGateRule, environments: readonly str
 }
 
 const isUnconditional = (rule: FeatureGateRule): boolean =>
-  rule.conditions.length === 0 || rule.conditions.every((condition) => condition.type === 'public')
+  rule.conditions.every((condition) => condition.type === 'public')
 
 const ageInDays = (timestamp: number, now: number): number => Math.floor((now - timestamp) / DAY_MS)
+
+const compareStrings = (left: string, right: string): number => left.localeCompare(right)
 
 const conditionFingerprint = (condition: FeatureGateRule['conditions'][number]): string =>
   [
@@ -111,15 +113,15 @@ const conditionFingerprint = (condition: FeatureGateRule['conditions'][number]):
 const ruleFingerprint = (rule: FeatureGateRule): string =>
   JSON.stringify([
     rule.passPercentage,
-    ruleEnvironments(rule).toSorted(),
-    rule.conditions.map((condition) => conditionFingerprint(condition)).toSorted(),
+    ruleEnvironments(rule).toSorted(compareStrings),
+    rule.conditions.map((condition) => conditionFingerprint(condition)).toSorted(compareStrings),
   ])
 
 const gateFingerprint = (gate: FeatureGate): string =>
   JSON.stringify(
     gateRules(gate)
       .map((rule) => ruleFingerprint(rule))
-      .toSorted(),
+      .toSorted(compareStrings),
   )
 
 const groupByFingerprint = (gates: readonly FeatureGate[]): Map<string, FeatureGate[]> => {
@@ -257,9 +259,11 @@ const largeIdList: IssueCheck = (gate) => {
     }))
     .filter((rule) => rule.size >= LARGE_TARGET_SIZE)
 
+  const described = oversized.map((rule) => `"${rule.name}" (${rule.size} values)`).join(', ')
+
   return oversized.length > 0
     ? {
-        detail: `Long targeting list in: ${oversized.map((rule) => `"${rule.name}" (${rule.size} values)`).join(', ')}`,
+        detail: `Long targeting list in: ${described}`,
         key: 'large_id_list',
       }
     : null
