@@ -3,6 +3,7 @@ import { useMemo } from 'react'
 import { FeatureGateRules } from '@/src/components/FeatureGateRules'
 import { GateOverridesSection } from '@/src/components/modals/manage-gate-overrides/GateOverridesSection'
 import { useFeatureGate } from '@/src/hooks/use-feature-gate'
+import { useGateCleanupIssues } from '@/src/hooks/use-gate-audit'
 import { useGateOverrides } from '@/src/hooks/use-gate-overrides'
 import { useUIStore } from '@/src/store/use-ui-store'
 
@@ -23,11 +24,18 @@ export function FeatureGateSheet() {
   const { error: overridesError, isLoading: isLoadingOverrides } = useGateOverrides(isOpen ? currentItemId : undefined)
 
   const isLoading = isLoadingGate || isLoadingOverrides
-  const error = gateError ?? overridesError
+  const issues = useGateCleanupIssues(isOpen ? currentItemId : undefined)
 
   const detailsContent = useMemo(
-    () => <FeatureGateSheetDetails isLoading={isLoading} error={error} featureGate={featureGate} />,
-    [isLoading, error, featureGate],
+    () => (
+      <FeatureGateSheetDetails
+        isLoading={isLoading}
+        error={gateError ?? overridesError}
+        featureGate={featureGate}
+        issues={issues}
+      />
+    ),
+    [isLoading, gateError, overridesError, featureGate, issues],
   )
 
   const rulesContent = useMemo(

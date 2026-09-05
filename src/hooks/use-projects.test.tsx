@@ -1,5 +1,6 @@
-import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { flushEffects, renderHook, waitFor } from '@/src/tests/utils/TestUtils'
 
 import { useAddProject, useBackfillProjectFingerprints, useRefreshProject, useSwitchProject } from './use-projects'
 
@@ -64,6 +65,7 @@ describe('project hooks', () => {
 
   it('stores the detection data of a newly added project', async () => {
     const { result } = renderHook(() => useAddProject())
+    await flushEffects()
 
     await expect(result.current('console-a')).resolves.toBe('p1')
 
@@ -87,9 +89,7 @@ describe('project hooks', () => {
     const { result } = renderHook(() => useSwitchProject())
 
     // Let the active tab origin resolve before the manual switch pins it
-    await act(async () => {
-      await Promise.resolve()
-    })
+    await flushEffects()
     const switching = result.current('p2', true)
 
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2', 'https://app.example.com')
@@ -103,6 +103,7 @@ describe('project hooks', () => {
 
   it('does not pin the origin when the switch is automatic', async () => {
     const { result } = renderHook(() => useSwitchProject())
+    await flushEffects()
 
     await result.current('p2')
 
@@ -125,7 +126,7 @@ describe('useBackfillProjectFingerprints', () => {
       useBackfillProjectFingerprints()
     })
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(updateProjectMock).toHaveBeenCalledWith('p1', { clientKeys: ['client-a'], gateHashes: [] })
     })
     expect(fetchProjectFingerprintMock).toHaveBeenCalledWith('console-a')
@@ -149,7 +150,7 @@ describe('useBackfillProjectFingerprints', () => {
       useBackfillProjectFingerprints()
     })
 
-    await vi.waitFor(() => {
+    await waitFor(() => {
       expect(fetchProjectFingerprintMock).toHaveBeenCalledTimes(1)
     })
     rerender()

@@ -2,7 +2,7 @@ import type { RenderOptions } from '@testing-library/react'
 import type { ReactNode } from 'react'
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render } from '@testing-library/react'
+import { act, render } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import React from 'react'
 
@@ -43,5 +43,8 @@ export function renderWithProviders(ui: ReactNode, options?: RenderOptions) {
     ...render(<TestProviders queryClient={queryClient}>{ui}</TestProviders>, options),
   }
 }
+
+/** Flush pending async effects (microtask-resolved state updates) inside act(...). */
+export const flushEffects = () => act(async () => {})
 
 export * from '@testing-library/react'

@@ -16,7 +16,7 @@ export const GATE_ISSUE_KEYS = [
 
 export type GateIssueKey = (typeof GATE_ISSUE_KEYS)[number]
 
-interface GateIssue {
+export interface GateIssue {
   detail: string
   key: GateIssueKey
 }
@@ -51,6 +51,9 @@ export const GATE_ISSUE_DESCRIPTIONS: Record<GateIssueKey, string> = {
   orphan: 'No owner and no team, so nobody is accountable for it.',
   twin_gates: 'Another gate evaluates exactly the same rules.',
 }
+
+/** Default age in days after which a gate counts as frozen or as an aged temporary gate. */
+export const DEFAULT_THRESHOLD_DAYS = 7
 
 const DAY_MS = 86_400_000
 const FULL_PASS = 100

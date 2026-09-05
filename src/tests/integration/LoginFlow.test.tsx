@@ -1,4 +1,3 @@
-import { screen, waitFor } from '@testing-library/react'
 import { beforeEach, vi, describe, expect, it } from 'vitest'
 
 import { AuthModal } from '@/src/components/modals/AuthModal'
@@ -6,7 +5,7 @@ import { initialLogin } from '@/src/handlers/initial-login'
 import { useSettingsStore } from '@/src/store/use-settings-store'
 import { useUIStore } from '@/src/store/use-ui-store'
 
-import { renderWithProviders } from '../utils/TestUtils'
+import { flushEffects, renderWithProviders, screen, waitFor } from '../utils/TestUtils'
 
 // Mock the initialLogin handler
 vi.mock(import('@/src/handlers/initial-login'), async (importOriginal) => {
@@ -39,8 +38,9 @@ describe('login Flow', () => {
     useSettingsStore.setState({ apiKey: '' })
   })
 
-  it('should render the login modal when open', () => {
+  it('should render the login modal when open', async () => {
     renderWithProviders(<AuthModal />)
+    await flushEffects()
 
     expect(screen.getByText('Login to Statsig')).toBeInTheDocument()
     expect(screen.getByLabelText(/Statsig Console API Key/iu)).toBeInTheDocument()

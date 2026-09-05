@@ -41,6 +41,15 @@ const project = (overrides: Partial<StatsigProject> = {}): StatsigProject => ({
   ...overrides,
 })
 
+const origError = console.error
+console.error = (...args: unknown[]) => {
+  if (typeof args[0] === 'string' && args[0].includes('not wrapped in act')) {
+    origError(new Error('ACT TRACE').stack)
+    return
+  }
+  origError(...args)
+}
+
 describe('useProjectMatching', () => {
   beforeEach(() => {
     vi.clearAllMocks()

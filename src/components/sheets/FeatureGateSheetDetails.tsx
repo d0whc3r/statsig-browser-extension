@@ -1,20 +1,24 @@
 import { Loader2 } from 'lucide-react'
 import { memo } from 'react'
 
+import type { GateIssue } from '@/src/lib/gate-audit'
 import type { FeatureGate } from '@/src/types/statsig'
 
 import { EntityDetailsContainer, EntityDetailsSection, EntityDetailsTags } from '@/src/components/sheets/EntityDetails'
+import { GATE_ISSUE_LABELS } from '@/src/lib/gate-audit'
 
 interface FeatureGateSheetDetailsProps {
   isLoading: boolean
   error: unknown
   featureGate?: FeatureGate
+  issues?: GateIssue[]
 }
 
 export const FeatureGateSheetDetails = memo(function FeatureGateSheetDetails({
   isLoading,
   error,
   featureGate,
+  issues,
 }: FeatureGateSheetDetailsProps) {
   if (isLoading) {
     return (
@@ -34,6 +38,20 @@ export const FeatureGateSheetDetails = memo(function FeatureGateSheetDetails({
       {featureGate?.tags && featureGate.tags.length > 0 && (
         <EntityDetailsSection title="Tags">
           <EntityDetailsTags tags={featureGate.tags} />
+        </EntityDetailsSection>
+      )}
+
+      {/* Cleanup signals */}
+      {issues && issues.length > 0 && (
+        <EntityDetailsSection title="Cleanup signals">
+          <ul className="space-y-1.5">
+            {issues.map((issue) => (
+              <li key={issue.key}>
+                <span className="font-medium">{GATE_ISSUE_LABELS[issue.key]}</span>
+                <span className="text-muted-foreground"> — {issue.detail}</span>
+              </li>
+            ))}
+          </ul>
         </EntityDetailsSection>
       )}
 

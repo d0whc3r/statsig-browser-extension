@@ -10,11 +10,12 @@ import { CleanupIssueFilter } from '@/src/components/cleanup/CleanupIssueFilter'
 import { Button } from '@/src/components/ui/button'
 import { GeneralEmptyState } from '@/src/components/ui/general-empty-state'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/src/components/ui/select'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/src/components/ui/tooltip'
 import { useGateAudit } from '@/src/hooks/use-gate-audit'
+import { DEFAULT_THRESHOLD_DAYS } from '@/src/lib/gate-audit'
 import { useUIStore } from '@/src/store/use-ui-store'
 
 const THRESHOLD_OPTIONS = ['7', '30', '90'] as const
-const DEFAULT_THRESHOLD_DAYS = 7
 
 interface CleanupBodyProps {
   error: unknown
@@ -121,9 +122,18 @@ export function CleanupPanel() {
           <div className="flex shrink-0 items-center gap-2 text-sm text-muted-foreground">
             <span className="whitespace-nowrap">Unused after</span>
             <Select value={String(thresholdDays)} onValueChange={handleThresholdChange}>
-              <SelectTrigger size="sm" aria-label="Days without changes" className="w-[6rem] text-muted-foreground">
-                <SelectValue />
-              </SelectTrigger>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <SelectTrigger size="sm" aria-label="Days without changes" className="w-[6rem] text-muted-foreground">
+                    <SelectValue />
+                  </SelectTrigger>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="max-w-[240px]">
+                    A gate untouched for this many days counts as frozen or as an aging temporary gate.
+                  </p>
+                </TooltipContent>
+              </Tooltip>
               <SelectContent>
                 {THRESHOLD_OPTIONS.map((days) => (
                   <SelectItem key={days} value={days}>
