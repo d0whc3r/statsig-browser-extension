@@ -1,7 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
+
+import { renderWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { GenericAddOverrideForm } from './GenericAddOverrideForm'
 
@@ -17,22 +17,19 @@ const OVERRIDE_VALUES = [
 const submitButtonText = (value: string) => `Add ${value.toUpperCase()} Override`
 
 const renderForm = (onAddOverride = vi.fn(), onCancel = vi.fn()) => {
-  const client = new QueryClient({ defaultOptions: { queries: { retry: false } } })
-  const user = userEvent.setup({ pointerEventsCheck: 0 })
-  render(
-    <QueryClientProvider client={client}>
-      <GenericAddOverrideForm
-        getSubmitButtonText={submitButtonText}
-        isPending={false}
-        onAddOverride={onAddOverride}
-        onCancel={onCancel}
-        onValueChange={vi.fn()}
-        selectedValue="pass"
-        valueLabel="Override Type"
-        values={OVERRIDE_VALUES}
-      />
-    </QueryClientProvider>,
+  const { user } = renderWithProviders(
+    <GenericAddOverrideForm
+      getSubmitButtonText={submitButtonText}
+      isPending={false}
+      onAddOverride={onAddOverride}
+      onCancel={onCancel}
+      onValueChange={vi.fn()}
+      selectedValue="pass"
+      valueLabel="Override Type"
+      values={OVERRIDE_VALUES}
+    />,
   )
+
   return { onAddOverride, onCancel, user }
 }
 

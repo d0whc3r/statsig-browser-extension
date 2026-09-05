@@ -1,6 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { renderHook, waitFor } from '@testing-library/react'
+import { waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { renderHookWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { useUserDetails } from './use-user-details'
 
@@ -17,15 +18,7 @@ vi.mock('../handlers/get-user-details', () => ({
   getUserDetails: getUserDetailsMock,
 }))
 
-const renderUseUserDetails = () => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  })
-
-  return renderHook(() => useUserDetails(), {
-    wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
-  })
-}
+const renderUseUserDetails = () => renderHookWithProviders(() => useUserDetails())
 
 describe('useUserDetails', () => {
   beforeEach(() => {

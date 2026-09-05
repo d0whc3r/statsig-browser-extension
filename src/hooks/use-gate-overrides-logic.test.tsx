@@ -1,10 +1,8 @@
-import type { ReactNode } from 'react'
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook } from '@testing-library/react'
+import { act } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { makeFeatureGate, makeGateOverride } from '@/src/tests/fixtures/statsig'
+import { renderHookWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { useGateOverridesLogic } from './use-gate-overrides-logic'
 
@@ -21,11 +19,6 @@ vi.mock('@/src/handlers/gate-overrides', () => ({
   updateGateOverrides: vi.fn(),
 }))
 
-const wrapper = ({ children }: { children: ReactNode }) => {
-  const client = new QueryClient({ defaultOptions: { mutations: { retry: false }, queries: { retry: false } } })
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>
-}
-
 describe('useGateOverridesLogic', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -39,9 +32,8 @@ describe('useGateOverridesLogic', () => {
       failingUserIDs: ['u_root_fail'],
       passingUserIDs: ['u_current'],
     })
-    const { result } = renderHook(
-      () => useGateOverridesLogic('gate-1', overrides, makeFeatureGate({ idType: 'userID' })),
-      { wrapper },
+    const { result } = renderHookWithProviders(() =>
+      useGateOverridesLogic('gate-1', overrides, makeFeatureGate({ idType: 'userID' })),
     )
 
     expect(result.current.canEdit).toBeTruthy()
@@ -58,7 +50,7 @@ describe('useGateOverridesLogic', () => {
   })
 
   it('starts on the table view and can switch to the form', () => {
-    const { result } = renderHook(() => useGateOverridesLogic('gate-1', makeGateOverride()), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverridesLogic('gate-1', makeGateOverride()))
 
     expect(result.current.view).toBe('table')
     act(() => {

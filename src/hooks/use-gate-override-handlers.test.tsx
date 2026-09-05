@@ -1,10 +1,8 @@
-import type { ReactNode } from 'react'
-
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { makeGateOverride } from '@/src/tests/fixtures/statsig'
+import { renderHookWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { useGateOverrideHandlers } from './use-gate-override-handlers'
 
@@ -16,11 +14,6 @@ vi.mock('@/src/handlers/gate-overrides', () => ({
   updateGateOverrides: (...args: unknown[]) => updateGateOverrides(...args),
 }))
 
-const wrapper = ({ children }: { children: ReactNode }) => {
-  const client = new QueryClient({ defaultOptions: { mutations: { retry: false }, queries: { retry: false } } })
-  return <QueryClientProvider client={client}>{children}</QueryClientProvider>
-}
-
 describe('useGateOverrideHandlers', () => {
   beforeEach(() => {
     updateGateOverrides.mockReset().mockResolvedValue({})
@@ -29,7 +22,7 @@ describe('useGateOverrideHandlers', () => {
 
   it('is a no-op when there is no current item', () => {
     const setView = vi.fn()
-    const { result } = renderHook(() => useGateOverrideHandlers(undefined, setView), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers(undefined, setView))
 
     act(() => {
       result.current.handleAddOverride({ type: 'pass', userId: 'u_1' })
@@ -42,7 +35,7 @@ describe('useGateOverrideHandlers', () => {
 
   it('adds a root passing user and switches back to the table on success', async () => {
     const setView = vi.fn()
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView, makeGateOverride()), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView, makeGateOverride()))
 
     act(() => {
       result.current.handleAddOverride({ type: 'pass', userId: 'u_1' })
@@ -62,7 +55,7 @@ describe('useGateOverrideHandlers', () => {
   it('adds a failing user and does not duplicate an existing id', async () => {
     const setView = vi.fn()
     const existing = makeGateOverride({ failingUserIDs: ['u_fail'], passingUserIDs: ['u_pass'] })
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView, existing), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView, existing))
 
     act(() => {
       result.current.handleAddOverride({ type: 'fail', userId: 'u_fail' })
@@ -82,7 +75,7 @@ describe('useGateOverrideHandlers', () => {
 
   it('adds an environment override for non-userID types even without an environment', async () => {
     const setView = vi.fn()
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView))
 
     act(() => {
       result.current.handleAddOverride({ environment: null, idType: 'stableID', type: 'pass', userId: 's_1' })
@@ -103,7 +96,7 @@ describe('useGateOverrideHandlers', () => {
     const existing = makeGateOverride({
       environmentOverrides: [{ environment: 'Production', failingIDs: [], passingIDs: ['already'], unitID: 'userID' }],
     })
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView, existing), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView, existing))
 
     act(() => {
       result.current.handleAddOverride({ environment: 'Production', idType: 'userID', type: 'fail', userId: 'u_new' })
@@ -117,7 +110,7 @@ describe('useGateOverrideHandlers', () => {
 
   it('deletes via a root payload and an environment payload', async () => {
     const setView = vi.fn()
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView))
 
     act(() => {
       result.current.handleDeleteOverride({ type: 'pass', userId: 'u_1' })
@@ -147,7 +140,7 @@ describe('useGateOverrideHandlers', () => {
 
   it('switches between form and table views', () => {
     const setView = vi.fn()
-    const { result } = renderHook(() => useGateOverrideHandlers('gate-1', setView), { wrapper })
+    const { result } = renderHookWithProviders(() => useGateOverrideHandlers('gate-1', setView))
 
     act(() => {
       result.current.handleSwitchToForm()

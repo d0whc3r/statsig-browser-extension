@@ -1,6 +1,7 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { act, renderHook, waitFor } from '@testing-library/react'
+import { act, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { renderHookWithProviders } from '@/src/tests/utils/TestUtils'
 
 import { useExperimentMutations } from './use-experiment-mutations'
 
@@ -15,19 +16,9 @@ vi.mock('@/src/handlers/experiment-overrides', () => ({
 }))
 
 const renderUseMutations = (props: Parameters<typeof useExperimentMutations>[0]) => {
-  const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: false } },
-  })
-  const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries')
+  const rendered = renderHookWithProviders(() => useExperimentMutations(props))
 
-  const wrapper = ({ children }: { children: React.ReactNode }) => (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-  )
-
-  return {
-    ...renderHook(() => useExperimentMutations(props), { wrapper }),
-    invalidateSpy,
-  }
+  return { ...rendered, invalidateSpy: vi.spyOn(rendered.queryClient, 'invalidateQueries') }
 }
 
 describe('useExperimentMutations', () => {
