@@ -83,11 +83,11 @@ export function BottomContent({ page, setPage, total }: Readonly<BottomContentPr
 
   return (
     <div className="flex w-full items-center justify-center gap-2">
-      <Button variant="ghost" size="icon-sm" onClick={handlePrevious} disabled={page === 1}>
+      <Button variant="ghost" size="icon-sm" onClick={handlePrevious} disabled={page === 1} aria-label="Previous page">
         <ChevronLeft />
       </Button>
       <PageNumbers page={page} totalPages={totalPages} onPageClick={handlePageClick} />
-      <Button variant="ghost" size="icon-sm" onClick={handleNext} disabled={page === totalPages}>
+      <Button variant="ghost" size="icon-sm" onClick={handleNext} disabled={page === totalPages} aria-label="Next page">
         <ChevronRight />
       </Button>
     </div>

@@ -8,18 +8,21 @@ import { useEntityTableLogic } from '@/src/hooks/use-entity-table-logic'
 import { useExperiments } from '@/src/hooks/use-experiments'
 
 export function ExperimentsTable() {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
+  const { data, isLoading, isError, error, refetch, fetchNextPage, hasNextPage, isFetchingNextPage } = useExperiments()
 
   const tableLogic = useEntityTableLogic<Experiment>({
     columns: experimentColumns,
     data,
     entityType: 'experiment',
+    error,
     facets: experimentFacets,
     fetchNextPage,
     fusedKeys: ['name', 'id', 'description', 'hypothesis', 'tags'],
     hasNextPage,
+    isError,
     isFetchingNextPage,
     isLoading,
+    refetch,
   })
 
   return (
@@ -31,6 +34,10 @@ export function ExperimentsTable() {
       loadMoreText="Load More Experiments"
     >
       <EntityTableBody<Experiment>
+        error={tableLogic.error}
+        isError={tableLogic.isError}
+        onRetry={tableLogic.handleRefetch}
+        errorTitle="Failed to load experiments"
         headerColumns={tableLogic.headerColumns}
         hasActiveFilters={tableLogic.hasActiveFilters}
         // oxlint-disable-next-line react/jsx-handler-names

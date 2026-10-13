@@ -1,3 +1,5 @@
+import type { Dispatch, SetStateAction } from 'react'
+
 import { useCallback, useMemo } from 'react'
 
 import type { Column, Facet } from '@/src/components/tables/table-types'
@@ -148,7 +150,12 @@ export function useEntityTableLogic<T extends { id: string }>({
       },
       [setCurrentItemId, setItemSheetOpen, setCurrentItemType, entityType],
     ),
-    setPage,
+    setPage: useCallback<Dispatch<SetStateAction<number>>>(
+      (value) => {
+        setPage((current) => (typeof value === 'function' ? value(clampPage(current, pages)) : value))
+      },
+      [pages, setPage],
+    ),
     totalItems: totalServerItems > 0 ? totalServerItems : entities.length,
     visibleColumns,
   }

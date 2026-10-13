@@ -26,6 +26,7 @@ interface UIState {
   setAuditLogSheetOpen: (isOpen: boolean) => void
   setAuditLogDetailSheetOpen: (isOpen: boolean) => void
   reset: () => void
+  resetProjectSelection: () => void
 }
 
 export const useUIStore = create<UIState>((set) => ({
@@ -55,6 +56,18 @@ export const useUIStore = create<UIState>((set) => ({
       isSettingsSheetOpen: false,
       isUserDetailsSheetOpen: false,
     }))
+  },
+  resetProjectSelection: () => {
+    set({
+      currentAuditLogId: undefined,
+      currentItemId: undefined,
+      currentItemType: undefined,
+      isAuditLogDetailSheetOpen: false,
+      isAuditLogSheetOpen: false,
+      isItemSheetOpen: false,
+      isManageExperimentModalOpen: false,
+      isManageGateOverridesModalOpen: false,
+    })
   },
   setAuditLogDetailSheetOpen: (isOpen) => {
     set(() => ({ isAuditLogDetailSheetOpen: isOpen }))

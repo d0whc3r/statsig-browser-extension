@@ -6,10 +6,10 @@ import { renderHook, renderInAct, waitFor } from '@/src/tests/utils/TestUtils'
 
 import { useProjectMatching } from './use-project-matching'
 
-const { getActiveTabOriginMock, resetQueriesMock, setActiveProjectMock, setProjectMatchMock } = vi.hoisted(() => ({
+const { getActiveTabOriginMock, setActiveProjectMock, setManualProjectMock, setProjectMatchMock } = vi.hoisted(() => ({
   getActiveTabOriginMock: vi.fn(),
-  resetQueriesMock: vi.fn(),
   setActiveProjectMock: vi.fn(),
+  setManualProjectMock: vi.fn(),
   setProjectMatchMock: vi.fn(),
 }))
 
@@ -18,10 +18,6 @@ const settingsState: Record<string, unknown> = {}
 
 vi.mock('@/src/lib/tabs', () => ({
   getActiveTabOrigin: getActiveTabOriginMock,
-}))
-
-vi.mock('@/src/lib/query-client', () => ({
-  queryClient: { resetQueries: resetQueriesMock },
 }))
 
 vi.mock('@/src/store/use-context-store', () => ({
@@ -46,13 +42,31 @@ describe('useProjectMatching', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     getActiveTabOriginMock.mockResolvedValue('')
-    resetQueriesMock.mockResolvedValue(null)
     contextState.detectedKeys = undefined
     contextState.manualProjectId = undefined
     contextState.setProjectMatch = setProjectMatchMock
+    contextState.setManualProject = setManualProjectMock
+    setActiveProjectMock.mockImplementation(async () => {})
     settingsState.activeProjectId = 'p1'
+    settingsState.isApiKeyLoading = false
     settingsState.projects = []
     settingsState.setActiveProject = setActiveProjectMock
+  })
+
+  it('preserves a manual choice while its credential transition is still pending', async () => {
+    settingsState.isApiKeyLoading = true
+    contextState.manualProjectId = 'p2'
+    settingsState.projects = [project(), project({ id: 'p2' })]
+
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
+
+    expect(setManualProjectMock).not.toHaveBeenCalled()
+    expect(setProjectMatchMock).not.toHaveBeenCalled()
+    expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 
   it('does nothing while no project is configured', async () => {
@@ -68,7 +82,7 @@ describe('useProjectMatching', () => {
     expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 
-  it('activates the project owning the detected SDK key before resetting cached data', async () => {
+  it('activates the project owning the detected SDK key', async () => {
     const activation = Promise.withResolvers<void>()
     setActiveProjectMock.mockImplementation((projectId: string) => {
       settingsState.activeProjectId = projectId
@@ -85,13 +99,8 @@ describe('useProjectMatching', () => {
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p2', reason: 'client-key' })
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2')
-    expect(resetQueriesMock).not.toHaveBeenCalled()
 
     activation.resolve()
-
-    await waitFor(() => {
-      expect(resetQueriesMock).toHaveBeenCalledTimes(1)
-    })
   })
 
   it('keeps the active project when it already owns the detected key', async () => {
@@ -106,7 +115,6 @@ describe('useProjectMatching', () => {
 
     expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p1', reason: 'client-key' })
     expect(setActiveProjectMock).not.toHaveBeenCalled()
-    expect(resetQueriesMock).not.toHaveBeenCalled()
   })
 
   it('reports no match when the detected key belongs to an unconfigured project', async () => {
@@ -135,6 +143,34 @@ describe('useProjectMatching', () => {
     )
 
     expect(setProjectMatchMock).not.toHaveBeenCalled()
+    expect(setActiveProjectMock).not.toHaveBeenCalled()
+  })
+
+  it.each(['removed', 'p2'])('clears stale manual project %s and resumes page detection', async (manualProjectId) => {
+    contextState.manualProjectId = manualProjectId
+    settingsState.projects = [project({ clientKeys: ['client-a'] }), project({ id: 'p2' })]
+    contextState.detectedKeys = { gateHashes: [], hashedSdkKeys: [], sdkKeys: ['client-a'] }
+
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
+
+    expect(setManualProjectMock).toHaveBeenCalledWith(undefined)
+    expect(setProjectMatchMock).toHaveBeenCalledWith({ projectId: 'p1', reason: 'client-key' })
+  })
+
+  it('clears the manual selection when all projects have been removed', async () => {
+    contextState.manualProjectId = 'removed'
+
+    await renderInAct(() =>
+      renderHook(() => {
+        useProjectMatching()
+      }),
+    )
+
+    expect(setManualProjectMock).toHaveBeenCalledWith(undefined)
     expect(setActiveProjectMock).not.toHaveBeenCalled()
   })
 

@@ -58,6 +58,18 @@ describe('useSettingsStorage', () => {
     expect(setTypeApiKey).toHaveBeenCalledWith('write-key')
   })
 
+  it('waits for storage to load before normalizing the API key type', () => {
+    useWxtStorage
+      .mockReset()
+      .mockReturnValueOnce(['statsig_user', setLocalStorageKey, false])
+      .mockReturnValueOnce(['read-key', setTypeApiKey, true])
+      .mockReturnValueOnce([[], setCurrentOverrides, false])
+
+    renderHook(() => useSettingsStorage())
+
+    expect(setTypeApiKey).not.toHaveBeenCalled()
+  })
+
   it('reset clears the projects, local storage key, and overrides', async () => {
     const { result } = renderHook(() => useSettingsStorage())
 

@@ -1,31 +1,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { useContextStore } from '@/src/store/use-context-store'
 import { renderHook, renderInAct, waitFor } from '@/src/tests/utils/TestUtils'
 
 import { useAddProject, useBackfillProjectFingerprints, useRefreshProject, useSwitchProject } from './use-projects'
 
-const {
-  addProjectMock,
-  fetchProjectFingerprintMock,
-  getActiveTabOriginMock,
-  resetQueriesMock,
-  setActiveProjectMock,
-  updateProjectMock,
-} = vi.hoisted(() => ({
-  addProjectMock: vi.fn(),
-  fetchProjectFingerprintMock: vi.fn(),
-  getActiveTabOriginMock: vi.fn(),
-  resetQueriesMock: vi.fn(),
-  setActiveProjectMock: vi.fn(),
-  updateProjectMock: vi.fn(),
-}))
+const { addProjectMock, fetchProjectFingerprintMock, getActiveTabOriginMock, setActiveProjectMock, updateProjectMock } =
+  vi.hoisted(() => ({
+    addProjectMock: vi.fn(),
+    fetchProjectFingerprintMock: vi.fn(),
+    getActiveTabOriginMock: vi.fn(),
+    setActiveProjectMock: vi.fn(),
+    updateProjectMock: vi.fn(),
+  }))
 
 vi.mock('@/src/handlers/project-fingerprint', () => ({
   fetchProjectFingerprint: fetchProjectFingerprintMock,
-}))
-
-vi.mock('@/src/lib/query-client', () => ({
-  queryClient: { resetQueries: resetQueriesMock },
 }))
 
 vi.mock('@/src/lib/tabs', () => ({
@@ -53,10 +43,10 @@ describe('project hooks', () => {
     vi.clearAllMocks()
     getActiveTabOriginMock.mockResolvedValue('https://app.example.com')
     addProjectMock.mockResolvedValue('p1')
-    resetQueriesMock.mockResolvedValue(null)
     updateProjectMock.mockImplementation(async () => {})
     setActiveProjectMock.mockImplementation(async () => {})
     fetchProjectFingerprintMock.mockResolvedValue({ clientKeys: ['client-a'], gateHashes: [] })
+    useContextStore.getState().reset()
     settingsState.addProject = addProjectMock
     settingsState.projects = []
     settingsState.setActiveProject = setActiveProjectMock
@@ -90,12 +80,27 @@ describe('project hooks', () => {
     const switching = result.current('p2', true)
 
     expect(setActiveProjectMock).toHaveBeenCalledWith('p2', 'https://app.example.com')
-    expect(resetQueriesMock).not.toHaveBeenCalled()
 
     activation.resolve()
     await switching
+  })
 
-    expect(resetQueriesMock).toHaveBeenCalledTimes(1)
+  it('clears the popup-only manual choice when Settings pins another project', async () => {
+    useContextStore.getState().setManualProject('p1')
+    const { result } = await renderInAct(() => renderHook(() => useSwitchProject()))
+
+    await result.current('p2', true)
+
+    expect(useContextStore.getState().manualProjectId).toBeUndefined()
+  })
+
+  it('preserves the popup-only choice when the project picker activates it', async () => {
+    useContextStore.getState().setManualProject('p2')
+    const { result } = await renderInAct(() => renderHook(() => useSwitchProject()))
+
+    await result.current('p2')
+
+    expect(useContextStore.getState().manualProjectId).toBe('p2')
   })
 
   it('does not pin the origin when the switch is automatic', async () => {

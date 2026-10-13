@@ -1,7 +1,7 @@
 import { ExternalLink } from 'lucide-react'
 import { useCallback, useMemo } from 'react'
 
-import type { PaginatedResponse } from '@/src/hooks/use-audit-logs'
+import type { PaginatedResponse } from '@/src/lib/pagination'
 import type { AuditLog } from '@/src/types/statsig'
 
 import { EntityDetailsContainer, EntityDetailsSection } from '@/src/components/sheets/EntityDetails'

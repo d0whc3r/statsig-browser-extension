@@ -28,7 +28,7 @@ export default defineBackground(() => {
     // Perform the fetch request
     void apiKeyStorage.getValue().then((apiKey: string | null) => {
       const finalHeaders = { ...headers }
-      if (apiKey && !finalHeaders['STATSIG-API-KEY']) {
+      if (apiKey && !new Headers(finalHeaders).has('STATSIG-API-KEY')) {
         // Remove quotes if present (legacy support)
         finalHeaders['STATSIG-API-KEY'] = apiKey.replaceAll('"', '')
       }

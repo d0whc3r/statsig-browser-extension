@@ -13,16 +13,23 @@ import { useSettingsStore } from '@/src/store/use-settings-store'
 export const usePageProject = () => {
   const projects = useSettingsStore((state) => state.projects)
   const activeProjectId = useSettingsStore((state) => state.activeProjectId)
+  const isApiKeyLoading = useSettingsStore((state) => state.isApiKeyLoading)
   const detectedKeys = useContextStore((state) => state.detectedKeys)
   const projectMatch = useContextStore((state) => state.projectMatch)
   const manualProjectId = useContextStore((state) => state.manualProjectId)
 
-  const { reason, status } = manualProjectId
-    ? ({ reason: 'manual', status: 'matched' } as const)
-    : getProjectDetection(projects, detectedKeys, projectMatch)
+  const validMatch =
+    projectMatch && (projectMatch.projectId !== activeProjectId || !findProject(projects, projectMatch.projectId))
+      ? null
+      : projectMatch
+  const detection =
+    manualProjectId === activeProjectId && findProject(projects, manualProjectId)
+      ? ({ reason: 'manual', status: 'matched' } as const)
+      : getProjectDetection(projects, detectedKeys, validMatch)
+  const { reason, status } = isApiKeyLoading ? { reason: undefined, status: 'pending' as const } : detection
 
   return {
-    activeLabel: findProject(projects, manualProjectId ?? activeProjectId)?.label,
+    activeLabel: findProject(projects, activeProjectId)?.label,
     detectedKey: detectedKeys?.sdkKeys[0],
     hasProjects: projects.length > 0,
     reason,

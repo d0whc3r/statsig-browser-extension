@@ -1,6 +1,8 @@
 import { beforeEach, vi, describe, expect, it } from 'vitest'
 
-import { API_BASE_URL, fetcher, poster } from './fetcher'
+import { useSettingsStore } from '@/src/store/use-settings-store'
+
+import { API_BASE_URL, api, fetcher, poster } from './fetcher'
 
 const { sendMessageMock } = vi.hoisted(() => ({
   sendMessageMock: vi.fn(),
@@ -18,6 +20,7 @@ vi.mock(import('wxt/browser'), async (importOriginal) => ({
 describe('custom fetch bridge', () => {
   beforeEach(() => {
     sendMessageMock.mockReset()
+    useSettingsStore.setState({ apiKey: '' })
   })
 
   it('fetches JSON data through the background script', async () => {
@@ -43,6 +46,35 @@ describe('custom fetch bridge', () => {
       },
       type: 'API_REQUEST',
     })
+  })
+
+  it('binds a request to the active key before background delivery', async () => {
+    useSettingsStore.setState({ apiKey: 'console-a' })
+    const delivery = Promise.withResolvers<unknown>()
+    sendMessageMock.mockReturnValue(delivery.promise)
+
+    const request = poster('/gates/shared/overrides', { passingUserIDs: ['user-a'] })
+    useSettingsStore.setState({ apiKey: 'console-b' })
+    delivery.resolve({ response: { data: {}, headers: {}, status: 200, statusText: 'OK' }, success: true })
+    await request
+
+    const expectedHeaders = expect.objectContaining({ 'STATSIG-API-KEY': 'console-a' })
+    const expectedConfig = expect.objectContaining({ headers: expectedHeaders })
+    expect(sendMessageMock).toHaveBeenCalledWith(expect.objectContaining({ config: expectedConfig }))
+  })
+
+  it('preserves an explicit key when verifying another project', async () => {
+    useSettingsStore.setState({ apiKey: 'console-active' })
+    sendMessageMock.mockResolvedValue({
+      response: { data: {}, headers: {}, status: 200, statusText: 'OK' },
+      success: true,
+    })
+
+    await api.headers({ 'STATSIG-API-KEY': 'console-explicit' }).url('/gates?limit=1').get().json()
+
+    const expectedHeaders = expect.objectContaining({ 'STATSIG-API-KEY': 'console-explicit' })
+    const expectedConfig = expect.objectContaining({ headers: expectedHeaders })
+    expect(sendMessageMock).toHaveBeenCalledWith(expect.objectContaining({ config: expectedConfig }))
   })
 
   it('posts data through the background script', async () => {

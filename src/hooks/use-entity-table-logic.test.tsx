@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { featureGateColumns, featureGateFacets } from '@/src/components/tables/data'
 import { DEFAULT_UI_PREFERENCES, useUiPreferencesStore } from '@/src/store/use-ui-preferences-store'
 import { useUIStore } from '@/src/store/use-ui-store'
-import { mockFeatureGates, paginated } from '@/src/tests/fixtures/statsig'
+import { makeFeatureGate, mockFeatureGates, paginated } from '@/src/tests/fixtures/statsig'
 
 import { useEntityTableLogic } from './use-entity-table-logic'
 
@@ -64,5 +64,40 @@ describe('useEntityTableLogic', () => {
 
     expect(result.current.entities).toStrictEqual([])
     expect(result.current.totalItems).toBe(0)
+  })
+
+  it('applies page updates to the visible page after persisted pagination exceeds the loaded list', () => {
+    const gates = Array.from({ length: 25 }, (_value, index) => makeFeatureGate({ id: `gate-${index}` }))
+    useUiPreferencesStore.getState().updateTable('featureGates', { page: 10, rowsPerPage: 5 })
+
+    const { result } = renderHook(() =>
+      useEntityTableLogic({
+        columns: featureGateColumns,
+        data: { pages: [paginated(gates)] },
+        entityType: 'feature_gate',
+        fetchNextPage: vi.fn(),
+        fusedKeys: ['name'],
+        hasNextPage: false,
+        isFetchingNextPage: false,
+        isLoading: false,
+      }),
+    )
+
+    expect(result.current.page).toBe(5)
+
+    act(() => {
+      result.current.setPage((current) => current - 1)
+    })
+
+    expect(result.current.page).toBe(4)
+    expect(useUiPreferencesStore.getState().tables.featureGates.page).toBe(4)
+
+    act(() => {
+      result.current.setPage((current) => current - 1)
+      result.current.setPage((current) => current - 1)
+    })
+
+    expect(result.current.page).toBe(2)
+    expect(useUiPreferencesStore.getState().tables.featureGates.page).toBe(2)
   })
 })

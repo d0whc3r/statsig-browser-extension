@@ -1,9 +1,14 @@
+import type { Query } from '@tanstack/react-query'
+import type { StoreApi } from 'zustand'
+
 import { create } from 'zustand'
 
 import type { StatsigProject } from '@/src/lib/projects'
 
 import { createProject, findProject } from '@/src/lib/projects'
+import { queryClient } from '@/src/lib/query-client'
 import { activeProjectIdStorage, apiKeyStorage, projectsStorage } from '@/src/lib/storage'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 interface SettingsState {
   projects: StatsigProject[]
@@ -51,97 +56,178 @@ const applyChanges = (project: StatsigProject, changes: Partial<Omit<StatsigProj
   ...changes,
 })
 
-export const useSettingsStore = create<SettingsState>((set, get) => ({
-  activeProjectId: '',
-  addProject: async (apiKey: string) => {
-    const { projects } = get()
-    const existing = projects.find((project) => project.apiKey === apiKey)
-    if (existing) {
-      await get().setActiveProject(existing.id)
-      return existing.id
-    }
+const readStoredSettings = () =>
+  Promise.all([projectsStorage.getValue(), activeProjectIdStorage.getValue(), apiKeyStorage.getValue()])
 
-    const project = createProject(apiKey, nextLabel(projects))
-    const updated = [...projects, project]
-    set({ activeProjectId: project.id, apiKey: project.apiKey, projects: updated })
-    await persist(updated, project.id)
-    return project.id
-  },
+const projectQueries = { predicate: (query: Query) => query.queryKey[0] !== 'user-details' }
 
-  apiKey: '',
+const createProjectPersistence = (
+  set: StoreApi<SettingsState>['setState'],
+  get: StoreApi<SettingsState>['getState'],
+) => {
+  const control = { pendingWrites: 0, revision: 0, unwatch: [] as (() => void)[], writes: Promise.resolve() }
 
-  clearProjects: async () => {
-    set({ activeProjectId: '', apiKey: '', projects: [] })
-    await persist([], '')
-  },
-
-  initialize: async () => {
-    try {
-      const [stored, storedActiveId, legacyApiKey] = await Promise.all([
-        projectsStorage.getValue(),
-        activeProjectIdStorage.getValue(),
-        apiKeyStorage.getValue(),
-      ])
-
-      const projects = restoreProjects(stored, legacyApiKey)
-      const active = findProject(projects, storedActiveId) ?? projects[0]
-
-      set({
-        activeProjectId: active?.id ?? '',
-        apiKey: active?.apiKey ?? '',
-        isApiKeyLoading: false,
-        projects,
-      })
-      await persist(projects, active?.id ?? '')
-    } catch (error) {
-      console.error('Failed to initialize settings store:', error)
-      set({ isApiKeyLoading: false })
-    }
-
-    // Watch for external changes (other extension pages)
-    projectsStorage.watch((projects) => {
-      const updated = projects ?? []
-      const active = findProject(updated, get().activeProjectId) ?? updated[0]
-      set({
-        activeProjectId: active?.id ?? '',
-        apiKey: active?.apiKey ?? '',
-        isApiKeyLoading: false,
-        projects: updated,
-      })
+  const holdCredential = () => {
+    set({ apiKey: '', isApiKeyLoading: true })
+    useUIStore.getState().resetProjectSelection()
+    return queryClient.cancelQueries(projectQueries).then(() => {
+      queryClient.removeQueries(projectQueries)
     })
-  },
+  }
 
-  isApiKeyLoading: true,
+  const update = (projects: StatsigProject[], activeProjectId: string): Promise<void> => {
+    const apiKey = findProject(projects, activeProjectId)?.apiKey ?? ''
+    const current = get()
+    const changing = current.isApiKeyLoading || current.activeProjectId !== activeProjectId || current.apiKey !== apiKey
+    const request = ++control.revision
+    control.pendingWrites++
+    const cacheReady = changing ? holdCredential() : Promise.resolve()
+    set({ activeProjectId, projects })
 
-  projects: [],
+    const operation = control.writes
+      .then(async () => {
+        await cacheReady
+        await persist(projects, activeProjectId)
+        if (request === control.revision) {
+          set({ apiKey, isApiKeyLoading: false })
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('Failed to persist project settings:', error)
+        throw error
+      })
+      .finally(() => {
+        control.pendingWrites--
+      })
+    // A failed write must not prevent a later retry, while each caller still receives its failure.
+    control.writes = operation.catch(() => {})
+    return operation
+  }
 
-  removeProject: async (projectId: string) => {
-    const { activeProjectId, projects } = get()
-    const updated = projects.filter((project) => project.id !== projectId)
-    const active = projectId === activeProjectId ? updated[0] : findProject(updated, activeProjectId)
+  const publishExternal = async (
+    [stored, activeProjectId, mirroredKey]: Awaited<ReturnType<typeof readStoredSettings>>,
+    request: number,
+    changing: boolean,
+  ) => {
+    const projects = stored ?? []
+    const active = findProject(projects, activeProjectId)
+    const apiKey = active?.apiKey ?? ''
+    const consistent = (Boolean(active) || projects.length === 0) && apiKey === (mirroredKey ?? '')
+    if (!changing && (get().activeProjectId !== activeProjectId || get().apiKey !== apiKey || !consistent)) {
+      await holdCredential()
+      if (request !== control.revision || control.pendingWrites > 0) {
+        return
+      }
+    }
+    set({
+      activeProjectId,
+      apiKey: consistent ? apiKey : '',
+      isApiKeyLoading: !consistent,
+      projects,
+    })
+  }
 
-    set({ activeProjectId: active?.id ?? '', apiKey: active?.apiKey ?? '', projects: updated })
-    await persist(updated, active?.id ?? '')
-  },
-
-  setActiveProject: async (projectId: string, pinOrigin?: string) => {
-    const { projects } = get()
-    const target = findProject(projects, projectId)
-    if (!target) {
+  const readExternal = async (changing: boolean) => {
+    if (control.pendingWrites > 0) {
       return
     }
+    const request = ++control.revision
+    const cacheReady = changing ? holdCredential() : Promise.resolve()
+    try {
+      const [snapshot] = await Promise.all([readStoredSettings(), cacheReady])
+      if (request !== control.revision || control.pendingWrites > 0) {
+        return
+      }
+      await publishExternal(snapshot, request, changing)
+    } catch (error) {
+      console.error('Failed to read external project settings:', error)
+    }
+  }
 
-    const updated = pinOrigin ? projects.map((project) => pinOriginTo(project, projectId, pinOrigin)) : projects
+  const watchExternal = () => {
+    // Changes are reconciled without writes: only a matching stored id/key mirror is usable.
+    control.unwatch = [
+      projectsStorage.watch((projects) => {
+        const nextKey = findProject(projects ?? [], get().activeProjectId)?.apiKey ?? ''
+        void readExternal(nextKey !== get().apiKey)
+      }),
+      activeProjectIdStorage.watch((activeProjectId) => {
+        void readExternal(activeProjectId !== get().activeProjectId)
+      }),
+      apiKeyStorage.watch((apiKey) => {
+        void readExternal(apiKey !== get().apiKey)
+      }),
+    ]
+  }
 
-    set({ activeProjectId: projectId, apiKey: target.apiKey, projects: updated })
-    await persist(updated, projectId)
-  },
+  const restore = async (request: number) => {
+    const [stored, storedActiveId, legacyApiKey] = await readStoredSettings()
+    if (request !== control.revision) {
+      return
+    }
+    const projects = restoreProjects(stored, legacyApiKey)
+    const active = findProject(projects, storedActiveId) ?? projects[0]
+    await update(projects, active?.id ?? '')
+  }
 
-  updateProject: async (projectId: string, changes: Partial<Omit<StatsigProject, 'id'>>) => {
-    const { activeProjectId, projects } = get()
-    const updated = projects.map((project) => (project.id === projectId ? applyChanges(project, changes) : project))
+  const initialize = async () => {
+    for (const stop of control.unwatch) {
+      stop()
+    }
+    control.unwatch = []
+    const request = control.revision
+    try {
+      await restore(request)
+    } catch (error) {
+      console.error('Failed to initialize settings store:', error)
+      if (get().projects.length === 0) {
+        set({ apiKey: '', isApiKeyLoading: false })
+      }
+    }
+    watchExternal()
+  }
 
-    set({ apiKey: findProject(updated, activeProjectId)?.apiKey ?? '', projects: updated })
-    await persist(updated, activeProjectId)
-  },
-}))
+  return { initialize, update }
+}
+
+export const useSettingsStore = create<SettingsState>((set, get) => {
+  const { initialize, update } = createProjectPersistence(set, get)
+  return {
+    activeProjectId: '',
+    addProject: async (apiKey: string) => {
+      const { projects } = get()
+      const existing = projects.find((project) => project.apiKey === apiKey)
+      if (existing) {
+        await get().setActiveProject(existing.id)
+        return existing.id
+      }
+      const project = createProject(apiKey, nextLabel(projects))
+      await update([...projects, project], project.id)
+      return project.id
+    },
+    apiKey: '',
+    clearProjects: () => update([], ''),
+    initialize,
+    isApiKeyLoading: true,
+    projects: [],
+    removeProject: (projectId: string) => {
+      const { activeProjectId, projects } = get()
+      const updated = projects.filter((project) => project.id !== projectId)
+      const active = projectId === activeProjectId ? updated[0] : findProject(updated, activeProjectId)
+      return update(updated, active?.id ?? '')
+    },
+    setActiveProject: async (projectId: string, pinOrigin?: string) => {
+      const { projects } = get()
+      if (!findProject(projects, projectId)) {
+        return
+      }
+      const updated = pinOrigin ? projects.map((project) => pinOriginTo(project, projectId, pinOrigin)) : projects
+      await update(updated, projectId)
+    },
+    updateProject: (projectId: string, changes: Partial<Omit<StatsigProject, 'id'>>) => {
+      const { activeProjectId, projects } = get()
+      const updated = projects.map((project) => (project.id === projectId ? applyChanges(project, changes) : project))
+      return update(updated, activeProjectId)
+    },
+  }
+})

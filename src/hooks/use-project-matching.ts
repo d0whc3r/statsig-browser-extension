@@ -1,8 +1,7 @@
 import { useEffect } from 'react'
 
 import { useActiveTabOrigin } from '@/src/hooks/use-active-tab-origin'
-import { matchProject } from '@/src/lib/projects'
-import { queryClient } from '@/src/lib/query-client'
+import { findProject, matchProject } from '@/src/lib/projects'
 import { useContextStore } from '@/src/store/use-context-store'
 import { useSettingsStore } from '@/src/store/use-settings-store'
 
@@ -14,14 +13,22 @@ import { useSettingsStore } from '@/src/store/use-settings-store'
 export const useProjectMatching = () => {
   const detectedKeys = useContextStore((state) => state.detectedKeys)
   const manualProjectId = useContextStore((state) => state.manualProjectId)
+  const setManualProject = useContextStore((state) => state.setManualProject)
   const setProjectMatch = useContextStore((state) => state.setProjectMatch)
   const projects = useSettingsStore((state) => state.projects)
+  const isApiKeyLoading = useSettingsStore((state) => state.isApiKeyLoading)
   const activeProjectId = useSettingsStore((state) => state.activeProjectId)
   const setActiveProject = useSettingsStore((state) => state.setActiveProject)
   const origin = useActiveTabOrigin()
 
   useEffect(() => {
-    if (projects.length === 0 || manualProjectId) {
+    if (isApiKeyLoading || (manualProjectId === activeProjectId && findProject(projects, manualProjectId))) {
+      return
+    }
+    if (manualProjectId) {
+      setManualProject(undefined)
+    }
+    if (projects.length === 0) {
       return
     }
 
@@ -29,7 +36,17 @@ export const useProjectMatching = () => {
     setProjectMatch(match)
 
     if (match && match.projectId !== activeProjectId) {
-      void setActiveProject(match.projectId).then(() => queryClient.resetQueries())
+      void setActiveProject(match.projectId)
     }
-  }, [projects, detectedKeys, manualProjectId, origin, activeProjectId, setActiveProject, setProjectMatch])
+  }, [
+    projects,
+    isApiKeyLoading,
+    detectedKeys,
+    manualProjectId,
+    origin,
+    activeProjectId,
+    setActiveProject,
+    setManualProject,
+    setProjectMatch,
+  ])
 }

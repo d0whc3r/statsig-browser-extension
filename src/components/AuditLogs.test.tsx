@@ -76,4 +76,30 @@ describe('auditLogs', () => {
     await user.type(screen.getByPlaceholderText(/search/iu), 'checkout')
     expect(useUiPreferencesStore.getState().auditLogs.filterValue).toBe('checkout')
   })
+
+  it('moves back from the visible page when the stored page exceeds the loaded logs', async () => {
+    const logs = Array.from({ length: 50 }, (_value, index) => ({
+      ...mockAuditLogs[0],
+      id: `log-${index}`,
+      name: `Gate ${index}`,
+    }))
+    useUiPreferencesStore.getState().setAuditLogs({ page: 10, rowsPerPage: 10 })
+    useAuditLogs.mockReturnValue({
+      data: { pages: [{ data: logs }] },
+      fetchNextPage: vi.fn(),
+      hasNextPage: true,
+      isFetching: false,
+      isFetchingNextPage: false,
+      isLoading: false,
+      refetch: vi.fn(),
+    })
+
+    const { user } = renderWithProviders(<AuditLogs />)
+
+    expect(screen.getByText('Gate 40')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Previous page' }))
+
+    expect(screen.getByText('Gate 30')).toBeInTheDocument()
+    expect(screen.queryByText('Gate 40')).not.toBeInTheDocument()
+  })
 })

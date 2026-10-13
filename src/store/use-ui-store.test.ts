@@ -19,6 +19,32 @@ describe('useUIStore', () => {
     })
   })
 
+  it('clears project editors while preserving Settings and detected user controls', () => {
+    useUIStore.setState({
+      currentAuditLogId: 'audit_1',
+      currentItemId: 'gate_123',
+      isAuditLogDetailSheetOpen: true,
+      isItemSheetOpen: true,
+      isManageExperimentModalOpen: true,
+      isManageGateOverridesModalOpen: true,
+      isSettingsSheetOpen: true,
+      isUserDetailsSheetOpen: true,
+    })
+
+    useUIStore.getState().resetProjectSelection()
+
+    expect(useUIStore.getState()).toMatchObject({
+      currentAuditLogId: undefined,
+      currentItemId: undefined,
+      isAuditLogDetailSheetOpen: false,
+      isItemSheetOpen: false,
+      isManageExperimentModalOpen: false,
+      isManageGateOverridesModalOpen: false,
+      isSettingsSheetOpen: true,
+      isUserDetailsSheetOpen: true,
+    })
+  })
+
   it('should have correct initial state', () => {
     const state = useUIStore.getState()
 

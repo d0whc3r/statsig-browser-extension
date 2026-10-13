@@ -2,6 +2,8 @@ import { act, renderHook } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { storage } from 'wxt/utils/storage'
 
+import { useContextStore } from '@/src/store/use-context-store'
+import { useSettingsStore } from '@/src/store/use-settings-store'
 import {
   DEFAULT_UI_PREFERENCES,
   UI_PREFERENCES_STORAGE_KEY,
@@ -32,6 +34,8 @@ describe('useAppLogic', () => {
     })
     await storage.removeItem(UI_PREFERENCES_STORAGE_KEY)
     useUIStore.getState().reset()
+    useContextStore.getState().reset()
+    useSettingsStore.setState({ activeProjectId: '', apiKey: '', isApiKeyLoading: false, projects: [] })
   })
 
   it('persists the last visited tab and closes the item sheet', () => {
@@ -48,6 +52,23 @@ describe('useAppLogic', () => {
     expect(useUiPreferencesStore.getState().activeTab).toBe('experiments')
     expect(useUIStore.getState().isItemSheetOpen).toBeFalsy()
     expect(useUIStore.getState().currentItemId).toBeUndefined()
+  })
+
+  it.each(['removed', 'p2'])('does not authorize stale manual project %s', (manualProjectId) => {
+    const projects = ['p1', 'p2'].map((id) => ({
+      apiKey: `console-${id}`,
+      clientKeys: [],
+      gateHashes: [],
+      id,
+      label: id,
+      origins: [],
+    }))
+    useSettingsStore.setState({ activeProjectId: 'p1', apiKey: 'console-p1', projects })
+    useContextStore.setState({ detectedKeys: null, manualProjectId, projectMatch: null })
+
+    const { result } = renderHook(() => useAppLogic())
+
+    expect(result.current.isPageMatched).toBeFalsy()
   })
 
   it('ignores unknown tab ids', () => {

@@ -72,6 +72,39 @@ describe('useWxtStorage', () => {
     expect(result.current[0]).toBe('b')
   })
 
+  it('keeps a watcher update when an older initial read finishes later', async () => {
+    const pending = Promise.withResolvers<string>()
+    const { emit, item } = createStorageItem('fallback', () => pending.promise)
+    const { result } = renderHook(() => useWxtStorage(item))
+
+    act(() => {
+      emit('newer')
+    })
+    await act(async () => {
+      pending.resolve('older')
+      await pending.promise
+    })
+
+    expect(result.current[0]).toBe('newer')
+    expect(result.current[2]).toBeFalsy()
+  })
+
+  it('keeps a local write when an older initial read finishes later', async () => {
+    const pending = Promise.withResolvers<string>()
+    const { item } = createStorageItem('fallback', () => pending.promise)
+    const { result } = renderHook(() => useWxtStorage(item))
+
+    act(() => {
+      result.current[1]('newer')
+    })
+    await act(async () => {
+      pending.resolve('older')
+      await pending.promise
+    })
+
+    expect(result.current[0]).toBe('newer')
+  })
+
   it('logs and stops loading on getValue failure', async () => {
     const { item } = createStorageItem('fallback', () => {
       throw new Error('boom')

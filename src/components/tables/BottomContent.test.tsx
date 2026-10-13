@@ -25,30 +25,24 @@ describe('bottomContent', () => {
 
   it('disables the previous button on the first page', () => {
     render(<BottomContent page={1} setPage={noop} total={5} />)
-    const buttons = screen.getAllByRole('button')
-    expect(buttons[0]).toBeDisabled()
-    expect(buttons.at(-1)).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Previous page' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Next page' })).not.toBeDisabled()
   })
 
   it('disables the next button on the last page', () => {
     render(<BottomContent page={5} setPage={noop} total={5} />)
-    const buttons = screen.getAllByRole('button')
-    expect(buttons.at(-1)).toBeDisabled()
-    expect(buttons[0]).not.toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Next page' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: 'Previous page' })).not.toBeDisabled()
   })
 
   it('advances and rewinds via next/previous arrows', async () => {
     const user = userEvent.setup()
     render(<Harness initialPage={2} total={5} />)
 
-    const buttons = screen.getAllByRole('button')
-    const [prev] = buttons
-    const next = buttons.at(-1)!
-
-    await user.click(next)
+    await user.click(screen.getByRole('button', { name: 'Next page' }))
     expect(screen.getByTestId('current-page')).toHaveTextContent('3')
 
-    await user.click(prev)
+    await user.click(screen.getByRole('button', { name: 'Previous page' }))
     expect(screen.getByTestId('current-page')).toHaveTextContent('2')
   })
 

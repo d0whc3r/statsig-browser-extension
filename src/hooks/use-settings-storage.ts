@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+
 import { useWxtStorage } from '@/src/hooks/use-wxt-storage'
 import { apiKeyTypeStorage, currentOverridesStorage, localStorageKeyStorage } from '@/src/lib/storage'
 import { useSettingsStore } from '@/src/store/use-settings-store'
@@ -5,20 +7,20 @@ import { useSettingsStore } from '@/src/store/use-settings-store'
 export const useSettingsStorage = () => {
   const { activeProjectId, apiKey, clearProjects, isApiKeyLoading, projects } = useSettingsStore()
   const [localStorageValue, setLocalStorageKey] = useWxtStorage(localStorageKeyStorage)
-  // Force write-key as default since user requested to remove the selector
-  const [typeApiKey, setTypeApiKey] = useWxtStorage(apiKeyTypeStorage)
+  const [typeApiKey, setTypeApiKey, isApiKeyTypeLoading] = useWxtStorage(apiKeyTypeStorage)
   const [, setCurrentOverrides] = useWxtStorage(currentOverridesStorage)
 
-  // Ensure typeApiKey is always write-key if it was somehow set to read-key
-  if (typeApiKey !== 'write-key') {
-    setTypeApiKey('write-key')
-  }
+  // Normalize legacy settings after hydration, outside the render phase.
+  useEffect(() => {
+    if (!isApiKeyTypeLoading && typeApiKey !== 'write-key') {
+      setTypeApiKey('write-key')
+    }
+  }, [isApiKeyTypeLoading, typeApiKey, setTypeApiKey])
 
   const reset = async () => {
     await clearProjects()
     setLocalStorageKey('statsig_user')
     setCurrentOverrides([])
-    // We do not reset typeApiKey as it is a user preference
   }
 
   return {

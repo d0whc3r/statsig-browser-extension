@@ -48,9 +48,11 @@ export const CleanupFindingCard = memo(function CleanupFindingCard({ finding, on
           <span className="block truncate font-mono text-xs text-muted-foreground">{gate.id}</span>
         </button>
         <div className="flex shrink-0 items-center gap-2">
-          <span className="text-xs whitespace-nowrap text-muted-foreground">
-            <TimeAgo date={gate.lastModifiedTime} />
-          </span>
+          {gate.lastModifiedTime !== null && (
+            <span className="text-xs whitespace-nowrap text-muted-foreground">
+              <TimeAgo date={gate.lastModifiedTime} />
+            </span>
+          )}
           <Badge variant={gate.isEnabled ? 'default' : 'destructive'}>{gate.isEnabled ? 'Enabled' : 'Disabled'}</Badge>
           <a
             href={`https://console.statsig.com/gates/${gate.id}`}

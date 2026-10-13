@@ -83,3 +83,24 @@ For detailed instructions on how the release process works and how to configure 
 4.  Make sure your code lints (`pnpm lint`).
 5.  Follow the commit message guidelines.
 6.  Issue that pull request!
+
+## Dependency security exceptions
+
+Run `pnpm audit` after dependency changes. The lockfile contains compatible security
+updates; the scoped `fx-runner>shell-quote` override replaces its vulnerable exact
+pin. Keep install-script restrictions in `pnpm-workspace.yaml` enabled.
+
+As of 2026-10-13, two development dependencies have no published fix. Keep their
+advisories visible and review them again by **2026-11-13**:
+
+- `node-forge` 1.4.0: [GHSA-86w9-cpqp-85rv](https://github.com/advisories/GHSA-86w9-cpqp-85rv).
+  It comes through `web-ext > @devicefarmer/adbkit`. The affected RSA verification
+  belongs to adbkit's TCP USB server. The reviewed web-ext workflows use its ADB
+  client, not that server, and target Chrome and desktop Firefox. Reassess before
+  adding TCP USB server functionality or another node-forge caller.
+- `braces` 3.0.3: [GHSA-vfj7-8cjw-p6xm](https://github.com/advisories/GHSA-vfj7-8cjw-p6xm).
+  It comes through release tooling and micromatch. The reviewed release callers
+  use `micromatch()` and `.isMatch()`, which call picomatch directly; the vulnerable
+  brace expansion paths are `.parse()`, `.braces()` and `.braceExpand()`. Patterns
+  are maintained in repository configuration. Reassess before using those paths
+  or accepting patterns from external input.

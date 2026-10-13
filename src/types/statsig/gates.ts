@@ -4,20 +4,20 @@ export interface FeatureGate {
   description: string
   idType: string
   lastModifierID: string
-  lastModifiedTime: number
+  lastModifiedTime: number | null
   lastModifierName: string
   lastModifierEmail: string | null
   creatorID: string
   createdTime: number
   creatorName: string
   creatorEmail: string | null
-  targetApps: string[]
+  targetApps: string | string[]
   holdoutIDs: string[]
   tags: string[]
   isEnabled: boolean
   status: string
   rules: FeatureGateRule[]
-  checksPerHour: number
+  checksPerHour: number | null
   type: string
   typeReason: string
   team: string | null

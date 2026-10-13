@@ -15,7 +15,7 @@ vi.mock('@/src/hooks/use-feature-gates', () => ({
 
 const page = (data: FeatureGate[], totalItems = data.length) => ({
   data,
-  pagination: { limit: 100, page: 1, totalItems },
+  pagination: { itemsPerPage: 100, nextPage: null, pageNumber: 1, previousPage: null, totalItems },
 })
 
 const mockGates = (overrides: Record<string, unknown> = {}) => {
@@ -59,6 +59,14 @@ describe('useGateAudit', () => {
     expect(gates.fetchNextPage).not.toHaveBeenCalled()
   })
 
+  it('stops automatic pagination after a page request fails', async () => {
+    const gates = mockGates({ error: new Error('Page failed'), hasNextPage: true, isError: true })
+    const { result } = await renderInAct(() => renderHook(() => useGateAudit(7)))
+
+    expect(gates.fetchNextPage).not.toHaveBeenCalled()
+    expect(result.current.isComplete).toBeFalsy()
+  })
+
   it('flattens every page into the audited gate list', async () => {
     mockGates({ data: { pages: [page([bareGate('a')]), page([bareGate('b')])] } })
 
@@ -69,7 +77,13 @@ describe('useGateAudit', () => {
   })
 
   it('tolerates a page that carries no data', async () => {
-    mockGates({ data: { pages: [{ pagination: { limit: 100, page: 1, totalItems: 0 } }] } })
+    mockGates({
+      data: {
+        pages: [
+          { pagination: { itemsPerPage: 100, nextPage: null, pageNumber: 1, previousPage: null, totalItems: 0 } },
+        ],
+      },
+    })
 
     const { result } = await renderInAct(() => renderHook(() => useGateAudit(7)))
 
@@ -150,6 +164,7 @@ describe('useGateCleanupIssues', () => {
     const { result } = await renderInAct(() => renderHook(() => useGateCleanupIssues('a')))
 
     expect(result.current.map((issue) => issue.key)).toStrictEqual(['always_off', 'no_traffic'])
+    expect(useFeatureGatesMock).toHaveBeenCalledWith(true)
   })
 
   it('drops the hygiene-only signals the cleanup panel still shows', async () => {
@@ -170,6 +185,7 @@ describe('useGateCleanupIssues', () => {
     const { result } = await renderInAct(() => renderHook(() => useGateCleanupIssues()))
 
     expect(result.current).toStrictEqual([])
+    expect(useFeatureGatesMock).toHaveBeenCalledWith(false)
   })
 
   it('returns nothing while no gate has been loaded', async () => {

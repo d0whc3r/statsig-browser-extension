@@ -127,7 +127,7 @@ export const makeExperimentOverridesResponse = (
 
 export const paginated = <T>(data: T[]) => ({
   data,
-  pagination: { limit: 100, page: 1, totalItems: data.length },
+  pagination: { itemsPerPage: 100, nextPage: null, pageNumber: 1, previousPage: null, totalItems: data.length },
 })
 
 export const single = <T>(data: T) => ({ data })

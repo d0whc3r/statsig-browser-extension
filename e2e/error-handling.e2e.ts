@@ -72,10 +72,7 @@ test.describe('error handling', () => {
     await expect(page.getByRole('button', { name: /Retry/iu })).toBeVisible()
   })
 
-  test('experiments tab has no error UI on 500 (source-code gap)', async ({ context, extensionId }) => {
-    // ExperimentsTableBody intentionally has no isError branch (unlike FeatureGatesTableBody
-    // And DynamicConfigsTableBody). This test pins the current behavior — if an error branch
-    // Is added to ExperimentsTableBody, flip this assertion to match.
+  test('experiments tab surfaces its own error UI on 500', async ({ context, extensionId }) => {
     const page = await context.newPage()
     await openAuthenticated(page, extensionId, [
       { data: paginated(mockFeatureGates), urlPattern: String.raw`/gates(\?|$)` },
@@ -86,7 +83,8 @@ test.describe('error handling', () => {
 
     await page.getByRole('tab', { name: /Experiments/iu }).click()
 
-    await expect(page.getByText(/Failed to load experiments/iu)).toHaveCount(0)
+    await expect(page.getByText(/Failed to load experiments/iu)).toBeVisible()
+    await expect(page.getByRole('button', { name: /Retry/iu })).toBeVisible()
   })
 
   test('unmatched API request returns "No mock" without throwing UI', async ({ context, extensionId }) => {

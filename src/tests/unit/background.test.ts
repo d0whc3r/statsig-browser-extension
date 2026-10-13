@@ -111,7 +111,7 @@ describe('background API proxy', () => {
     })
   })
 
-  it('does not overwrite an existing STATSIG-API-KEY header', async () => {
+  it.each(['STATSIG-API-KEY', 'statsig-api-key'])('preserves an explicit %s header', async (headerName) => {
     getValue.mockResolvedValue('console-stored')
     const fetchMock = vi.fn().mockResolvedValue(jsonResponse('not-json'))
     vi.stubGlobal('fetch', fetchMock)
@@ -122,7 +122,7 @@ describe('background API proxy', () => {
       {
         config: {
           body: '{"name":"gate"}',
-          headers: { 'STATSIG-API-KEY': 'console-explicit' },
+          headers: { [headerName]: 'console-explicit' },
           method: 'POST',
           url: 'https://statsigapi.net/console/v1/gates',
         },
@@ -138,7 +138,7 @@ describe('background API proxy', () => {
 
     expect(fetchMock).toHaveBeenCalledWith('https://statsigapi.net/console/v1/gates', {
       body: '{"name":"gate"}',
-      headers: { 'STATSIG-API-KEY': 'console-explicit' },
+      headers: { [headerName]: 'console-explicit' },
       method: 'POST',
     })
     expect(sendResponse).toHaveBeenCalledWith(

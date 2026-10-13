@@ -139,6 +139,32 @@ describe('auditLogList', () => {
     expect(screen.queryByRole('button', { name: /load more/iu })).not.toBeInTheDocument()
   })
 
+  it('lets an empty filtered list load the remaining audit logs', async () => {
+    const onLoadMore = vi.fn()
+    const user = userEvent.setup({ pointerEventsCheck: 0 })
+
+    renderWithProviders(
+      <AuditLogList
+        actionFilter="create"
+        filterValue="checkout"
+        filteredItems={EMPTY_LOGS}
+        hasNextPage
+        isFetchingNextPage={false}
+        isLoading={false}
+        onClearFilters={vi.fn()}
+        onLoadMore={onLoadMore}
+        onViewDetails={vi.fn()}
+        page={1}
+        setPage={vi.fn()}
+        totalPages={1}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: /load more/iu }))
+
+    expect(onLoadMore).toHaveBeenCalledTimes(1)
+  })
+
   it('renders page controls and moves to the next page', async () => {
     const setPage = vi.fn()
     const user = userEvent.setup({ pointerEventsCheck: 0 })

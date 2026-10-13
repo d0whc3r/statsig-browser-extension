@@ -79,7 +79,7 @@ vi.mock(import('@/src/lib/storage'), async (importOriginal) => {
     apiKeyStorage: {
       getValue: vi.fn().mockResolvedValue('test-api-key'),
       setValue: vi.fn(),
-      watch: vi.fn(),
+      watch: vi.fn(() => () => {}),
     } as any,
   }
 })

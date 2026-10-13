@@ -18,10 +18,10 @@ export const useGateAudit = (thresholdDays: number) => {
   const { data, error, fetchNextPage, hasNextPage, isError, isFetchingNextPage, isLoading, refetch } = useFeatureGates()
 
   useEffect(() => {
-    if (hasNextPage && !isFetchingNextPage) {
+    if (hasNextPage && !isFetchingNextPage && !isError) {
       void fetchNextPage()
     }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage])
+  }, [hasNextPage, isFetchingNextPage, isError, fetchNextPage])
 
   const gates = useMemo(() => data?.pages.flatMap((page) => page.data ?? []) ?? [], [data])
   const findings = useMemo(() => auditGates(gates, thresholdDays), [gates, thresholdDays])
@@ -31,7 +31,7 @@ export const useGateAudit = (thresholdDays: number) => {
     error,
     findings,
     // Twins and counts are unreliable until every page is in, so callers can warn about it.
-    isComplete: !hasNextPage && !isLoading,
+    isComplete: !hasNextPage && !isLoading && !isError,
     isError,
     isLoading,
     refetch,
@@ -50,7 +50,7 @@ export const useGateAudit = (thresholdDays: number) => {
  * @returns The gate issues worth acting on, empty when the gate is clean or not loaded yet.
  */
 export const useGateCleanupIssues = (gateId?: string): GateIssue[] => {
-  const { data } = useFeatureGates()
+  const { data } = useFeatureGates(Boolean(gateId))
 
   return useMemo(() => {
     const gates = data?.pages.flatMap((page) => page.data ?? []) ?? []

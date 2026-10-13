@@ -1,26 +1,19 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import type { PaginatedResponse } from '@/src/lib/pagination'
+
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
+import { getNextPageParam } from '@/src/lib/pagination'
 import { handleApiError } from '@/src/lib/utils'
 
 import type { AuditLog } from '../types/statsig'
 
 const PAGE_LIMIT = 50
 
-export interface PaginatedResponse<ItemType> {
-  data: ItemType[]
-  pagination: {
-    totalItems: number
-    page: number
-    limit: number
-  }
-}
-
 /**
  * Fetches a single page of audit logs from the Statsig API.
  *
- * @param apiKey - The Statsig Console API Key
  * @param page - The page number to fetch
  * @returns A promise resolving to the paginated audit logs response
  * @throws Error if the fetch fails
@@ -35,7 +28,7 @@ const fetchAuditLogsPage = async (page: number): Promise<PaginatedResponse<Audit
 
 /**
  * React Query hook to fetch audit logs using infinite scrolling.
- * Uses the stored API key or an optional override.
+ * Uses the stored API key.
  *
  * @returns The Infinite React Query result containing the audit logs pages
  */
@@ -44,17 +37,7 @@ export const useAuditLogs = () => {
 
   return useInfiniteQuery({
     enabled: Boolean(apiKey),
-    getNextPageParam: (lastPage: PaginatedResponse<AuditLog>) => {
-      if (!lastPage?.pagination) {
-        return null
-      }
-      const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
-      if (currentTotal < lastPage.pagination.totalItems) {
-        return lastPage.pagination.page + 1
-      }
-
-      return null
-    },
+    getNextPageParam,
     initialPageParam: 1,
     queryFn: ({ pageParam }) => fetchAuditLogsPage(pageParam),
     queryKey: ['audit-logs'],

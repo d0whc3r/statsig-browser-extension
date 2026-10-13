@@ -1,6 +1,8 @@
 import wretch from 'wretch'
 import { browser } from 'wxt/browser'
 
+import { useSettingsStore } from '@/src/store/use-settings-store'
+
 /** @internal Referenced by unit tests; used by the wretch client below. */
 export const API_BASE_URL = 'https://statsigapi.net/console/v1'
 
@@ -35,11 +37,21 @@ const isExtMessageResponse = (val: unknown): val is ExtMessageResponse => {
   return 'success' in val
 }
 
+const getProjectRequestHeaders = (headers?: HeadersInit): HeadersInit | undefined => {
+  const requestHeaders = new Headers(headers)
+  const { apiKey } = useSettingsStore.getState()
+  // Capture the ready project credential before asynchronous background delivery.
+  // Explicit login/fingerprint keys already identify their own project.
+  return apiKey && !requestHeaders.has('STATSIG-API-KEY')
+    ? { ...Object.fromEntries(requestHeaders), 'STATSIG-API-KEY': apiKey.replaceAll('"', '') }
+    : headers
+}
+
 const customFetch = async (url: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
   const response: unknown = await browser.runtime.sendMessage({
     config: {
       body: init?.body,
-      headers: init?.headers,
+      headers: getProjectRequestHeaders(init?.headers),
       method: init?.method,
       url: getRequestUrl(url),
     },

@@ -126,7 +126,11 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
 
           const { url = '', method = 'GET', body } = message.config
           const stored = await runtimeRoot.browser?.storage?.local?.get(storageKey)
-          const currentApiKey = typeof stored?.[storageKey] === 'string' ? stored[storageKey] : undefined
+          const explicitApiKey = Object.entries(message.config.headers ?? {}).find(
+            ([name]) => name.toLowerCase() === 'statsig-api-key',
+          )?.[1]
+          const currentApiKey =
+            explicitApiKey ?? (typeof stored?.[storageKey] === 'string' ? stored[storageKey] : undefined)
           let parsedBody: unknown = body
           try {
             parsedBody = typeof body === 'string' ? JSON.parse(body) : body
@@ -188,7 +192,9 @@ export const mockApi = async (page: Page, routes: MockRoute[]): Promise<MockApi>
         runtimeRoot.browser.tabs.query = async (...args: unknown[]) => {
           const tabs = await queryTabs(...args)
           for (const tab of tabs) {
-            tab.url ??= activeTabUrl
+            if (!tab.url || tab.url.startsWith('chrome-extension://')) {
+              tab.url = activeTabUrl
+            }
           }
           return tabs
         }

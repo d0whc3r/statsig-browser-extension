@@ -77,7 +77,6 @@ const FULL_PASS = 100
 const PRODUCTION_PATTERN = /^prod/iu
 
 interface AuditContext {
-  environments: string[]
   hasProductionEnvironment: boolean
   now: number
   thresholdDays: number
@@ -88,27 +87,22 @@ const gateRules = (gate: FeatureGate): FeatureGateRule[] => gate.rules ?? []
 
 const ruleEnvironments = (rule: FeatureGateRule): string[] => rule.environments ?? []
 
-/** An empty `environments` array means "every environment" in the Statsig console. */
-const coversAllEnvironments = (rule: FeatureGateRule, environments: readonly string[]): boolean => {
-  const targeted = ruleEnvironments(rule)
-  return targeted.length === 0 || environments.every((environment) => targeted.includes(environment))
-}
-
 const isUnconditional = (rule: FeatureGateRule): boolean =>
   rule.conditions.every((condition) => condition.type === 'public')
 
-const ageInDays = (timestamp: number, now: number): number => Math.floor((now - timestamp) / DAY_MS)
+const ageInDays = (timestamp: number | null, now: number): number | null =>
+  timestamp === null || !Number.isFinite(timestamp) ? null : Math.floor((now - timestamp) / DAY_MS)
 
 const compareStrings = (left: string, right: string): number => left.localeCompare(right)
 
 const conditionFingerprint = (condition: FeatureGateRule['conditions'][number]): string =>
-  [
+  JSON.stringify([
     condition.type,
     condition.operator ?? '',
     condition.field ?? '',
     condition.customID ?? '',
     JSON.stringify(condition.targetValue ?? null),
-  ].join('|')
+  ])
 
 const ruleFingerprint = (rule: FeatureGateRule): string =>
   JSON.stringify([
@@ -118,15 +112,23 @@ const ruleFingerprint = (rule: FeatureGateRule): string =>
   ])
 
 const gateFingerprint = (gate: FeatureGate): string =>
-  JSON.stringify(
-    gateRules(gate)
-      .map((rule) => ruleFingerprint(rule))
-      .toSorted(compareStrings),
-  )
+  JSON.stringify([
+    gate.isEnabled,
+    gate.idType,
+    (typeof gate.targetApps === 'string' ? [gate.targetApps] : (gate.targetApps ?? [])).toSorted(compareStrings),
+    // Statsig evaluates the first matching rule, so order is significant.
+    gateRules(gate).map((rule) => ruleFingerprint(rule)),
+  ])
+
+// Independent rollout salts and holdouts can produce different results for identical rules.
+const hasDeterministicRules = (gate: FeatureGate): boolean =>
+  !gate.holdoutIDs?.length &&
+  gateRules(gate).length > 0 &&
+  gateRules(gate).every((rule) => rule.passPercentage === 0 || rule.passPercentage === FULL_PASS)
 
 const groupByFingerprint = (gates: readonly FeatureGate[]): Map<string, FeatureGate[]> => {
   const groups = new Map<string, FeatureGate[]>()
-  for (const gate of gates.filter((candidate) => gateRules(candidate).length > 0)) {
+  for (const gate of gates.filter((candidate) => hasDeterministicRules(candidate))) {
     const fingerprint = gateFingerprint(gate)
     groups.set(fingerprint, [...(groups.get(fingerprint) ?? []), gate])
   }
@@ -153,7 +155,6 @@ const buildContext = (gates: readonly FeatureGate[], thresholdDays: number): Aud
   const environments = [...new Set(gates.flatMap((gate) => gateRules(gate).flatMap((rule) => ruleEnvironments(rule))))]
 
   return {
-    environments,
     hasProductionEnvironment: environments.some((environment) => PRODUCTION_PATTERN.test(environment)),
     now: Date.now(),
     thresholdDays,
@@ -163,18 +164,21 @@ const buildContext = (gates: readonly FeatureGate[], thresholdDays: number): Aud
 
 type IssueCheck = (gate: FeatureGate, context: AuditContext) => GateIssue | null
 
-const alwaysOn: IssueCheck = (gate, context) => {
-  if (!gate.isEnabled) {
+const alwaysOn: IssueCheck = (gate) => {
+  if (!gate.isEnabled || gate.holdoutIDs?.length) {
     return null
   }
-  const rule = gateRules(gate).find(
-    (candidate) =>
-      candidate.passPercentage === FULL_PASS &&
-      isUnconditional(candidate) &&
-      coversAllEnvironments(candidate, context.environments),
-  )
-
-  return rule ? { detail: `Rule "${rule.name}" passes everyone at 100% in every environment`, key: 'always_on' } : null
+  for (const rule of gateRules(gate)) {
+    // Any earlier match can reject a user before the unconditional fallback.
+    if (rule.passPercentage !== FULL_PASS) {
+      return null
+    }
+    // Loaded rules do not provide an authoritative list of project environments.
+    if (isUnconditional(rule) && ruleEnvironments(rule).length === 0) {
+      return { detail: `Rule "${rule.name}" passes everyone at 100% in every environment`, key: 'always_on' }
+    }
+  }
+  return null
 }
 
 const alwaysOff: IssueCheck = (gate) => {
@@ -196,7 +200,9 @@ const noTraffic: IssueCheck = (gate) =>
 
 const frozen: IssueCheck = (gate, context) => {
   const days = ageInDays(gate.lastModifiedTime, context.now)
-  return days >= context.thresholdDays ? { detail: `Not modified in ${days} days`, key: 'frozen' } : null
+  return days !== null && days >= context.thresholdDays
+    ? { detail: `Not modified in ${days} days`, key: 'frozen' }
+    : null
 }
 
 const agingTemporary: IssueCheck = (gate, context) => {
@@ -205,7 +211,7 @@ const agingTemporary: IssueCheck = (gate, context) => {
   }
   const days = ageInDays(gate.createdTime, context.now)
 
-  return days >= context.thresholdDays
+  return days !== null && days >= context.thresholdDays
     ? { detail: `Temporary gate created ${days} days ago`, key: 'aging_temporary' }
     : null
 }

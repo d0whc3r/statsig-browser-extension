@@ -3,7 +3,7 @@ import { useCallback, useEffect, useRef } from 'react'
 import { fetchProjectFingerprint } from '@/src/handlers/project-fingerprint'
 import { useActiveTabOrigin } from '@/src/hooks/use-active-tab-origin'
 import { hasProjectFingerprint } from '@/src/lib/projects'
-import { queryClient } from '@/src/lib/query-client'
+import { useContextStore } from '@/src/store/use-context-store'
 import { useSettingsStore } from '@/src/store/use-settings-store'
 
 /**
@@ -74,14 +74,17 @@ export const useRefreshProject = () => {
  * where the SDK key cannot be detected.
  */
 export const useSwitchProject = () => {
+  const setManualProject = useContextStore((state) => state.setManualProject)
   const setActiveProject = useSettingsStore((state) => state.setActiveProject)
   const origin = useActiveTabOrigin()
 
   return useCallback(
     async (projectId: string, pinOrigin = false) => {
+      if (pinOrigin) {
+        setManualProject(undefined)
+      }
       await setActiveProject(projectId, pinOrigin ? origin : undefined)
-      await queryClient.resetQueries()
     },
-    [origin, setActiveProject],
+    [origin, setActiveProject, setManualProject],
   )
 }

@@ -1,8 +1,11 @@
+import { waitFor } from '@testing-library/react'
 import { beforeEach, vi, describe, expect, it } from 'vitest'
 
 import type { StatsigProject } from '@/src/lib/projects'
 
+import { queryClient } from '@/src/lib/query-client'
 import { activeProjectIdStorage, apiKeyStorage, projectsStorage } from '@/src/lib/storage'
+import { useUIStore } from '@/src/store/use-ui-store'
 
 import { useSettingsStore } from './use-settings-store'
 
@@ -39,12 +42,15 @@ const mockStorage = (projects: StatsigProject[], activeId = '', legacyKey = '') 
   vi.mocked(projectsStorage.getValue).mockResolvedValue(projects)
   vi.mocked(activeProjectIdStorage.getValue).mockResolvedValue(activeId)
   vi.mocked(apiKeyStorage.getValue).mockResolvedValue(legacyKey)
-  vi.mocked(projectsStorage.watch).mockReturnValue({ unsubscribe: vi.fn() } as never)
+  vi.mocked(projectsStorage.watch).mockReturnValue(vi.fn())
 }
 
 describe('useSettingsStore', () => {
   beforeEach(() => {
     vi.clearAllMocks()
+    vi.mocked(projectsStorage.watch).mockReset().mockReturnValue(vi.fn())
+    vi.mocked(activeProjectIdStorage.watch).mockReset().mockReturnValue(vi.fn())
+    vi.mocked(apiKeyStorage.watch).mockReset().mockReturnValue(vi.fn())
     useSettingsStore.setState({
       activeProjectId: '',
       apiKey: '',
@@ -112,7 +118,7 @@ describe('useSettingsStore', () => {
     vi.mocked(projectsStorage.getValue).mockRejectedValue(new Error('Storage error'))
     vi.mocked(activeProjectIdStorage.getValue).mockResolvedValue('')
     vi.mocked(apiKeyStorage.getValue).mockResolvedValue('')
-    vi.mocked(projectsStorage.watch).mockReturnValue({ unsubscribe: vi.fn() } as never)
+    vi.mocked(projectsStorage.watch).mockReturnValue(vi.fn())
 
     await useSettingsStore.getState().initialize()
 
@@ -122,14 +128,54 @@ describe('useSettingsStore', () => {
 
   it('should update state when the projects storage changes externally', async () => {
     mockStorage([project()], 'p1')
-    vi.mocked(projectsStorage.watch).mockImplementation((callback) => {
-      ;(callback as (value: StatsigProject[]) => void)([project({ apiKey: 'console-updated' })])
-      return { unsubscribe: vi.fn() } as never
-    })
-
     await useSettingsStore.getState().initialize()
+    vi.mocked(projectsStorage.getValue).mockResolvedValue([project({ apiKey: 'console-updated' })])
+    vi.mocked(apiKeyStorage.getValue).mockResolvedValue('console-updated')
+    vi.mocked(projectsStorage.watch).mock.calls[0][0]([project({ apiKey: 'console-updated' })], [project()])
 
-    expect(useSettingsStore.getState().apiKey).toBe('console-updated')
+    await waitFor(() => {
+      expect(useSettingsStore.getState().apiKey).toBe('console-updated')
+    })
+  })
+
+  it('preserves project editors and cache on external metadata-only changes', async () => {
+    mockStorage([project()], 'p1', 'console-a')
+    await useSettingsStore.getState().initialize()
+    const updated = [project({ label: 'Renamed' })]
+    vi.mocked(projectsStorage.getValue).mockResolvedValue(updated)
+    useUIStore.setState({ currentItemId: 'selected', isItemSheetOpen: true })
+    queryClient.setQueryData(['feature-gates'], 'cached')
+    vi.mocked(projectsStorage.watch).mock.calls[0][0](updated, [project()])
+
+    await waitFor(() => {
+      expect(useSettingsStore.getState().projects[0].label).toBe('Renamed')
+    })
+    expect(useSettingsStore.getState().apiKey).toBe('console-a')
+    expect(useUIStore.getState().currentItemId).toBe('selected')
+    expect(queryClient.getQueryData(['feature-gates'])).toBe('cached')
+    queryClient.clear()
+  })
+
+  it('waits for an external active id and key mirror to agree without writing back', async () => {
+    mockStorage([project(), project({ apiKey: 'console-b', id: 'p2' })], 'p1', 'console-a')
+    await useSettingsStore.getState().initialize()
+    const writesBefore = vi.mocked(apiKeyStorage.setValue).mock.calls.length
+    vi.mocked(activeProjectIdStorage.getValue).mockResolvedValue('p2')
+    vi.mocked(activeProjectIdStorage.watch).mock.calls[0][0]('p2', 'p1')
+
+    await waitFor(() => {
+      expect(useSettingsStore.getState().isApiKeyLoading).toBeTruthy()
+      expect(useSettingsStore.getState().activeProjectId).toBe('p2')
+    })
+    expect(useSettingsStore.getState().apiKey).toBe('')
+    vi.mocked(apiKeyStorage.getValue).mockResolvedValue('console-b')
+    vi.mocked(apiKeyStorage.watch).mock.calls[0][0]('console-b', 'console-a')
+
+    await waitFor(() => {
+      expect(useSettingsStore.getState().apiKey).toBe('console-b')
+      expect(useSettingsStore.getState().isApiKeyLoading).toBeFalsy()
+    })
+    expect(vi.mocked(apiKeyStorage.setValue)).toHaveBeenCalledTimes(writesBefore)
   })
 
   it('should add a project, activate it and mirror its key', async () => {
@@ -213,6 +259,59 @@ describe('useSettingsStore', () => {
       gateHashes: ['123'],
     })
     expect(projectsStorage.setValue).toHaveBeenCalled()
+  })
+
+  it('keeps the credential unavailable until the mirror write completes', async () => {
+    useSettingsStore.setState({
+      activeProjectId: 'p1',
+      apiKey: 'console-a',
+      isApiKeyLoading: false,
+      projects: [project(), project({ apiKey: 'console-b', id: 'p2' })],
+    })
+    const mirror = Promise.withResolvers<void>()
+    vi.mocked(apiKeyStorage.setValue).mockReturnValueOnce(mirror.promise)
+    const switching = useSettingsStore.getState().setActiveProject('p2')
+
+    expect(useSettingsStore.getState().apiKey).toBe('')
+    expect(useSettingsStore.getState().isApiKeyLoading).toBeTruthy()
+    mirror.resolve()
+    await switching
+    expect(useSettingsStore.getState().apiKey).toBe('console-b')
+    expect(useSettingsStore.getState().isApiKeyLoading).toBeFalsy()
+  })
+
+  it('does not publish a late earlier activation over a newer choice', async () => {
+    useSettingsStore.setState({
+      activeProjectId: 'p1',
+      apiKey: 'console-a',
+      isApiKeyLoading: false,
+      projects: [project(), project({ apiKey: 'console-b', id: 'p2' })],
+    })
+    const firstWrite = Promise.withResolvers<void>()
+    vi.mocked(projectsStorage.setValue).mockReturnValueOnce(firstWrite.promise)
+    const first = useSettingsStore.getState().setActiveProject('p2')
+    const second = useSettingsStore.getState().setActiveProject('p1')
+    firstWrite.resolve()
+    await first
+    expect(useSettingsStore.getState().apiKey).toBe('')
+    await second
+    expect(useSettingsStore.getState().apiKey).toBe('console-a')
+    expect(vi.mocked(apiKeyStorage.setValue).mock.calls.at(-1)?.[0]).toBe('console-a')
+  })
+
+  it('does not expose a credential when persistence fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    useSettingsStore.setState({
+      activeProjectId: 'p1',
+      apiKey: 'console-a',
+      isApiKeyLoading: false,
+      projects: [project(), project({ apiKey: 'console-b', id: 'p2' })],
+    })
+    vi.mocked(apiKeyStorage.setValue).mockRejectedValueOnce(new Error('Storage failure'))
+
+    await expect(useSettingsStore.getState().setActiveProject('p2')).rejects.toThrow('Storage failure')
+    expect(useSettingsStore.getState().apiKey).toBe('')
+    expect(useSettingsStore.getState().isApiKeyLoading).toBeTruthy()
   })
 
   it('should clear every project on logout', async () => {

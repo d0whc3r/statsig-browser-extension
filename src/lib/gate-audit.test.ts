@@ -65,6 +65,26 @@ describe('auditGates', () => {
     expect(issuesOf([healthyGate({ rules: [rule] })])).not.toContain('always_on')
   })
 
+  it('does not flag always_on when an earlier rule rejects matching users', () => {
+    const gate = healthyGate({
+      rules: [
+        makeRule({ conditions: [{ operator: 'any', targetValue: ['excluded'], type: 'user_id' }], passPercentage: 0 }),
+        makeRule({ environments: [], id: 'fallback', passPercentage: 100 }),
+      ],
+    })
+    expect(issuesOf([gate])).not.toContain('always_on')
+  })
+
+  it('does not infer every project environment from the loaded rules', () => {
+    const gate = healthyGate({ rules: [makeRule({ passPercentage: 100 })] })
+    expect(issuesOf([gate])).not.toContain('always_on')
+  })
+
+  it('does not flag always_on when a holdout can reject users', () => {
+    const gate = healthyGate({ holdoutIDs: ['holdout'], rules: [makeRule({ environments: [], passPercentage: 100 })] })
+    expect(issuesOf([gate])).not.toContain('always_on')
+  })
+
   it('flags disabled gates, ruleless gates and all-zero gates as always_off', () => {
     const disabled = healthyGate({ isEnabled: false })
     const ruleless = healthyGate({ rules: [] })
@@ -84,6 +104,10 @@ describe('auditGates', () => {
 
     expect(issuesOf([gate], 7)).toContain('frozen')
     expect(issuesOf([gate], 30)).not.toContain('frozen')
+  })
+
+  it('does not infer an old modification from a missing timestamp', () => {
+    expect(issuesOf([healthyGate({ lastModifiedTime: null })])).not.toContain('frozen')
   })
 
   it('flags temporary gates that outlived the threshold', () => {
@@ -109,10 +133,50 @@ describe('auditGates', () => {
   })
 
   it('flags two gates that share the exact same rules', () => {
-    const gates = [healthyGate(), healthyGate({ id: 'gate-2', name: 'gate_2' })]
+    const rules = [makeRule({ passPercentage: 100 })]
+    const gates = [healthyGate({ rules }), healthyGate({ id: 'gate-2', name: 'gate_2', rules })]
     const finding = auditGates(gates, 7).find((item) => item.gate.id === 'gate-1')
 
     expect(finding?.issues.find((issue) => issue.key === 'twin_gates')?.detail).toBe('Same rules as gate_2')
+  })
+
+  it('does not treat different rule orders as twin gates', () => {
+    const rules = [
+      makeRule({ environments: [], passPercentage: 0 }),
+      makeRule({ environments: [], id: 'second', passPercentage: 100 }),
+    ]
+    const gates = [healthyGate({ rules }), healthyGate({ id: 'gate-2', rules: rules.toReversed() })]
+    expect(issuesOf(gates)).not.toContain('twin_gates')
+  })
+
+  it('does not treat different enabled states or ID types as twin gates', () => {
+    const rules = [makeRule({ passPercentage: 100 })]
+    const gate = healthyGate({ rules })
+    expect(issuesOf([gate, healthyGate({ id: 'gate-2', isEnabled: false, rules })])).not.toContain('twin_gates')
+    expect(issuesOf([gate, healthyGate({ id: 'gate-2', idType: 'companyID', rules })])).not.toContain('twin_gates')
+  })
+
+  it('accepts scalar targetApps and matches its equivalent array representation', () => {
+    const rules = [makeRule({ passPercentage: 100 })]
+    const gates = [
+      healthyGate({ rules, targetApps: 'app-1' }),
+      healthyGate({ id: 'gate-2', rules, targetApps: ['app-1'] }),
+    ]
+    expect(issuesOf(gates)).toContain('twin_gates')
+    expect(issuesOf([gates[0], healthyGate({ id: 'gate-2', rules, targetApps: ['app-2'] })])).not.toContain(
+      'twin_gates',
+    )
+  })
+
+  it('does not treat independent percentage rollouts as equivalent gates', () => {
+    expect(issuesOf([healthyGate(), healthyGate({ id: 'gate-2' })])).not.toContain('twin_gates')
+  })
+
+  it('does not treat gates with holdouts as equivalent gates', () => {
+    const rules = [makeRule({ passPercentage: 100 })]
+    expect(
+      issuesOf([healthyGate({ holdoutIDs: ['holdout'], rules }), healthyGate({ id: 'gate-2', rules })]),
+    ).not.toContain('twin_gates')
   })
 
   it('flags repeated rules inside one gate', () => {

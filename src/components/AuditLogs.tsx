@@ -47,18 +47,10 @@ const useAuditLogPreferences = () => {
       },
       [setAuditLogs],
     ),
+    setAuditLogs,
     setFilterValue: useCallback(
       (value: string) => {
         setAuditLogs({ filterValue: value, page: 1 })
-      },
-      [setAuditLogs],
-    ),
-    setPage: useCallback<Dispatch<SetStateAction<number>>>(
-      (value) => {
-        setAuditLogs((current) => ({
-          ...current,
-          page: typeof value === 'function' ? value(current.page) : value,
-        }))
       },
       [setAuditLogs],
     ),
@@ -72,8 +64,16 @@ const useAuditLogPreferences = () => {
 }
 
 const useAuditLogState = () => {
-  const { actionFilter, filterValue, page, rowsPerPage, setActionFilter, setFilterValue, setPage, setRowsPerPage } =
-    useAuditLogPreferences()
+  const {
+    actionFilter,
+    filterValue,
+    page,
+    rowsPerPage,
+    setActionFilter,
+    setAuditLogs,
+    setFilterValue,
+    setRowsPerPage,
+  } = useAuditLogPreferences()
   const debouncedFilterValue = useDebounce(filterValue, FILTER_DEBOUNCE_MS)
   const { data, fetchNextPage, hasNextPage, isFetching, isFetchingNextPage, refetch, isLoading } = useAuditLogs()
 
@@ -82,6 +82,15 @@ const useAuditLogState = () => {
 
   const totalPages = Math.max(1, Math.ceil(filteredItems.length / rowsPerPage))
   const currentPage = Math.min(page, totalPages)
+  const setPage = useCallback<Dispatch<SetStateAction<number>>>(
+    (value) => {
+      setAuditLogs((current) => ({
+        ...current,
+        page: typeof value === 'function' ? value(Math.min(current.page, totalPages)) : value,
+      }))
+    },
+    [setAuditLogs, totalPages],
+  )
   const pageItems = useMemo(
     () => filteredItems.slice((currentPage - 1) * rowsPerPage, currentPage * rowsPerPage),
     [filteredItems, currentPage, rowsPerPage],

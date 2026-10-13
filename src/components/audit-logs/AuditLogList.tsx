@@ -42,7 +42,7 @@ function EmptyState({
     <GeneralEmptyState
       variant="search"
       title="No results with the current filters"
-      description="Every audit log is hidden by the active search or filters. Clear them to see all results."
+      description="No loaded audit logs match the active search or filters. Clear them to see the loaded results."
     >
       <Button variant="outline" size="sm" onClick={onClearFilters} className="mt-2">
         <FilterX className="size-4" />
@@ -138,7 +138,7 @@ export const AuditLogList = memo(function AuditLogList({
         )}
       </div>
 
-      {filteredItems.length > 0 && (
+      {(filteredItems.length > 0 || hasNextPage) && (
         <div className="flex-none border-t bg-background p-3">
           <Footer
             hasNextPage={hasNextPage}

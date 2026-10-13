@@ -1,21 +1,15 @@
 import { useInfiniteQuery } from '@tanstack/react-query'
 
+import type { PaginatedResponse } from '@/src/lib/pagination'
+
 import { useSettingsStorage } from '@/src/hooks/use-settings-storage'
 import { fetcher } from '@/src/lib/fetcher'
+import { getNextPageParam } from '@/src/lib/pagination'
 import { handleApiError } from '@/src/lib/utils'
 
 import type { FeatureGate } from '../types/statsig'
 
 const PAGE_LIMIT = 100
-
-export interface PaginatedResponse<ItemType> {
-  data: ItemType[]
-  pagination: {
-    totalItems: number
-    page: number
-    limit: number
-  }
-}
 
 /**
  * Fetches a single page of feature gates from the Statsig API.
@@ -38,22 +32,12 @@ const fetchFeatureGatesPage = async (page: number): Promise<PaginatedResponse<Fe
  *
  * @returns The Infinite React Query result containing the feature gates pages
  */
-export const useFeatureGates = () => {
+export const useFeatureGates = (enabled = true) => {
   const { apiKey } = useSettingsStorage()
 
   return useInfiniteQuery({
-    enabled: Boolean(apiKey),
-    getNextPageParam: (lastPage: PaginatedResponse<FeatureGate>) => {
-      if (!lastPage?.pagination) {
-        return null
-      }
-      const currentTotal = lastPage.pagination.page * lastPage.pagination.limit
-      if (currentTotal < lastPage.pagination.totalItems) {
-        return lastPage.pagination.page + 1
-      }
-
-      return null
-    },
+    enabled: enabled && Boolean(apiKey),
+    getNextPageParam,
     initialPageParam: 1,
     queryFn: ({ pageParam }) => fetchFeatureGatesPage(pageParam),
     queryKey: ['feature-gates'],
