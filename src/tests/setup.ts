@@ -28,10 +28,10 @@ const browserMock = {
   },
 }
 
-const root = globalThis as typeof globalThis & { browser?: typeof browserMock }
+const existingBrowser = 'browser' in globalThis ? globalThis.browser : undefined
 
-if (typeof root.browser === 'object' && root.browser !== null) {
-  Object.assign(root.browser, browserMock)
+if (typeof existingBrowser === 'object' && existingBrowser !== null) {
+  Object.assign(existingBrowser, browserMock)
 } else {
   Object.defineProperty(globalThis, 'browser', {
     configurable: true,

@@ -82,10 +82,6 @@ const createMessageHandler = (sendResponse: (response: unknown) => void) => {
       return
     }
 
-    const cleanup = () => {
-      globalThis.window.removeEventListener('message', handler)
-    }
-
     if (data.type === 'STATSIG_USER_DETECTED') {
       handleUserDetected(data, sendResponse, cleanup)
     } else if (data.type === 'STATSIG_DETECTED_BUT_ERROR') {
@@ -93,6 +89,9 @@ const createMessageHandler = (sendResponse: (response: unknown) => void) => {
     } else if (data.type === 'STATSIG_NOT_DETECTED') {
       handleNotDetected(sendResponse, cleanup)
     }
+  }
+  const cleanup = () => {
+    globalThis.window.removeEventListener('message', handler)
   }
   return handler
 }
