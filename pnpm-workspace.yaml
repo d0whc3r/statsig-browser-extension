@@ -13,4 +13,4 @@ minimumReleaseAgeStrict: false
 
 # fx-runner pins a vulnerable shell-quote release; keep the compatible fix scoped.
 overrides:
-  fx-runner>shell-quote: 1.11.0
+  fx-runner>shell-quote: 1.12.0
