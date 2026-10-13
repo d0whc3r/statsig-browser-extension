@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- Original 128px mark; generated PNGs: 16, 32, 48, 96, 128px.
+       White tile keeps the mark at 15.65:1 contrast across browser themes. -->
+  <rect width="128" height="128" rx="20" fill="#fff" />
+  <g transform="translate(14 14) scale(0.78125)" fill="#1b2528">
+    <polygon points="0,47 13,30 29,4 34,0 117,0 116,4 113,6 75,65 54,37 13,98 0,81" />
+    <polygon points="10,126 54,61 57,63 71,86 75,89 114,29 117,31 128,48 128,80 96,127 10,128" />
+  </g>
+</svg>
