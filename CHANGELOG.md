@@ -1,3 +1,11 @@
+## [1.7.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.7.1...v1.7.2) (2026-10-13)
+
+### Bug Fixes
+
+- add extension icon and upgrade dependencies ([232e5b9](https://github.com/d0whc3r/statsig-browser-extension/commit/232e5b9ba711776baf3620ac398f59e5e2473925))
+- Harden project switching and pagination handling ([c441855](https://github.com/d0whc3r/statsig-browser-extension/commit/c4418550a3e2e76d14a32df04bcb82e04a099d5f))
+- message handler cleanup scope and browser mock setup ([495d2b8](https://github.com/d0whc3r/statsig-browser-extension/commit/495d2b85580ea115699a4d5f553296f014398739))
+
 ## [1.7.1](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.7.0...v1.7.1) (2026-09-05)
 
 ### Bug Fixes
