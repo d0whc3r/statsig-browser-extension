@@ -35,7 +35,7 @@ export const OverrideRow = memo(function OverrideRow({
 
   return (
     <TableRow className={override.isCurrentUser ? 'bg-muted/30' : undefined}>
-      <TableCell className="font-medium">
+      <TableCell className="font-medium break-all">
         <div className="flex items-center gap-2">
           {override.ids.join(', ')}
           {override.isCurrentUser && (

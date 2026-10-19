@@ -27,7 +27,7 @@ export const OverrideRow = memo(function OverrideRow({ item, canEdit, isPending,
 
   return (
     <TableRow className={item.isCurrentUser ? 'bg-muted/30' : undefined}>
-      <TableCell className="font-mono text-xs">
+      <TableCell className="font-mono text-xs break-all">
         <div className="flex items-center gap-2">
           {item.id}
           {item.isCurrentUser && (
