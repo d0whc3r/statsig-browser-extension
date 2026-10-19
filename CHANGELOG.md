@@ -1,3 +1,9 @@
+## [1.7.3](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.7.2...v1.7.3) (2026-10-19)
+
+### Bug Fixes
+
+- table dimensions ([c804d8f](https://github.com/d0whc3r/statsig-browser-extension/commit/c804d8f708aec6cf7c4bbfe75278ee4d142c82c7))
+
 ## [1.7.2](https://github.com/d0whc3r/statsig-browser-extension/compare/v1.7.1...v1.7.2) (2026-10-13)
 
 ### Bug Fixes
